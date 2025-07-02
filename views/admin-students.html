@@ -5,6 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .device-status, .session-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .device-status.has-device {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .device-status.no-device {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .session-status.active-session {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .session-status.no-session {
+            background-color: #e2e3e5;
+            color: #383d41;
+            border: 1px solid #d6d8db;
+        }
+
+        .admin-table th:nth-child(6),
+        .admin-table th:nth-child(7) {
+            min-width: 120px;
+        }
+    </style>
 </head>
 <body>
     <!-- Loading Indicator -->
@@ -54,6 +91,7 @@
                                 <th>Ngày sinh</th>
                                 <th>Ngày đăng ký</th>
                                 <th>Thiết bị</th>
+                                <th>Phiên đăng nhập</th>
                                 <th>Thao tác</th>
                             </tr>
                         </thead>
@@ -204,10 +242,12 @@
             });
             
             // Determine device status and add unbind button if needed
-            let deviceStatus = 'Chưa đăng nhập';
+            let deviceStatus = student.device_status || 'Chưa đăng ký thiết bị';
+            let sessionStatus = student.session_status || 'Không có phiên';
             let actionButton = '';
-            if (student.approved_device_fingerprint) {
-                deviceStatus = 'Đã liên kết'; // More specific than 'Đã đăng nhập'
+
+            // Show unbind button if any device is registered
+            if (student.device_identifier) {
                 actionButton += `
                     <button class="button small secondary unbind-btn" onclick="unbindDevice('${student.id}')" title="Gỡ liên kết thiết bị này">
                         <i class="fas fa-unlink"></i> Gỡ liên kết
@@ -227,7 +267,8 @@
                 <td>${student.phone_number}</td>
                 <td>${dateOfBirth}</td>
                 <td>${approvedAt}</td>
-                <td>${deviceStatus}</td>
+                <td><span class="device-status ${student.device_identifier ? 'has-device' : 'no-device'}">${deviceStatus}</span></td>
+                <td><span class="session-status ${student.current_session_id ? 'active-session' : 'no-session'}">${sessionStatus}</span></td>
                 <td class="action-cell">${actionButton}</td>
             `;
             

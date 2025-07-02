@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Học Vật Lý - Nền tảng học tập trực tuyến</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    
+    <style>
+        /* Page Specific Overrides */
+        .hero-section {
+            padding: var(--space-3xl) 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-title {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            margin-bottom: var(--space-md);
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-subtitle {
+            font-size: var(--text-xl);
+            color: var(--text-secondary);
+            margin-bottom: var(--space-xl);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-lg);
+            margin-bottom: var(--space-2xl);
+        }
+        
+        .lesson-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: var(--space-xl);
+            margin-bottom: var(--space-2xl);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-xl);
+        }
+        
+        .section-title {
+            font-size: var(--text-2xl);
+            font-weight: 600;
+        }
+        
+        .view-all-link {
+            color: var(--primary-color);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+        
+        .view-all-link:hover {
+            gap: var(--space-sm);
+        }
+        
+        /* Progress tracking */
+        .progress-section {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            margin-bottom: var(--space-2xl);
+        }
+        
+        .overall-progress {
+            margin-bottom: var(--space-lg);
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .streak-indicator {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm) var(--space-md);
+            background-color: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            font-size: var(--text-sm);
+        }
+        
+        .streak-icon {
+            color: var(--warning-color);
+        }
+        
+        /* Categories */
+        .category-pills {
+            display: flex;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-xl);
+            overflow-x: auto;
+            padding-bottom: var(--space-sm);
+        }
+        
+        .category-pill {
+            padding: var(--space-sm) var(--space-lg);
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-full);
+            color: var(--text-secondary);
+            font-weight: 500;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all var(--transition-base);
+        }
+        
+        .category-pill:hover {
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        
+        .category-pill.active {
+            background-color: var(--primary-bg);
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        /* Quick actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-md);
+            margin-bottom: var(--space-2xl);
+        }
+        
+        .quick-action-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-base);
+        }
+        
+        .quick-action-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+        
+        .quick-action-icon {
+            font-size: var(--text-3xl);
+            color: var(--primary-color);
+            margin-bottom: var(--space-md);
+        }
+        
+        .quick-action-title {
+            font-weight: 600;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .quick-action-description {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+        }
+        
+        /* Empty states */
+        .empty-lessons {
+            text-align: center;
+            padding: var(--space-3xl);
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+        }
+        
+        /* Mobile optimization */
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: var(--space-xl) 0;
+            }
+            
+            .lesson-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip Link for Accessibility -->
+    <a href="#main-content" class="skip-link">Chuyển đến nội dung chính</a>
+    
+    <!-- Loading Indicator -->
+    <div id="loading-indicator" class="loading-indicator hidden">
+        <div class="spinner"></div>
+        <p class="loading-text">Đang tải...</p>
+    </div>
+    
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <i class="fas fa-atom"></i>
+                <span>Học Vật Lý</span>
+            </a>
+            
+            <div class="nav-links" id="nav-links">
+                <a href="/" class="nav-link active">
+                    <i class="fas fa-home"></i>
+                    <span>Trang chủ</span>
+                </a>
+                <a href="#lessons" class="nav-link">
+                    <i class="fas fa-book"></i>
+                    <span>Bài học</span>
+                </a>
+                <a href="/leaderboard" class="nav-link">
+                    <i class="fas fa-trophy"></i>
+                    <span>Bảng xếp hạng</span>
+                </a>
+                <a href="/profile" class="nav-link" id="profile-link">
+                    <i class="fas fa-user"></i>
+                    <span>Hồ sơ</span>
+                </a>
+                <a href="/admin/login" class="nav-link">
+                    <i class="fas fa-cog"></i>
+                    <span class="hide-mobile">Quản trị</span>
+                </a>
+            </div>
+            
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main id="main-content" class="main-content">
+        <div class="container">
+            <!-- Hero Section -->
+            <section class="hero-section">
+                <div class="hero-content">
+                    <h1 class="hero-title">Khám phá Vật lý 12 một cách thú vị</h1>
+                    <p class="hero-subtitle">Học tập hiệu quả với phương pháp tương tác và theo dõi tiến độ cá nhân</p>
+                    
+                    <!-- Quick Stats -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="total-lessons">0</div>
+                            <div class="stat-label">Bài học</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="total-students">1,234</div>
+                            <div class="stat-label">Học sinh</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="completion-rate">89%</div>
+                            <div class="stat-label">Tỷ lệ hoàn thành</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="avg-score">8.5</div>
+                            <div class="stat-label">Điểm trung bình</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Progress Section (for logged in students) -->
+            <section class="progress-section hidden" id="progress-section">
+                <div class="section-header">
+                    <h2 class="section-title">Tiến độ học tập</h2>
+                    <div class="streak-indicator">
+                        <i class="fas fa-fire streak-icon"></i>
+                        <span id="streak-count">0 ngày liên tiếp</span>
+                    </div>
+                </div>
+                
+                <div class="overall-progress">
+                    <div class="progress-label">
+                        <span>Tổng tiến độ</span>
+                        <span id="progress-percentage">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <div class="quick-actions">
+                    <div class="quick-action-card" onclick="continueLesson()">
+                        <i class="fas fa-play-circle quick-action-icon"></i>
+                        <h3 class="quick-action-title">Tiếp tục học</h3>
+                        <p class="quick-action-description">Bài: Dao động điều hòa</p>
+                    </div>
+                    <div class="quick-action-card" onclick="reviewMistakes()">
+                        <i class="fas fa-redo quick-action-icon"></i>
+                        <h3 class="quick-action-title">Ôn tập lỗi sai</h3>
+                        <p class="quick-action-description">15 câu cần ôn lại</p>
+                    </div>
+                    <div class="quick-action-card" onclick="practiceMode()">
+                        <i class="fas fa-dumbbell quick-action-icon"></i>
+                        <h3 class="quick-action-title">Luyện tập</h3>
+                        <p class="quick-action-description">Câu hỏi ngẫu nhiên</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Search and Filters -->
+            <section class="search-filter-container">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="search-input" class="search-input" placeholder="Tìm kiếm bài học, chủ đề...">
+                </div>
+                
+                <div class="filter-options">
+                    <select id="sort-select" class="filter-select">
+                        <option value="newest">Mới nhất</option>
+                        <option value="oldest">Cũ nhất</option>
+                        <option value="popular">Phổ biến</option>
+                        <option value="az">A → Z</option>
+                        <option value="za">Z → A</option>
+                    </select>
+                </div>
+            </section>
+            
+            <!-- Category Pills -->
+            <div class="category-pills">
+                <button class="category-pill active" data-category="all">Tất cả</button>
+                <button class="category-pill" data-category="dao-dong">Dao động cơ</button>
+                <button class="category-pill" data-category="song-co">Sóng cơ</button>
+                <button class="category-pill" data-category="dien-xoay-chieu">Điện xoay chiều</button>
+                <button class="category-pill" data-category="dao-dong-dien-tu">Dao động điện từ</button>
+                <button class="category-pill" data-category="song-anh-sang">Sóng ánh sáng</button>
+                <button class="category-pill" data-category="luong-tu">Lượng tử ánh sáng</button>
+                <button class="category-pill" data-category="hat-nhan">Vật lý hạt nhân</button>
+            </div>
+            
+            <!-- Lessons Section -->
+            <section id="lessons-section">
+                <div class="section-header">
+                    <h2 class="section-title">Bài học</h2>
+                    <div class="filter-chips" id="active-filters"></div>
+                </div>
+                
+                <div id="lessons" class="lesson-grid">
+                    <!-- Lessons will be dynamically loaded here -->
+                </div>
+                
+                <!-- Pagination -->
+                <div id="pagination-controls" class="pagination"></div>
+            </section>
+        </div>
+    </main>
+    
+    <!-- Student Info Modal -->
+    <div id="user-info-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <h2 class="modal-title">Thông tin học sinh</h2>
+            </div>
+            
+            <form id="user-info-form" autocomplete="off">
+                <div class="form-group">
+                    <label class="form-label">Họ và tên *</label>
+                    <input type="text" id="student-name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Ngày sinh</label>
+                    <input type="date" id="student-dob">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Mã số học sinh</label>
+                    <input type="text" id="student-id">
+                </div>
+                
+                <div class="modal-buttons">
+                    <button type="submit" class="button primary">
+                        <i class="fas fa-check"></i>
+                        Bắt đầu học
+                    </button>
+                    <button type="button" onclick="closeModal()" class="button secondary">
+                        <i class="fas fa-times"></i>
+                        Hủy
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="/js/lessons.js"></script>
+    <script>
+        // Mobile menu toggle
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const navLinks = document.getElementById('nav-links');
+        
+        mobileMenuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+        
+        // Category filter
+        const categoryPills = document.querySelectorAll('.category-pill');
+        categoryPills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                categoryPills.forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                const category = pill.dataset.category;
+                // Filter lessons by category
+                if (category === 'all') {
+                    filterAndRenderLessons();
+                } else {
+                    document.getElementById('search-input').value = category;
+                    filterAndRenderLessons();
+                }
+            });
+        });
+        
+        // Progress functions
+        function continueLesson() {
+            // Navigate to last incomplete lesson
+            window.location.href = '/lesson/last-incomplete';
+        }
+        
+        function reviewMistakes() {
+            // Navigate to review mode
+            window.location.href = '/review/mistakes';
+        }
+        
+        function practiceMode() {
+            // Navigate to practice mode
+            window.location.href = '/practice';
+        }
+        
+        // Update total lessons count
+        async function updateStats() {
+            try {
+                const response = await fetch('/api/lessons?limit=1');
+                const data = await response.json();
+                document.getElementById('total-lessons').textContent = data.total || 0;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateStats();
+            
+            // Check if student is logged in to show progress section
+            checkStudentAuthentication().then(isAuthenticated => {
+                if (isAuthenticated) {
+                    document.getElementById('progress-section').classList.remove('hidden');
+                    // Load progress data
+                    loadStudentProgress();
+                }
+            });
+        });
+        
+        // Load student progress
+        async function loadStudentProgress() {
+            try {
+                const response = await fetch('/api/progress/overview');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.progress) {
+                        const progress = data.progress;
+                        document.getElementById('streak-count').textContent = `${progress.streak || 0} ngày liên tiếp`;
+                        document.getElementById('progress-percentage').textContent = `${progress.percentage || 0}%`;
+                        document.querySelector('.progress-fill').style.width = `${progress.percentage || 0}%`;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading progress:', error);
+            }
+        }
+    </script>
+</body>
+</html>

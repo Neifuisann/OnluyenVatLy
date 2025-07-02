@@ -3,170 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hồ sơ học viên</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <title>Hồ sơ học viên - Ôn luyện Vật lí</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Add Chart.js -->
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    
     <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        }
-        .profile-container {
-            max-width: 800px;
-            margin: 30px auto;
-            padding: 25px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.07);
-        }
-        .profile-header {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            border-bottom: 1px solid #dee2e6;
-            padding-bottom: 20px;
-            margin-bottom: 20px;
-        }
-        .profile-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background-color: #e9ecef;
-            color: #495057;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            font-weight: 600;
-        }
-        .profile-info h1 {
-            margin: 0 0 5px 0;
-            font-size: 1.8rem;
-            color: #343a40;
-        }
-        .profile-info p {
-            margin: 0;
-            color: #6c757d;
-        }
-        .profile-rating {
-             font-size: 1.1rem;
-             font-weight: 600;
-        }
-        .profile-rating .fas {
-             margin-right: 5px;
-             color: #ffc107;
-        }
-
-        .profile-section {
-            margin-bottom: 30px;
-        }
-        .profile-section h2 {
-            font-size: 1.3rem;
-            color: #495057;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 8px;
+        /* Additional styles for chart theming */
+        .chart-container canvas {
+            max-height: 350px;
         }
         
-        /* Rating chart styling */
-        .chart-container {
-            position: relative;
-            width: 100%;
-            height: 300px;
-            margin-bottom: 20px;
-        }
-        
-        /* Rating categories/tiers */
-        .rating-tiers {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 15px;
-            justify-content: center;
-        }
-        
-        .rating-tier {
-            display: flex;
-            align-items: center;
-            font-size: 0.85rem;
-            gap: 5px;
-        }
-        
-        .tier-color {
-            width: 12px;
-            height: 12px;
-            border-radius: 2px;
-        }
-        
-        /* Responsive legend for small screens */
-        .mobile-tier-container {
-            display: none;
-        }
-        
-        .rating-history-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .history-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px dashed #eee;
-            font-size: 0.95rem;
-        }
-        .history-item:last-child {
-            border-bottom: none;
-        }
-        .history-details span {
-            display: block;
-            color: #6c757d;
-            font-size: 0.85rem;
-        }
-         .history-change {
-             font-weight: 600;
-             padding: 3px 8px;
-             border-radius: 4px;
-             min-width: 50px; /* Ensure some width */
-             text-align: right;
-         }
-         .history-change.positive {
-             color: #198754;
-             background-color: rgba(25, 135, 84, 0.1);
-         }
-         .history-change.negative {
-             color: #dc3545;
-             background-color: rgba(220, 53, 69, 0.1);
-         }
-        .loading, .error {
-            text-align: center;
-            padding: 30px;
-            color: #6c757d;
-        }
-        
-        .no-data {
-            padding: 15px;
-            text-align: center;
-            color: #6c757d;
-            font-style: italic;
-        }
-
-        @media (max-width: 600px) {
-            .profile-header { flex-direction: column; text-align: center; gap: 15px; }
-            .profile-avatar { width: 70px; height: 70px; font-size: 2rem; }
-            .profile-info h1 { font-size: 1.6rem; }
-            .history-item { flex-direction: column; align-items: flex-start; gap: 5px; }
-            .history-change { align-self: flex-end; }
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
             
-            /* Adjust chart height for mobile */
+            .profile-avatar {
+                width: 80px;
+                height: 80px;
+                font-size: 2.5rem;
+            }
+            
+            .profile-info h1 {
+                font-size: 2rem;
+            }
+            
+            .history-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .history-change {
+                align-self: flex-end;
+            }
+            
             .chart-container {
                 height: 250px;
             }
             
-            /* Switch to horizontal scrolling tiers for very small screens */
             .rating-tiers {
                 display: none;
             }
@@ -175,42 +64,52 @@
                 display: block;
                 overflow-x: auto;
                 white-space: nowrap;
-                padding-bottom: 8px;
-                margin-bottom: 15px;
-                -webkit-overflow-scrolling: touch;
+                padding-bottom: 1rem;
+                margin-bottom: 1.5rem;
             }
             
             .mobile-tier-container .rating-tiers {
                 display: inline-flex;
                 flex-wrap: nowrap;
-                padding: 0 5px;
             }
-            
-            .mobile-tier-container .rating-tier {
-                font-size: 0.8rem;
-                white-space: nowrap;
+        }
+        
+        @media (min-width: 769px) {
+            .mobile-tier-container {
+                display: none;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Loading Indicator -->
+    <div id="loading-indicator" class="loading-indicator">
+        <div class="spinner"></div>
+        <p>Đang tải hồ sơ...</p>
+    </div>
+
+    <!-- Background Animation -->
+    <canvas id="network-canvas"></canvas>
+    
+    <!-- Home Button -->
     <a href="/" class="home-button">
         <img src="https://styles.redditmedia.com/t5_851o4i/styles/profileIcon_0elfudeu2s5b1.jpg?width=256&height=256&frame=1&auto=webp&crop=256:256,smart&s=86be605407a08efe2894a6bacd089074aca51879" alt="Home">
     </a>
+    
     <div class="profile-container" id="profile-data">
-        <div class="loading">Đang tải hồ sơ...</div>
         <!-- Profile content will be loaded here -->
     </div>
 
+    <script src="/js/network-animation.js"></script>
     <script>
-        // Define rating tiers similar to Codeforces
+        // Define rating tiers
         const ratingTiers = [
-            { name: "Newbie", min: 0, max: 1200, color: "#ccc" },
-            { name: "Học viên", min: 1200, max: 1400, color: "#7cb342" },
-            { name: "Chuyên cần", min: 1400, max: 1600, color: "#2196f3" },
-            { name: "Giỏi", min: 1600, max: 1900, color: "#ab47bc" },
-            { name: "Xuất sắc", min: 1900, max: 2200, color: "#ff9800" },
-            { name: "Master", min: 2200, max: 3000, color: "#f44336" }
+            { name: "Newbie", min: 0, max: 1200, color: "#808080" },
+            { name: "Học viên", min: 1200, max: 1400, color: "#43e97b" },
+            { name: "Chuyên cần", min: 1400, max: 1600, color: "#3b82f6" },
+            { name: "Giỏi", min: 1600, max: 1900, color: "#a855f7" },
+            { name: "Xuất sắc", min: 1900, max: 2200, color: "#f59e0b" },
+            { name: "Master", min: 2200, max: 3000, color: "#ef4444" }
         ];
         
         // Get rating tier color
@@ -220,7 +119,7 @@
                     return tier.color;
                 }
             }
-            return "#ccc"; // Default
+            return "#808080";
         }
         
         // Get rating tier name
@@ -235,10 +134,12 @@
         
         async function loadProfile() {
             const profileContainer = document.getElementById('profile-data');
-            const studentId = window.location.pathname.split('/').pop(); // Get ID from URL
+            const studentId = window.location.pathname.split('/').pop();
+            const loadingIndicator = document.getElementById('loading-indicator');
 
             if (!studentId) {
-                profileContainer.innerHTML = '<div class="error">Không tìm thấy ID học viên.</div>';
+                profileContainer.innerHTML = '<div class="error-message"><i class="fas fa-exclamation-circle"></i> Không tìm thấy ID học viên.</div>';
+                loadingIndicator.style.display = 'none';
                 return;
             }
 
@@ -252,7 +153,7 @@
 
                 const data = await response.json();
                 
-                // --- Render Profile --- 
+                // Render Profile
                 let profileHTML = `
                     <div class="profile-header">
                         <div class="profile-avatar">${data.student.full_name?.[0]?.toUpperCase() || '?'}</div>
@@ -260,17 +161,17 @@
                             <h1>${data.student.full_name || 'Vô danh'}</h1>
                             <p class="profile-rating">
                                 <i class="fas fa-star"></i> ${Math.round(data.rating?.rating || 1500)} điểm
-                                <span style="color: ${getRatingColor(data.rating?.rating || 1500)}"> (${getRatingTier(data.rating?.rating || 1500)})</span>
+                                <span style="color: ${getRatingColor(data.rating?.rating || 1500)}; font-weight: 700;"> (${getRatingTier(data.rating?.rating || 1500)})</span>
                             </p>
-                            <p>Tham gia: ${new Date(data.student.created_at).toLocaleDateString('vi-VN')}</p>
+                            <p><i class="fas fa-calendar-alt"></i> Tham gia: ${new Date(data.student.created_at).toLocaleDateString('vi-VN')}</p>
                         </div>
                     </div>
                 `;
                 
-                // --- Add Rating Chart Section ---
+                // Add Rating Chart Section
                 profileHTML += `
                     <div class="profile-section">
-                        <h2>Biểu đồ điểm số</h2>
+                        <h2><i class="fas fa-chart-line"></i> Biểu đồ điểm số</h2>
                         <div class="rating-tiers">
                             ${ratingTiers.map(tier => 
                                 `<div class="rating-tier">
@@ -299,18 +200,16 @@
                 
                 profileHTML += `</div>`;
 
-                // --- Render Rating History --- 
+                // Render Rating History
                 if (data.ratingHistory && data.ratingHistory.length > 0) {
                     profileHTML += `
                         <div class="profile-section">
-                            <h2>Lịch sử thay đổi điểm</h2>
+                            <h2><i class="fas fa-history"></i> Lịch sử thay đổi điểm</h2>
                             <ul class="rating-history-list">
                     `;
                     data.ratingHistory.forEach(item => {
-                        // Calculate rating change if not provided
                         let change = item.rating_change;
                         if (change === undefined || change === null) {
-                            // If API doesn't provide rating_change, calculate it
                             const prevRating = item.previous_rating || 0;
                             const newRating = item.new_rating || 0;
                             change = newRating - prevRating;
@@ -322,10 +221,11 @@
                             <li class="history-item">
                                 <div class="history-details">
                                     <strong>${item.lesson_title || `Bài học ID: ${item.lesson_id}`}</strong> 
-                                    <span>${new Date(item.timestamp).toLocaleString('vi-VN')}</span>
+                                    <span><i class="fas fa-clock"></i> ${new Date(item.timestamp).toLocaleString('vi-VN')}</span>
                                 </div>
                                 <div class="history-change ${changeClass}">
                                     ${changeSymbol}${change}
+                                    <i class="fas fa-arrow-${change > 0 ? 'up' : 'down'}"></i>
                                     (${Math.round(item.new_rating)})
                                 </div>
                             </li>
@@ -333,19 +233,28 @@
                     });
                     profileHTML += '</ul></div>';
                 } else {
-                     profileHTML += '<div class="profile-section"><p>Chưa có lịch sử thay đổi điểm.</p></div>';
+                    profileHTML += `
+                        <div class="profile-section">
+                            <h2><i class="fas fa-history"></i> Lịch sử thay đổi điểm</h2>
+                            <div class="no-data">Chưa có lịch sử thay đổi điểm.</div>
+                        </div>
+                    `;
                 }
                 
                 profileContainer.innerHTML = profileHTML;
                 
-                // --- Create Rating Chart if data exists ---
+                // Hide loading indicator
+                loadingIndicator.style.display = 'none';
+                
+                // Create Rating Chart if data exists
                 if (data.ratingHistory && data.ratingHistory.length > 0) {
                     createRatingChart(data.ratingHistory);
                 }
 
             } catch (error) {
                 console.error("Error loading profile:", error);
-                profileContainer.innerHTML = `<div class="error">Không thể tải hồ sơ: ${error.message}</div>`;
+                profileContainer.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i> Không thể tải hồ sơ: ${error.message}</div>`;
+                loadingIndicator.style.display = 'none';
             }
         }
         
@@ -353,15 +262,13 @@
             // Ensure history is sorted by timestamp
             historyData.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
             
-            // Calculate rating changes if not provided by API
+            // Calculate rating changes if not provided
             historyData.forEach((item, index) => {
                 if (item.rating_change === undefined || item.rating_change === null) {
-                    // If this is the first entry, calculate from starting rating (default 1500)
                     if (index === 0) {
                         const startingRating = item.previous_rating || 1500;
                         item.rating_change = (item.new_rating || 0) - startingRating;
                     } else {
-                        // Otherwise calculate from previous entry
                         const prevRating = historyData[index - 1].new_rating || 0;
                         item.rating_change = (item.new_rating || 0) - prevRating;
                     }
@@ -377,15 +284,13 @@
             const ratings = historyData.map(item => Math.round(item.new_rating || 1500));
             const pointColors = historyData.map(item => getRatingColor(item.new_rating || 1500));
             
-            // Add starting point if necessary
+            // Add starting point
             if (historyData.length > 0) {
                 const firstEntry = historyData[0];
-                // Use previous_rating if available, otherwise calculate from rating_change
                 const startingRating = firstEntry.previous_rating || 
                                       (Math.round(firstEntry.new_rating) - firstEntry.rating_change) || 
                                       1500;
                 
-                // Add starting point one day before first entry
                 const firstDate = new Date(firstEntry.timestamp);
                 firstDate.setDate(firstDate.getDate() - 1);
                 
@@ -394,22 +299,9 @@
                 pointColors.unshift(getRatingColor(startingRating));
             }
             
-            // Find min and max for nice axis scaling
-            let minRating = Math.min(...ratings) - 100;
-            let maxRating = Math.max(...ratings) + 100;
-            
-            // Ensure the chart shows at least tier boundaries
-            minRating = Math.min(minRating, 1200);
-            maxRating = Math.max(maxRating, 1600);
-            
-            // Round to nearest 100
-            minRating = Math.floor(minRating / 100) * 100;
-            maxRating = Math.ceil(maxRating / 100) * 100;
-            
-            // Create background gradient zones for rating tiers
+            // Chart configuration
             const ctx = document.getElementById('ratingChart').getContext('2d');
             
-            // Create chart
             const chart = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -418,13 +310,14 @@
                         label: 'Điểm số',
                         data: ratings,
                         fill: false,
-                        borderColor: '#0d6efd',
+                        borderColor: '#a855f7',
                         tension: 0.1,
                         pointBackgroundColor: pointColors,
                         pointBorderColor: '#fff',
                         pointBorderWidth: 2,
-                        pointRadius: 5,
-                        pointHoverRadius: 7
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        borderWidth: 3
                     }]
                 },
                 options: {
@@ -432,6 +325,13 @@
                     maintainAspectRatio: false,
                     plugins: {
                         tooltip: {
+                            backgroundColor: 'rgba(10, 10, 15, 0.9)',
+                            borderColor: 'rgba(168, 85, 247, 0.5)',
+                            borderWidth: 1,
+                            titleColor: '#fff',
+                            bodyColor: '#b8bcc8',
+                            padding: 12,
+                            displayColors: false,
                             callbacks: {
                                 title: function(tooltipItems) {
                                     const idx = tooltipItems[0].dataIndex;
@@ -466,31 +366,16 @@
                     },
                     scales: {
                         y: {
-                            min: minRating,
-                            max: maxRating,
                             title: {
                                 display: true,
-                                text: 'Điểm số'
+                                text: 'Điểm số',
+                                color: '#b8bcc8'
                             },
                             grid: {
-                                color: (context) => {
-                                    // Show lines at tier boundaries
-                                    const value = context.tick.value;
-                                    const isTierBoundary = ratingTiers.some(tier => tier.min === value || tier.max === value);
-                                    return isTierBoundary ? 'rgba(0,0,0,0.1)' : 'rgba(0,0,0,0.05)';
-                                }
+                                color: 'rgba(255, 255, 255, 0.05)'
                             },
                             ticks: {
-                                callback: function(value) {
-                                    // For smaller screens, only show tier boundaries
-                                    if (window.innerWidth < 600) {
-                                        const isTierBoundary = ratingTiers.some(tier => 
-                                            tier.min === value || tier.max === value
-                                        );
-                                        return isTierBoundary ? value : '';
-                                    }
-                                    return value;
-                                }
+                                color: '#b8bcc8'
                             }
                         },
                         x: {
@@ -498,56 +383,17 @@
                                 display: false
                             },
                             ticks: {
+                                color: '#b8bcc8',
                                 maxRotation: 45,
-                                minRotation: 45,
-                                // Limit number of x-axis labels on smaller screens
-                                callback: function(val, index) {
-                                    if (window.innerWidth < 600) {
-                                        // Only show every nth label on mobile
-                                        const numLabels = labels.length;
-                                        const skipFactor = Math.ceil(numLabels / 5); // Show max 5 labels
-                                        return index % skipFactor === 0 ? this.getLabelForValue(val) : '';
-                                    }
-                                    return this.getLabelForValue(val);
-                                }
+                                minRotation: 45
                             }
                         }
                     }
                 }
-            });
-            
-            // Draw tier backgrounds
-            chart.options.plugins.beforeDraw = (chart) => {
-                const ctx = chart.ctx;
-                const chartArea = chart.chartArea;
-                const yAxis = chart.scales.y;
-                
-                ratingTiers.forEach(tier => {
-                    // Convert rating values to y-positions on the chart
-                    const yTop = yAxis.getPixelForValue(Math.min(tier.max, maxRating));
-                    const yBottom = yAxis.getPixelForValue(Math.max(tier.min, minRating));
-                    
-                    // Skip if outside chart area
-                    if (yBottom < chartArea.top || yTop > chartArea.bottom) return;
-                    
-                    // Draw background
-                    ctx.fillStyle = `${tier.color}15`; // 15 is hex for 10% opacity
-                    ctx.fillRect(
-                        chartArea.left, 
-                        yTop,
-                        chartArea.right - chartArea.left,
-                        yBottom - yTop
-                    );
-                });
-            };
-            
-            // Update chart when window resizes
-            window.addEventListener('resize', () => {
-                chart.resize();
             });
         }
 
         document.addEventListener('DOMContentLoaded', loadProfile);
     </script>
 </body>
-</html> 
+</html>

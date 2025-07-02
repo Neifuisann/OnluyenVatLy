@@ -1,10 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
     <meta name="format-detection" content="telephone=no">
-    <title>Lý thuyết Vật lí</title>
+    <title>Lý thuyết Vật lí - Ôn luyện Vật lí</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    
     <style>
         html, body {
             margin: 0;
@@ -12,26 +24,227 @@
             height: 100%;
             overflow: hidden;
         }
+        
+        .main-content {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        /* Gallery specific overrides for consistent theming */
+        .gallery-container {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        .gallery-layout {
+            background: var(--glass-bg) !important;
+            border: 1px solid var(--glass-border) !important;
+            backdrop-filter: blur(20px) !important;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
+        }
+        
+        .gallery-content {
+            background: rgba(255, 255, 255, 0.02) !important;
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg) !important;
+        }
+        
+        .gallery-arrow {
+            background: var(--glass-bg) !important;
+            border: 2px solid var(--glass-border) !important;
+            backdrop-filter: blur(10px) !important;
+            color: var(--text-primary) !important;
+        }
+        
+        .gallery-arrow:hover {
+            background: var(--primary-gradient) !important;
+            color: white !important;
+            border-color: transparent !important;
+            box-shadow: 0 10px 30px rgba(168, 85, 247, 0.4) !important;
+        }
+        
+        .image-counter {
+            background: var(--glass-bg) !important;
+            border: 1px solid var(--glass-border) !important;
+            color: var(--text-primary) !important;
+            backdrop-filter: blur(10px) !important;
+            font-weight: 600;
+        }
+        
+        .preview-item {
+            border: 2px solid var(--glass-border) !important;
+            transition: all var(--transition-fast) !important;
+        }
+        
+        .preview-item:hover {
+            border-color: var(--neon-purple) !important;
+            box-shadow: 0 5px 15px rgba(168, 85, 247, 0.3) !important;
+        }
+        
+        .preview-item.active {
+            border-color: var(--neon-purple) !important;
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.5) !important;
+        }
+        
+        /* Enhanced modal */
+        .image-modal {
+            background: rgba(0, 0, 0, 0.95) !important;
+            backdrop-filter: blur(20px) !important;
+        }
+        
+        .close-modal {
+            background: var(--glass-bg) !important;
+            border: 2px solid var(--glass-border) !important;
+            color: var(--text-primary) !important;
+            backdrop-filter: blur(10px) !important;
+            font-weight: normal !important;
+            line-height: 1 !important;
+        }
+        
+        .close-modal:hover {
+            background: var(--danger-gradient) !important;
+            color: white !important;
+            border-color: transparent !important;
+            box-shadow: 0 10px 30px rgba(244, 59, 71, 0.4) !important;
+        }
+        
+        /* Loading states */
+        .gallery-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-secondary);
+        }
+        
+        .gallery-loading .spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid var(--glass-border);
+            border-top-color: var(--neon-purple);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+        
+        /* Empty state */
+        .gallery-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .gallery-empty i {
+            font-size: 5rem;
+            color: var(--text-tertiary);
+            margin-bottom: 1rem;
+        }
+        
+        .gallery-empty h3 {
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Touch-friendly controls */
+        @media (max-width: 768px) {
+            .gallery-arrow {
+                width: 40px !important;
+                height: 40px !important;
+                font-size: 1.2rem !important;
+            }
+            
+            .prev-arrow {
+                left: 10px !important;
+            }
+            
+            .next-arrow {
+                right: 10px !important;
+            }
+            
+            .preview-item {
+                width: 60px !important;
+                height: 60px !important;
+            }
+            
+            .close-modal {
+                top: 1rem !important;
+                right: 1rem !important;
+                width: 40px !important;
+                height: 40px !important;
+            }
+        }
+        
+        /* Smooth image transitions */
+        .gallery-content img {
+            opacity: 0;
+            animation: imageLoad 0.5s ease-out forwards;
+        }
+        
+        @keyframes imageLoad {
+            to {
+                opacity: 1;
+            }
+        }
+        
+        /* Preview strip custom scrollbar */
+        .preview-strip::-webkit-scrollbar {
+            height: 8px;
+        }
+        
+        .preview-strip::-webkit-scrollbar-track {
+            background: var(--glass-bg);
+            border-radius: var(--radius-full);
+        }
+        
+        .preview-strip::-webkit-scrollbar-thumb {
+            background: var(--glass-border);
+            border-radius: var(--radius-full);
+        }
+        
+        .preview-strip::-webkit-scrollbar-thumb:hover {
+            background: var(--neon-purple);
+        }
     </style>
-    <link rel="stylesheet" href="/css/style.css">
+    
+    <!-- Gallery CSS -->
     <link rel="stylesheet" href="/css/gallery.css">
 </head>
 <body>
     <!-- Background Animation -->
     <canvas id="network-canvas"></canvas>
+    
     <a href="/" class="home-button">
         <img src="https://styles.redditmedia.com/t5_851o4i/styles/profileIcon_0elfudeu2s5b1.jpg?width=256&height=256&frame=1&auto=webp&crop=256:256,smart&s=86be605407a08efe2894a6bacd089074aca51879" alt="Home">
     </a>
+    
     <!-- Main Content -->
     <div class="main-content">
-        <!-- End New Area -->
         <div class="gallery-container">
             <div class="gallery-layout">
                 <div class="gallery-main">
-                    <button class="gallery-arrow prev-arrow">&lt;</button>
-                    <div class="gallery-content"></div>
+                    <button class="gallery-arrow prev-arrow">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="gallery-content">
+                        <!-- Images will be loaded here -->
+                        <div class="gallery-loading">
+                            <div class="spinner"></div>
+                            <p>Đang tải hình ảnh...</p>
+                        </div>
+                    </div>
                     <div class="image-counter">0 / 0</div>
-                    <button class="gallery-arrow next-arrow">&gt;</button>
+                    <button class="gallery-arrow next-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
                 </div>
                 <div class="gallery-preview">
                     <div class="preview-strip"></div>
@@ -40,12 +253,57 @@
         </div>
 
         <div class="image-modal">
-            <span class="close-modal">&times;</span>
+            <span class="close-modal">
+                <i class="fas fa-times"></i>
+            </span>
             <img class="modal-image" src="" alt="Enlarged image">
         </div>
     </div>
 
+    <!-- Background Animation Script -->
     <script src="/js/network-animation.js"></script>
     <script src="/js/gallery.js"></script>
+    
+    <script>
+        // Add keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                document.querySelector('.prev-arrow').click();
+            } else if (e.key === 'ArrowRight') {
+                document.querySelector('.next-arrow').click();
+            } else if (e.key === 'Escape') {
+                const modal = document.querySelector('.image-modal');
+                if (modal.classList.contains('active')) {
+                    document.querySelector('.close-modal').click();
+                }
+            }
+        });
+        
+        // Add swipe support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        const galleryContent = document.querySelector('.gallery-content');
+        
+        galleryContent.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        
+        galleryContent.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+        
+        function handleSwipe() {
+            if (touchEndX < touchStartX - 50) {
+                // Swipe left - next image
+                document.querySelector('.next-arrow').click();
+            }
+            if (touchEndX > touchStartX + 50) {
+                // Swipe right - previous image
+                document.querySelector('.prev-arrow').click();
+            }
+        }
+    </script>
 </body>
-</html> 
+</html>

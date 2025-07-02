@@ -1,58 +1,857 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-    <title>Màn hình giáo viên - Danh sách bài học</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/admin-enhanced.css">
     <link rel="stylesheet" href="/css/style.css">
+    <title>Quản lý Giáo viên - Dashboard</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Canvas Animation -->
+    <canvas id="network-canvas"></canvas>
+    
+    <style>
+        /* Enhanced Admin Styles */
+        .admin-dashboard {
+            min-height: 100vh;
+            padding: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        /* Header Section */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem 2rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            backdrop-filter: blur(20px);
+        }
+        
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .header-title h1 {
+            font-size: 2rem;
+            margin: 0;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        /* Statistics Overview */
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-widget {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            transition: var(--transition-normal);
+            cursor: pointer;
+        }
+        
+        .stat-widget:hover {
+            transform: translateY(-2px);
+            border-color: var(--neon-purple);
+            box-shadow: 0 10px 30px rgba(168, 85, 247, 0.2);
+        }
+        
+        .stat-widget-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .stat-widget.total .stat-widget-icon {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+            color: var(--neon-purple);
+        }
+        
+        .stat-widget.active .stat-widget-icon {
+            background: linear-gradient(135deg, rgba(67, 233, 123, 0.2) 0%, rgba(56, 249, 215, 0.2) 100%);
+            color: #43e97b;
+        }
+        
+        .stat-widget.students .stat-widget-icon {
+            background: linear-gradient(135deg, rgba(79, 172, 254, 0.2) 0%, rgba(0, 242, 254, 0.2) 100%);
+            color: #4facfe;
+        }
+        
+        .stat-widget.recent .stat-widget-icon {
+            background: linear-gradient(135deg, rgba(250, 112, 154, 0.2) 0%, rgba(254, 225, 64, 0.2) 100%);
+            color: #fa709a;
+        }
+        
+        .stat-widget-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-widget-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        /* Main Content Area */
+        .content-wrapper {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            backdrop-filter: blur(20px);
+            height: fit-content;
+            position: sticky;
+            top: 2rem;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+        
+        .sidebar-section:last-child {
+            margin-bottom: 0;
+        }
+        
+        .sidebar-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* Search Box */
+        .search-wrapper {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+        
+        .search-wrapper input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 2.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+        
+        .search-wrapper i {
+            position: absolute;
+            left: 0.875rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-tertiary);
+            font-size: 0.875rem;
+        }
+        
+        /* Filters */
+        .filter-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .filter-label {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        
+        .filter-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+        
+        /* Tag Cloud */
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .tag-filter {
+            padding: 0.5rem 0.875rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+        
+        .tag-filter:hover {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+            transform: scale(1.05);
+        }
+        
+        .tag-filter.active {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+        }
+        
+        /* Main Content */
+        .main-content {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            backdrop-filter: blur(20px);
+        }
+        
+        /* Content Header */
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        
+        .content-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .view-options {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .view-btn {
+            padding: 0.5rem 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+        
+        .view-btn.active {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+        }
+        
+        /* Lesson Grid/List */
+        .lessons-container {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .lesson-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            transition: var(--transition-normal);
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        
+        .lesson-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--neon-purple);
+            transform: translateX(5px);
+        }
+        
+        /* Color indicator */
+        .lesson-color {
+            width: 4px;
+            height: 60px;
+            border-radius: var(--radius-sm);
+            background: var(--primary-gradient);
+        }
+        
+        .lesson-details {
+            flex: 1;
+        }
+        
+        .lesson-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .lesson-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+        
+        .lesson-status {
+            padding: 0.25rem 0.75rem;
+            background: linear-gradient(135deg, rgba(67, 233, 123, 0.1) 0%, rgba(56, 249, 215, 0.1) 100%);
+            border: 1px solid rgba(67, 233, 123, 0.3);
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            color: #43e97b;
+        }
+        
+        .lesson-meta {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+        }
+        
+        .meta-item i {
+            font-size: 0.875rem;
+        }
+        
+        .lesson-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .lesson-tag {
+            padding: 0.25rem 0.625rem;
+            background: rgba(168, 85, 247, 0.1);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            color: var(--neon-purple);
+        }
+        
+        .lesson-actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+        
+        .action-btn {
+            padding: 0.625rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--neon-purple);
+            color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+        
+        .action-btn.danger {
+            color: #ff6b6b;
+            border-color: rgba(244, 59, 71, 0.3);
+        }
+        
+        .action-btn.danger:hover {
+            background: rgba(244, 59, 71, 0.1);
+            border-color: rgba(244, 59, 71, 0.5);
+        }
+        
+        .color-picker-wrapper {
+            position: relative;
+        }
+        
+        .color-picker {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid var(--glass-border);
+            cursor: pointer;
+            overflow: hidden;
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+        }
+        
+        .color-picker::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+        
+        .color-picker::-webkit-color-swatch {
+            border: none;
+            border-radius: 50%;
+        }
+        
+        /* Pagination */
+        .pagination-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--glass-border);
+        }
+        
+        /* Quick Actions */
+        .quick-actions {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .fab-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: var(--transition-normal);
+        }
+        
+        .fab-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .content-wrapper {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: static;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .lesson-card {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .lesson-color {
+                width: 100%;
+                height: 4px;
+            }
+            
+            .lesson-actions {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Loading Indicator -->
-    <div id="loading-indicator" class="loading-indicator">
+    <div id="loading-indicator" class="loading-indicator hidden">
         <div class="spinner"></div>
-        <p>Đang tải bài học...</p>
-    </div>  
+        <p>Đang tải dữ liệu...</p>
+    </div>
 
+    <!-- Home Button -->
     <a href="/" class="home-button">
         <img src="https://styles.redditmedia.com/t5_851o4i/styles/profileIcon_0elfudeu2s5b1.jpg?width=256&height=256&frame=1&auto=webp&crop=256:256,smart&s=86be605407a08efe2894a6bacd089074aca51879" alt="Home">
     </a>
-    <div class="admin-container">
-        <h1>Màn hình giáo viên</h1>
-        <div class="admin-controls">
-            <a href="/admin/new" class="button primary">Tạo bài học mới</a>
-            <a href="/history" class="button secondary">Lịch sử hoạt động</a>
-            <a href="/admin/students" class="button">Quản lý học sinh</a>
-            <button onclick="openReviewLessonModal()" class="button">Tạo bài ôn tập</button>
-        </div>
-        <div class="admin-nav">
-            <a href="/admin/quiz" class="nav-item">
-                <i class="fas fa-gamepad"></i>
-                <span>Trò chơi chinh phục</span>
-            </a>
-        </div>
-        <div id="lesson-list">
-            <h2>Bài học đã tạo</h2>
-            <div class="lesson-items">
-                <!-- Lessons will be dynamically added here -->
+    
+    <div class="admin-dashboard">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <div class="header-title">
+                <i class="fas fa-graduation-cap" style="font-size: 2rem; color: var(--neon-purple);"></i>
+                <h1>Quản lý Giáo viên</h1>
             </div>
+            <div class="header-actions">
+                <a href="/admin/students" class="button secondary">
+                    <i class="fas fa-users"></i>
+                    Quản lý học sinh
+                </a>
+                <a href="/history" class="button secondary">
+                    <i class="fas fa-history"></i>
+                    Lịch sử
+                </a>
+                <a href="/admin/quiz" class="button secondary">
+                    <i class="fas fa-gamepad"></i>
+                    Trò chơi
+                </a>
+            </div>
+        </div>
+        
+        <!-- Statistics Overview -->
+        <div class="stats-overview">
+            <div class="stat-widget total">
+                <div class="stat-widget-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="stat-widget-value">0</div>
+                <div class="stat-widget-label">Tổng bài học</div>
+            </div>
+            <div class="stat-widget active">
+                <div class="stat-widget-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-widget-value">0</div>
+                <div class="stat-widget-label">Đang hoạt động</div>
+            </div>
+            <div class="stat-widget students">
+                <div class="stat-widget-icon">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="stat-widget-value">0</div>
+                <div class="stat-widget-label">Học sinh</div>
+            </div>
+            <div class="stat-widget recent">
+                <div class="stat-widget-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-widget-value">0</div>
+                <div class="stat-widget-label">Hoạt động gần đây</div>
+            </div>
+        </div>
+        
+        <!-- Main Content Area -->
+        <div class="content-wrapper">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <!-- Search -->
+                <div class="sidebar-section">
+                    <div class="sidebar-title">
+                        <i class="fas fa-search"></i>
+                        Tìm kiếm
+                    </div>
+                    <div class="search-wrapper">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-input" placeholder="Tìm bài học hoặc tag...">
+                    </div>
+                </div>
+                
+                <!-- Filters -->
+                <div class="sidebar-section">
+                    <div class="sidebar-title">
+                        <i class="fas fa-filter"></i>
+                        Lọc & Sắp xếp
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Sắp xếp theo</label>
+                        <select id="sort-select" class="filter-select">
+                            <option value="az">Tên A-Z</option>
+                            <option value="za">Tên Z-A</option>
+                            <option value="newest">Mới nhất</option>
+                            <option value="oldest">Cũ nhất</option>
+                            <option value="popular">Phổ biến</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Tags -->
+                <div class="sidebar-section">
+                    <div class="sidebar-title">
+                        <i class="fas fa-tags"></i>
+                        Tags phổ biến
+                    </div>
+                    <div class="tag-cloud tags-container">
+                        <!-- Tags will be loaded here -->
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="sidebar-section">
+                    <button onclick="openReviewLessonModal()" class="button primary" style="width: 100%;">
+                        <i class="fas fa-book-reader"></i>
+                        Tạo bài ôn tập
+                    </button>
+                </div>
+            </aside>
+            
+            <!-- Main Content -->
+            <main class="main-content">
+                <div class="content-header">
+                    <h2 class="content-title">Danh sách bài học</h2>
+                    <div class="view-options">
+                        <button class="view-btn active" data-view="list">
+                            <i class="fas fa-list"></i>
+                        </button>
+                        <button class="view-btn" data-view="grid">
+                            <i class="fas fa-th"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Lessons Container -->
+                <div id="sortable-lessons" class="lessons-container">
+                    <!-- Lessons will be loaded here -->
+                </div>
+                
+                <!-- Pagination -->
+                <div id="admin-pagination-controls" class="pagination-controls">
+                    <!-- Pagination will be loaded here -->
+                </div>
+            </main>
         </div>
     </div>
     
-    <div id="review-lesson-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center;">
-        <div style="background: white; padding: 20px; border-radius: 5px; max-width: 400px; width: 100%; position: relative;">
-            <span onclick="closeReviewLessonModal()" style="position: absolute; top: 5px; right: 10px; cursor: pointer; font-size: 24px;">&times;</span>
-            <h2>Tạo bài ôn tập</h2>
+    <!-- Quick Actions FAB -->
+    <div class="quick-actions">
+        <a href="/admin/new" class="fab-btn" title="Tạo bài học mới">
+            <i class="fas fa-plus"></i>
+        </a>
+    </div>
+    
+    <!-- Review Lesson Modal (keep existing) -->
+    <div id="review-lesson-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; z-index: 2000;">
+        <div style="background: var(--bg-secondary); padding: 2.5rem; border-radius: var(--radius-xl); max-width: 500px; width: 90%; position: relative; border: 1px solid var(--glass-border); backdrop-filter: blur(20px); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);">
+            <span onclick="closeReviewLessonModal()" style="position: absolute; top: 1rem; right: 1rem; cursor: pointer; font-size: 1.5rem; color: var(--text-tertiary); transition: var(--transition-fast);">
+                <i class="fas fa-times"></i>
+            </span>
+            <h2 style="margin-bottom: 2rem; text-align: center; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                <i class="fas fa-book-reader"></i> Tạo bài ôn tập
+            </h2>
             <form id="review-lesson-form">
-                <div style="margin-bottom: 10px;">
-                    <label for="review-lesson-name">Tên bài:</label>
-                    <input type="text" id="review-lesson-name" required style="width: 100%;" placeholder="Nhập tên bài..." />
+                <div class="form-group">
+                    <label for="review-lesson-name">
+                        <i class="fas fa-edit"></i> Tên bài
+                    </label>
+                    <input type="text" id="review-lesson-name" required placeholder="Nhập tên bài ôn tập..." class="modern-input" />
                 </div>
-                <div id="review-lesson-rows"></div>
-                <button type="button" onclick="addReviewRow()" class="button" style="width: 100%; margin-bottom: 10px;">Thêm bài</button>
-                <button type="submit" class="button primary" style="width: 100%;">Tạo</button>
+                <div id="review-lesson-rows" style="margin-bottom: 1.5rem;"></div>
+                <button type="button" onclick="addReviewRow()" class="button secondary" style="width: 100%; margin-bottom: 1rem;">
+                    <i class="fas fa-plus"></i> Thêm bài
+                </button>
+                <button type="submit" class="button primary" style="width: 100%;">
+                    <i class="fas fa-check"></i> Tạo bài ôn tập
+                </button>
             </form>
         </div>
     </div>
     
+    <!-- Enhanced JavaScript -->
+    <script>
+        // Enhanced render function for lesson cards
+        function renderLessonCard(lesson) {
+            const div = document.createElement('div');
+            div.className = 'lesson-card';
+            div.dataset.id = lesson.id;
+            
+            // Calculate some mock statistics (in real app, these would come from API)
+            const studentCount = Math.floor(Math.random() * 50) + 10;
+            const completionRate = Math.floor(Math.random() * 40) + 60;
+            const lastActivity = Math.floor(Math.random() * 24) + 1;
+            
+            div.innerHTML = `
+                <div class="lesson-color" style="background: ${lesson.color || '#a4aeff'};"></div>
+                <div class="lesson-details">
+                    <div class="lesson-header">
+                        <h3 class="lesson-title">${lesson.title}</h3>
+                        <span class="lesson-status">Hoạt động</span>
+                    </div>
+                    <div class="lesson-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-users"></i>
+                            <span>${studentCount} học sinh</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-chart-line"></i>
+                            <span>${completionRate}% hoàn thành</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-clock"></i>
+                            <span>${lastActivity}h trước</span>
+                        </div>
+                    </div>
+                    ${lesson.tags && lesson.tags.length > 0 ? 
+                        `<div class="lesson-tags">
+                            ${lesson.tags.map(tag => `<span class="lesson-tag">${tag}</span>`).join('')}
+                        </div>` : ''}
+                </div>
+                <div class="lesson-actions">
+                    <div class="color-picker-wrapper">
+                        <input type="color" 
+                               class="color-picker"
+                               value="${lesson.color || '#a4aeff'}" 
+                               onchange="updateLessonColor(${lesson.id}, this.value)"
+                               title="Đổi màu">
+                    </div>
+                    <a href="/admin/edit/${lesson.id}" class="action-btn">
+                        <i class="fas fa-edit"></i>
+                        <span>Sửa</span>
+                    </a>
+                    <a href="/admin/statistics/${lesson.id}" class="action-btn">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Thống kê</span>
+                    </a>
+                    <button onclick="copyShareLink(${lesson.id})" class="action-btn">
+                        <i class="fas fa-share"></i>
+                        <span>Chia sẻ</span>
+                    </button>
+                    <button onclick="deleteLesson(${lesson.id})" class="action-btn danger">
+                        <i class="fas fa-trash"></i>
+                        <span>Xóa</span>
+                    </button>
+                </div>
+            `;
+            
+            return div;
+        }
+        
+        // Update stats overview
+        function updateStatsOverview() {
+            // In real app, these would come from API
+            document.querySelector('.stat-widget.total .stat-widget-value').textContent = totalLessons;
+            document.querySelector('.stat-widget.active .stat-widget-value').textContent = Math.floor(totalLessons * 0.8);
+            document.querySelector('.stat-widget.students .stat-widget-value').textContent = Math.floor(totalLessons * 15);
+            document.querySelector('.stat-widget.recent .stat-widget-value').textContent = Math.floor(Math.random() * 20) + 5;
+        }
+        
+        // View toggle functionality
+        document.querySelectorAll('.view-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const view = this.dataset.view;
+                const container = document.getElementById('sortable-lessons');
+                
+                if (view === 'grid') {
+                    container.style.gridTemplateColumns = 'repeat(auto-fill, minmax(350px, 1fr))';
+                } else {
+                    container.style.gridTemplateColumns = '1fr';
+                }
+            });
+        });
+        
+        // Override the loadLessonsForAdmin function to use enhanced rendering
+        const originalLoadLessonsForAdmin = loadLessonsForAdmin;
+        loadLessonsForAdmin = async function() {
+            if (isLoading) return;
+            isLoading = true;
+            showLoader(true);
+            
+            try {
+                const params = new URLSearchParams({
+                    page: currentPage,
+                    limit: lessonsPerPage,
+                    sort: currentSort
+                });
+                
+                if (currentSearch) {
+                    params.append('search', currentSearch);
+                }
+                
+                const response = await fetch(`/api/lessons?${params.toString()}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch lessons');
+                }
+                
+                const data = await response.json();
+                displayedLessons = data.lessons || [];
+                totalLessons = data.total || 0;
+                
+                const sortableContainer = document.getElementById('sortable-lessons');
+                sortableContainer.innerHTML = '';
+                
+                if (displayedLessons.length === 0) {
+                    sortableContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Không tìm thấy bài học nào phù hợp.</p>';
+                } else {
+                    displayedLessons.forEach(lesson => {
+                        sortableContainer.appendChild(renderLessonCard(lesson));
+                    });
+                }
+                
+                updateAdminPaginationControls();
+                updateStatsOverview();
+                
+            } catch (error) {
+                console.error('Error loading lessons:', error);
+                document.getElementById('sortable-lessons').innerHTML = `
+                    <p class="error-message">Lỗi khi tải dữ liệu. Vui lòng thử lại sau.</p>
+                `;
+            } finally {
+                showLoader(false);
+                isLoading = false;
+            }
+        };
+    </script>
+    
+    <!-- Keep existing scripts -->
+    <script src="/js/network-animation.js"></script>
     <script src="/js/admin-list.js"></script>
     <script src="/js/drag-utils.js"></script>
 </body>

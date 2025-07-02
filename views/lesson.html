@@ -1,523 +1,1417 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-    <title>Bài học</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài thi - Ôn luyện Vật lí</title>
     
-    <!-- Preconnect to external domains -->
-    <link rel="preconnect" href="https://cdn.jsdelivr.net">
-    <link rel="preconnect" href="https://miojaflixmncmhsgyabd.supabase.co">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Preload critical resources -->
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <link rel="preload" href="/js/lesson.js" as="script">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- Inline critical CSS -->
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    
     <style>
-        body {
+        /* Reset and Base Styles */
+        * {
             margin: 0;
             padding: 0;
-            overflow-x: hidden;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #dee3ec 100%);
-            min-height: 100vh;
+            box-sizing: border-box;
         }
-        
+
+        :root {
+            /* Dark theme colors */
+            --bg-primary: #0f0f14;
+            --bg-secondary: #1a1a24;
+            --bg-tertiary: #252533;
+            --bg-card: #1e1e2a;
+            --bg-card-hover: #262635;
+            
+            /* Text colors */
+            --text-primary: #e4e4e7;
+            --text-secondary: #a1a1aa;
+            --text-tertiary: #71717a;
+            
+            /* Accent colors */
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            
+            /* Borders */
+            --border-color: #2a2a3a;
+            --border-focus: #6366f1;
+            
+            /* Spacing */
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 1.5rem;
+            --space-lg: 2rem;
+            --space-xl: 3rem;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Loading Indicator */
         .loading-indicator {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(255, 255, 255, 0.9);
+            background: var(--bg-primary);
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
             z-index: 9999;
         }
-        
+
         .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #3498db;
+            width: 48px;
+            height: 48px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin-bottom: 15px;
         }
-        
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            to { transform: rotate(360deg); }
         }
-        
-        h1 {
-            text-align: center;
-            color: #4375a7;
-            margin: 30px 0;
-        }
-        
-        .home-button {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1000;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: transform 0.2s;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            padding: 0;
-            overflow: hidden;
-            display: block;
-        }
-        
-        .home-button img {
+
+        /* Main Layout */
+        .exam-container {
+            display: flex;
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            height: 100vh;
+            overflow: hidden;
         }
-        
-        /* Image zoom modal styles */
-        .image-modal {
-            display: none;
+
+        /* Sidebar Navigation */
+        .exam-sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .exam-header {
+            padding: var(--space-lg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .exam-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-sm);
+        }
+
+        .exam-timer {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-size: 1.125rem;
+            color: var(--accent-warning);
+            font-weight: 500;
+        }
+
+        /* Question Navigation */
+        .question-nav {
+            padding: var(--space-md);
+        }
+
+        .question-nav-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .question-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: var(--space-xs);
+        }
+
+        .question-nav-item {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .question-nav-item:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent-primary);
+        }
+
+        .question-nav-item.active {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: white;
+        }
+
+        .question-nav-item.answered {
+            background: var(--bg-tertiary);
+            border-color: var(--accent-success);
+        }
+
+        .question-nav-item.flagged::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 8px;
+            height: 8px;
+            background: var(--accent-warning);
+            border-radius: 50%;
+        }
+
+        /* Progress Stats */
+        .exam-stats {
+            padding: var(--space-md);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-sm);
+            font-size: 0.875rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Main Content Area */
+        .exam-content {
+            flex: 1;
+            overflow-y: auto;
+            background: var(--bg-primary);
+        }
+
+        .content-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: var(--space-xl);
+        }
+
+        /* Question Card */
+        .question-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: var(--space-xl);
+            margin-bottom: var(--space-lg);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--space-lg);
+        }
+
+        .question-number {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--accent-primary);
+        }
+
+        .question-actions {
+            display: flex;
+            gap: var(--space-sm);
+        }
+
+        .btn-flag {
+            padding: var(--space-xs) var(--space-sm);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .btn-flag:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent-warning);
+            color: var(--accent-warning);
+        }
+
+        .btn-flag.flagged {
+            background: var(--accent-warning);
+            border-color: var(--accent-warning);
+            color: white;
+        }
+
+        .question-text {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: var(--text-primary);
+            margin-bottom: var(--space-lg);
+        }
+
+        .question-image-container {
+            margin-bottom: var(--space-lg);
+            text-align: center;
+        }
+
+        .question-image {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 8px;
+            cursor: zoom-in;
+            transition: opacity 0.3s;
+        }
+
+        .question-image:hover {
+            opacity: 0.9;
+        }
+
+        /* Multiple Choice Options */
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+
+        .option-card {
+            position: relative;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: var(--space-md);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-card:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent-primary);
+            transform: translateX(4px);
+        }
+
+        .option-card input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .option-card.selected {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: white;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-sm);
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .option-letter {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-secondary);
+            border-radius: 50%;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .option-card.selected .option-letter {
+            background: white;
+            color: var(--accent-primary);
+        }
+
+        .option-text {
+            flex: 1;
+            line-height: 1.6;
+        }
+
+        /* True/False Options */
+        .truefalse-container {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        .truefalse-item {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: var(--space-lg);
+            align-items: center;
+            padding: var(--space-md);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        .truefalse-text {
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .truefalse-buttons {
+            display: flex;
+            gap: var(--space-sm);
+        }
+
+        .truefalse-btn {
+            position: relative;
+            padding: var(--space-xs) var(--space-md);
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .truefalse-btn input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .truefalse-btn:hover {
+            border-color: var(--accent-primary);
+        }
+
+        .truefalse-btn.selected-true {
+            background: var(--accent-success);
+            border-color: var(--accent-success);
+            color: white;
+        }
+
+        .truefalse-btn.selected-false {
+            background: var(--accent-danger);
+            border-color: var(--accent-danger);
+            color: white;
+        }
+
+        /* Number Input */
+        .number-input-container {
+            max-width: 300px;
+        }
+
+        .modern-number-input {
+            width: 100%;
+            padding: var(--space-md);
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1.125rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .modern-number-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Navigation Buttons */
+        .navigation-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--space-xl);
+            padding-top: var(--space-xl);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .nav-button {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-sm) var(--space-lg);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-button:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .submit-button {
+            padding: var(--space-sm) var(--space-xl);
+            background: var(--accent-primary);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+
+        .submit-button:hover {
+            background: var(--accent-secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* Confirmation Modal */
+        .confirmation-modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 9990;
-            justify-content: center;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
             align-items: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            overflow: hidden;
-        }
-        
-        .image-modal.open {
-            display: flex;
-            opacity: 1;
-        }
-        
-        .modal-image-container {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            display: flex;
             justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-        
-        .modal-image {
-            display: block;
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            transition: transform 0.1s ease;
-            transform-origin: center;
-            cursor: move;
-        }
-        
-        .close-button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 40px;
-            height: 40px;
-            background-color: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            z-index: 9999;
-            transition: background-color 0.2s;
-        }
-        
-        .close-button:hover {
-            background-color: rgba(255, 255, 255, 0.5);
-        }
-        
-        .close-button:before, .close-button:after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 2px;
-            background-color: white;
-        }
-        
-        .close-button:before {
-            transform: rotate(45deg);
-        }
-        
-        .close-button:after {
-            transform: rotate(-45deg);
-        }
-        
-        .zoom-controls {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
             z-index: 9999;
         }
-        
-        .zoom-button {
-            width: 40px;
-            height: 40px;
-            background-color: rgba(255, 255, 255, 0.3);
-            color: white;
-            border-radius: 50%;
-            border: none;
+
+        .confirmation-modal.show {
             display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            font-size: 20px;
-            transition: background-color 0.2s;
         }
-        
-        .zoom-button:hover {
-            background-color: rgba(255, 255, 255, 0.5);
+
+        .confirmation-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: var(--space-xl);
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
         }
-        
-        .reset-zoom-button {
-            padding: 0 15px;
-            height: 40px;
-            background-color: rgba(255, 255, 255, 0.3);
-            color: white;
-            border-radius: 20px;
-            border: none;
+
+        .confirmation-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: var(--space-md);
+            color: var(--text-primary);
+        }
+
+        .confirmation-message {
+            color: var(--text-secondary);
+            margin-bottom: var(--space-lg);
+            line-height: 1.6;
+        }
+
+        .confirmation-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+            padding: var(--space-md);
+            background: var(--bg-card);
+            border-radius: 8px;
+        }
+
+        .confirmation-stat {
+            text-align: center;
+        }
+
+        .confirmation-stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .confirmation-stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .confirmation-actions {
             display: flex;
+            gap: var(--space-md);
             justify-content: center;
-            align-items: center;
+        }
+
+        .btn-cancel {
+            padding: var(--space-sm) var(--space-xl);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
             cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.2s;
+            transition: all 0.2s;
+            font-weight: 500;
         }
-        
-        .reset-zoom-button:hover {
-            background-color: rgba(255, 255, 255, 0.5);
+
+        .btn-cancel:hover {
+            background: var(--bg-card-hover);
         }
-        
-        /* Make all images clickable */
-        #lesson-image, .question-image {
+
+        .btn-confirm {
+            padding: var(--space-sm) var(--space-xl);
+            background: var(--accent-primary);
+            border: none;
+            border-radius: 8px;
+            color: white;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.2s;
+            font-weight: 600;
         }
-        
-        #lesson-image:hover, .question-image:hover {
-            transform: scale(1.02);
+
+        .btn-confirm:hover {
+            background: var(--accent-secondary);
         }
-        
-        /* Load remaining styles asynchronously */
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .exam-sidebar {
+                display: none;
+            }
+
+            .content-wrapper {
+                padding: var(--space-md);
+            }
+
+            .truefalse-item {
+                grid-template-columns: 1fr;
+                gap: var(--space-sm);
+            }
+
+            .truefalse-buttons {
+                justify-content: flex-start;
+            }
+        }
     </style>
-    <link rel="stylesheet" href="/css/style.css" media="print" onload="this.media='all'; this.onload=null;">
-    <link rel="stylesheet" href="/css/lesson-questions.css" media="print" onload="this.media='all'; this.onload=null;">
-    <noscript><link rel="stylesheet" href="/css/style.css"></noscript>
-    <noscript><link rel="stylesheet" href="/css/lesson-questions.css"></noscript>
-    
-    <!-- Async KaTeX -->
-    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"></noscript>
 </head>
 <body>
     <!-- Loading Indicator -->
     <div id="loading-indicator" class="loading-indicator">
         <div class="spinner"></div>
-        <p>Đang tải bài học...</p>
+        <p>Đang tải bài thi...</p>
     </div>
 
-    <a href="/" class="home-button">
-        <img src="https://styles.redditmedia.com/t5_851o4i/styles/profileIcon_0elfudeu2s5b1.jpg?width=256&height=256&frame=1&auto=webp&crop=256:256,smart&s=86be605407a08efe2894a6bacd089074aca51879" alt="Home">
-    </a>
-    
-    <!-- Image Zoom Modal -->
-    <div id="image-modal" class="image-modal">
-        <div class="modal-image-container">
-            <img id="modal-image" class="modal-image" alt="Zoomed Image">
-        </div>
-        <div class="close-button" id="close-modal"></div>
-        <div class="zoom-controls">
-            <button class="zoom-button" id="zoom-out">−</button>
-            <button class="reset-zoom-button" id="reset-zoom">Reset</button>
-            <button class="zoom-button" id="zoom-in">+</button>
-        </div>
-    </div>
-    
-    <h1 id="lesson-title"></h1>
-    
-    <div id="lesson-image-container" class="lesson-image-container" style="display: none;">
-        <img id="lesson-image" alt="Lesson Image" 
-             style="max-width: 100%; margin: 20px auto; display: block; border-radius: 8px;"
-             loading="eager" 
-             sizes="(max-width: 768px) 100vw, 800px"
-             onload="this.classList.add('loaded')">
-    </div>
-    
-    <div id="abcd-questions">
-        <h3>Câu hỏi trắc nghiệm</h3>
-    </div>
-    
-    <div id="truefalse-questions">
-        <h3>Câu hỏi đúng/sai</h3>
-    </div>
-    
-    <div id="number-questions">
-        <h3>Câu hỏi trả lời ngắn</h3>
+    <div class="exam-container">
+        <!-- Sidebar -->
+        <aside class="exam-sidebar">
+            <div class="exam-header">
+                <h2 class="exam-title" id="lesson-title">Đang tải...</h2>
+                <div class="exam-timer">
+                    <i class="fas fa-clock"></i>
+                    <span id="timer">00:00:00</span>
+                </div>
+            </div>
+
+            <div class="question-nav">
+                <h3 class="question-nav-title">Điều hướng câu hỏi</h3>
+                <div class="question-grid" id="question-nav-grid">
+                    <!-- Question navigation buttons will be generated here -->
+                </div>
+            </div>
+
+            <div class="exam-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Đã trả lời</span>
+                    <span class="stat-value" id="answered-count">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Chưa trả lời</span>
+                    <span class="stat-value" id="unanswered-count">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Đã đánh dấu</span>
+                    <span class="stat-value" id="flagged-count">0</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="exam-content">
+            <div class="content-wrapper">
+                <div id="lesson-image-container" class="lesson-image-container" style="display: none;">
+                    <img id="lesson-image" alt="Lesson Image" class="question-image">
+                </div>
+
+                <div id="questions-container">
+                    <!-- Questions will be dynamically inserted here -->
+                </div>
+
+                <div class="navigation-container">
+                    <button class="nav-button" id="prev-button" onclick="navigateQuestion(-1)">
+                        <i class="fas fa-chevron-left"></i>
+                        Câu trước
+                    </button>
+                    
+                    <button class="submit-button" id="submit-quiz-btn">
+                        <i class="fas fa-paper-plane"></i>
+                        Nộp bài
+                    </button>
+                    
+                    <button class="nav-button" id="next-button" onclick="navigateQuestion(1)">
+                        Câu sau
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
     </div>
 
-    <button id="submit-quiz-btn">Nộp bài</button>
-    <div id="result"></div>
-    
-    <!-- Move scripts to the end of body for better performance -->
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"></script>
-    <script src="/js/lesson.js"></script>
+    <!-- Confirmation Modal -->
+    <div class="confirmation-modal" id="confirmation-modal">
+        <div class="confirmation-content">
+            <h3 class="confirmation-title">Xác nhận nộp bài</h3>
+            <p class="confirmation-message">
+                Bạn có chắc chắn muốn nộp bài không? Sau khi nộp, bạn không thể thay đổi câu trả lời.
+            </p>
+            <div class="confirmation-stats">
+                <div class="confirmation-stat">
+                    <div class="confirmation-stat-value" id="modal-answered">0</div>
+                    <div class="confirmation-stat-label">Đã trả lời</div>
+                </div>
+                <div class="confirmation-stat">
+                    <div class="confirmation-stat-value" id="modal-unanswered">0</div>
+                    <div class="confirmation-stat-label">Chưa trả lời</div>
+                </div>
+                <div class="confirmation-stat">
+                    <div class="confirmation-stat-value" id="modal-flagged">0</div>
+                    <div class="confirmation-stat-label">Đã đánh dấu</div>
+                </div>
+            </div>
+            <div class="confirmation-actions">
+                <button class="btn-cancel" onclick="closeConfirmationModal()">Quay lại</button>
+                <button class="btn-confirm" onclick="confirmSubmit()">Nộp bài</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
     
     <script>
-        // Enhanced image zoom functionality with free zooming
-        document.addEventListener('DOMContentLoaded', function() {
-            // Select all zoomable images
-            const lessonImage = document.getElementById('lesson-image');
-            const questionImages = document.querySelectorAll('.question-image');
-            const imageModal = document.getElementById('image-modal');
-            const modalImage = document.getElementById('modal-image');
-            const closeButton = document.getElementById('close-modal');
-            const zoomInButton = document.getElementById('zoom-in');
-            const zoomOutButton = document.getElementById('zoom-out');
-            const resetZoomButton = document.getElementById('reset-zoom');
-            
-            // Zooming variables
-            let scale = 1;
-            let panning = false;
-            let pointX = 0;
-            let pointY = 0;
-            let startX = 0;
-            let startY = 0;
-            
-            // Open modal when lesson image is clicked
-            if (lessonImage) {
-                lessonImage.addEventListener('click', function() {
-                    openModal(this);
-                });
-            }
-            
-            // Open modal when any question image is clicked
-            questionImages.forEach(function(image) {
-                image.addEventListener('click', function() {
-                    openModal(this);
-                });
-            });
-            
-            // Also find images that might be added dynamically
-            document.addEventListener('click', function(e) {
-                if (e.target && (e.target.id === 'lesson-image' || e.target.classList.contains('question-image'))) {
-                    openModal(e.target);
-                }
-            });
-            
-            function openModal(imageElement) {
-                modalImage.src = imageElement.src;
-                modalImage.alt = imageElement.alt;
-                imageModal.classList.add('open');
-                document.body.style.overflow = 'hidden'; // Prevent scrolling
+        // Global variables
+        let currentQuestionIndex = 0;
+        let currentLessonData = null;
+        let questionMappings = {};
+        let answeredQuestions = new Set();
+        let flaggedQuestions = new Set();
+        let startTime = Date.now();
+        let timerInterval = null;
+
+        // Timer function
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                const elapsed = Date.now() - startTime;
+                const hours = Math.floor(elapsed / 3600000);
+                const minutes = Math.floor((elapsed % 3600000) / 60000);
+                const seconds = Math.floor((elapsed % 60000) / 1000);
                 
-                // Reset zoom on open
-                resetZoom();
-            }
-            
-            // Close modal when close button is clicked
-            if (closeButton) {
-                closeButton.addEventListener('click', closeModal);
-            }
-            
-            // Close modal when clicking outside the image
-            imageModal.addEventListener('click', function(e) {
-                if (e.target === imageModal) {
-                    closeModal();
+                const timerElement = document.getElementById('timer');
+                if (timerElement) {
+                    timerElement.textContent = 
+                        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
                 }
-            });
-            
-            // Close modal when ESC key is pressed
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && imageModal.classList.contains('open')) {
-                    closeModal();
+            }, 1000);
+        }
+
+        // Authentication functions
+        async function checkStudentAuthentication() {
+            try {
+                const response = await fetch('/api/check-student-auth');
+                if (!response.ok) {
+                    console.log('Auth check failed, user not authenticated');
+                    return false;
                 }
-            });
-            
-            function closeModal() {
-                imageModal.classList.remove('open');
-                document.body.style.overflow = ''; // Restore scrolling
-                resetZoom();
-            }
-            
-            // Zoom controls
-            zoomInButton.addEventListener('click', function() {
-                setZoom(scale + 0.5);
-            });
-            
-            zoomOutButton.addEventListener('click', function() {
-                setZoom(Math.max(1, scale - 0.5));
-            });
-            
-            resetZoomButton.addEventListener('click', resetZoom);
-            
-            function resetZoom() {
-                scale = 1;
-                pointX = 0;
-                pointY = 0;
-                modalImage.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
-            }
-            
-            function setZoom(newScale) {
-                scale = newScale;
-                modalImage.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
-            }
-            
-            // Mouse wheel zoom
-            modalImage.addEventListener('wheel', function(e) {
-                e.preventDefault();
-                const xs = (e.clientX - pointX) / scale;
-                const ys = (e.clientY - pointY) / scale;
-                
-                if (e.deltaY < 0) {
-                    // Zoom in
-                    scale *= 1.1;
+                const authData = await response.json();
+
+                if (authData.isAuthenticated && authData.student) {
+                    console.log('Student authenticated:', authData.student.name);
+                    return true;
                 } else {
-                    // Zoom out
-                    scale /= 1.1;
+                    console.log('Student not authenticated');
+                    return false;
                 }
+            } catch (error) {
+                console.error('Error checking student authentication:', error);
+                return false;
+            }
+        }
+
+        function promptForLogin() {
+            const currentUrl = window.location.pathname + window.location.search;
+            if (confirm('Bạn cần đăng nhập để làm bài tập. Chuyển đến trang đăng nhập?')) {
+                window.location.href = '/student/login?redirect=' + encodeURIComponent(currentUrl);
+            }
+        }
+
+        // Utility functions
+        function showLoader(show) {
+            const loader = document.getElementById('loading-indicator');
+            if (loader) {
+                loader.style.display = show ? 'flex' : 'none';
+            }
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Question navigation
+        function navigateToQuestion(index) {
+            const questions = document.querySelectorAll('.question-card');
+            if (index >= 0 && index < questions.length) {
+                // Hide all questions
+                questions.forEach(q => q.style.display = 'none');
                 
-                // Limit minimum zoom to 1
-                scale = Math.max(1, scale);
+                // Show selected question
+                questions[index].style.display = 'block';
+                currentQuestionIndex = index;
                 
-                pointX = e.clientX - xs * scale;
-                pointY = e.clientY - ys * scale;
+                // Update navigation state
+                updateNavigationState();
                 
-                modalImage.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
+                // Scroll to top
+                document.querySelector('.exam-content').scrollTop = 0;
+            }
+        }
+
+        function navigateQuestion(direction) {
+            navigateToQuestion(currentQuestionIndex + direction);
+        }
+
+        function updateNavigationState() {
+            // Update nav buttons in sidebar
+            const navItems = document.querySelectorAll('.question-nav-item');
+            navItems.forEach((item, index) => {
+                item.classList.toggle('active', index === currentQuestionIndex);
             });
+
+            // Update prev/next buttons
+            const prevButton = document.getElementById('prev-button');
+            const nextButton = document.getElementById('next-button');
+            const totalQuestions = document.querySelectorAll('.question-card').length;
             
-            // Drag to pan
-            modalImage.addEventListener('mousedown', function(e) {
-                e.preventDefault();
+            prevButton.disabled = currentQuestionIndex === 0;
+            nextButton.disabled = currentQuestionIndex === totalQuestions - 1;
+
+            // Update stats
+            updateStats();
+        }
+
+        function updateStats() {
+            const totalQuestions = document.querySelectorAll('.question-card').length;
+            const answeredCount = answeredQuestions.size;
+            const unansweredCount = totalQuestions - answeredCount;
+            const flaggedCount = flaggedQuestions.size;
+
+            document.getElementById('answered-count').textContent = answeredCount;
+            document.getElementById('unanswered-count').textContent = unansweredCount;
+            document.getElementById('flagged-count').textContent = flaggedCount;
+        }
+
+        function toggleFlag(questionIndex) {
+            if (flaggedQuestions.has(questionIndex)) {
+                flaggedQuestions.delete(questionIndex);
+            } else {
+                flaggedQuestions.add(questionIndex);
+            }
+            
+            // Update UI
+            const flagButton = document.querySelector(`[data-question-index="${questionIndex}"] .btn-flag`);
+            const navItem = document.querySelectorAll('.question-nav-item')[questionIndex];
+            
+            flagButton.classList.toggle('flagged');
+            navItem.classList.toggle('flagged');
+            
+            updateStats();
+        }
+
+        // Answer tracking
+        function markQuestionAnswered(questionIndex) {
+            answeredQuestions.add(questionIndex);
+            const navItem = document.querySelectorAll('.question-nav-item')[questionIndex];
+            navItem.classList.add('answered');
+            updateStats();
+        }
+
+        // Render questions with improved UI
+        async function renderQuestions(lesson) {
+            if (!lesson || !lesson.questions || !Array.isArray(lesson.questions)) {
+                console.warn('Lesson has no questions');
+                return;
+            }
+
+            const container = document.getElementById('questions-container');
+            const navGrid = document.getElementById('question-nav-grid');
+            container.innerHTML = '';
+            navGrid.innerHTML = '';
+
+            // Process questions
+            let allQuestions = [...lesson.questions];
+            
+            // Apply random selection if specified
+            if (lesson.randomQuestions > 0 && lesson.randomQuestions < lesson.questions.length) {
+                allQuestions = shuffleArray(allQuestions).slice(0, lesson.randomQuestions);
+            }
+
+            // Render each question
+            allQuestions.forEach((q, displayIndex) => {
+                const originalIndex = lesson.questions.indexOf(q);
                 
-                if (scale > 1) {
-                    panning = true;
-                    startX = e.clientX - pointX;
-                    startY = e.clientY - pointY;
+                // Create navigation item
+                const navItem = document.createElement('div');
+                navItem.className = 'question-nav-item';
+                navItem.textContent = displayIndex + 1;
+                navItem.onclick = () => navigateToQuestion(displayIndex);
+                navGrid.appendChild(navItem);
+
+                // Create question card
+                const questionCard = document.createElement('div');
+                questionCard.className = 'question-card';
+                questionCard.dataset.questionIndex = originalIndex;
+                questionCard.style.display = displayIndex === 0 ? 'block' : 'none';
+
+                // Extract image if present
+                let imageUrl = null;
+                const imgRegex = /\[img\s+src="([^"]+)"\]/i;
+                const match = q.question.match(imgRegex);
+                if (match && match[1]) {
+                    imageUrl = match[1];
                 }
-            });
-            
-            imageModal.addEventListener('mousemove', function(e) {
-                e.preventDefault();
-                
-                if (panning && scale > 1) {
-                    pointX = e.clientX - startX;
-                    pointY = e.clientY - startY;
-                    modalImage.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
+                let questionText = q.question;
+                if (imageUrl) {
+                    questionText = questionText.replace(imgRegex, '').trim();
                 }
-            });
-            
-            imageModal.addEventListener('mouseup', function(e) {
-                panning = false;
-            });
-            
-            imageModal.addEventListener('mouseleave', function(e) {
-                panning = false;
-            });
-            
-            // Mobile touch events for pinch zoom and panning
-            let evCache = [];
-            let prevDiff = -1;
-            
-            modalImage.addEventListener('touchstart', function(e) {
-                if (e.touches.length > 1) {
-                    e.preventDefault(); // Prevent page zooming
+
+                let questionHtml = `
+                    <div class="question-header">
+                        <h3 class="question-number">Câu ${displayIndex + 1}</h3>
+                        <div class="question-actions">
+                            <button class="btn-flag" onclick="toggleFlag(${displayIndex})">
+                                <i class="fas fa-flag"></i>
+                                Đánh dấu
+                            </button>
+                        </div>
+                    </div>
+                    <div class="question-text">${questionText}</div>
+                `;
+
+                if (imageUrl) {
+                    questionHtml += `
+                        <div class="question-image-container">
+                            <img src="${imageUrl}" alt="Question Image" class="question-image">
+                        </div>
+                    `;
                 }
-                
-                // Store touch points
-                for (let i = 0; i < e.changedTouches.length; i++) {
-                    evCache.push(e.changedTouches[i]);
-                }
-                
-                if (e.touches.length === 1) {
-                    panning = true;
-                    startX = e.touches[0].clientX - pointX;
-                    startY = e.touches[0].clientY - pointY;
-                }
-            });
-            
-            modalImage.addEventListener('touchmove', function(e) {
-                // Handle pinch zoom
-                if (e.touches.length > 1) {
-                    e.preventDefault();
-                    
-                    // Calculate distance between touch points
-                    const dist = Math.hypot(
-                        e.touches[0].clientX - e.touches[1].clientX,
-                        e.touches[0].clientY - e.touches[1].clientY
-                    );
-                    
-                    if (prevDiff > 0) {
-                        if (dist > prevDiff) {
-                            // Zoom in
-                            scale *= 1.03;
-                        } else if (dist < prevDiff) {
-                            // Zoom out
-                            scale /= 1.03;
+
+                // Render options based on question type
+                switch(q.type) {
+                    case 'abcd':
+                        const optionsWithIndices = q.options.map((option, idx) => ({
+                            text: typeof option === 'string' ? option : (option.text || ''),
+                            originalIndex: idx,
+                            letter: String.fromCharCode(65 + idx)
+                        }));
+                        const shuffledOptions = shuffleArray([...optionsWithIndices]);
+                        
+                        questionMappings[originalIndex] = shuffledOptions.map(
+                            (opt, newIndex) => ({
+                                displayedLetter: String.fromCharCode(65 + newIndex),
+                                originalLetter: opt.letter,
+                                originalIndex: opt.originalIndex
+                            })
+                        );
+
+                        questionHtml += '<div class="options-container">';
+                        shuffledOptions.forEach((option, idx) => {
+                            const optionLetter = String.fromCharCode(65 + idx);
+                            questionHtml += `
+                                <div class="option-card" onclick="selectOption(${originalIndex}, '${optionLetter}', this)">
+                                    <input type="radio" 
+                                           id="q${originalIndex}_${idx}"
+                                           name="q${originalIndex}" 
+                                           value="${optionLetter}">
+                                    <label for="q${originalIndex}_${idx}" class="option-label">
+                                        <span class="option-letter">${optionLetter}</span>
+                                        <span class="option-text">${option.text}</span>
+                                    </label>
+                                </div>
+                            `;
+                        });
+                        questionHtml += '</div>';
+                        break;
+
+                    case 'truefalse':
+                        if (Array.isArray(q.options)) {
+                            questionHtml += '<div class="truefalse-container">';
+                            q.options.forEach((option, idx) => {
+                                const optionText = typeof option === 'string' ? option : (option.text || '');
+                                questionHtml += `
+                                    <div class="truefalse-item">
+                                        <div class="truefalse-text">${String.fromCharCode(65 + idx)}) ${optionText}</div>
+                                        <div class="truefalse-buttons">
+                                            <label class="truefalse-btn" onclick="selectTrueFalse(${originalIndex}, ${idx}, true, this)">
+                                                <input type="radio" 
+                                                       name="q${originalIndex}_${idx}" 
+                                                       value="true">
+                                                Đúng
+                                            </label>
+                                            <label class="truefalse-btn" onclick="selectTrueFalse(${originalIndex}, ${idx}, false, this)">
+                                                <input type="radio" 
+                                                       name="q${originalIndex}_${idx}" 
+                                                       value="false">
+                                                Sai
+                                            </label>
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                            questionHtml += '</div>';
                         }
-                        
-                        // Limit min zoom
-                        scale = Math.max(1, scale);
-                        
-                        modalImage.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
+                        break;
+
+                    case 'number':
+                        questionHtml += `
+                            <div class="number-input-container">
+                                <input type="number" 
+                                       name="q${originalIndex}" 
+                                       class="modern-number-input"
+                                       placeholder="Nhập câu trả lời..."
+                                       onchange="markQuestionAnswered(${displayIndex})"
+                                       required>
+                            </div>
+                        `;
+                        break;
+                }
+
+                questionCard.innerHTML = questionHtml;
+                container.appendChild(questionCard);
+            });
+
+            // Initialize first question as active
+            if (navGrid.firstChild) {
+                navGrid.firstChild.classList.add('active');
+            }
+
+            // Initialize KaTeX rendering
+            if (typeof renderMathInElement === 'function') {
+                renderMathInElement(container, {
+                    delimiters: [
+                        {left: "$$", right: "$$", display: true},
+                        {left: "$", right: "$", display: false},
+                        {left: "\\(", right: "\\)", display: false},
+                        {left: "\\[", right: "\\]", display: true}
+                    ],
+                    throwOnError: false
+                });
+            }
+        }
+
+        // Option selection handlers
+        function selectOption(questionIndex, value, element) {
+            // Remove selected class from all options
+            const allOptions = element.parentElement.querySelectorAll('.option-card');
+            allOptions.forEach(opt => opt.classList.remove('selected'));
+            
+            // Add selected class to clicked option
+            element.classList.add('selected');
+            
+            // Check the radio button
+            const radio = element.querySelector('input[type="radio"]');
+            radio.checked = true;
+            
+            // Mark question as answered
+            const displayIndex = Array.from(document.querySelectorAll('.question-card'))
+                .findIndex(card => card.dataset.questionIndex == questionIndex);
+            markQuestionAnswered(displayIndex);
+        }
+
+        function selectTrueFalse(questionIndex, optionIndex, value, element) {
+            // Remove selected class from both buttons
+            const buttons = element.parentElement.querySelectorAll('.truefalse-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('selected-true', 'selected-false');
+            });
+            
+            // Add appropriate class
+            element.classList.add(value ? 'selected-true' : 'selected-false');
+            
+            // Check the radio button
+            const radio = element.querySelector('input[type="radio"]');
+            radio.checked = true;
+            
+            // Check if all options are answered for this question
+            const questionCard = document.querySelector(`[data-question-index="${questionIndex}"]`);
+            const allRadios = questionCard.querySelectorAll('input[type="radio"]');
+            const checkedRadios = questionCard.querySelectorAll('input[type="radio"]:checked');
+            
+            if (allRadios.length / 2 === checkedRadios.length) {
+                const displayIndex = Array.from(document.querySelectorAll('.question-card'))
+                    .findIndex(card => card.dataset.questionIndex == questionIndex);
+                markQuestionAnswered(displayIndex);
+            }
+        }
+
+        // Submit confirmation
+        function showConfirmationModal() {
+            const modal = document.getElementById('confirmation-modal');
+            const totalQuestions = document.querySelectorAll('.question-card').length;
+            
+            document.getElementById('modal-answered').textContent = answeredQuestions.size;
+            document.getElementById('modal-unanswered').textContent = totalQuestions - answeredQuestions.size;
+            document.getElementById('modal-flagged').textContent = flaggedQuestions.size;
+            
+            modal.classList.add('show');
+        }
+
+        function closeConfirmationModal() {
+            document.getElementById('confirmation-modal').classList.remove('show');
+        }
+
+        async function confirmSubmit() {
+            const submitButton = document.getElementById('submit-quiz-btn');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Đang nộp bài...';
+            
+            // Continue with existing submit logic...
+            await submitQuiz();
+        }
+
+        // Modified submit function
+        async function submitQuiz() {
+            try {
+                // Get IP address
+                const ipResponse = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipResponse.json();
+                
+                const lessonId = currentLessonData.id;
+                const lesson = currentLessonData;
+                
+                let score = 0;
+                let totalPossiblePoints = 0;
+                const timeTaken = (Date.now() - startTime) / 1000;
+
+                const quizResults = {
+                    lessonId: lessonId,
+                    questions: [],
+                    ipAddress: ipData.ip,
+                    submittedAt: new Date().toISOString(),
+                    timeTaken: timeTaken
+                };
+
+                // Process all questions...
+                const questionElements = document.querySelectorAll('.question-card');
+                questionElements.forEach((questionElement) => {
+                    const originalIndex = parseInt(questionElement.dataset.questionIndex);
+                    const q = lesson.questions[originalIndex];
+                    
+                    const questionPoints = (typeof q.points === 'number' && q.points > 0) ? q.points : 1;
+                    totalPossiblePoints += questionPoints;
+
+                    let userAnswer, correctAnswer, isCorrect, optionsText = null;
+                    
+                    // Extract image URL if present
+                    let imageUrl = null;
+                    const imgRegex = /\[img\s+src="([^"]+)"\]/i;
+                    const originalQuestionText = lesson.questions[originalIndex].question;
+                    const match = originalQuestionText.match(imgRegex);
+                    if (match && match[1]) {
+                        imageUrl = match[1];
                     }
                     
-                    prevDiff = dist;
-                } else if (e.touches.length === 1 && panning && scale > 1) {
-                    // Handle panning
-                    pointX = e.touches[0].clientX - startX;
-                    pointY = e.touches[0].clientY - startY;
-                    modalImage.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
-                }
-            });
-            
-            modalImage.addEventListener('touchend', function(e) {
-                // Remove ended touches from the cache
-                for (let i = 0; i < e.changedTouches.length; i++) {
-                    const idx = evCache.findIndex(cachedTouch => 
-                        cachedTouch.identifier === e.changedTouches[i].identifier
-                    );
-                    if (idx >= 0) {
-                        evCache.splice(idx, 1);
+                    let questionTextForSaving = originalQuestionText;
+                    if (imageUrl) {
+                        questionTextForSaving = questionTextForSaving.replace(imgRegex, '').trim();
                     }
-                }
+
+                    // Process answers based on question type
+                    if (q.type === 'truefalse' && Array.isArray(q.options)) {
+                        const userAnswersArray = q.options.map((_, idx) => {
+                            const selectedInput = document.querySelector(`input[name="q${originalIndex}_${idx}"]:checked`);
+                            return selectedInput ? selectedInput.value === 'true' : null;
+                        });
+                        
+                        const correctAnswersArray = q.correct;
+                        optionsText = q.options.map(opt => opt.text || opt);
+
+                        isCorrect = Array.isArray(correctAnswersArray) && 
+                                    correctAnswersArray.every((correctAns, idx) => 
+                                        userAnswersArray[idx] !== null && userAnswersArray[idx] === correctAns
+                                    );
+
+                        userAnswer = userAnswersArray;
+                        correctAnswer = correctAnswersArray;
+                    } else if (q.type === 'abcd') {
+                        const selectedRadio = document.querySelector(`input[name="q${originalIndex}"]:checked`);
+                        const selectedValue = selectedRadio ? selectedRadio.value : null;
+
+                        if (Array.isArray(q.options)) {
+                            optionsText = q.options.map(opt => opt.text || opt);
+                        } else {
+                            optionsText = [];
+                        }
+
+                        if (selectedValue) {
+                            const mapping = questionMappings[originalIndex];
+                            const selectedMapping = mapping ? mapping.find(m => m.displayedLetter === selectedValue) : null;
+                            
+                            if (selectedMapping && q.options[selectedMapping.originalIndex]) {
+                                const option = q.options[selectedMapping.originalIndex];
+                                userAnswer = option.text || option;
+                                
+                                const correctIndex = q.correct.toUpperCase().charCodeAt(0) - 65;
+                                if (correctIndex >= 0 && correctIndex < q.options.length) {
+                                    const correctOption = q.options[correctIndex];
+                                    correctAnswer = correctOption.text || correctOption;
+                                    isCorrect = selectedMapping.originalIndex === correctIndex;
+                                } else {
+                                    correctAnswer = 'Error: Invalid correct answer specified';
+                                    isCorrect = false;
+                                }
+                            }
+                        } else {
+                            userAnswer = 'No answer';
+                            const correctIndex = q.correct.toUpperCase().charCodeAt(0) - 65;
+                            if (correctIndex >= 0 && correctIndex < q.options.length) {
+                                const correctOption = q.options[correctIndex];
+                                correctAnswer = correctOption.text || correctOption;
+                            } else {
+                                correctAnswer = 'Error: Invalid correct answer specified';
+                            }
+                            isCorrect = false;
+                        }
+                    } else if (q.type === 'number') {
+                        const inputElement = document.querySelector(`[name="q${originalIndex}"]`);
+                        userAnswer = inputElement ? inputElement.value : 'No input found';
+                        correctAnswer = q.correct.toString();
+                        isCorrect = userAnswer !== '' && userAnswer === correctAnswer;
+                    }
+
+                    quizResults.questions.push({
+                        type: q.type,
+                        question: questionTextForSaving,
+                        imageUrl: imageUrl,
+                        userAnswer: userAnswer,
+                        correctAnswer: correctAnswer,
+                        isCorrect: isCorrect,
+                        points: questionPoints,
+                        earnedPoints: isCorrect ? questionPoints : 0,
+                        optionsText: optionsText
+                    });
+
+                    if (isCorrect) {
+                        score += questionPoints;
+                    }
+                });
                 
-                if (evCache.length < 2) {
-                    prevDiff = -1;
+                quizResults.totalPoints = totalPossiblePoints;
+                quizResults.score = score;
+
+                // Submit results
+                let studentInfo = { name: 'Anonymous Student' };
+                try {
+                    const authResponse = await fetch('/api/check-student-auth');
+                    if (authResponse.ok) {
+                        const authData = await authResponse.json();
+                        if (authData.isAuthenticated && authData.student) {
+                            studentInfo = {
+                                name: authData.student.name,
+                                id: authData.student.id
+                            };
+                        }
+                    }
+                } catch (authError) {
+                    console.warn('Could not get student info:', authError);
                 }
+
+                const answers = Array.isArray(quizResults.questions) ? quizResults.questions : [];
+                const resultPayload = {
+                    lessonId: quizResults.lessonId,
+                    answers: answers,
+                    timeTaken: Number(quizResults.timeTaken) || 0,
+                    studentInfo: studentInfo
+                };
+
+                const saveResponse = await fetch('/api/results', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(resultPayload)
+                });
+
+                if (!saveResponse.ok) {
+                    const errorData = await saveResponse.json();
+                    throw new Error(errorData.message || 'Failed to save results');
+                }
+
+                const resultData = await saveResponse.json();
                 
-                if (e.touches.length === 0) {
-                    panning = false;
-                }
-            });
+                localStorage.setItem('quizResults', JSON.stringify({
+                    lessonId: quizResults.lessonId,
+                    score: quizResults.score,
+                    totalPoints: quizResults.totalPoints,
+                    resultId: resultData.resultId
+                }));
+                
+                window.location.href = `/result/${resultData.resultId}`;
+
+            } catch (error) {
+                console.error('Error submitting quiz:', error);
+                alert('Đã xảy ra lỗi khi nộp bài. Vui lòng thử lại.');
+                
+                const submitButton = document.getElementById('submit-quiz-btn');
+                submitButton.disabled = false;
+                submitButton.textContent = 'Nộp bài';
+            }
+        }
+
+        // Initialize lesson
+        async function initializeLesson() {
+            const isAuthenticated = await checkStudentAuthentication();
             
-            // Prevent default touchmove behavior to avoid page scrolling while zooming
-            modalImage.addEventListener('touchmove', function(e) {
-                if (e.touches.length > 1 || (scale > 1 && e.touches.length === 1)) {
-                    e.preventDefault();
+            showLoader(true);
+            const lessonId = window.location.pathname.split('/')[2];
+            document.title = 'Loading lesson...';
+            
+            try {
+                const response = await fetch(`/api/lessons/${lessonId}`);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch lesson: ${response.status}`);
                 }
-            }, { passive: false });
+                
+                const responseData = await response.json();
+                const lesson = responseData.lesson || responseData;
+                currentLessonData = lesson;
+
+                if (lesson.error || responseData.error) {
+                    document.body.innerHTML = '<h1>Lesson not found</h1>';
+                    currentLessonData = null;
+                    return;
+                }
+                
+                document.title = lesson.title;
+                const titleElement = document.getElementById('lesson-title');
+                if (titleElement) {
+                    titleElement.textContent = lesson.title;
+                }
+                
+                // Display lesson image if present
+                if (lesson.lessonImage) {
+                    const imageContainer = document.getElementById('lesson-image-container');
+                    const imageElement = document.getElementById('lesson-image');
+                    imageElement.src = lesson.lessonImage;
+                    imageContainer.style.display = 'block';
+                }
+                
+                await renderQuestions(lesson);
+                showLoader(false);
+                
+                // Start timer
+                startTimer();
+                
+                // Update initial stats
+                updateStats();
+
+            } catch (error) {
+                console.error('Error loading lesson:', error);
+                document.body.innerHTML = `
+                    <h1>Error loading lesson</h1>
+                    <p>Error details: ${error.message}</p>
+                `;
+                showLoader(false);
+            }
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            const submitButton = document.getElementById('submit-quiz-btn');
+            if (submitButton) {
+                submitButton.addEventListener('click', async () => {
+                    const isAuthenticated = await checkStudentAuthentication();
+                    if (!isAuthenticated) {
+                        promptForLogin();
+                        return;
+                    }
+
+                    if (!currentLessonData) {
+                        alert("Lỗi: Dữ liệu bài học chưa được tải. Vui lòng tải lại trang.");
+                        return;
+                    }
+                    
+                    showConfirmationModal();
+                });
+            }
+
+            initializeLesson();
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' && currentQuestionIndex > 0) {
+                navigateQuestion(-1);
+            } else if (e.key === 'ArrowRight' && currentQuestionIndex < document.querySelectorAll('.question-card').length - 1) {
+                navigateQuestion(1);
+            }
         });
     </script>
 </body>

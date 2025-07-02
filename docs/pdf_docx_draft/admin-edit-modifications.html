@@ -1,0 +1,474 @@
+<!-- Add this modal HTML right after the <body> tag in admin-edit.html -->
+
+<!-- Document Upload Modal -->
+<div id="document-upload-modal" class="upload-modal-overlay">
+    <div class="upload-modal">
+        <div class="upload-modal-header">
+            <h2>Tạo bài học mới</h2>
+            <p>Chọn cách bạn muốn tạo nội dung bài học</p>
+        </div>
+        
+        <div class="upload-options">
+            <div class="upload-option" onclick="chooseManualCreation()">
+                <div class="option-icon">
+                    <i class="fas fa-keyboard"></i>
+                </div>
+                <h3>Tạo thủ công</h3>
+                <p>Nhập nội dung bài học trực tiếp vào trình soạn thảo</p>
+            </div>
+            
+            <div class="upload-option" onclick="chooseDocumentUpload()">
+                <div class="option-icon">
+                    <i class="fas fa-file-upload"></i>
+                </div>
+                <h3>Tải lên tài liệu</h3>
+                <p>Tải lên file PDF hoặc DOCX để AI tự động định dạng</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Document Upload Interface -->
+<div id="document-upload-interface" class="upload-interface-overlay" style="display: none;">
+    <div class="upload-interface">
+        <div class="upload-interface-header">
+            <h2>Tải lên tài liệu</h2>
+            <button class="close-upload-btn" onclick="closeUploadInterface()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="upload-dropzone" id="upload-dropzone">
+            <input type="file" id="document-file-input" accept=".pdf,.docx" style="display: none;">
+            
+            <div class="dropzone-content">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <h3>Kéo thả file vào đây</h3>
+                <p>hoặc</p>
+                <button class="browse-btn" onclick="document.getElementById('document-file-input').click()">
+                    Chọn file từ máy tính
+                </button>
+                <p class="file-types">Hỗ trợ: PDF, DOCX (Tối đa 10MB)</p>
+            </div>
+            
+            <div class="file-preview" id="file-preview" style="display: none;">
+                <div class="file-info">
+                    <i class="file-icon fas fa-file-pdf"></i>
+                    <div class="file-details">
+                        <span class="file-name"></span>
+                        <span class="file-size"></span>
+                    </div>
+                    <button class="remove-file-btn" onclick="removeSelectedFile()">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="upload-actions">
+            <button class="cancel-btn" onclick="closeUploadInterface()">Hủy</button>
+            <button class="process-btn" id="process-document-btn" onclick="processDocument()" disabled>
+                <i class="fas fa-magic"></i> Xử lý tài liệu
+            </button>
+        </div>
+        
+        <!-- Processing Status -->
+        <div class="processing-status" id="processing-status" style="display: none;">
+            <div class="processing-spinner"></div>
+            <p class="processing-message">Đang xử lý tài liệu...</p>
+            <div class="processing-steps">
+                <div class="step" id="step-upload">
+                    <i class="fas fa-upload"></i>
+                    <span>Tải lên file</span>
+                </div>
+                <div class="step" id="step-extract">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Trích xuất nội dung</span>
+                </div>
+                <div class="step" id="step-ai">
+                    <i class="fas fa-brain"></i>
+                    <span>AI đang định dạng</span>
+                </div>
+                <div class="step" id="step-complete">
+                    <i class="fas fa-check"></i>
+                    <span>Hoàn tất</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add these styles inline or move to admin.css -->
+<style>
+/* Modal Overlay */
+.upload-modal-overlay,
+.upload-interface-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+/* Upload Modal */
+.upload-modal {
+    background: white;
+    border-radius: 16px;
+    padding: 40px;
+    max-width: 600px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.upload-modal-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.upload-modal-header h2 {
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 28px;
+}
+
+.upload-modal-header p {
+    color: #666;
+    font-size: 16px;
+}
+
+.upload-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.upload-option {
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #fafafa;
+}
+
+.upload-option:hover {
+    border-color: #007bff;
+    background: #f0f7ff;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0, 123, 255, 0.2);
+}
+
+.option-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    background: #007bff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 36px;
+    color: white;
+}
+
+.upload-option h3 {
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 20px;
+}
+
+.upload-option p {
+    color: #666;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Upload Interface */
+.upload-interface {
+    background: white;
+    border-radius: 16px;
+    padding: 40px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+.upload-interface-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.upload-interface-header h2 {
+    color: #333;
+    font-size: 24px;
+}
+
+.close-upload-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #666;
+    cursor: pointer;
+    padding: 5px;
+    transition: color 0.2s;
+}
+
+.close-upload-btn:hover {
+    color: #333;
+}
+
+/* Dropzone */
+.upload-dropzone {
+    border: 3px dashed #ddd;
+    border-radius: 12px;
+    padding: 60px 40px;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.upload-dropzone.dragover {
+    border-color: #007bff;
+    background: #f0f7ff;
+}
+
+.dropzone-content i {
+    font-size: 64px;
+    color: #007bff;
+    margin-bottom: 20px;
+}
+
+.dropzone-content h3 {
+    color: #333;
+    margin-bottom: 15px;
+    font-size: 20px;
+}
+
+.dropzone-content p {
+    color: #666;
+    margin: 10px 0;
+}
+
+.browse-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin: 15px 0;
+}
+
+.browse-btn:hover {
+    background: #0056b3;
+}
+
+.file-types {
+    font-size: 14px;
+    color: #999;
+}
+
+/* File Preview */
+.file-preview {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.file-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.file-icon {
+    font-size: 36px;
+    color: #dc3545;
+}
+
+.file-icon.fa-file-word {
+    color: #2b579a;
+}
+
+.file-details {
+    flex: 1;
+    text-align: left;
+}
+
+.file-name {
+    display: block;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.file-size {
+    display: block;
+    color: #666;
+    font-size: 14px;
+}
+
+.remove-file-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.remove-file-btn:hover {
+    background: #c82333;
+}
+
+/* Upload Actions */
+.upload-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.cancel-btn,
+.process-btn {
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: none;
+}
+
+.cancel-btn {
+    background: #f8f9fa;
+    color: #333;
+}
+
+.cancel-btn:hover {
+    background: #e9ecef;
+}
+
+.process-btn {
+    background: #28a745;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.process-btn:hover:not(:disabled) {
+    background: #218838;
+}
+
+.process-btn:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Processing Status */
+.processing-status {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.processing-spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.processing-message {
+    color: #333;
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+.processing-steps {
+    display: flex;
+    justify-content: space-around;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.step {
+    text-align: center;
+    color: #ccc;
+    transition: color 0.3s;
+}
+
+.step.active {
+    color: #007bff;
+}
+
+.step.completed {
+    color: #28a745;
+}
+
+.step i {
+    font-size: 24px;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.step span {
+    font-size: 12px;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .upload-options {
+        grid-template-columns: 1fr;
+    }
+    
+    .upload-modal,
+    .upload-interface {
+        padding: 20px;
+    }
+    
+    .processing-steps {
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+}
+</style>
+
+<!-- Add this script tag before closing </body> in admin-edit.html -->
+<script src="/js/document-upload.js"></script>

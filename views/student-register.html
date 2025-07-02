@@ -2,43 +2,388 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Đăng ký Học sinh</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký Học sinh - Ôn luyện Vật lí</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Styles -->
     <link rel="stylesheet" href="/css/style.css">
+    
+    <style>
+        /* Use same styles as student-login.html for consistency */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-bg-animation {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+        
+        .login-bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, 
+                transparent 30%, 
+                rgba(168, 85, 247, 0.1) 50%, 
+                transparent 70%);
+            animation: bgSlide 15s linear infinite;
+        }
+        
+        @keyframes bgSlide {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        .floating-icons {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .floating-icon {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.1;
+            animation: floatIcon 20s infinite linear;
+        }
+        
+        .floating-icon:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .floating-icon:nth-child(2) { left: 30%; animation-delay: 3s; }
+        .floating-icon:nth-child(3) { left: 50%; animation-delay: 6s; }
+        .floating-icon:nth-child(4) { left: 70%; animation-delay: 9s; }
+        .floating-icon:nth-child(5) { left: 90%; animation-delay: 12s; }
+        
+        @keyframes floatIcon {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.1;
+            }
+            90% {
+                opacity: 0.1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .login-form {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: 3rem;
+            width: 100%;
+            max-width: 450px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            animation: formSlideIn 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        @keyframes formSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .login-form::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.1) 0%, transparent 70%);
+            animation: rotate 30s linear infinite;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .login-icon {
+            font-size: 4rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+        
+        .login-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .login-header p {
+            color: var(--text-secondary);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: var(--transition-fast);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--neon-purple);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 1rem 2rem;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            z-index: 1;
+        }
+        
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn-login:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(168, 85, 247, 0.4);
+        }
+        
+        .btn-login:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .form-note {
+            text-align: center;
+            margin-top: 2rem;
+            color: var(--text-secondary);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .form-note a {
+            color: var(--neon-purple);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition-fast);
+        }
+        
+        .form-note a:hover {
+            color: var(--neon-blue);
+            text-decoration: underline;
+        }
+        
+        .message {
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        .success-message {
+            background: rgba(67, 233, 123, 0.1);
+            border: 1px solid rgba(67, 233, 123, 0.3);
+            color: #43e97b;
+        }
+        
+        .error-message {
+            background: rgba(244, 59, 71, 0.1);
+            border: 1px solid rgba(244, 59, 71, 0.3);
+            color: #ff6b6b;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 480px) {
+            .login-form {
+                padding: 2rem 1.5rem;
+            }
+            
+            .login-header h1 {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <a href="/" class="home-button">
-        <img src="https://styles.redditmedia.com/t5_851o4i/styles/profileIcon_0elfudeu2s5b1.jpg?width=256&height=256&frame=1&auto=webp&crop=256:256,smart&s=86be605407a08efe2894a6bacd089074aca51879" alt="Home">
-    </a>
-
     <div class="login-container">
+        <!-- Animated Background -->
+        <div class="login-bg-animation"></div>
+        <div class="floating-icons">
+            <div class="floating-icon">📚</div>
+            <div class="floating-icon">✏️</div>
+            <div class="floating-icon">🎓</div>
+            <div class="floating-icon">💡</div>
+            <div class="floating-icon">🚀</div>
+        </div>
+        
+        <!-- Home Button -->
+        <a href="/" class="home-button">
+            <img src="https://styles.redditmedia.com/t5_851o4i/styles/profileIcon_0elfudeu2s5b1.jpg?width=256&height=256&frame=1&auto=webp&crop=256:256,smart&s=86be605407a08efe2894a6bacd089074aca51879" alt="Home">
+        </a>
+
         <div class="login-form">
-            <h1>Đăng ký Học sinh</h1>
+            <div class="login-header">
+                <div class="login-icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <h1>Đăng ký Học sinh</h1>
+                <p>Tham gia cộng đồng học tập! 🎉</p>
+            </div>
+            
             <form id="student-register-form" onsubmit="handleStudentRegister(event)">
                 <div id="register-message" class="message" style="display: none;"></div>
+                
                 <div class="form-group">
-                    <label for="full_name">Họ và tên *</label>
-                    <input type="text" id="full_name" class="form-control" required>
+                    <label for="full_name">
+                        <i class="fas fa-user"></i>
+                        Họ và tên *
+                    </label>
+                    <input type="text" id="full_name" class="form-control" required placeholder="Nhập họ và tên đầy đủ">
                 </div>
+                
                 <div class="form-group">
-                    <label for="date_of_birth">Ngày sinh</label>
+                    <label for="date_of_birth">
+                        <i class="fas fa-calendar"></i>
+                        Ngày sinh
+                    </label>
                     <input type="date" id="date_of_birth" class="form-control">
                 </div>
+                
                 <div class="form-group">
-                    <label for="phone_number">Số điện thoại *</label>
-                    <input type="tel" id="phone_number" class="form-control" required>
+                    <label for="phone_number">
+                        <i class="fas fa-phone"></i>
+                        Số điện thoại *
+                    </label>
+                    <input type="tel" id="phone_number" class="form-control" required placeholder="Nhập số điện thoại">
                 </div>
+                
                 <div class="form-group">
-                    <label for="password">Mật khẩu (ít nhất 6 ký tự) *</label>
-                    <input type="password" id="password" class="form-control" required minlength="6">
+                    <label for="password">
+                        <i class="fas fa-lock"></i>
+                        Mật khẩu (ít nhất 6 ký tự) *
+                    </label>
+                    <input type="password" id="password" class="form-control" required minlength="6" placeholder="Tạo mật khẩu mạnh">
                 </div>
-                 <div class="form-group">
-                    <label for="confirm_password">Xác nhận mật khẩu *</label>
-                    <input type="password" id="confirm_password" class="form-control" required minlength="6">
+                
+                <div class="form-group">
+                    <label for="confirm_password">
+                        <i class="fas fa-check-circle"></i>
+                        Xác nhận mật khẩu *
+                    </label>
+                    <input type="password" id="confirm_password" class="form-control" required minlength="6" placeholder="Nhập lại mật khẩu">
                 </div>
-                <button type="submit" id="register-button" class="btn-login">Đăng ký</button>
+                
+                <button type="submit" id="register-button" class="btn-login">
+                    <i class="fas fa-user-plus"></i>
+                    Đăng ký
+                </button>
             </form>
-            <p class="form-note">Đã có tài khoản? <a href="/student/login">Đăng nhập</a></p>
+            
+            <p class="form-note">
+                Đã có tài khoản? 
+                <a href="/student/login">Đăng nhập</a>
+            </p>
         </div>
     </div>
 
@@ -48,28 +393,28 @@
             const registerButton = document.getElementById('register-button');
             const messageDiv = document.getElementById('register-message');
             messageDiv.style.display = 'none';
-            messageDiv.className = 'message'; // Reset class
+            messageDiv.className = 'message';
             registerButton.disabled = true;
-            registerButton.textContent = 'Đang đăng ký...';
+            registerButton.innerHTML = '<i class="loading-spinner"></i> Đang đăng ký...';
 
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirm_password').value;
 
             if (password !== confirmPassword) {
-                messageDiv.textContent = 'Mật khẩu xác nhận không khớp.';
-                messageDiv.className = 'message error-message'; // Add error class
-                messageDiv.style.display = 'block';
+                messageDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Mật khẩu xác nhận không khớp.';
+                messageDiv.className = 'message error-message';
+                messageDiv.style.display = 'flex';
                 registerButton.disabled = false;
-                registerButton.textContent = 'Đăng ký';
+                registerButton.innerHTML = '<i class="fas fa-user-plus"></i> Đăng ký';
                 return;
             }
             
             if (password.length < 6) {
-                messageDiv.textContent = 'Mật khẩu phải có ít nhất 6 ký tự.';
+                messageDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Mật khẩu phải có ít nhất 6 ký tự.';
                 messageDiv.className = 'message error-message';
-                messageDiv.style.display = 'block';
+                messageDiv.style.display = 'flex';
                 registerButton.disabled = false;
-                registerButton.textContent = 'Đăng ký';
+                registerButton.innerHTML = '<i class="fas fa-user-plus"></i> Đăng ký';
                 return;
             }
 
@@ -88,27 +433,37 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    messageDiv.textContent = 'Đăng ký thành công! Vui lòng chờ giáo viên duyệt tài khoản.';
-                    messageDiv.className = 'message success-message'; // Add success class
-                    messageDiv.style.display = 'block';
-                    document.getElementById('student-register-form').reset(); // Clear the form
-                    // Optional: Redirect to login after a delay
+                    messageDiv.innerHTML = '<i class="fas fa-check-circle"></i> Đăng ký thành công! Vui lòng chờ giáo viên duyệt tài khoản.';
+                    messageDiv.className = 'message success-message';
+                    messageDiv.style.display = 'flex';
+                    document.getElementById('student-register-form').reset();
+                    
+                    // Change button to success state
+                    registerButton.innerHTML = '<i class="fas fa-check"></i> Đăng ký thành công!';
+                    registerButton.style.background = 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)';
+                    
+                    // Optional: Redirect to login after delay
                     // setTimeout(() => { window.location.href = '/student/login'; }, 3000);
                 } else {
-                    messageDiv.textContent = result.message || 'Đăng ký thất bại. Vui lòng thử lại.';
-                    messageDiv.className = 'message error-message'; // Add error class
-                    messageDiv.style.display = 'block';
+                    messageDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${result.message || 'Đăng ký thất bại. Vui lòng thử lại.'}`;
+                    messageDiv.className = 'message error-message';
+                    messageDiv.style.display = 'flex';
                 }
             } catch (error) {
                 console.error('Registration error:', error);
-                messageDiv.textContent = 'Đã xảy ra lỗi trong quá trình đăng ký. Vui lòng thử lại.';
-                messageDiv.className = 'message error-message'; // Add error class
-                messageDiv.style.display = 'block';
+                messageDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Đã xảy ra lỗi trong quá trình đăng ký. Vui lòng thử lại.';
+                messageDiv.className = 'message error-message';
+                messageDiv.style.display = 'flex';
             } finally {
-                 registerButton.disabled = false;
-                 registerButton.textContent = 'Đăng ký';
+                if (!registerButton.innerHTML.includes('thành công')) {
+                    registerButton.disabled = false;
+                    registerButton.innerHTML = '<i class="fas fa-user-plus"></i> Đăng ký';
+                }
             }
         }
+        
+        // Auto-focus first input
+        document.getElementById('full_name').focus();
     </script>
 </body>
-</html> 
+</html>

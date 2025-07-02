@@ -3,301 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bảng xếp hạng - Học tập</title>
-    <link rel="stylesheet" href="/css/style.css"> 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"> <!-- Font Awesome for icons -->
+    <title>Bảng xếp hạng - Ôn luyện Vật lí</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    
     <style>
-        body {
-            background-color: #f8f9fa; /* Slightly lighter grey */
-            color: #212529; /* Darker text */
-            line-height: 1.6;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        }
-
-        .leaderboard-container {
-            max-width: 960px; /* Optimized width */
-            margin: 30px auto; /* More top/bottom margin */
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.07);
-        }
-
-        .leaderboard-header {
-            text-align: center; /* Center header content */
-            margin-bottom: 25px;
-            border-bottom: 1px solid #dee2e6;
-            padding-bottom: 15px;
-        }
-
-        .leaderboard-header h1 {
-            font-size: 1.9rem;
-            color: #343a40;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-        .leaderboard-header p {
-            color: #6c757d; /* Grey text */
-            margin-bottom: 0;
-            font-size: 1rem;
-        }
-
-        .leaderboard-filters {
-            display: flex; /* Use flexbox */
-            justify-content: center; /* Center buttons */
-            flex-wrap: wrap; /* Allow wrapping */
-            gap: 10px;
-            margin-bottom: 25px;
-        }
-
-        .filter-button {
-            padding: 8px 16px; /* Standard padding */
-            font-size: 0.9rem;
-            border: 1px solid #ced4da;
-            border-radius: 20px; /* Pill shape */
-            background: #fff;
-            color: #495057;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .filter-button:hover {
-             border-color: #adb5bd;
-             background-color: #f8f9fa;
-        }
-
-        .filter-button.active {
-            background: #0d6efd; /* Bootstrap primary */
-            color: white;
-            border-color: #0d6efd;
-            font-weight: 500;
-        }
-        
-        /* --- Table Wrapper for Scrolling --- */
-        .table-responsive-wrapper {
-            overflow-x: auto; /* Enable horizontal scroll on overflow */
-            width: 100%;
-            margin-top: 20px;
-            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-            border-radius: 8px; /* Match the visual style */
-        }
-
-        .leaderboard-table {
-            width: 100%; /* Ensure table tries to take full width */
-            min-width: 600px; /* Minimum width before scrolling starts */
-            border-collapse: collapse; /* Remove gaps between cells */
-        }
-
-        .leaderboard-table th {
-            background: #f8f9fa;
-            padding: 12px 15px;
-            font-size: 0.85rem; /* Smaller header text */
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #6c757d;
-            text-align: left; /* Align text left */
-            border-bottom: 2px solid #dee2e6; /* Stronger bottom border */
-        }
-        .leaderboard-table th.center-align { text-align: center; }
-        .leaderboard-table th.rank-column { width: 40px; } /* Set fixed width for rank column */
-        .leaderboard-table th.score-column { width: 40px; } /* Set fixed width for score column */
-        .leaderboard-table th.change-column { width: 40px; } /* Set fixed width for change column */
-        .leaderboard-table th.name-column { width: 80px; } /* Control width for name column */
-
-        .leaderboard-table td {
-            padding: 12px 15px;
-            border-top: 1px solid #dee2e6;
-            font-size: 0.95rem;
-            vertical-align: middle;
-            color: #495057;
-        }
-        .leaderboard-table td.center-align { text-align: center; }
-        
-        /* Style for the user name cell */
-        .leaderboard-table td.name-cell {
-            max-width: 180px;
-            overflow-wrap: break-word;
-            word-wrap: break-word;
-            word-break: break-word;
-            hyphens: auto;
-        }
-
-        .leaderboard-table tr:hover td {
-             background-color: #f8f9fa; /* Subtle hover effect */
-        }
-
-        .leaderboard-table td a {
-            color: #0d6efd;
-            text-decoration: none;
-            font-weight: 500;
-        }
-        .leaderboard-table td a:hover {
-            text-decoration: underline;
-        }
-
-        .rank {
-            font-weight: 600;
-            font-size: 1rem;
-            color: #0d6efd;
-        }
-
-        .top-3 .rank {
-            font-size: 1.1em;
-            font-weight: 700;
-        }
-
-        .medal {
-             margin-right: 5px;
-             color: #ffc107; /* Gold color for all medals */
-        }
-        .top-3 .medal {
-             font-size: 1.2em;
-        }
-        .gold { color: #ffc107; }
-        .silver { color: #adb5bd; }
-        .bronze { color: #fd7e14; }
-
-        .rating-value {
-             font-weight: 600;
-        }
-
-        .rating-change {
-            font-weight: 600;
-            font-size: 0.9rem;
-            padding: 2px 6px;
-            border-radius: 4px;
-        }
-
-        .rating-change.positive {
-            color: #198754; /* Bootstrap success green */
-            background-color: rgba(25, 135, 84, 0.1);
-        }
-
-        .rating-change.negative {
-            color: #dc3545; /* Bootstrap danger red */
-             background-color: rgba(220, 53, 69, 0.1);
-        }
-
-        .user-profile {
-            align-items: center;
-            gap: 10px;
-            width: 100%;
-        }
-
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            min-width: 32px; /* Prevent avatar from shrinking */
-            font-size: 0.9rem;
-            font-weight: 600;
-            background-color: #e9ecef;
-            color: #495057;
-            border-radius: 50%;
-            display: inline-flex; /* Use inline-flex */
-            align-items: center;
-            justify-content: center;
-            line-height: 1;
-        }
-        .user-profile span {
-             line-height: 1.2;
-             display: inline-block; /* Allow text to wrap */
-             width: calc(100% - 42px); /* Full width minus avatar and gap */
-             overflow-wrap: break-word;
-        }
-        
-        .user-profile a {
-            max-width: 100%;
-        }
-
-        .loading, .error, .no-results {
-            padding: 50px 15px;
-            text-align: center;
-            color: #6c757d;
-            font-size: 1rem;
-        }
-        .loading::before {
-            content: "";
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(0,0,0,0.1);
-            border-radius: 50%;
-            border-top-color: #0d6efd;
-            animation: spin 1s ease-in-out infinite;
-            margin-right: 10px;
-            vertical-align: middle;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Pagination */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px; /* Slightly reduced gap */
-            margin-top: 30px;
-            flex-wrap: wrap;
-        }
-
-        .pagination button,
-        .pagination span {
-            padding: 8px 12px;
-            font-size: 0.9rem;
-            border-radius: 6px;
-            text-align: center;
-        }
-        .pagination button {
-            border: 1px solid #dee2e6;
-            background: white;
-            cursor: pointer;
-            transition: background-color 0.2s ease, border-color 0.2s ease;
-            color: #0d6efd;
-        }
-        .pagination button:disabled {
-            background-color: #e9ecef;
-            cursor: not-allowed;
-            opacity: 0.6;
-            color: #6c757d;
-            border-color: #dee2e6;
-        }
-        .pagination button:not(:disabled):hover {
-             background-color: #e9ecef;
-             border-color: #ced4da;
-        }
-        .pagination #page-info {
-             color: #495057;
-             font-weight: 600;
-             background-color: #f8f9fa;
-             border: 1px solid #dee2e6;
-        }
-
-        /* --- Mobile Adjustments --- */
+        /* Mobile responsive adjustments */
         @media (max-width: 768px) {
             .leaderboard-container {
-                margin: 15px;
-                padding: 15px;
+                padding: 1rem;
+                margin-top: 5rem;
             }
-            .leaderboard-header h1 { font-size: 1.7rem; }
-            .leaderboard-header p { font-size: 0.95rem; }
-            .filter-button { padding: 6px 12px; font-size: 0.85rem; }
             
-            .leaderboard-table th,
-            .leaderboard-table td {
-                padding: 10px;
+            .leaderboard-header h1 {
+                font-size: 2rem;
+            }
+            
+            .leaderboard-header p {
+                font-size: 1rem;
+            }
+            
+            .filter-button {
+                padding: 0.5rem 1.5rem;
                 font-size: 0.9rem;
             }
             
-            /* Adjust column widths for smaller screens */
-            .leaderboard-table th.rank-column { width: 60px; }
-            .leaderboard-table th.score-column { width: 60px; }
-            .leaderboard-table th.change-column { width: 60px; }
-            .leaderboard-table th.name-column { width: 150px; } /* Narrower on mobile */
+            .leaderboard-table th,
+            .leaderboard-table td {
+                padding: 1rem;
+                font-size: 0.9rem;
+            }
             
-            .leaderboard-table td.name-cell { max-width: 150px; }
+            .user-avatar {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
             
-            .user-profile { gap: 8px; }
-            .user-profile span { width: calc(100% - 36px); }
-            
-            /* Add a subtle hint that the table is scrollable */
+            /* Add scroll hint */
             .table-responsive-wrapper::after {
                 content: '';
                 position: absolute;
@@ -305,99 +57,92 @@
                 right: 0;
                 bottom: 0;
                 width: 30px;
-                background: linear-gradient(to right, transparent, rgba(255,255,255,0.8));
+                background: linear-gradient(to right, transparent, rgba(10, 10, 15, 0.8));
                 pointer-events: none;
                 opacity: 0.8;
             }
         }
-
+        
         @media (max-width: 480px) {
-            .leaderboard-header h1 { font-size: 1.5rem; }
-            .leaderboard-header p { font-size: 0.9rem; }
-            .leaderboard-filters { gap: 6px; margin-bottom: 20px; }
-            .filter-button { padding: 5px 10px; font-size: 0.8rem; }
-
-            .leaderboard-table th,
-            .leaderboard-table td {
-                padding: 8px;
+            .leaderboard-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .filter-button {
+                padding: 0.5rem 1rem;
                 font-size: 0.85rem;
             }
             
-            /* Further reduce column widths */
-            .leaderboard-table th.rank-column { width: 50px; }
-            .leaderboard-table th.score-column { width: 50px; }
-            .leaderboard-table th.change-column { width: 50px; }
-            .leaderboard-table th.name-column { width: 120px; } /* Even narrower on smallest screens */
-            
-            .leaderboard-table td.name-cell { max-width: 120px; }
-            
-            .rank { font-size: 0.9rem; }
-            .user-avatar { width: 28px; height: 28px; font-size: 0.8rem; }
-            .pagination button,
-            .pagination span {
-                padding: 6px 10px;
-                font-size: 0.85rem;
-            }
-            .pagination { gap: 6px; }
-            
-            /* Make table scrollable more obvious on smallest screens */
-            .table-responsive-wrapper {
-                border: 1px solid #e9ecef;
+            .rank {
+                font-size: 1rem;
             }
             
-            .table-responsive-wrapper::before {
-                content: '← Scroll →';
-                display: block;
-                text-align: center;
-                padding: 5px;
-                background: #f8f9fa;
-                color: #6c757d;
-                font-size: 0.8rem;
-                border-bottom: 1px solid #e9ecef;
+            .medal {
+                font-size: 1.2rem;
             }
         }
-
     </style>
 </head>
 <body>
+    <!-- Loading Indicator -->
+    <div id="loading-indicator" class="loading-indicator">
+        <div class="spinner"></div>
+        <p>Đang tải bảng xếp hạng...</p>
+    </div>
+
+    <!-- Background Animation -->
+    <canvas id="network-canvas"></canvas>
+    
+    <!-- Home Button -->
     <a href="/" class="home-button">
         <img src="https://styles.redditmedia.com/t5_851o4i/styles/profileIcon_0elfudeu2s5b1.jpg?width=256&height=256&frame=1&auto=webp&crop=256:256,smart&s=86be605407a08efe2894a6bacd089074aca51879" alt="Home">
     </a>
+    
     <div class="leaderboard-container">
         <div class="leaderboard-header">
             <h1>Bảng xếp hạng</h1>
-            <p>Xem thứ hạng của bạn so với các học viên khác.</p>
+            <p>Xem thứ hạng của bạn so với các học viên khác 🏆</p>
         </div>
 
         <div class="leaderboard-filters">
-            <button class="filter-button active" data-filter="all">Tất cả</button>
-            <button class="filter-button" data-filter="month">Tháng Này</button>
-            <button class="filter-button" data-filter="week">Tuần Này</button>
+            <button class="filter-button active" data-filter="all">
+                <i class="fas fa-globe"></i> Tất cả
+            </button>
+            <button class="filter-button" data-filter="month">
+                <i class="fas fa-calendar-alt"></i> Tháng này
+            </button>
+            <button class="filter-button" data-filter="week">
+                <i class="fas fa-calendar-week"></i> Tuần này
+            </button>
         </div>
 
-        <!-- Add wrapper for horizontal scrolling -->
         <div class="table-responsive-wrapper">
             <div id="leaderboard-content">
                 <!-- Table will be inserted here by JS -->
-                <div class="loading">Đang tải...</div>
             </div>
         </div>
 
         <div class="pagination">
-            <button id="prev-page" disabled> <i class="fas fa-chevron-left"></i> Trước </button>
+            <button id="prev-page" disabled>
+                <i class="fas fa-chevron-left"></i> Trước
+            </button>
             <span id="page-info">Trang 1</span>
-            <button id="next-page"> Tiếp <i class="fas fa-chevron-right"></i> </button>
+            <button id="next-page">
+                Tiếp <i class="fas fa-chevron-right"></i>
+            </button>
         </div>
     </div>
 
+    <script src="/js/network-animation.js"></script>
     <script>
         let currentPage = 1;
         let currentFilter = 'all';
         const pageSize = 20;
+        const loadingIndicator = document.getElementById('loading-indicator');
 
         async function loadLeaderboard() {
             const contentDiv = document.getElementById('leaderboard-content');
-            contentDiv.innerHTML = '<div class="loading">Đang tải...</div>'; // Show loading inside the content area
+            contentDiv.innerHTML = '<div class="loading">Đang tải...</div>';
             
             // Disable pagination during load
             document.getElementById('prev-page').disabled = true;
@@ -405,21 +150,24 @@
 
             try {
                 const response = await fetch(`/api/ratings?page=${currentPage}&filter=${currentFilter}`);
-                const ratings = await response.json();
+                const data = await response.json();
 
                 if (!response.ok) {
-                    const errorData = ratings; 
-                    console.error('API Error fetching ratings:', errorData);
-                    contentDiv.innerHTML = `<div class="error">Lỗi tải bảng xếp hạng: ${errorData.details || errorData.error || 'Unknown error'}</div>`;
+                    console.error('API Error fetching ratings:', data);
+                    contentDiv.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-circle"></i> Lỗi tải bảng xếp hạng: ${data.details || data.error || 'Unknown error'}</div>`;
+                    loadingIndicator.style.display = 'none';
                     return;
                 }
-                
+
+                // Extract ratings array from response
+                const ratings = data.ratings || [];
+
                 if (!ratings || ratings.length === 0) {
-                    contentDiv.innerHTML = '<div class="no-results">Không có dữ liệu xếp hạng cho bộ lọc này.</div>';
+                    contentDiv.innerHTML = '<div class="no-data"><i class="fas fa-trophy"></i><br>Không có dữ liệu xếp hạng cho bộ lọc này.</div>';
                     document.getElementById('page-info').textContent = `Trang ${currentPage}`;
-                    // Prev button should be enabled if currentPage > 1 even if no results on *this* page
                     document.getElementById('prev-page').disabled = currentPage === 1;
-                    document.getElementById('next-page').disabled = true; // No results, so no next page
+                    document.getElementById('next-page').disabled = true;
+                    loadingIndicator.style.display = 'none';
                     return;
                 }
 
@@ -443,10 +191,10 @@
                     const row = document.createElement('tr');
                     if (rank <= 3) row.className = 'top-3';
 
-                    // Placeholder for rating change - fetch/calculate this properly later
-                    const ratingChange = 0; // rating.last_rating_change || 0;
+                    const ratingChange = 0; // TODO: Implement rating change calculation
                     const changeClass = ratingChange > 0 ? 'positive' : ratingChange < 0 ? 'negative' : '';
                     const changeSymbol = ratingChange > 0 ? '+' : '';
+                    const changeIcon = ratingChange > 0 ? 'arrow-up' : ratingChange < 0 ? 'arrow-down' : 'minus';
                     
                     row.innerHTML = `
                         <td class="rank center-align">
@@ -456,7 +204,6 @@
                         <td class="name-cell">
                             <div class="user-profile">
                                 <div class="user-avatar">${rating.students?.full_name?.[0]?.toUpperCase() || '?'}</div>
-                                <!-- Ensure student_id is available in rating object -->
                                 <a href="/profile/${rating.student_id || '#'}" title="Xem hồ sơ của ${rating.students?.full_name || 'Vô danh'}">
                                     <span>${rating.students?.full_name || 'Vô danh'}</span>
                                 </a>
@@ -465,7 +212,8 @@
                         <td class="center-align rating-value">${Math.round(rating.rating)}</td>
                         <td class="center-align">
                             <span class="rating-change ${changeClass}">
-                                ${changeSymbol}${ratingChange}
+                                ${changeSymbol}${Math.abs(ratingChange)}
+                                <i class="fas fa-${changeIcon}"></i>
                             </span>
                         </td>
                     `;
@@ -473,34 +221,36 @@
                 });
                 table.appendChild(tbody);
 
-                contentDiv.innerHTML = ''; // Clear loading/previous content
+                contentDiv.innerHTML = '';
                 contentDiv.appendChild(table);
 
-                // Update pagination 
+                // Update pagination using response data
                 document.getElementById('prev-page').disabled = currentPage === 1;
                 document.getElementById('page-info').textContent = `Trang ${currentPage}`;
-                document.getElementById('next-page').disabled = ratings.length < pageSize;
+                document.getElementById('next-page').disabled = !data.pagination?.hasMore;
+                
+                // Hide loading indicator
+                loadingIndicator.style.display = 'none';
 
             } catch (error) {
                 console.error('Error loading leaderboard:', error);
-                contentDiv.innerHTML = '<div class="error">Không thể tải bảng xếp hạng. Vui lòng thử lại sau.</div>';
-                 // Also handle pagination state on error
-                 document.getElementById('prev-page').disabled = currentPage === 1;
-                 document.getElementById('next-page').disabled = true;
-                 document.getElementById('page-info').textContent = `Trang ${currentPage}`;
+                contentDiv.innerHTML = '<div class="error-message"><i class="fas fa-exclamation-triangle"></i> Không thể tải bảng xếp hạng. Vui lòng thử lại sau.</div>';
+                document.getElementById('prev-page').disabled = currentPage === 1;
+                document.getElementById('next-page').disabled = true;
+                document.getElementById('page-info').textContent = `Trang ${currentPage}`;
+                loadingIndicator.style.display = 'none';
             }
         }
 
-        // --- Event Listeners --- 
+        // Event Listeners
         document.querySelectorAll('.filter-button').forEach(button => {
             button.addEventListener('click', () => {
-                // Prevent re-loading if already active
                 if (button.classList.contains('active')) return;
                 
                 document.querySelectorAll('.filter-button').forEach(b => b.classList.remove('active'));
                 button.classList.add('active');
                 currentFilter = button.dataset.filter;
-                currentPage = 1; // Reset to page 1 when filter changes
+                currentPage = 1;
                 loadLeaderboard();
             });
         });
@@ -513,15 +263,43 @@
         });
 
         document.getElementById('next-page').addEventListener('click', () => {
-             if (!document.getElementById('next-page').disabled) {
-                 currentPage++;
-                 loadLeaderboard();
-             }
+            if (!document.getElementById('next-page').disabled) {
+                currentPage++;
+                loadLeaderboard();
+            }
         });
 
         // Initial load
         document.addEventListener('DOMContentLoaded', loadLeaderboard);
-
+        
+        // Add stagger animation to rows
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateX(0)';
+                    }, index * 50);
+                }
+            });
+        });
+        
+        // Observe rows when they're added
+        const observeRows = () => {
+            document.querySelectorAll('.leaderboard-table tr').forEach(row => {
+                row.style.opacity = '0';
+                row.style.transform = 'translateX(-20px)';
+                row.style.transition = 'all 0.5s ease-out';
+                observer.observe(row);
+            });
+        };
+        
+        // Call observeRows after table is loaded
+        const originalLoadLeaderboard = loadLeaderboard;
+        loadLeaderboard = async function() {
+            await originalLoadLeaderboard();
+            setTimeout(observeRows, 100);
+        };
     </script>
 </body>
-</html> 
+</html>

@@ -2,12 +2,13 @@ let currentResult = null;
 let resultData = null;
 let sortedQuestions = [];
 
-// --- Student Authentication Functions ---
+// --- Student Authentication Functions (optional) ---
 async function checkStudentAuthentication() {
     try {
         const response = await fetch('/api/check-student-auth');
         if (!response.ok) {
-            throw new Error('Auth check failed');
+            console.log('Auth check failed, user not authenticated');
+            return false;
         }
         const authData = await response.json();
 
@@ -15,14 +16,11 @@ async function checkStudentAuthentication() {
             console.log('Student authenticated:', authData.student.name);
             return true;
         } else {
-            console.log('Student not authenticated, redirecting...');
-            const currentUrl = window.location.pathname + window.location.search;
-            window.location.href = '/student/login?redirect=' + encodeURIComponent(currentUrl);
+            console.log('Student not authenticated');
             return false;
         }
     } catch (error) {
         console.error('Error checking student authentication:', error);
-        window.location.href = '/student/login';
         return false;
     }
 }
@@ -74,12 +72,14 @@ async function displayResults() {
             // Fetch result from server
             const response = await fetch(`/api/results/${resultId}`);
             if (!response.ok) throw new Error('Result not found');
-            currentResult = await response.json();
+            const responseData = await response.json();
+            // Extract the actual result data from the API response
+            currentResult = responseData.result || responseData;
         } else {
             // Use the result from localStorage
             currentResult = resultData;
         }
-        
+
         // Log the result for debugging
         console.log('Result data:', currentResult);
         
@@ -131,14 +131,17 @@ function storeResultInSession(result) {
 }
 
 function updateStatisticsCards(result) {
+    // Handle different data structures - questions might be in different properties
+    const questions = result.questions || result.answers || [];
+
     // Calculate statistics
-    const totalQuestions = result.questions.length;
-    const correctAnswers = result.questions.filter(q => q.isCorrect).length;
+    const totalQuestions = questions.length;
+    const correctAnswers = questions.filter(q => q.isCorrect).length;
     const incorrectAnswers = totalQuestions - correctAnswers;
-    const accuracy = ((correctAnswers / totalQuestions) * 100).toFixed(1);
-    const score = result.score;
-    const totalPoints = result.totalPoints;
-    const scorePercentage = ((score / totalPoints) * 100).toFixed(1);
+    const accuracy = totalQuestions > 0 ? ((correctAnswers / totalQuestions) * 100).toFixed(1) : '0.0';
+    const score = result.score || 0;
+    const totalPoints = result.totalPoints || totalQuestions;
+    const scorePercentage = totalPoints > 0 ? ((score / totalPoints) * 100).toFixed(1) : '0.0';
 
     // Update statistics cards
     document.getElementById('score-value').textContent = `${score}/${totalPoints}`;
@@ -622,7 +625,7 @@ function createParticleEffect(container, color, type) {
         if (particlesContainer && particlesContainer.parentNode) {
             particlesContainer.innerHTML = '';
         }
-    }, 3000);
+    }, 3003);
 }
 
 function displaySortedResults(sortType) {
@@ -635,7 +638,8 @@ function displaySortedResults(sortType) {
     document.querySelector(`[onclick="sortResults('${sortType}')"]`).classList.add('active');
 
     // Filter questions based on sort type
-    const filteredQuestions = currentResult.questions.filter(question => {
+    const questions = currentResult.questions || currentResult.answers || [];
+    const filteredQuestions = questions.filter(question => {
         if (sortType === 'all') return true;
         if (sortType === 'correct') return question.isCorrect;
         if (sortType === 'incorrect') return !question.isCorrect;
@@ -1086,7 +1090,7 @@ async function getExplanation(button, question, userAnswer, correctAnswer) {
         
         // Direct API call to Google Gemini API
         const API_KEY = "AIzaSyAxJF-5iBBx7gp9RPwrAfF58ERZi69KzCc"; // This is the same key from server-side
-        const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+        const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
         
         const response = await fetch(`${GEMINI_URL}?key=${API_KEY}`, {
             method: 'POST',
@@ -1340,13 +1344,13 @@ function showResultModal(quizResults) {
                 </div>
                 <div class="metric">
                     <span class="label">Questions</span>
-                    <span class="value">${quizResults.questions.length}</span>
+                    <span class="value">${(quizResults.questions || quizResults.answers || []).length}</span>
                 </div>
             </div>
 
             <div class="question-breakdown">
                 <h3>Question Breakdown</h3>
-                ${quizResults.questions.map((q, index) => `
+                ${(quizResults.questions || quizResults.answers || []).map((q, index) => `
                     <div class="question-result ${q.isCorrect ? 'correct' : 'incorrect'}">
                         <div class="question-header">
                             <span class="question-number">Q${index + 1}</span>

@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Lost in Space | Next Gen Learning</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+            position: relative;
+            cursor: crosshair;
+        }
+
+        /* ===== COSMIC BACKGROUND ===== */
+        .cosmos {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, #0a0a2e 0%, #000 100%);
+            z-index: 1;
+        }
+
+        /* ===== STARS FIELD ===== */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .star:hover {
+            transform: scale(2);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .shooting-star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            animation: shoot 3s linear infinite;
+        }
+
+        .shooting-star::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.8), transparent);
+            transform: translateX(-100px);
+        }
+
+        @keyframes shoot {
+            0% {
+                transform: translate(0, 0) rotate(-45deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(1000px, 1000px) rotate(-45deg);
+                opacity: 0;
+            }
+        }
+
+        /* ===== NEBULA EFFECTS ===== */
+        .nebula {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: nebulaFloat 30s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        .nebula1 {
+            background: radial-gradient(circle at center, #667eea 0%, transparent 70%);
+            top: -300px;
+            left: -300px;
+        }
+
+        .nebula2 {
+            background: radial-gradient(circle at center, #764ba2 0%, transparent 70%);
+            bottom: -300px;
+            right: -300px;
+            animation-delay: -15s;
+        }
+
+        .nebula3 {
+            background: radial-gradient(circle at center, #f093fb 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -7s;
+        }
+
+        @keyframes nebulaFloat {
+            0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+            25% { transform: translate(50px, -50px) scale(1.1) rotate(90deg); }
+            50% { transform: translate(-50px, 50px) scale(0.9) rotate(180deg); }
+            75% { transform: translate(30px, 30px) scale(1.05) rotate(270deg); }
+        }
+
+        /* ===== BLACK HOLE ===== */
+        .black-hole-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .black-hole {
+            width: 300px;
+            height: 300px;
+            position: relative;
+            animation: blackHolePulse 4s infinite ease-in-out;
+        }
+
+        @keyframes blackHolePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .event-horizon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle at center, 
+                transparent 30%, 
+                rgba(0,0,0,0.8) 40%, 
+                rgba(0,0,0,0.9) 50%,
+                transparent 70%
+            );
+            border-radius: 50%;
+            animation: rotate 20s linear infinite;
+        }
+
+        .accretion-disk {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            height: 150px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: #667eea;
+            border-bottom-color: #f093fb;
+            animation: rotate 3s linear infinite;
+            filter: blur(2px);
+            box-shadow: 
+                0 0 30px #667eea,
+                0 0 60px #764ba2,
+                0 0 90px #f093fb;
+        }
+
+        .accretion-disk::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-left-color: #f5576c;
+            border-right-color: #4facfe;
+            animation: rotate 2s linear infinite reverse;
+        }
+
+        @keyframes rotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* ===== ASTRONAUT ===== */
+        .astronaut-container {
+            position: absolute;
+            top: 30%;
+            left: 70%;
+            z-index: 20;
+            animation: floatAstronaut 10s infinite ease-in-out;
+            cursor: grab;
+        }
+
+        .astronaut-container:active {
+            cursor: grabbing;
+        }
+
+        @keyframes floatAstronaut {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(-30px, -20px) rotate(-5deg); }
+            50% { transform: translate(20px, -40px) rotate(5deg); }
+            75% { transform: translate(-20px, -10px) rotate(-3deg); }
+        }
+
+        .astronaut {
+            font-size: 80px;
+            transform: rotate(-15deg);
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.5));
+            animation: astronautRotate 20s infinite linear;
+            transition: all 0.3s ease;
+        }
+
+        .astronaut:hover {
+            filter: drop-shadow(0 0 40px rgba(255, 255, 255, 0.8));
+            transform: scale(1.1) rotate(-15deg);
+        }
+
+        @keyframes astronautRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .tether {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            width: 2px;
+            height: 300px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent);
+            transform-origin: top;
+            animation: tetherSway 5s infinite ease-in-out;
+        }
+
+        @keyframes tetherSway {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(10deg); }
+        }
+
+        /* ===== 404 GLITCH TEXT ===== */
+        .error-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 30;
+            pointer-events: none;
+        }
+
+        .error-404 {
+            font-size: clamp(100px, 20vw, 200px);
+            font-weight: 900;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 5s ease infinite, glitch 2s infinite;
+            position: relative;
+            text-shadow: 0 0 40px rgba(168, 85, 247, 0.5);
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .error-404::before,
+        .error-404::after {
+            content: '404';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .error-404::before {
+            background: linear-gradient(135deg, #ff0000 0%, #00ff00 100%);
+            animation: glitchBefore 0.3s infinite;
+            z-index: -1;
+        }
+
+        .error-404::after {
+            background: linear-gradient(135deg, #0000ff 0%, #ff00ff 100%);
+            animation: glitchAfter 0.3s infinite;
+            z-index: -2;
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+        }
+
+        @keyframes glitchBefore {
+            0%, 100% { transform: translate(0); opacity: 0.8; }
+            25% { transform: translate(-5px, -5px); opacity: 0.5; }
+            50% { transform: translate(5px, 5px); opacity: 0.6; }
+            75% { transform: translate(-3px, 3px); opacity: 0.7; }
+        }
+
+        @keyframes glitchAfter {
+            0%, 100% { transform: translate(0); opacity: 0.8; }
+            25% { transform: translate(5px, -5px); opacity: 0.5; }
+            50% { transform: translate(-5px, 5px); opacity: 0.6; }
+            75% { transform: translate(3px, 3px); opacity: 0.7; }
+        }
+
+        /* ===== MESSAGE ===== */
+        .message {
+            margin-top: 2rem;
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            animation: fadeIn 2s ease-out;
+            pointer-events: all;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .sub-message {
+            margin-top: 1rem;
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.6);
+            animation: fadeIn 2.5s ease-out;
+        }
+
+        /* ===== INTERACTIVE CONSTELLATION ===== */
+        .constellation-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            cursor: crosshair;
+        }
+
+        /* ===== CONTROL PANEL ===== */
+        .control-panel {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 50;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            padding: 20px 30px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: slideUp 1s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateX(-50%) translateY(100px); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+
+        .control-button {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.9rem;
+        }
+
+        .control-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            transition: all 0.5s ease;
+        }
+
+        .control-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .control-button:hover {
+            transform: translateY(-3px) scale(1.05);
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
+        }
+
+        .control-button.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            box-shadow: 0 10px 30px rgba(168, 85, 247, 0.4);
+        }
+
+        .control-button.primary:hover {
+            box-shadow: 0 15px 40px rgba(168, 85, 247, 0.6);
+        }
+
+        /* ===== PORTAL EFFECT ===== */
+        .portal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            overflow: hidden;
+            z-index: 100;
+            transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+        }
+
+        .portal.active {
+            transform: translate(-50%, -50%) scale(1);
+            pointer-events: all;
+        }
+
+        .portal-inner {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, 
+                #4facfe 0%, 
+                #00f2fe 20%, 
+                #667eea 40%, 
+                #764ba2 60%, 
+                #f093fb 80%, 
+                #f5576c 100%
+            );
+            animation: portalSpin 2s linear infinite;
+            position: relative;
+        }
+
+        @keyframes portalSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .portal-inner::before {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            right: 10%;
+            bottom: 10%;
+            background: radial-gradient(circle at center, 
+                rgba(255,255,255,0.8) 0%, 
+                transparent 70%
+            );
+            border-radius: 50%;
+            animation: portalPulse 1s infinite ease-in-out;
+        }
+
+        @keyframes portalPulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        /* ===== PARTICLES ===== */
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            animation: particleFloat 4s infinite ease-out;
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translate(0, 0) scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--x), var(--y)) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* ===== HIDDEN FEATURES ===== */
+        .easter-egg {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            font-size: 2rem;
+            opacity: 0.1;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .easter-egg:hover {
+            opacity: 1;
+            transform: scale(1.2) rotate(180deg);
+        }
+
+        .secret-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 30px;
+            border-radius: 20px;
+            border: 2px solid #667eea;
+            color: white;
+            text-align: center;
+            z-index: 200;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 50px rgba(168, 85, 247, 0.5);
+        }
+
+        .secret-message.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        /* ===== COSMIC DUST ===== */
+        .cosmic-dust {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: drift 20s infinite linear;
+        }
+
+        @keyframes drift {
+            from {
+                transform: translate(0, -100vh) rotate(0deg);
+            }
+            to {
+                transform: translate(100vw, 100vh) rotate(360deg);
+            }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .error-404 {
+                font-size: clamp(80px, 25vw, 150px);
+            }
+            
+            .control-panel {
+                bottom: 20px;
+                padding: 15px 20px;
+                gap: 10px;
+            }
+            
+            .control-button {
+                padding: 10px 20px;
+                font-size: 0.8rem;
+            }
+            
+            .astronaut {
+                font-size: 60px;
+            }
+            
+            .black-hole {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .accretion-disk {
+                width: 300px;
+                height: 100px;
+            }
+        }
+
+        /* ===== GLOWING CURSOR ===== */
+        .cursor-glow {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.5) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: all 0.1s ease;
+            mix-blend-mode: screen;
+        }
+
+        .cursor-glow.clicked {
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.8) 0%, transparent 70%);
+        }
+
+        /* ===== SPACE WARPING ===== */
+        @keyframes spaceWarp {
+            0% { transform: perspective(1000px) rotateX(0deg) rotateY(0deg); }
+            100% { transform: perspective(1000px) rotateX(360deg) rotateY(360deg); }
+        }
+
+        .warping {
+            animation: spaceWarp 20s linear infinite;
+        }
+
+        /* ===== ACHIEVEMENT NOTIFICATION ===== */
+        .achievement {
+            position: fixed;
+            top: 20px;
+            right: -400px;
+            background: linear-gradient(135deg, rgba(67, 233, 123, 0.9) 0%, rgba(56, 249, 215, 0.9) 100%);
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(67, 233, 123, 0.4);
+            color: white;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+        }
+
+        .achievement.show {
+            right: 20px;
+        }
+
+        .achievement-icon {
+            font-size: 2rem;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* ===== MATRIX RAIN EASTER EGG ===== */
+        .matrix-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .matrix-rain.active {
+            opacity: 0.3;
+        }
+
+        .matrix-column {
+            position: absolute;
+            top: -100%;
+            font-family: monospace;
+            font-size: 20px;
+            color: #0f0;
+            text-shadow: 0 0 5px #0f0;
+            animation: matrixFall 10s linear infinite;
+        }
+
+        @keyframes matrixFall {
+            to {
+                top: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cosmic Background -->
+    <div class="cosmos"></div>
+    
+    <!-- Nebula Effects -->
+    <div class="nebula nebula1"></div>
+    <div class="nebula nebula2"></div>
+    <div class="nebula nebula3"></div>
+    
+    <!-- Stars Container -->
+    <div class="stars-container" id="stars-container"></div>
+    
+    <!-- Constellation Canvas -->
+    <canvas class="constellation-canvas" id="constellation-canvas"></canvas>
+    
+    <!-- Black Hole -->
+    <div class="black-hole-container">
+        <div class="black-hole">
+            <div class="accretion-disk"></div>
+            <div class="event-horizon"></div>
+        </div>
+    </div>
+    
+    <!-- Floating Astronaut -->
+    <div class="astronaut-container" id="astronaut-container">
+        <div class="tether"></div>
+        <div class="astronaut">👨‍🚀</div>
+    </div>
+    
+    <!-- 404 Error -->
+    <div class="error-container">
+        <h1 class="error-404">404</h1>
+        <p class="message">Ôi không! Bạn đã lạc vào không gian vô tận</p>
+        <p class="sub-message">Hãy kết nối các vì sao để tìm đường về nhà 🌟</p>
+    </div>
+    
+    <!-- Control Panel -->
+    <div class="control-panel">
+        <button class="control-button" onclick="activateWarpDrive()">
+            <i class="fas fa-rocket"></i> Kích hoạt Warp
+        </button>
+        <button class="control-button" onclick="callForHelp()">
+            <i class="fas fa-satellite"></i> Gọi cứu hộ
+        </button>
+        <button class="control-button primary" onclick="openPortal()">
+            <i class="fas fa-home"></i> Về trang chủ
+        </button>
+    </div>
+    
+    <!-- Portal Effect -->
+    <div class="portal" id="portal">
+        <div class="portal-inner"></div>
+    </div>
+    
+    <!-- Glowing Cursor -->
+    <div class="cursor-glow" id="cursor-glow"></div>
+    
+    <!-- Easter Egg -->
+    <div class="easter-egg" onclick="revealSecret()">🛸</div>
+    
+    <!-- Secret Message -->
+    <div class="secret-message" id="secret-message">
+        <h2>🎉 Bạn đã tìm thấy bí mật! 🎉</h2>
+        <p>Chúc mừng nhà thám hiểm vũ trụ!</p>
+        <p style="margin-top: 10px; font-size: 0.9rem; opacity: 0.8;">
+            Nhấn phím K để kích hoạt chế độ Konami<br>
+            Nhấn phím M để xem Matrix Rain
+        </p>
+    </div>
+    
+    <!-- Achievement Notification -->
+    <div class="achievement" id="achievement">
+        <div class="achievement-icon">🏆</div>
+        <div>Achievement Unlocked: Space Explorer!</div>
+    </div>
+    
+    <!-- Matrix Rain -->
+    <div class="matrix-rain" id="matrix-rain"></div>
+    
+    <script>
+        // ===== STARS GENERATION =====
+        const starsContainer = document.getElementById('stars-container');
+        const numberOfStars = 200;
+        
+        for (let i = 0; i < numberOfStars; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.width = Math.random() * 3 + 'px';
+            star.style.height = star.style.width;
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            star.style.animationDuration = Math.random() * 3 + 3 + 's';
+            
+            // Make some stars interactive
+            if (Math.random() > 0.8) {
+                star.addEventListener('click', function() {
+                    createStarburst(this);
+                });
+            }
+            
+            starsContainer.appendChild(star);
+        }
+        
+        // ===== SHOOTING STARS =====
+        function createShootingStar() {
+            const shootingStar = document.createElement('div');
+            shootingStar.className = 'shooting-star';
+            shootingStar.style.left = Math.random() * 100 + '%';
+            shootingStar.style.top = Math.random() * 50 + '%';
+            shootingStar.style.animationDuration = Math.random() * 2 + 1 + 's';
+            starsContainer.appendChild(shootingStar);
+            
+            setTimeout(() => {
+                shootingStar.remove();
+            }, 3000);
+        }
+        
+        setInterval(createShootingStar, 3000);
+        
+        // ===== COSMIC DUST =====
+        function createCosmicDust() {
+            for (let i = 0; i < 50; i++) {
+                const dust = document.createElement('div');
+                dust.className = 'cosmic-dust';
+                dust.style.left = Math.random() * 100 + '%';
+                dust.style.animationDelay = Math.random() * 20 + 's';
+                dust.style.animationDuration = Math.random() * 10 + 20 + 's';
+                document.body.appendChild(dust);
+            }
+        }
+        
+        createCosmicDust();
+        
+        // ===== CONSTELLATION DRAWING =====
+        const canvas = document.getElementById('constellation-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        let isDrawing = false;
+        let constellationPoints = [];
+        let lastPoint = null;
+        
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('click', addConstellationPoint);
+        
+        function startDrawing(e) {
+            isDrawing = true;
+        }
+        
+        function draw(e) {
+            if (!isDrawing) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            ctx.beginPath();
+            ctx.arc(x, y, 2, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.fill();
+        }
+        
+        function stopDrawing() {
+            isDrawing = false;
+        }
+        
+        function addConstellationPoint(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // Draw star point
+            ctx.beginPath();
+            ctx.arc(x, y, 5, 0, Math.PI * 2);
+            ctx.fillStyle = 'white';
+            ctx.fill();
+            
+            // Connect to last point
+            if (lastPoint) {
+                ctx.beginPath();
+                ctx.moveTo(lastPoint.x, lastPoint.y);
+                ctx.lineTo(x, y);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+            
+            lastPoint = { x, y };
+            constellationPoints.push(lastPoint);
+            
+            // Check for completed constellation
+            if (constellationPoints.length >= 5) {
+                showAchievement('Constellation Master!');
+                setTimeout(() => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    constellationPoints = [];
+                    lastPoint = null;
+                }, 2000);
+            }
+        }
+        
+        // ===== CURSOR GLOW =====
+        const cursorGlow = document.getElementById('cursor-glow');
+        let mouseX = 0, mouseY = 0;
+        
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            cursorGlow.style.left = mouseX + 'px';
+            cursorGlow.style.top = mouseY + 'px';
+        });
+        
+        document.addEventListener('mousedown', () => {
+            cursorGlow.classList.add('clicked');
+            createParticles(mouseX, mouseY);
+        });
+        
+        document.addEventListener('mouseup', () => {
+            cursorGlow.classList.remove('clicked');
+        });
+        
+        // ===== PARTICLE EFFECTS =====
+        function createParticles(x, y) {
+            for (let i = 0; i < 10; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                particle.style.setProperty('--x', (Math.random() - 0.5) * 200 + 'px');
+                particle.style.setProperty('--y', (Math.random() - 0.5) * 200 + 'px');
+                particle.style.animationDelay = Math.random() * 0.5 + 's';
+                document.body.appendChild(particle);
+                
+                setTimeout(() => particle.remove(), 4000);
+            }
+        }
+        
+        // ===== ASTRONAUT DRAG =====
+        const astronautContainer = document.getElementById('astronaut-container');
+        let isDragging = false;
+        let dragOffsetX, dragOffsetY;
+        
+        astronautContainer.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            const rect = astronautContainer.getBoundingClientRect();
+            dragOffsetX = e.clientX - rect.left;
+            dragOffsetY = e.clientY - rect.top;
+            astronautContainer.style.animation = 'none';
+        });
+        
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            astronautContainer.style.left = (e.clientX - dragOffsetX) + 'px';
+            astronautContainer.style.top = (e.clientY - dragOffsetY) + 'px';
+        });
+        
+        document.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                astronautContainer.style.animation = 'floatAstronaut 10s infinite ease-in-out';
+                
+                // Check if astronaut is near black hole
+                const blackHole = document.querySelector('.black-hole-container');
+                const bhRect = blackHole.getBoundingClientRect();
+                const astroRect = astronautContainer.getBoundingClientRect();
+                
+                const distance = Math.sqrt(
+                    Math.pow(bhRect.left + bhRect.width/2 - astroRect.left - astroRect.width/2, 2) +
+                    Math.pow(bhRect.top + bhRect.height/2 - astroRect.top - astroRect.height/2, 2)
+                );
+                
+                if (distance < 150) {
+                    showAchievement('Black Hole Explorer!');
+                    astronautContainer.style.animation = 'none';
+                    astronautContainer.style.transition = 'all 2s ease-in';
+                    astronautContainer.style.left = bhRect.left + bhRect.width/2 - astroRect.width/2 + 'px';
+                    astronautContainer.style.top = bhRect.top + bhRect.height/2 - astroRect.height/2 + 'px';
+                    astronautContainer.style.transform = 'scale(0) rotate(720deg)';
+                    
+                    setTimeout(() => {
+                        astronautContainer.style.transition = 'none';
+                        astronautContainer.style.transform = 'scale(1) rotate(0deg)';
+                        astronautContainer.style.left = '70%';
+                        astronautContainer.style.top = '30%';
+                        setTimeout(() => {
+                            astronautContainer.style.animation = 'floatAstronaut 10s infinite ease-in-out';
+                        }, 100);
+                    }, 2000);
+                }
+            }
+        });
+        
+        // ===== CONTROL FUNCTIONS =====
+        function activateWarpDrive() {
+            document.body.classList.add('warping');
+            showAchievement('Warp Drive Activated!');
+            
+            // Create warp effect
+            for (let i = 0; i < 50; i++) {
+                const line = document.createElement('div');
+                line.style.position = 'absolute';
+                line.style.width = '2px';
+                line.style.height = Math.random() * 200 + 100 + 'px';
+                line.style.background = 'linear-gradient(to bottom, transparent, white, transparent)';
+                line.style.left = Math.random() * 100 + '%';
+                line.style.top = Math.random() * 100 + '%';
+                line.style.transform = 'rotate(' + Math.random() * 360 + 'deg)';
+                line.style.animation = 'shoot 0.5s linear';
+                line.style.zIndex = '100';
+                document.body.appendChild(line);
+                
+                setTimeout(() => line.remove(), 500);
+            }
+            
+            setTimeout(() => {
+                document.body.classList.remove('warping');
+            }, 5000);
+        }
+        
+        function callForHelp() {
+            showAchievement('SOS Signal Sent!');
+            
+            // Create radio wave effect
+            const wave = document.createElement('div');
+            wave.style.position = 'fixed';
+            wave.style.top = '50%';
+            wave.style.left = '50%';
+            wave.style.transform = 'translate(-50%, -50%)';
+            wave.style.width = '100px';
+            wave.style.height = '100px';
+            wave.style.border = '3px solid rgba(255, 255, 255, 0.8)';
+            wave.style.borderRadius = '50%';
+            wave.style.animation = 'expand 2s ease-out';
+            wave.style.zIndex = '100';
+            document.body.appendChild(wave);
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes expand {
+                    to {
+                        width: 1000px;
+                        height: 1000px;
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            setTimeout(() => {
+                wave.remove();
+                style.remove();
+            }, 2000);
+        }
+        
+        function openPortal() {
+            const portal = document.getElementById('portal');
+            portal.classList.add('active');
+            
+            // Create spiral particles
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.style.position = 'absolute';
+                    particle.style.width = '5px';
+                    particle.style.height = '5px';
+                    particle.style.background = '#fff';
+                    particle.style.borderRadius = '50%';
+                    particle.style.left = '50%';
+                    particle.style.top = '50%';
+                    particle.style.transform = 'translate(-50%, -50%)';
+                    particle.style.animation = `spiral ${Math.random() * 2 + 1}s linear`;
+                    portal.appendChild(particle);
+                    
+                    const spiralStyle = document.createElement('style');
+                    spiralStyle.textContent = `
+                        @keyframes spiral {
+                            to {
+                                transform: translate(-50%, -50%) rotate(1080deg) translateX(150px);
+                                opacity: 0;
+                            }
+                        }
+                    `;
+                    document.head.appendChild(spiralStyle);
+                    
+                    setTimeout(() => {
+                        particle.remove();
+                        spiralStyle.remove();
+                    }, 3000);
+                }, i * 100);
+            }
+            
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 2000);
+        }
+        
+        // ===== STARBURST EFFECT =====
+        function createStarburst(star) {
+            const burst = document.createElement('div');
+            burst.style.position = 'absolute';
+            burst.style.left = star.style.left;
+            burst.style.top = star.style.top;
+            burst.style.width = '100px';
+            burst.style.height = '100px';
+            burst.style.transform = 'translate(-50%, -50%)';
+            
+            for (let i = 0; i < 8; i++) {
+                const ray = document.createElement('div');
+                ray.style.position = 'absolute';
+                ray.style.width = '2px';
+                ray.style.height = '50px';
+                ray.style.background = 'linear-gradient(to bottom, white, transparent)';
+                ray.style.left = '50%';
+                ray.style.top = '50%';
+                ray.style.transformOrigin = 'center bottom';
+                ray.style.transform = `translateX(-50%) rotate(${i * 45}deg)`;
+                ray.style.animation = 'rayExpand 1s ease-out';
+                burst.appendChild(ray);
+            }
+            
+            starsContainer.appendChild(burst);
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes rayExpand {
+                    from {
+                        height: 0;
+                        opacity: 1;
+                    }
+                    to {
+                        height: 100px;
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            setTimeout(() => {
+                burst.remove();
+                style.remove();
+            }, 1000);
+        }
+        
+        // ===== ACHIEVEMENT SYSTEM =====
+        function showAchievement(text) {
+            const achievement = document.getElementById('achievement');
+            achievement.querySelector('div:last-child').textContent = text;
+            achievement.classList.add('show');
+            
+            setTimeout(() => {
+                achievement.classList.remove('show');
+            }, 3000);
+        }
+        
+        // ===== SECRET FEATURES =====
+        function revealSecret() {
+            const secretMessage = document.getElementById('secret-message');
+            secretMessage.classList.add('show');
+            
+            setTimeout(() => {
+                secretMessage.classList.remove('show');
+            }, 5000);
+        }
+        
+        // ===== KONAMI CODE =====
+        const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+        let konamiIndex = 0;
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === konamiCode[konamiIndex]) {
+                konamiIndex++;
+                if (konamiIndex === konamiCode.length) {
+                    activateKonamiMode();
+                    konamiIndex = 0;
+                }
+            } else {
+                konamiIndex = 0;
+            }
+            
+            // Matrix rain easter egg
+            if (e.key === 'm' || e.key === 'M') {
+                toggleMatrixRain();
+            }
+        });
+        
+        function activateKonamiMode() {
+            showAchievement('KONAMI CODE ACTIVATED!');
+            document.body.style.animation = 'hueRotate 2s linear infinite';
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes hueRotate {
+                    to {
+                        filter: hue-rotate(360deg);
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            setTimeout(() => {
+                document.body.style.animation = '';
+                style.remove();
+            }, 10000);
+        }
+        
+        // ===== MATRIX RAIN =====
+        function toggleMatrixRain() {
+            const matrixRain = document.getElementById('matrix-rain');
+            matrixRain.classList.toggle('active');
+            
+            if (matrixRain.classList.contains('active')) {
+                for (let i = 0; i < 30; i++) {
+                    const column = document.createElement('div');
+                    column.className = 'matrix-column';
+                    column.style.left = Math.random() * 100 + '%';
+                    column.style.animationDelay = Math.random() * 10 + 's';
+                    column.textContent = Array(50).fill(0).map(() => 
+                        String.fromCharCode(0x30A0 + Math.random() * 96)
+                    ).join('');
+                    matrixRain.appendChild(column);
+                }
+            } else {
+                matrixRain.innerHTML = '';
+            }
+        }
+        
+        // ===== RESIZE HANDLER =====
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+        
+        // ===== INITIAL ANIMATIONS =====
+        setTimeout(() => {
+            showAchievement('Welcome to the Void!');
+        }, 2000);
+        
+        // ===== RANDOM EVENTS =====
+        setInterval(() => {
+            if (Math.random() > 0.7) {
+                createShootingStar();
+            }
+        }, 5000);
+        
+        // ===== PERFORMANCE OPTIMIZATION =====
+        let ticking = false;
+        function requestTick() {
+            if (!ticking) {
+                requestAnimationFrame(updateAnimations);
+                ticking = true;
+            }
+        }
+        
+        function updateAnimations() {
+            // Update animations here
+            ticking = false;
+        }
+        
+        // ===== PAGE VISIBILITY =====
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                // Pause heavy animations
+            } else {
+                // Resume animations
+            }
+        });
+    </script>
+</body>
+</html>

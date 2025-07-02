@@ -1,24 +1,42 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-    <title>Thống kê bài làm</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="stylesheet" href="/css/style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
-    <!-- Add Font Awesome for icons -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thống kê bài làm - Ôn luyện Vật lí</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- SheetJS for Excel export -->
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+    
+    <!-- Canvas Animation -->
+    <canvas id="network-canvas"></canvas>
 </head>
 <body>
     <a href="/" class="home-button">
         <img src="https://styles.redditmedia.com/t5_851o4i/styles/profileIcon_0elfudeu2s5b1.jpg?width=256&height=256&frame=1&auto=webp&crop=256:256,smart&s=86be605407a08efe2894a6bacd089074aca51879" alt="Home">
     </a>
+    
     <div class="statistics-container">
         <div class="stats-header">
             <h1>Thống kê bài làm</h1>
             <div class="export-controls">
                 <button onclick="exportToExcel()" class="export-btn">
-                    <i class="fas fa-file-export"></i> Xuất Excel
+                    <i class="fas fa-file-export"></i> 
+                    <span>Xuất Excel</span>
                 </button>
             </div>
         </div>
@@ -64,7 +82,8 @@
         <div class="stats-content-grid">
             <div class="stats-card chart-card">
                 <h3>
-                    <i class="fas fa-chart-bar"></i> Phân bố điểm
+                    <i class="fas fa-chart-bar"></i> 
+                    <span>Phân bố điểm</span>
                 </h3>
                 <div class="chart-container">
                     <canvas id="scoreChart"></canvas>
@@ -73,20 +92,21 @@
 
             <div class="stats-card">
                 <h3>
-                    <i class="fas fa-clipboard-check"></i> Phân tích câu hỏi
+                    <i class="fas fa-clipboard-check"></i> 
+                    <span>Phân tích câu hỏi</span>
                 </h3>
                 <div class="table-responsive">
                     <table class="statistics-table" id="question-stats">
                         <thead>
                             <tr>
-                                <th>NO.</th>
-                                <th>Câu hỏi</th>
-                                <th>Tổng</th>
-                                <th>Làm</th>
-                                <th>Không làm</th>
-                                <th>Đúng</th>
-                                <th>Sai</th>
-                                <th>Tỉ lệ</th>
+                                <th><i class="fas fa-hashtag"></i> NO.</th>
+                                <th><i class="fas fa-question-circle"></i> Câu hỏi</th>
+                                <th><i class="fas fa-users"></i> Tổng</th>
+                                <th><i class="fas fa-check"></i> Làm</th>
+                                <th><i class="fas fa-times"></i> Không làm</th>
+                                <th><i class="fas fa-check-circle"></i> Đúng</th>
+                                <th><i class="fas fa-times-circle"></i> Sai</th>
+                                <th><i class="fas fa-percentage"></i> Tỉ lệ</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -99,7 +119,8 @@
             <div class="stats-card">
                 <div class="card-header">
                     <h3>
-                        <i class="fas fa-graduation-cap"></i> Bảng điểm học sinh
+                        <i class="fas fa-graduation-cap"></i> 
+                        <span>Bảng điểm học sinh</span>
                     </h3>
                     <div class="search-box">
                         <i class="fas fa-search search-icon"></i>
@@ -113,10 +134,10 @@
                     <table class="statistics-table" id="transcripts">
                         <thead>
                             <tr>
-                                <th>NO.</th>
-                                <th>Họ tên</th>
-                                <th>Ngày sinh</th>
-                                <th>Điểm</th>
+                                <th><i class="fas fa-hashtag"></i> NO.</th>
+                                <th><i class="fas fa-user"></i> Họ tên</th>
+                                <th><i class="fas fa-calendar"></i> Ngày sinh</th>
+                                <th><i class="fas fa-star"></i> Điểm</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -127,6 +148,9 @@
             </div>
         </div>
     </div>
+    
+    <!-- Background Animation Script -->
+    <script src="/js/network-animation.js"></script>
     <script src="/js/lesson-statistics.js"></script>
 </body>
-</html> 
+</html>

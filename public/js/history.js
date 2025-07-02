@@ -337,7 +337,7 @@ function showSuccessMessage(message) {
     
     setTimeout(() => {
         successDiv.remove();
-    }, 3000);
+    }, 3003);
 }
 
 function updateTable() {

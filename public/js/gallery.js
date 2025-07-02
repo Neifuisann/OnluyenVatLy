@@ -1,10 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    // --- NEW: Perform authentication check first ---
+    // --- Check authentication status (optional for public pages) ---
     const isAuthenticated = await checkStudentAuthentication();
-    if (!isAuthenticated) {
-        // Stop further execution if not authenticated (redirect already happened)
-        return; 
-    }
+    // Continue loading page regardless of authentication status
     // --- END NEW ---
 
     let currentImageIndex = 0;
@@ -29,7 +26,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Clear any existing content and add loading indicator
             galleryContent.innerHTML = '<div class="loading-indicator">Đang tải ảnh...</div>';
             
-            const response = await fetch('/api/gallery-images');
+            const response = await fetch('/api/gallery');
             
             if (!response.ok) {
                 throw new Error(`Server returned ${response.status}: ${response.statusText}`);
@@ -230,13 +227,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     loadImages();
 });
 
-// --- NEW: Check student authentication ---
+// --- Check student authentication (optional) ---
 async function checkStudentAuthentication() {
     try {
         const response = await fetch('/api/check-student-auth');
         if (!response.ok) {
-            // If API fails, assume not logged in for safety
-            throw new Error('Auth check failed');
+            // If API fails, assume not logged in
+            console.log('Auth check failed, user not authenticated');
+            return false;
         }
         const authData = await response.json();
 
@@ -244,16 +242,13 @@ async function checkStudentAuthentication() {
             console.log('Student authenticated:', authData.student.name);
             return true; // Authenticated
         } else {
-            // Not authenticated, redirect to login
-            console.log('Student not authenticated, redirecting...');
-            const currentUrl = window.location.pathname + window.location.search;
-            window.location.href = '/student/login?redirect=' + encodeURIComponent(currentUrl);
+            // Not authenticated - this is OK for public pages
+            console.log('Student not authenticated');
             return false; // Not authenticated
         }
     } catch (error) {
         console.error('Error checking student authentication:', error);
-        // Redirect to login on error
-        window.location.href = '/student/login'; 
+        // Don't redirect on error for public pages
         return false; // Treat error as not authenticated
     }
 }

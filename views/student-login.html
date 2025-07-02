@@ -2,90 +2,536 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Đăng nhập Học sinh</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập Học sinh - Ôn luyện Vật lí</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Styles -->
     <link rel="stylesheet" href="/css/style.css">
-    <!-- Include locally hosted FingerprintJS -->
-    <script async src="/js/fp.min.js"></script>
+    
+    <!-- Device ID System -->
+    <script src="/js/device-id.js"></script>
+    
+    <style>
+        /* Login Page Specific Styles */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Animated Background */
+        .login-bg-animation {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+        
+        .login-bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, 
+                transparent 30%, 
+                rgba(168, 85, 247, 0.1) 50%, 
+                transparent 70%);
+            animation: bgSlide 15s linear infinite;
+        }
+        
+        @keyframes bgSlide {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        .floating-icons {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .floating-icon {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.1;
+            animation: floatIcon 20s infinite linear;
+        }
+        
+        .floating-icon:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .floating-icon:nth-child(2) { left: 30%; animation-delay: 3s; }
+        .floating-icon:nth-child(3) { left: 50%; animation-delay: 6s; }
+        .floating-icon:nth-child(4) { left: 70%; animation-delay: 9s; }
+        .floating-icon:nth-child(5) { left: 90%; animation-delay: 12s; }
+        
+        @keyframes floatIcon {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.1;
+            }
+            90% {
+                opacity: 0.1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .login-form {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: 3rem;
+            width: 100%;
+            max-width: 450px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            animation: formSlideIn 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        @keyframes formSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .login-form::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.1) 0%, transparent 70%);
+            animation: rotate 30s linear infinite;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .login-icon {
+            font-size: 4rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+        
+        .login-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .login-header p {
+            color: var(--text-secondary);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: var(--transition-fast);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--neon-purple);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
+        }
+        
+        .form-control:focus + .input-icon {
+            color: var(--neon-purple);
+        }
+        
+        .input-group {
+            position: relative;
+        }
+        
+        .input-icon {
+            position: absolute;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-tertiary);
+            transition: var(--transition-fast);
+        }
+        
+        .error-message {
+            background: rgba(244, 59, 71, 0.1);
+            border: 1px solid rgba(244, 59, 71, 0.3);
+            color: #ff6b6b;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: shake 0.5s ease-out;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 1rem 2rem;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            z-index: 1;
+        }
+        
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn-login:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(168, 85, 247, 0.4);
+        }
+        
+        .btn-login:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .form-links {
+            margin-top: 2rem;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .form-note {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-note a {
+            color: var(--neon-purple);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition-fast);
+        }
+        
+        .form-note a:hover {
+            color: var(--neon-blue);
+            text-decoration: underline;
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--glass-border);
+        }
+        
+        .divider span {
+            padding: 0 1rem;
+            color: var(--text-tertiary);
+            font-size: 0.9rem;
+        }
+        
+        .social-login {
+            display: flex;
+            gap: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .social-btn {
+            flex: 1;
+            padding: 0.75rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+        
+        .social-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Loading State */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        /* Responsive */
+        @media (max-width: 480px) {
+            .login-form {
+                padding: 2rem 1.5rem;
+            }
+            
+            .login-header h1 {
+                font-size: 1.75rem;
+            }
+            
+            .social-login {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
-    <a href="/" class="home-button">
-        <img src="https://styles.redditmedia.com/t5_851o4i/styles/profileIcon_0elfudeu2s5b1.jpg?width=256&height=256&frame=1&auto=webp&crop=256:256,smart&s=86be605407a08efe2894a6bacd089074aca51879" alt="Home">
-    </a>
-
     <div class="login-container">
+        <!-- Animated Background -->
+        <div class="login-bg-animation"></div>
+        <div class="floating-icons">
+            <div class="floating-icon">⚛️</div>
+            <div class="floating-icon">🔬</div>
+            <div class="floating-icon">📐</div>
+            <div class="floating-icon">💡</div>
+            <div class="floating-icon">🧪</div>
+        </div>
+        
+        <!-- Home Button -->
+        <a href="/" class="home-button">
+            <img src="https://styles.redditmedia.com/t5_851o4i/styles/profileIcon_0elfudeu2s5b1.jpg?width=256&height=256&frame=1&auto=webp&crop=256:256,smart&s=86be605407a08efe2894a6bacd089074aca51879" alt="Home">
+        </a>
+
         <div class="login-form">
-            <h1>Đăng nhập Học sinh</h1>
+            <div class="login-header">
+                <div class="login-icon">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <h1>Đăng nhập Học sinh</h1>
+                <p>Chào mừng bạn quay trở lại! 👋</p>
+            </div>
+            
             <form id="student-login-form" onsubmit="handleStudentLogin(event)">
-                <div id="login-error" class="error-message" style="display: none;"></div>
-                <div class="form-group">
-                    <label for="phone_number">Số điện thoại:</label>
-                    <input type="tel" id="phone_number" class="form-control" required>
+                <div id="login-error" class="error-message" style="display: none;">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span></span>
                 </div>
+                
                 <div class="form-group">
-                    <label for="password">Mật khẩu:</label>
-                    <input type="password" id="password" class="form-control" required>
+                    <label for="phone_number">
+                        <i class="fas fa-phone"></i>
+                        Số điện thoại
+                    </label>
+                    <div class="input-group">
+                        <input type="tel" id="phone_number" class="form-control" required placeholder="Nhập số điện thoại">
+                        <i class="fas fa-phone input-icon"></i>
+                    </div>
                 </div>
-                <button type="submit" id="login-button" class="btn-login">Đăng nhập</button>
+                
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-lock"></i>
+                        Mật khẩu
+                    </label>
+                    <div class="input-group">
+                        <input type="password" id="password" class="form-control" required placeholder="Nhập mật khẩu">
+                        <i class="fas fa-eye input-icon" id="toggle-password" style="cursor: pointer;"></i>
+                    </div>
+                </div>
+                
+                <button type="submit" id="login-button" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Đăng nhập
+                </button>
             </form>
-            <p class="form-note">Chưa có tài khoản? <a href="/student/register">Đăng ký ngay</a></p>
-            <p class="form-note"><a href="/admin/login">Đăng nhập Giáo viên</a></p>
+            
+            <div class="form-links">
+                <p class="form-note">
+                    Chưa có tài khoản? 
+                    <a href="/student/register">Đăng ký ngay</a>
+                </p>
+                
+                <div class="divider">
+                    <span>HOẶC</span>
+                </div>
+                
+                <div class="social-login">
+                    <a href="/admin/login" class="social-btn">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Giáo viên</span>
+                    </a>
+                    <a href="/gallery" class="social-btn">
+                        <i class="fas fa-book"></i>
+                        <span>Lý thuyết</span>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        let visitorId = null;
+        let deviceId = null;
 
-        // Initialize FingerprintJS
-        async function getVisitorId() {
-            if (!visitorId) {
-                if (typeof FingerprintJS === 'undefined') {
-                    console.error('FingerprintJS library not loaded. Possible browser extension block.');
-                    document.getElementById('login-error').textContent = 'Lỗi tải thư viện định danh thiết bị. Vui lòng kiểm tra tiện ích chặn quảng cáo/theo dõi và thử lại.';
-                    document.getElementById('login-error').style.display = 'block';
-                    return null; // Indicate critical failure
+        // Initialize Device ID system
+        async function getDeviceId() {
+            if (!deviceId) {
+                if (typeof window.deviceIdentifier === 'undefined') {
+                    console.error('Device ID system not loaded.');
+                    document.getElementById('login-error').querySelector('span').textContent = 'Lỗi tải hệ thống định danh thiết bị. Vui lòng thử lại.';
+                    document.getElementById('login-error').style.display = 'flex';
+                    return null;
                 }
                 try {
-                    const fpPromise = FingerprintJS.load();
-                    const fp = await fpPromise;
-                    const result = await fp.get();
-                    visitorId = result.visitorId;
-                    console.log('Device Fingerprint:', visitorId);
+                    deviceId = await window.deviceIdentifier.generateDeviceId();
+                    console.log('Device ID generated:', deviceId.substring(0, 8) + '...');
                 } catch (error) {
-                    console.error('FingerprintJS error:', error);
-                    // Handle error - maybe disable login or proceed without fingerprint
-                    document.getElementById('login-error').textContent = 'Không thể lấy thông tin thiết bị. Vui lòng thử lại.';
-                    document.getElementById('login-error').style.display = 'block';
-                    return null; // Indicate failure
+                    console.error('Device ID generation error:', error);
+                    document.getElementById('login-error').querySelector('span').textContent = 'Không thể tạo mã định danh thiết bị. Vui lòng thử lại.';
+                    document.getElementById('login-error').style.display = 'flex';
+                    return null;
                 }
             }
-            return visitorId;
+            return deviceId;
         }
+
+        // Pre-generate device ID on page load
+        window.addEventListener('load', async () => {
+            try {
+                await getDeviceId();
+                console.log('Device ID pre-generated successfully');
+            } catch (error) {
+                console.warn('Failed to pre-generate device ID:', error);
+            }
+        });
+
+        // Toggle password visibility
+        const togglePassword = document.getElementById('toggle-password');
+        const passwordInput = document.getElementById('password');
         
-        // Call it once on load to start the process
-        // getVisitorId(); 
+        togglePassword.addEventListener('click', () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            togglePassword.classList.toggle('fa-eye');
+            togglePassword.classList.toggle('fa-eye-slash');
+        });
 
         async function handleStudentLogin(event) {
             event.preventDefault();
             const loginButton = document.getElementById('login-button');
             const errorMessageDiv = document.getElementById('login-error');
-            errorMessageDiv.style.display = 'none'; // Hide previous errors
-            loginButton.disabled = true;
-            loginButton.textContent = 'Đang đăng nhập...';
-
-            const currentVisitorId = await getVisitorId(); // Now it's called here
+            const errorText = errorMessageDiv.querySelector('span');
+            errorMessageDiv.style.display = 'none';
             
-            if (!currentVisitorId) { 
-                 loginButton.disabled = false;
-                 loginButton.textContent = 'Đăng nhập';
-                 // Error message is already set by getVisitorId if FingerprintJS is missing or errored
-                 if (!errorMessageDiv.textContent) { // Set a generic message if not already set
-                    errorMessageDiv.textContent = 'Lỗi lấy thông tin thiết bị. Không thể đăng nhập.';
-                    errorMessageDiv.style.display = 'block';
-                 }
-                 return; // Stop login if fingerprint is essential and failed
-            }
+            // Show loading state
+            loginButton.disabled = true;
+            loginButton.innerHTML = '<i class="loading-spinner"></i> Đang đăng nhập...';
 
+            const currentDeviceId = await getDeviceId();
+
+            if (!currentDeviceId) {
+                loginButton.disabled = false;
+                loginButton.innerHTML = '<i class="fas fa-sign-in-alt"></i> Đăng nhập';
+                if (!errorText.textContent) {
+                    errorText.textContent = 'Lỗi tạo mã định danh thiết bị. Không thể đăng nhập.';
+                    errorMessageDiv.style.display = 'flex';
+                }
+                return;
+            }
 
             try {
                 const response = await fetch('/api/student/login', {
@@ -94,32 +540,42 @@
                     body: JSON.stringify({
                         phone_number: document.getElementById('phone_number').value,
                         password: document.getElementById('password').value,
-                        // Send the fingerprint ID
-                        device_fingerprint: currentVisitorId 
+                        deviceId: currentDeviceId
                     })
                 });
 
                 const result = await response.json();
 
                 if (result.success) {
-                    // Check for redirect query parameter
+                    // Success animation
+                    loginButton.innerHTML = '<i class="fas fa-check"></i> Đăng nhập thành công!';
+                    loginButton.style.background = 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)';
+                    
+                    // Check for redirect
                     const urlParams = new URLSearchParams(window.location.search);
                     const redirectUrl = urlParams.get('redirect');
-                    // Redirect to intended page or home
-                    window.location.href = redirectUrl || '/multiplechoice'; // Or '/' or '/dashboard'
+                    
+                    setTimeout(() => {
+                        window.location.href = redirectUrl || '/multiplechoice';
+                    }, 500);
                 } else {
-                    errorMessageDiv.textContent = result.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.';
-                    errorMessageDiv.style.display = 'block';
+                    errorText.textContent = result.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.';
+                    errorMessageDiv.style.display = 'flex';
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                errorMessageDiv.textContent = 'Đã xảy ra lỗi trong quá trình đăng nhập. Vui lòng thử lại.';
-                errorMessageDiv.style.display = 'block';
+                errorText.textContent = 'Đã xảy ra lỗi trong quá trình đăng nhập. Vui lòng thử lại.';
+                errorMessageDiv.style.display = 'flex';
             } finally {
-                 loginButton.disabled = false;
-                 loginButton.textContent = 'Đăng nhập';
+                if (!document.getElementById('login-button').innerHTML.includes('thành công')) {
+                    loginButton.disabled = false;
+                    loginButton.innerHTML = '<i class="fas fa-sign-in-alt"></i> Đăng nhập';
+                }
             }
         }
+
+        // Auto-focus first input
+        document.getElementById('phone_number').focus();
     </script>
 </body>
-</html> 
+</html>

@@ -1,56 +1,112 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-    <title>Trò chơi chinh phục</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="stylesheet" href="/css/style.css">
+    <title>Trò chơi chinh phục - Ôn luyện Vật lí</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Add AOS library for smooth animations -->
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    
+    <!-- AOS library for smooth animations -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
     <!-- KaTeX CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1tBCETKfPFPcxLR7diph9NkLkq3Y" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+    
     <style>
-      /* Loading Screen Styles */
-      #loading-screen {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: #fff;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 10000;
-          opacity: 1;
-          transition: opacity 0.5s ease;
-      }
-      .spinner {
-          border: 16px solid #f3f3f3;
-          border-top: 16px solid #3498db;
-          border-radius: 50%;
-          width: 120px;
-          height: 120px;
-          animation: spin 2s linear infinite;
-      }
-      @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-      }
-      
-      /* Hide the katex-html elements while keeping katex-mathml visible */
-      .katex-html {
-          display: none !important;
-      }
+        /* Loading Screen Styles */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+        
+        #loading-screen .spinner {
+            width: 80px;
+            height: 80px;
+            border: 4px solid var(--glass-border);
+            border-top-color: var(--neon-purple);
+            margin-bottom: 1rem;
+        }
+        
+        #loading-screen p {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            animation: pulse 2s infinite;
+        }
+        
+        /* Hide the katex-html elements while keeping katex-mathml visible */
+        .katex-html {
+            display: none !important;
+        }
+        
+        /* Home Button for Quiz */
+        .quiz-home-button {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-normal);
+            z-index: 101;
+            overflow: hidden;
+        }
+        
+        .quiz-home-button img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+        
+        .quiz-home-button:hover {
+            transform: scale(1.1) rotate(5deg);
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.6);
+        }
     </style>
 </head>
 <body>
+    <!-- Loading Screen -->
     <div id="loading-screen">
         <div class="spinner"></div>
+        <p>Đang tải trò chơi...</p>
     </div>
-    <!-- Add score display -->
+    
+    <!-- Home Button -->
+    <a href="/" class="quiz-home-button">
+        <img src="https://styles.redditmedia.com/t5_851o4i/styles/profileIcon_0elfudeu2s5b1.jpg?width=256&height=256&frame=1&auto=webp&crop=256:256,smart&s=86be605407a08efe2894a6bacd089074aca51879" alt="Home">
+    </a>
+    
+    <!-- Score Display -->
     <div class="score-display">
         <div class="score-content">
             <div class="score-label">Điểm</div>
@@ -60,16 +116,20 @@
         <div class="firework-container"></div>
     </div>
 
-    <!-- Add question counter and timer -->
+    <!-- Question Counter and Timer -->
     <div class="quiz-info">
-        <div class="question-counter">Câu hỏi: <span id="current-question">1</span>/20</div>
+        <div class="question-counter">
+            <i class="fas fa-question-circle"></i>
+            Câu hỏi: <span id="current-question">1</span>/20
+        </div>
         <div class="timer-display">
+            <i class="fas fa-clock"></i>
             <div class="timer-value">30</div>
             <div class="timer-label">giây</div>
         </div>
     </div>
 
-    <!-- Add audio elements -->
+    <!-- Audio Elements -->
     <audio id="background-music-1" src="/audio/30sec_1.mp3" preload="auto"></audio>
     <audio id="background-music-2" src="/audio/30sec_2.mp3" preload="auto"></audio>
     <audio id="background-music-3" src="/audio/30sec_3.mp3" preload="auto"></audio>
@@ -83,15 +143,16 @@
     <audio id="correct-5" src="/audio/correct_5.mp3" preload="auto"></audio>
     <audio id="incorrect" src="/audio/incorrect.mp3" preload="auto"></audio>
     <audio id="points" src="/audio/points.mp3" preload="auto"></audio>
-    <!-- Add celebration overlay -->
+    
+    <!-- Celebration Overlay -->
     <div class="celebration-overlay" style="display: none;">
-
         <div class="celebration-content" data-aos="zoom-in">
-            <h2>Chúc mừng!</h2>
+            <h2>🎉 Chúc mừng! 🎉</h2>
             <p>Bạn đã hoàn thành <span class="milestone-number"></span> câu hỏi!</p>
         </div>
     </div>
 
+    <!-- Main Game Container -->
     <div class="quiz-game-container">
         <div class="progress-container">
             <div class="progress-bar">
@@ -122,48 +183,74 @@
         </div>
     </div>
 
-    <!-- Add firework container -->
+    <!-- Fireworks Container -->
     <div class="fireworks-container"></div>
 
     <!-- Student Info Modal -->
     <div id="student-info-modal" class="modal">
         <div class="modal-content">
-            <h2>Thông tin học sinh</h2>
+            <div class="modal-icon" style="text-align: center; font-size: 4rem; margin-bottom: 1.5rem;">
+                <i class="fas fa-user-graduate"></i>
+            </div>
+            <h2 style="text-align: center; margin-bottom: 2rem;">Thông tin học sinh</h2>
             <form id="student-info-form">
                 <div class="form-group">
-                    <label>Họ và tên *</label>
-                    <input type="text" id="student-name" required>
+                    <label>
+                        <i class="fas fa-user"></i>
+                        Họ và tên *
+                    </label>
+                    <input type="text" id="student-name" required placeholder="Nhập họ và tên">
                 </div>
                 <div class="form-group">
-                    <label>Ngày sinh</label>
+                    <label>
+                        <i class="fas fa-calendar"></i>
+                        Ngày sinh
+                    </label>
                     <input type="date" id="student-dob">
                 </div>
                 <div class="form-group">
-                    <label>Mã học sinh</label>
-                    <input type="text" id="student-id">
+                    <label>
+                        <i class="fas fa-id-card"></i>
+                        Mã học sinh
+                    </label>
+                    <input type="text" id="student-id" placeholder="Nhập mã học sinh (nếu có)">
                 </div>
                 <div class="modal-buttons">
-                    <button type="submit">Bắt đầu</button>
-                    <button type="button" onclick="window.location.href='/'">Huỷ</button>
+                    <button type="submit" class="button primary">
+                        <i class="fas fa-play"></i>
+                        Bắt đầu
+                    </button>
+                    <button type="button" onclick="window.location.href='/'" class="button secondary">
+                        <i class="fas fa-times"></i>
+                        Hủy
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fireworks/1.0.0/fireworks.min.js"></script>
     <!-- KaTeX JS -->
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
-    <!-- Optional: KaTeX auto-render extension -->
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+    <!-- KaTeX auto-render extension -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
     <script src="/js/quizgame.js"></script>
     <script>
-    window.addEventListener('load', function() {
-        const loader = document.getElementById('loading-screen');
-        if(loader) {
-            loader.style.opacity = '0';
-            setTimeout(() => { loader.style.display = 'none'; }, 500);
-        }
-    });
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+        
+        // Hide loading screen when page loads
+        window.addEventListener('load', function() {
+            const loader = document.getElementById('loading-screen');
+            if(loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => { loader.style.display = 'none'; }, 500);
+            }
+        });
     </script>
 </body>
-</html> 
+</html>

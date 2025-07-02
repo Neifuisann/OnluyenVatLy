@@ -1,53 +1,253 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-    <title>Edit Quiz Questions</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=no">
     <meta name="format-detection" content="telephone=no">
-    <link rel="stylesheet" href="/css/style.css">
+    <title>Chỉnh sửa câu hỏi Quiz - Ôn luyện Vật lí</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    
+    <!-- Canvas Animation -->
+    <canvas id="network-canvas"></canvas>
 </head>
 <body>
     <a href="/" class="home-button">
         <img src="https://styles.redditmedia.com/t5_851o4i/styles/profileIcon_0elfudeu2s5b1.jpg?width=256&height=256&frame=1&auto=webp&crop=256:256,smart&s=86be605407a08efe2894a6bacd089074aca51879" alt="Home">
     </a>
+    
     <div class="sortable-container">
-        <h2>Edit Quiz Questions</h2>
+        <h2>Chỉnh sửa câu hỏi Quiz</h2>
+        
         <div class="questions-header">
             <button onclick="minimizeAllQuestions()" class="minimize-all-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24">
-                    <path d="M4 9h16M4 15h16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"/>
-                </svg>
+                <i class="fas fa-compress-alt"></i>
                 <span>Thu gọn tất cả</span>
             </button>
         </div>
-        <div id="questions"></div>
+        
+        <div id="questions">
+            <!-- Questions will be dynamically loaded here -->
+        </div>
+        
         <button onclick="addQuestion()" class="add-question-btn">
-            <svg width="24" height="24" viewBox="0 0 24 24">
-                <path d="M12 5v14M5 12h14" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"/>
-            </svg>
+            <i class="fas fa-plus-circle"></i>
             <span>Thêm câu hỏi</span>
         </button>
     </div>
 
     <div class="text-editor-panel">
         <div class="text-editor-toggle">
-            <svg width="24" height="24" viewBox="0 0 24 24">
-                <path d="M15 19l-7-7 7-7" stroke="currentColor" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            <i class="fas fa-chevron-left"></i>
         </div>
         <div class="text-editor-content">
             <div class="text-editor-header">
-                <h3>Question Editor</h3>
-                <button onclick="renderQuestions()" class="render-btn">Render</button>
+                <h3>
+                    <i class="fas fa-code"></i>
+                    Question Editor
+                </h3>
+                <button onclick="renderQuestions()" class="render-btn">
+                    <i class="fas fa-sync"></i>
+                    Render
+                </button>
             </div>
             <div class="text-editor-container">
-                <textarea id="text-editor" spellcheck="false"></textarea>
+                <textarea id="text-editor" spellcheck="false" placeholder="Nhập câu hỏi ở đây..."></textarea>
             </div>
         </div>
     </div>
     
+    <!-- Background Animation Script -->
+    <script src="/js/network-animation.js"></script>
     <script src="/js/admin-quiz-edit.js"></script>
+    
+    <style>
+        /* Additional styles for quiz editor */
+        .sortable-container {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        .sortable-container h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Question items styling */
+        .question-item {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            backdrop-filter: blur(10px);
+            transition: var(--transition-normal);
+        }
+        
+        .question-item:hover {
+            border-color: var(--neon-purple);
+            box-shadow: 0 10px 30px rgba(168, 85, 247, 0.2);
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .question-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .question-btn {
+            padding: 0.5rem 1rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+        
+        .question-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--neon-purple);
+            transform: translateY(-2px);
+        }
+        
+        .question-btn.danger:hover {
+            background: rgba(244, 59, 71, 0.2);
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+        
+        /* Text editor panel animation */
+        .text-editor-panel.active .text-editor-toggle {
+            transform: rotate(180deg);
+        }
+        
+        .text-editor-toggle:hover {
+            background: rgba(168, 85, 247, 0.2);
+            border-color: var(--neon-purple);
+        }
+        
+        .text-editor-toggle i {
+            transition: transform var(--transition-fast);
+        }
+        
+        /* Make textarea more modern */
+        #text-editor {
+            background: rgba(255, 255, 255, 0.03);
+            line-height: 1.6;
+        }
+        
+        #text-editor:focus {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
+        }
+        
+        /* Question input fields */
+        .question-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: var(--transition-fast);
+            margin-bottom: 1rem;
+        }
+        
+        .question-input:focus {
+            outline: none;
+            border-color: var(--neon-purple);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
+        }
+        
+        /* Drag handle */
+        .drag-handle {
+            cursor: move;
+            color: var(--text-tertiary);
+            margin-right: 1rem;
+            transition: var(--transition-fast);
+        }
+        
+        .drag-handle:hover {
+            color: var(--neon-purple);
+        }
+        
+        /* Dragging state */
+        .dragging {
+            opacity: 0.5;
+            transform: scale(0.98);
+        }
+        
+        /* Toggle switch for True/False */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+            margin-left: 1rem;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            transition: var(--transition-fast);
+            border-radius: var(--radius-full);
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 3px;
+            background: var(--text-primary);
+            transition: var(--transition-fast);
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background: var(--success-gradient);
+            border-color: transparent;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(30px);
+        }
+    </style>
 </body>
-</html> 
+</html>

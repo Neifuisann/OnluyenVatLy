@@ -1,51 +1,485 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-    <title>Đăng nhập</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập Giáo viên - Ôn luyện Vật lí</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Styles -->
     <link rel="stylesheet" href="/css/style.css">
+    
+    <style>
+        /* Admin Login Specific Styles */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Different animation for admin */
+        .admin-bg-animation {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+        
+        .admin-bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(135deg, 
+                transparent 30%, 
+                rgba(79, 172, 254, 0.1) 45%, 
+                rgba(0, 242, 254, 0.1) 60%,
+                transparent 75%);
+            animation: adminBgSlide 20s linear infinite;
+        }
+        
+        @keyframes adminBgSlide {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        .admin-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--neon-cyan);
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFloat 10s infinite linear;
+        }
+        
+        .particle:nth-child(1) { left: 5%; animation-delay: 0s; }
+        .particle:nth-child(2) { left: 15%; animation-delay: 1s; }
+        .particle:nth-child(3) { left: 25%; animation-delay: 2s; }
+        .particle:nth-child(4) { left: 35%; animation-delay: 3s; }
+        .particle:nth-child(5) { left: 45%; animation-delay: 4s; }
+        .particle:nth-child(6) { left: 55%; animation-delay: 5s; }
+        .particle:nth-child(7) { left: 65%; animation-delay: 6s; }
+        .particle:nth-child(8) { left: 75%; animation-delay: 7s; }
+        .particle:nth-child(9) { left: 85%; animation-delay: 8s; }
+        .particle:nth-child(10) { left: 95%; animation-delay: 9s; }
+        
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            10% {
+                transform: translateY(90vh) scale(1);
+                opacity: 1;
+            }
+            90% {
+                transform: translateY(10vh) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(0) scale(0);
+                opacity: 0;
+            }
+        }
+        
+        .login-form {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: 3rem;
+            width: 100%;
+            max-width: 450px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            animation: formSlideIn 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        @keyframes formSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .login-form::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(79, 172, 254, 0.1) 0%, transparent 70%);
+            animation: rotateReverse 25s linear infinite;
+        }
+        
+        @keyframes rotateReverse {
+            0% { transform: rotate(360deg); }
+            100% { transform: rotate(0deg); }
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .login-icon {
+            font-size: 4rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+        
+        .login-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .login-header p {
+            color: var(--text-secondary);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: var(--transition-fast);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--neon-cyan);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
+        }
+        
+        .input-group {
+            position: relative;
+        }
+        
+        .input-icon {
+            position: absolute;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-tertiary);
+            transition: var(--transition-fast);
+        }
+        
+        .form-control:focus + .input-icon {
+            color: var(--neon-cyan);
+        }
+        
+        .error-message {
+            background: rgba(244, 59, 71, 0.1);
+            border: 1px solid rgba(244, 59, 71, 0.3);
+            color: #ff6b6b;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: shake 0.5s ease-out;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 1rem 2rem;
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            z-index: 1;
+        }
+        
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn-login:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(79, 172, 254, 0.4);
+        }
+        
+        .btn-login:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 2rem 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--glass-border);
+        }
+        
+        .divider span {
+            padding: 0 1rem;
+            color: var(--text-tertiary);
+            font-size: 0.9rem;
+        }
+        
+        .alt-links {
+            display: flex;
+            gap: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .alt-btn {
+            flex: 1;
+            padding: 0.75rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .alt-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border-color: var(--neon-cyan);
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 480px) {
+            .login-form {
+                padding: 2rem 1.5rem;
+            }
+            
+            .login-header h1 {
+                font-size: 1.75rem;
+            }
+            
+            .alt-links {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
-    <a href="/" class="home-button">
-        <img src="https://styles.redditmedia.com/t5_851o4i/styles/profileIcon_0elfudeu2s5b1.jpg?width=256&height=256&frame=1&auto=webp&crop=256:256,smart&s=86be605407a08efe2894a6bacd089074aca51879" alt="Home">
-    </a>
-
     <div class="login-container">
+        <!-- Animated Background -->
+        <div class="admin-bg-animation"></div>
+        <div class="admin-particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+        
+        <!-- Home Button -->
+        <a href="/" class="home-button">
+            <img src="https://styles.redditmedia.com/t5_851o4i/styles/profileIcon_0elfudeu2s5b1.jpg?width=256&height=256&frame=1&auto=webp&crop=256:256,smart&s=86be605407a08efe2894a6bacd089074aca51879" alt="Home">
+        </a>
+
         <div class="login-form">
-            <h1>Đăng nhập</h1>
+            <div class="login-header">
+                <div class="login-icon">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <h1>Đăng nhập Giáo viên</h1>
+                <p>Quản lý và theo dõi tiến độ học tập 📊</p>
+            </div>
+            
             <form id="login-form" onsubmit="handleLogin(event)">
-                <div id="login-error" class="error-message" style="display: none; color: red; margin-bottom: 15px;"></div>
-                <div class="form-group">
-                    <label for="username">Tên đăng nhập:</label>
-                    <input type="text" id="username" class="form-control" required>
+                <div id="login-error" class="error-message" style="display: none;">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span></span>
                 </div>
+                
                 <div class="form-group">
-                    <label for="password">Mật khẩu:</label>
-                    <input type="password" id="password" class="form-control" required>
+                    <label for="username">
+                        <i class="fas fa-user"></i>
+                        Tên đăng nhập
+                    </label>
+                    <div class="input-group">
+                        <input type="text" id="username" class="form-control" required placeholder="Nhập tên đăng nhập">
+                        <i class="fas fa-user input-icon"></i>
+                    </div>
                 </div>
-                <button type="submit" id="login-button" class="btn-login">Đăng nhập</button>
+                
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-lock"></i>
+                        Mật khẩu
+                    </label>
+                    <div class="input-group">
+                        <input type="password" id="password" class="form-control" required placeholder="Nhập mật khẩu">
+                        <i class="fas fa-eye input-icon" id="toggle-password" style="cursor: pointer;"></i>
+                    </div>
+                </div>
+                
+                <button type="submit" id="login-button" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Đăng nhập
+                </button>
             </form>
+            
+            <div class="divider">
+                <span>HOẶC</span>
+            </div>
+            
+            <div class="alt-links">
+                <a href="/student/login" class="alt-btn">
+                    <i class="fas fa-user-graduate"></i>
+                    <span>Học sinh</span>
+                </a>
+                <a href="/gallery" class="alt-btn">
+                    <i class="fas fa-book"></i>
+                    <span>Lý thuyết</span>
+                </a>
+            </div>
         </div>
     </div>
 
     <script>
+        // Toggle password visibility
+        const togglePassword = document.getElementById('toggle-password');
+        const passwordInput = document.getElementById('password');
+        
+        togglePassword.addEventListener('click', () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            togglePassword.classList.toggle('fa-eye');
+            togglePassword.classList.toggle('fa-eye-slash');
+        });
+        
         async function handleLogin(event) {
             event.preventDefault();
             const loginButton = document.getElementById('login-button');
             const errorElement = document.getElementById('login-error');
+            const errorText = errorElement.querySelector('span');
             
             // Reset error display
             errorElement.style.display = 'none';
             
             // Disable button and show loading state
             loginButton.disabled = true;
-            loginButton.textContent = 'Đang đăng nhập...';
+            loginButton.innerHTML = '<i class="loading-spinner"></i> Đang đăng nhập...';
             
             try {
                 const response = await fetch('/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    credentials: 'same-origin', // Important for cookies/session
+                    credentials: 'same-origin',
                     body: JSON.stringify({
                         username: document.getElementById('username').value,
                         password: document.getElementById('password').value
@@ -54,32 +488,41 @@
                 
                 // Handle server errors
                 if (!response.ok) {
-                    const errorText = response.status === 401 
+                    const errorMsg = response.status === 401 
                         ? 'Tên đăng nhập hoặc mật khẩu không đúng'
                         : `Lỗi máy chủ: ${response.status}`;
-                    throw new Error(errorText);
+                    throw new Error(errorMsg);
                 }
                 
                 const result = await response.json();
                 
                 if (result.success) {
+                    // Success animation
+                    loginButton.innerHTML = '<i class="fas fa-check"></i> Đăng nhập thành công!';
+                    loginButton.style.background = 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)';
+                    
                     // Redirect to admin page
-                    console.log('Login successful, redirecting...');
-                    window.location.href = '/admin';
+                    setTimeout(() => {
+                        window.location.href = '/admin';
+                    }, 500);
                 } else {
-                    // Handle unexpected successful response but login failed
                     throw new Error(result.message || 'Đăng nhập thất bại vì lý do không xác định');
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                errorElement.textContent = error.message || 'Đăng nhập thất bại. Vui lòng thử lại.';
-                errorElement.style.display = 'block';
+                errorText.textContent = error.message || 'Đăng nhập thất bại. Vui lòng thử lại.';
+                errorElement.style.display = 'flex';
             } finally {
                 // Reset button state
-                loginButton.disabled = false;
-                loginButton.textContent = 'Đăng nhập';
+                if (!loginButton.innerHTML.includes('thành công')) {
+                    loginButton.disabled = false;
+                    loginButton.innerHTML = '<i class="fas fa-sign-in-alt"></i> Đăng nhập';
+                }
             }
         }
+        
+        // Auto-focus first input
+        document.getElementById('username').focus();
     </script>
 </body>
 </html>

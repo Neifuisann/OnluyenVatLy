@@ -209,6 +209,9 @@ function initializeEditor(initialContent) {
             }
         });
 
+        // IMPORTANT: Expose editor globally for document upload integration
+        window.editor = editor;
+
         editor.setValue(initialContent || '');
 
         let debounceTimer;
@@ -224,6 +227,16 @@ function initializeEditor(initialContent) {
             }, 300);
         });
 
+        // Add event listener for when content is inserted via upload
+        editor.on('setValue', () => {
+            console.log('Editor content updated via setValue');
+            // Trigger parsing and preview update
+            const currentText = editor.getValue();
+            const parsed = parseQuizText(currentText);
+            updatePreview(parsed);
+            applySyntaxHighlighting(editor);
+        });
+
         const initialParsed = parseQuizText(initialContent);
         updatePreview(initialParsed);
         applySyntaxHighlighting(editor);
@@ -231,6 +244,16 @@ function initializeEditor(initialContent) {
         setTimeout(() => {
              if (editor) editor.refresh();
         }, 150);
+
+        // Add a trigger method to the editor for external updates
+        editor.trigger = function(eventName) {
+            if (eventName === 'change') {
+                const currentText = this.getValue();
+                const parsed = parseQuizText(currentText);
+                updatePreview(parsed);
+                applySyntaxHighlighting(this);
+            }
+        };
 
     } catch (err) {
         console.error("Error initializing CodeMirror:", err);

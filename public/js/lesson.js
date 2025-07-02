@@ -7,7 +7,8 @@ async function checkStudentAuthentication() {
     try {
         const response = await fetch('/api/check-student-auth');
         if (!response.ok) {
-            throw new Error('Auth check failed');
+            console.log('Auth check failed, user not authenticated');
+            return false;
         }
         const authData = await response.json();
 
@@ -15,15 +16,20 @@ async function checkStudentAuthentication() {
             console.log('Student authenticated:', authData.student.name);
             return true;
         } else {
-            console.log('Student not authenticated, redirecting...');
-            const currentUrl = window.location.pathname + window.location.search;
-            window.location.href = '/student/login?redirect=' + encodeURIComponent(currentUrl);
+            console.log('Student not authenticated');
             return false;
         }
     } catch (error) {
         console.error('Error checking student authentication:', error);
-        window.location.href = '/student/login';
         return false;
+    }
+}
+
+// Function to prompt for login when authentication is required
+function promptForLogin() {
+    const currentUrl = window.location.pathname + window.location.search;
+    if (confirm('Bạn cần đăng nhập để làm bài tập. Chuyển đến trang đăng nhập?')) {
+        window.location.href = '/student/login?redirect=' + encodeURIComponent(currentUrl);
     }
 }
 
@@ -61,6 +67,25 @@ function shuffleArray(array) {
 }
 
 async function renderQuestions(lesson) {
+    // Check if lesson has questions property
+    if (!lesson || !lesson.questions || !Array.isArray(lesson.questions)) {
+        console.warn('Lesson has no questions or questions is not an array:', lesson);
+        // Hide question sections if no questions
+        const questionSections = ['abcd-questions', 'truefalse-questions', 'number-questions'];
+        questionSections.forEach(sectionId => {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.style.display = 'none';
+            }
+        });
+        // Hide submit button
+        const submitBtn = document.getElementById('submit-quiz-btn');
+        if (submitBtn) {
+            submitBtn.style.display = 'none';
+        }
+        return;
+    }
+
     const sections = {
         abcd: { element: document.getElementById('abcd-questions'), questions: [] },
         truefalse: { element: document.getElementById('truefalse-questions'), questions: [] },
@@ -286,11 +311,9 @@ async function renderQuestions(lesson) {
 }
 
 async function initializeLesson() {
-    // Check student authentication first
+    // Check student authentication (optional for viewing lessons)
     const isAuthenticated = await checkStudentAuthentication();
-    if (!isAuthenticated) {
-        return; // Stop execution if not authenticated
-    }
+    // Continue loading lesson regardless of authentication status
     
     showLoader(true);
     const lessonId = window.location.pathname.split('/')[2];
@@ -302,10 +325,13 @@ async function initializeLesson() {
             throw new Error(`Failed to fetch lesson: ${response.status}`);
         }
         
-        const lesson = await response.json();
+        const responseData = await response.json();
+
+        // Extract lesson from API response
+        const lesson = responseData.lesson || responseData;
         currentLessonData = lesson; // Store the lesson data
-        
-        if (lesson.error) {
+
+        if (lesson.error || responseData.error) {
             document.body.innerHTML = '<h1>Lesson not found</h1>';
             currentLessonData = null; // Clear data on error
             return;
@@ -414,11 +440,18 @@ document.addEventListener('DOMContentLoaded', () => {
         initializeLesson(); 
 
         submitButton.addEventListener('click', async () => {
+            // Check authentication before allowing quiz submission
+            const isAuthenticated = await checkStudentAuthentication();
+            if (!isAuthenticated) {
+                promptForLogin();
+                return;
+            }
+
             // Disable the submit button and provide visual feedback
             submitButton.disabled = true;
             submitButton.textContent = 'Đang nộp bài...';
             submitButton.style.opacity = '0.7'; // Dim the button slightly
-            
+
             // Check if lesson data is available
             if (!currentLessonData) {
                 console.error("Lesson data not loaded, cannot submit.");
@@ -427,7 +460,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitButton.disabled = false;
                 submitButton.textContent = 'Nộp bài';
                 submitButton.style.opacity = '1';
-                return; 
+                return;
             }
             
             try {
@@ -589,12 +622,48 @@ document.addEventListener('DOMContentLoaded', () => {
                 quizResults.timeTaken = (performance.now() - startTime) / 1000;
                 quizResults.streak = getCurrentStreak(lessonId);
 
-                // --- REVERTED: Call /api/results to save and trigger rating update server-side --- 
+                // --- REVERTED: Call /api/results to save and trigger rating update server-side ---
                 try {
+                    // Get student info from authentication
+                    let studentInfo = { name: 'Anonymous Student' }; // Default fallback
+
+                    try {
+                        const authResponse = await fetch('/api/check-student-auth');
+                        if (authResponse.ok) {
+                            const authData = await authResponse.json();
+                            if (authData.isAuthenticated && authData.student) {
+                                studentInfo = {
+                                    name: authData.student.name,
+                                    id: authData.student.id
+                                };
+                            }
+                        }
+                    } catch (authError) {
+                        console.warn('Could not get student info:', authError);
+                    }
+
+                    // Debug: Log the data we're about to send
+                    console.log('Debug - quizResults:', quizResults);
+                    console.log('Debug - quizResults.questions:', quizResults.questions);
+                    console.log('Debug - studentInfo:', studentInfo);
+
+                    // Ensure answers is a valid array
+                    const answers = Array.isArray(quizResults.questions) ? quizResults.questions : [];
+
+                    // Prepare data in the format expected by the server
+                    const resultPayload = {
+                        lessonId: quizResults.lessonId,
+                        answers: answers, // Server expects 'answers' not 'questions'
+                        timeTaken: Number(quizResults.timeTaken) || 0, // Ensure it's a number, default to 0
+                        studentInfo: studentInfo
+                    };
+
+                    console.log('Debug - resultPayload:', resultPayload);
+
                     const saveResponse = await fetch('/api/results', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(quizResults)
+                        body: JSON.stringify(resultPayload)
                     });
 
                     if (!saveResponse.ok) {

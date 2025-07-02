@@ -27,7 +27,8 @@ async function checkStudentAuthentication() {
     try {
         const response = await fetch('/api/check-student-auth');
         if (!response.ok) {
-            throw new Error('Auth check failed');
+            console.log('Auth check failed, user not authenticated');
+            return false;
         }
         const authData = await response.json();
 
@@ -35,15 +36,20 @@ async function checkStudentAuthentication() {
             console.log('Student authenticated:', authData.student.name);
             return true;
         } else {
-            console.log('Student not authenticated, redirecting...');
-            const currentUrl = window.location.pathname + window.location.search;
-            window.location.href = '/student/login?redirect=' + encodeURIComponent(currentUrl);
+            console.log('Student not authenticated');
             return false;
         }
     } catch (error) {
         console.error('Error checking student authentication:', error);
-        window.location.href = '/student/login';
         return false;
+    }
+}
+
+// Function to prompt for login when authentication is required
+function promptForLogin() {
+    const currentUrl = window.location.pathname + window.location.search;
+    if (confirm('Bạn cần đăng nhập để chơi quiz. Chuyển đến trang đăng nhập?')) {
+        window.location.href = '/student/login?redirect=' + encodeURIComponent(currentUrl);
     }
 }
 
@@ -131,7 +137,9 @@ async function initQuiz() {
     // Check student authentication first
     const isAuthenticated = await checkStudentAuthentication();
     if (!isAuthenticated) {
-        return; // Stop execution if not authenticated
+        // Show login prompt instead of stopping execution
+        promptForLogin();
+        return;
     }
     
     // Check if student info is already provided in a session or storage
