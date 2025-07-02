@@ -164,7 +164,8 @@ async function fetchLessonName(lessonId) {
         if (!response.ok) throw new Error('Failed to fetch lesson');
         
         const lessonData = await response.json();
-        document.getElementById('lesson-name').textContent = lessonData.title || 'Unknown';
+        // Access the lesson object within the response
+        document.getElementById('lesson-name').textContent = lessonData.lesson?.title || lessonData.title || 'Unknown';
     } catch (error) {
         console.error('Error fetching lesson name:', error);
         document.getElementById('lesson-name').textContent = 'Unknown';
@@ -184,11 +185,11 @@ async function fetchUserRanking(lessonId, userScore, totalPoints) {
         let apiSuccess = false;
         
         try {
-            const response = await fetch(`/api/lessons/${lessonId}/statistics`);
+            const response = await fetch(`/api/lessons/${lessonId}/rankings`);
             if (response.ok) {
                 apiData = await response.json();
                 apiSuccess = true;
-                console.log('API statistics data received:', apiData);
+                console.log('API rankings data received:', apiData);
             } else {
                 console.error(`API call failed with status: ${response.status} ${response.statusText}`);
             }

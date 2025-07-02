@@ -328,6 +328,29 @@ class LessonController {
       lesson: newLesson
     });
   });
+
+  // Get student rankings for a lesson (student-accessible)
+  getStudentRankings = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    
+    // Get lesson results with anonymized student data
+    const results = await databaseService.getLessonResults(id);
+    
+    // Transform results to include only necessary data for rankings
+    // Remove sensitive information but keep score data
+    const transcripts = results.map(result => ({
+      student_id: result.student_id || result.studentId,
+      score: result.score !== undefined && result.totalPoints !== undefined
+        ? `${Math.round((result.score / result.totalPoints) * 100)}%`
+        : '0%',
+      timestamp: result.timestamp || result.created_at
+    }));
+    
+    res.json({
+      success: true,
+      transcripts
+    });
+  });
 }
 
 module.exports = new LessonController();

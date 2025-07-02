@@ -70,3 +70,9 @@
 [2025-07-02T12:58:36.461Z] [WARN] 404 Not Found | {"url":"/.well-known/appspecific/com.chrome.devtools.json","method":"GET","ip":"::1"}
 [2025-07-02T12:58:55.243Z] [WARN] 404 Not Found | {"url":"/.well-known/appspecific/com.chrome.devtools.json","method":"GET","ip":"::1"}
 [2025-07-02T12:59:23.773Z] [WARN] 404 Not Found | {"url":"/.well-known/appspecific/com.chrome.devtools.json","method":"GET","ip":"::1"}
+[2025-07-02T16:58:10.893Z] [WARN] 404 Not Found | {"url":"/favicon.ico","method":"GET","ip":"::1"}
+[2025-07-02T16:58:47.356Z] [WARN] 404 Not Found | {"url":"/.well-known/appspecific/com.chrome.devtools.json","method":"GET","ip":"::1"}
+[2025-07-02T16:59:39.728Z] [WARN] 404 Not Found | {"url":"/.well-known/appspecific/com.chrome.devtools.json","method":"GET","ip":"::1"}
+[2025-07-02T17:33:43.422Z] [WARN] 404 Not Found | {"url":"/.well-known/appspecific/com.chrome.devtools.json","method":"GET","ip":"::1"}
+[2025-07-02T17:37:37.165Z] [WARN] 404 Not Found | {"url":"/.well-known/appspecific/com.chrome.devtools.json","method":"GET","ip":"::1"}
+[2025-07-02T17:38:40.757Z] [WARN] 404 Not Found | {"url":"/.well-known/appspecific/com.chrome.devtools.json","method":"GET","ip":"::1"}

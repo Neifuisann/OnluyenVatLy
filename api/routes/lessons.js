@@ -126,4 +126,12 @@ router.get('/:id/results',
   lessonController.getLessonResults
 );
 
+// Student-accessible ranking data
+router.get('/:id/rankings',
+  optionalAuth,
+  validateIdParam('id'),
+  shortCacheMiddleware(300), // 5 minutes cache
+  lessonController.getStudentRankings
+);
+
 module.exports = router;
