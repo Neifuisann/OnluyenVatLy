@@ -476,7 +476,7 @@
             loginButton.innerHTML = '<i class="loading-spinner"></i> Đang đăng nhập...';
             
             try {
-                const response = await fetch('/api/login', {
+                const response = await fetch('/api/auth/admin/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'same-origin',

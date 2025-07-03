@@ -3,31 +3,69 @@ const databaseService = require('./databaseService');
 class SessionService {
   constructor() {
     this.sessionStore = null; // Initialize as null
+    this.studentCache = new Map(); // Cache for student data to reduce DB queries
+    this.cacheTimeout = 5 * 60 * 1000; // 5 minutes cache timeout
   }
 
   // Initialize session service with session store
   initialize(sessionStore) {
     this.sessionStore = sessionStore;
+    
+    // Set up cache cleanup interval
+    setInterval(() => {
+      this.cleanupCache();
+    }, this.cacheTimeout);
+  }
+
+  // Cache management methods
+  getCachedStudent(studentId) {
+    const cached = this.studentCache.get(studentId);
+    if (cached && Date.now() - cached.timestamp < this.cacheTimeout) {
+      return cached.data;
+    }
+    return null;
+  }
+
+  setCachedStudent(studentId, studentData) {
+    this.studentCache.set(studentId, {
+      data: studentData,
+      timestamp: Date.now()
+    });
+  }
+
+  clearStudentCache(studentId) {
+    this.studentCache.delete(studentId);
+  }
+
+  cleanupCache() {
+    const now = Date.now();
+    for (const [studentId, cached] of this.studentCache.entries()) {
+      if (now - cached.timestamp > this.cacheTimeout) {
+        this.studentCache.delete(studentId);
+      }
+    }
   }
 
   // Terminate existing sessions for a student (single session enforcement)
   async terminateExistingSessions(studentId, currentSessionId) {
     try {
-      // Get student's current session ID from database
-      const student = await databaseService.getStudentByPhone(null); // We need to modify this to get by ID
-      // For now, let's get the student data directly
-      const { data: studentData, error } = await require('../config/database').supabase
-        .from('students')
-        .select('current_session_id')
-        .eq('id', studentId)
-        .maybeSingle();
-
-      if (error) {
-        console.error('Error fetching student session:', error);
-        return;
+      // Try to get student data from cache first
+      let studentData = this.getCachedStudent(studentId);
+      
+      if (!studentData) {
+        // Get student's current session ID from database using databaseService
+        studentData = await databaseService.getStudentById(studentId);
+        
+        if (!studentData) {
+          console.error('Student not found:', studentId);
+          return;
+        }
+        
+        // Cache the student data for future use
+        this.setCachedStudent(studentId, studentData);
       }
 
-      if (studentData && studentData.current_session_id && studentData.current_session_id !== currentSessionId) {
+      if (studentData.current_session_id && studentData.current_session_id !== currentSessionId) {
         // Destroy the previous session (new login gets priority)
         console.log(`🔄 Single session enforcement: Terminating previous session ${studentData.current_session_id} for student ${studentId} (new session: ${currentSessionId})`);
         
@@ -38,7 +76,7 @@ class SessionService {
             console.log(`✅ Previous session ${studentData.current_session_id} successfully terminated for student ${studentId}`);
           }
         });
-      } else if (studentData && !studentData.current_session_id) {
+      } else if (!studentData.current_session_id) {
         console.log(`📱 First session for student ${studentId}: ${currentSessionId}`);
       } else {
         console.log(`🔄 Session refresh for student ${studentId}: ${currentSessionId}`);
@@ -57,8 +95,11 @@ class SessionService {
 
     // Update device information if provided
     if (deviceIdentifier) {
-      // Check if this is a device_id (new system) or device_fingerprint (legacy)
-      if (deviceIdentifier.length > 20) { // Assume device_id is longer
+      // More reliable device ID detection - check for UUID format or specific patterns
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(deviceIdentifier);
+      const isLongId = deviceIdentifier.length > 20;
+      
+      if (isUUID || isLongId) {
         updateData.approved_device_id = deviceIdentifier;
         updateData.device_registered_at = new Date().toISOString();
       } else {
@@ -68,6 +109,10 @@ class SessionService {
     }
 
     await databaseService.updateStudent(studentId, updateData);
+    
+    // Clear cache since student data has been updated
+    this.clearStudentCache(studentId);
+    
     return true;
   }
 
@@ -76,6 +121,10 @@ class SessionService {
     await databaseService.updateStudent(studentId, {
       current_session_id: null
     });
+    
+    // Clear cache since student data has been updated
+    this.clearStudentCache(studentId);
+    
     return true;
   }
 

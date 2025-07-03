@@ -243,9 +243,9 @@ class DatabaseService {
       // Map approved_device_id to device_identifier for frontend compatibility
       device_identifier: student.approved_device_id,
       // Add device_status based on whether device is linked
-      device_status: student.approved_device_id ? 'Thiết bị đã liên kết' : 'Chưa đăng ký thiết bị',
+      device_status: student.approved_device_id ? 'Liên kết' : 'Chưa liên kết',
       // Add session_status based on whether there's an active session
-      session_status: student.current_session_id ? 'Đang hoạt động' : 'Không có phiên'
+      session_status: student.current_session_id ? 'Hoạt động' : 'Không có phiên'
     }));
     
     return mappedStudents;
@@ -437,8 +437,8 @@ class DatabaseService {
     // Map database columns to expected frontend properties for consistency
     if (student) {
       student.device_identifier = student.approved_device_id;
-      student.device_status = student.approved_device_id ? 'Thiết bị đã liên kết' : 'Chưa đăng ký thiết bị';
-      student.session_status = student.current_session_id ? 'Đang hoạt động' : 'Không có phiên';
+      student.device_status = student.approved_device_id ? 'Liên kết' : 'Chưa liên kết';
+      student.session_status = student.current_session_id ? 'Hoạt động' : 'Không có phiên';
     }
     
     return student;

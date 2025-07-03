@@ -5,7 +5,9 @@ let sortedQuestions = [];
 // --- Student Authentication Functions (optional) ---
 async function checkStudentAuthentication() {
     try {
-        const response = await fetch('/api/auth/student/check');
+        const response = await fetch('/api/auth/student/check', {
+            credentials: 'include'
+        });
         if (!response.ok) {
             console.log('Auth check failed, user not authenticated');
             return false;
@@ -32,7 +34,10 @@ async function checkStudentAuthentication() {
 
 async function handleLogout() {
     try {
-        const response = await fetch('/api/student/logout', { method: 'POST' });
+        const response = await fetch('/api/student/logout', { 
+            method: 'POST',
+            credentials: 'include'
+        });
         const result = await response.json();
         if (result.success) {
             console.log('Logout successful');
@@ -80,7 +85,9 @@ async function displayResults() {
     try {
         if (resultId) {
             // Fetch result from server
-            const response = await fetch(`/api/results/${resultId}`);
+            const response = await fetch(`/api/results/${resultId}`, {
+                credentials: 'include' // Include cookies for authentication
+            });
             if (!response.ok) throw new Error('Result not found');
             const responseData = await response.json();
             // Extract the actual result data from the API response
@@ -175,7 +182,9 @@ function updateStatisticsCards(result) {
 // Function to fetch lesson name
 async function fetchLessonName(lessonId) {
     try {
-        const response = await fetch(`/api/lessons/${lessonId}`);
+        const response = await fetch(`/api/lessons/${lessonId}`, {
+            credentials: 'include'
+        });
         if (!response.ok) throw new Error('Failed to fetch lesson');
         
         const lessonData = await response.json();
@@ -200,7 +209,9 @@ async function fetchUserRanking(lessonId, userScore, totalPoints) {
         let apiSuccess = false;
         
         try {
-            const response = await fetch(`/api/lessons/${lessonId}/rankings`);
+            const response = await fetch(`/api/lessons/${lessonId}/rankings`, {
+                credentials: 'include'
+            });
             if (response.ok) {
                 apiData = await response.json();
                 apiSuccess = true;

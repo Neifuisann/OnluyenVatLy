@@ -25,6 +25,14 @@ class AuthController {
     const { phone_number, password } = req.body;
     const deviceIdentifier = req.headers['x-device-id'] || req.body.deviceId;
 
+    // Debug logging
+    console.log('[Auth Debug] Student login attempt:', {
+      endpoint: '/api/auth/student/login',
+      phone: phone_number?.substring(0, 3) + '***',
+      hasDeviceId: !!deviceIdentifier,
+      sessionId: req.sessionID
+    });
+
     const result = await authService.authenticateStudent(phone_number, password, deviceIdentifier);
     
     // Handle session management
@@ -35,6 +43,12 @@ class AuthController {
     
     // Update student session in database
     await sessionService.updateStudentSession(result.student.id, req.sessionID, deviceIdentifier);
+    
+    console.log('[Auth Debug] Student login successful:', {
+      studentId: result.student.id,
+      studentName: result.student.name,
+      sessionId: req.sessionID
+    });
     
     res.json({
       success: true,
@@ -87,23 +101,32 @@ class AuthController {
     
     if (sessionData.isAuthenticated) {
       res.json({
-        authenticated: true,
-        user: {
-          type: 'admin'
+        success: true,
+        data: {
+          authenticated: true,
+          user: {
+            type: 'admin'
+          }
         }
       });
     } else if (sessionData.studentId) {
       res.json({
-        authenticated: true,
-        user: {
-          type: 'student',
-          id: sessionData.studentId,
-          name: sessionData.studentName
+        success: true,
+        data: {
+          authenticated: true,
+          user: {
+            type: 'student',
+            id: sessionData.studentId,
+            name: sessionData.studentName
+          }
         }
       });
     } else {
       res.json({
-        authenticated: false
+        success: true,
+        data: {
+          authenticated: false
+        }
       });
     }
   });
@@ -181,13 +204,16 @@ class AuthController {
     const sessionData = sessionService.getSessionData(req);
     
     res.json({
-      sessionId: sessionData.sessionId,
-      authenticated: sessionData.isAuthenticated || !!sessionData.studentId,
-      user: sessionData.isAuthenticated ? 
-        { type: 'admin' } : 
-        sessionData.studentId ? 
-          { type: 'student', id: sessionData.studentId, name: sessionData.studentName } : 
-          null
+      success: true,
+      data: {
+        sessionId: sessionData.sessionId,
+        authenticated: sessionData.isAuthenticated || !!sessionData.studentId,
+        user: sessionData.isAuthenticated ? 
+          { type: 'admin' } : 
+          sessionData.studentId ? 
+            { type: 'student', id: sessionData.studentId, name: sessionData.studentName } : 
+            null
+      }
     });
   });
 
@@ -196,8 +222,11 @@ class AuthController {
     const isAdmin = sessionService.isAdminAuthenticated(req);
     
     res.json({
-      isAdmin,
-      authenticated: isAdmin
+      success: true,
+      data: {
+        isAdmin,
+        authenticated: isAdmin
+      }
     });
   });
 
@@ -206,14 +235,29 @@ class AuthController {
     const sessionData = sessionService.getSessionData(req);
     const isStudent = !!sessionData.studentId;
 
-    res.json({
+    // Debug logging
+    console.log('[Auth Debug] Student check:', {
+      endpoint: '/api/auth/student/check',
+      sessionId: req.sessionID,
+      studentId: sessionData.studentId,
+      studentName: sessionData.studentName,
       isStudent,
-      authenticated: isStudent,
-      isAuthenticated: isStudent, // Add this for client compatibility
-      student: isStudent ? {
-        id: sessionData.studentId,
-        name: sessionData.studentName
-      } : null
+      headers: {
+        'x-device-id': req.headers['x-device-id']
+      }
+    });
+
+    res.json({
+      success: true,
+      data: {
+        isStudent,
+        authenticated: isStudent,
+        isAuthenticated: isStudent, // Add this for client compatibility
+        student: isStudent ? {
+          id: sessionData.studentId,
+          name: sessionData.studentName
+        } : null
+      }
     });
   });
 }

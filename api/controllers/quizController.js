@@ -5,7 +5,10 @@ class QuizController {
     // Get quiz data
     getQuiz = asyncHandler(async (req, res) => {
         const quizData = await databaseService.getQuizData();
-        res.json(quizData);
+        res.json({
+            success: true,
+            data: quizData
+        });
     });
     
     // Submit quiz results
@@ -14,7 +17,11 @@ class QuizController {
         const studentId = req.session.studentId;
         
         if (!studentId) {
-            return res.status(401).json({ error: 'Unauthorized: No student session found.' });
+            return res.status(401).json({ 
+                success: false,
+                error: 'UNAUTHORIZED',
+                message: 'No student session found' 
+            });
         }
         
         const newResult = {
@@ -31,8 +38,11 @@ class QuizController {
         const savedResult = await databaseService.saveQuizResult(newResult);
         
         res.json({ 
-            success: true, 
-            resultId: savedResult.id 
+            success: true,
+            message: 'Quiz submitted successfully',
+            data: { 
+                resultId: savedResult.id 
+            }
         });
     });
     
@@ -40,7 +50,10 @@ class QuizController {
     saveQuiz = asyncHandler(async (req, res) => {
         const quizData = req.body;
         await databaseService.saveQuizData(quizData);
-        res.json({ success: true });
+        res.json({ 
+            success: true,
+            message: 'Quiz configuration saved successfully' 
+        });
     });
 }
 

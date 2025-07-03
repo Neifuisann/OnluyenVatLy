@@ -1,6 +1,6 @@
 const databaseService = require('../services/databaseService');
 const sessionService = require('../services/sessionService');
-const { asyncHandler, NotFoundError, AuthorizationError } = require('../middleware/errorHandler');
+const { asyncHandler, NotFoundError, AuthorizationError, ValidationError, AuthenticationError } = require('../middleware/errorHandler');
 const { SUCCESS_MESSAGES } = require('../config/constants');
 
 class StudentController {
@@ -75,12 +75,9 @@ class StudentController {
   // Get student profile
   getStudentProfile = asyncHandler(async (req, res) => {
     const { studentId } = req.params;
-    const sessionData = sessionService.getSessionData(req);
     
-    // Check if admin or student accessing their own profile
-    if (!sessionData.isAuthenticated && sessionData.studentId !== studentId) {
-      throw new AuthorizationError('Can only access own profile');
-    }
+    // Authorization already handled by requireAdminOrOwner middleware
+    // No need for additional checks here
     
     const profile = await databaseService.getStudentProfile(studentId);
     
@@ -93,13 +90,10 @@ class StudentController {
   // Update student profile
   updateStudentProfile = asyncHandler(async (req, res) => {
     const { studentId } = req.params;
-    const sessionData = sessionService.getSessionData(req);
     const updateData = req.body;
     
-    // Check if admin or student updating their own profile
-    if (!sessionData.isAuthenticated && sessionData.studentId !== studentId) {
-      throw new AuthorizationError('Can only update own profile');
-    }
+    // Authorization already handled by requireAdminOrOwner middleware
+    // No need for additional checks here
     
     // Remove sensitive fields that shouldn't be updated via this endpoint
     delete updateData.password_hash;
@@ -171,12 +165,9 @@ class StudentController {
   updateDeviceInfo = asyncHandler(async (req, res) => {
     const { studentId } = req.params;
     const { deviceId, deviceFingerprint } = req.body;
-    const sessionData = sessionService.getSessionData(req);
     
-    // Check if admin or student updating their own device
-    if (!sessionData.isAuthenticated && sessionData.studentId !== studentId) {
-      throw new AuthorizationError('Can only update own device information');
-    }
+    // Authorization already handled by requireAdminOrOwner middleware
+    // No need for additional checks here
     
     const updateData = {};
     if (deviceId) {
@@ -198,12 +189,9 @@ class StudentController {
   // Get student statistics
   getStudentStatistics = asyncHandler(async (req, res) => {
     const { studentId } = req.params;
-    const sessionData = sessionService.getSessionData(req);
     
-    // Check if admin or student accessing their own stats
-    if (!sessionData.isAuthenticated && sessionData.studentId !== studentId) {
-      throw new AuthorizationError('Can only access own statistics');
-    }
+    // Authorization already handled by requireAdminOrOwner middleware
+    // No need for additional checks here
     
     // This would need to be implemented to gather student statistics
     // For now, return basic info
@@ -226,12 +214,9 @@ class StudentController {
   getStudentActivity = asyncHandler(async (req, res) => {
     const { studentId } = req.params;
     const { limit = 50 } = req.query;
-    const sessionData = sessionService.getSessionData(req);
     
-    // Check if admin or student accessing their own activity
-    if (!sessionData.isAuthenticated && sessionData.studentId !== studentId) {
-      throw new AuthorizationError('Can only access own activity');
-    }
+    // Authorization already handled by requireAdminOrOwner middleware
+    // No need for additional checks here
     
     // This would need to be implemented to get activity history
     // For now, return empty array

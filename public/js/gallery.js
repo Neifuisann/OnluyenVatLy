@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 // --- Check student authentication (optional) ---
 async function checkStudentAuthentication() {
     try {
-        const response = await fetch('/api/check-student-auth');
+        const response = await fetch('/api/auth/student/check');
         if (!response.ok) {
             // If API fails, assume not logged in
             console.log('Auth check failed, user not authenticated');
@@ -238,9 +238,15 @@ async function checkStudentAuthentication() {
         }
         const authData = await response.json();
 
-        if (authData.isAuthenticated && authData.student) {
-            console.log('Student authenticated:', authData.student.name);
-            return true; // Authenticated
+        if (authData.success && authData.data) {
+            if (authData.data.isAuthenticated && authData.data.student) {
+                console.log('Student authenticated:', authData.data.student.name);
+                return true; // Authenticated
+            } else {
+                // Not authenticated - this is OK for public pages
+                console.log('Student not authenticated');
+                return false; // Not authenticated
+            }
         } else {
             // Not authenticated - this is OK for public pages
             console.log('Student not authenticated');

@@ -15,6 +15,8 @@
     
     <!-- Styles -->
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin-students.css">
+    <link rel="stylesheet" href="/css/history.css">
     
     <!-- SheetJS for Excel export -->
     <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
@@ -33,104 +35,117 @@
         <img src="https://styles.redditmedia.com/t5_851o4i/styles/profileIcon_0elfudeu2s5b1.jpg?width=256&height=256&frame=1&auto=webp&crop=256:256,smart&s=86be605407a08efe2894a6bacd089074aca51879" alt="Home">
     </a>
     
-    <div class="history-container">
-        <div class="history-header">
-            <h1>
-                <i class="fas fa-history"></i> 
-                Lịch sử hoạt động
-            </h1>
-            <div class="export-controls">
-                <button onclick="exportToExcel()" class="export-btn">
-                    <i class="fas fa-file-export"></i> 
-                    <span>Xuất Excel</span>
+    <div class="admin-container">
+        <div class="page-header">
+            <h1 class="page-title">Lịch sử hoạt động</h1>
+            
+            <div class="admin-controls">
+                <a href="/admin" class="button secondary">
+                    <i class="fas fa-arrow-left"></i>
+                    Quay lại danh sách bài học
+                </a>
+                <a href="/admin/students" class="button secondary">
+                    <i class="fas fa-users"></i>
+                    Quản lý học sinh
+                </a>
+                <button onclick="exportToExcel()" class="button primary">
+                    <i class="fas fa-file-export"></i>
+                    Xuất Excel
                 </button>
             </div>
         </div>
 
-        <div class="history-stats-grid">
-            <div class="stat-card primary mobile-full">
-                <div class="stat-icon">
-                    <i class="fas fa-users"></i>
+        <div class="history-management-container">
+            <div class="history-stats-section section-card">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-chart-bar"></i>
+                        Thống kê hoạt động
+                    </h2>
                 </div>
-                <div class="stat-value" id="total-students-history">0</div>
-                <div class="stat-label">Tổng số học sinh</div>
-            </div>
-            <div class="stat-card success mobile-full">
-                <div class="stat-icon">
-                    <i class="fas fa-file-alt"></i>
-                </div>
-                <div class="stat-value" id="total-submissions">0</div>
-                <div class="stat-label">Tổng số bài nộp</div>
-            </div>
-            <div class="stat-card info">
-                <div class="stat-icon">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                <div class="stat-value" id="avg-score-history">0</div>
-                <div class="stat-label">Tỉ lệ đúng trung bình</div>
-            </div>
-            <div class="stat-card warning">
-                <div class="stat-icon">
-                    <i class="fas fa-calendar-alt"></i>
-                </div>
-                <div class="stat-value" id="submissions-today">0</div>
-                <div class="stat-label">Bài nộp hôm nay</div>
-            </div>
-        </div>
-
-        <div class="history-content">
-            <div class="history-card">
-                <div class="card-header">
-                    <h3>
-                        <i class="fas fa-list"></i> 
-                        <span>Danh sách bài nộp</span>
-                    </h3>
-                    <div class="header-controls">
-                        <div class="search-box">
-                            <i class="fas fa-search search-icon"></i>
-                            <input type="text" id="history-filter-input" placeholder="Tìm tên học sinh hoặc tên bài" class="modern-input" />
-                            <button id="history-clear-filter-btn" class="clear-btn">
-                                <i class="fas fa-times"></i>
-                            </button>
+                <div class="stats-grid">
+                    <div class="stat-card primary">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
                         </div>
-                        <button onclick="deleteAllHistory()" class="delete-all-btn">
-                            <i class="fas fa-trash"></i> 
-                            <span>Xóa tất cả</span>
-                        </button>
+                        <div class="stat-content">
+                            <div class="stat-value" id="total-students-history">0</div>
+                            <div class="stat-label">Tổng số học sinh</div>
+                        </div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="total-submissions">0</div>
+                            <div class="stat-label">Tổng số bài nộp</div>
+                        </div>
+                    </div>
+                    <div class="stat-card info">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="avg-score-history">0%</div>
+                            <div class="stat-label">Tỉ lệ đúng trung bình</div>
+                        </div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="submissions-today">0</div>
+                            <div class="stat-label">Bài nộp hôm nay</div>
+                        </div>
                     </div>
                 </div>
-                <div class="table-responsive">
-                    <table class="statistics-table mobile-friendly" id="history-log">
-                        <thead>
-                            <tr>
-                                <th class="mobile-hide">
-                                    <i class="fas fa-hashtag"></i> STT
-                                </th>
-                                <th class="sortable" data-sort="name">
-                                    <i class="fas fa-user"></i> Tên 
-                                    <i class="fas fa-sort"></i>
-                                </th>
-                                <th class="sortable" data-sort="lesson">
-                                    <i class="fas fa-book"></i> Bài 
-                                    <i class="fas fa-sort"></i>
-                                </th>
-                                <th class="mobile-optional sortable" data-sort="time">
-                                    <i class="fas fa-clock"></i> Thời gian 
-                                    <i class="fas fa-sort"></i>
-                                </th>
-                                <th class="sortable" data-sort="score">
-                                    <i class="fas fa-star"></i> Điểm 
-                                    <i class="fas fa-sort"></i>
-                                </th>
-                                <th>
-                                    <i class="fas fa-eye"></i> Chi tiết
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Activity log data will be populated by JavaScript -->
-                        </tbody>
-                    </table>
+            </div>
+            
+            <div class="history-results-section section-card">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-history"></i>
+                        Danh sách bài nộp
+                        <span class="section-badge" id="history-count">0</span>
+                    </h2>
+                </div>
+                <div class="search-filter-container">
+                    <div class="search-box">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="history-filter-input" placeholder="Tìm kiếm tên học sinh hoặc tên bài..." class="modern-input" />
+                        <button id="history-clear-filter-btn" class="clear-btn">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <button onclick="deleteAllHistory()" class="button danger">
+                        <i class="fas fa-trash"></i>
+                        Xóa tất cả
+                    </button>
+                </div>
+                <div class="table-container">
+                    <div class="table-responsive">
+                        <table class="statistics-table" id="history-log">
+                            <thead>
+                                <tr>
+                                    <th># STT</th>
+                                    <th>Tên</th>
+                                    <th>Bài</th>
+                                    <th>Thời gian</th>
+                                    <th>Điểm</th>
+                                    <th>Chi tiết</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Activity log data will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                        <p class="empty-state" id="empty-history-state" style="display: none;">
+                            <i class="fas fa-history" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;"></i>
+                            Chưa có lịch sử hoạt động nào.
+                        </p>
+                    </div>
                 </div>
                 
                 <!-- Pagination controls -->

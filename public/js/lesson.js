@@ -5,16 +5,21 @@ let currentLessonData = null; // Variable to store loaded lesson data
 // --- Student Authentication Functions ---
 async function checkStudentAuthentication() {
     try {
-        const response = await fetch('/api/check-student-auth');
+        const response = await fetch('/api/auth/student/check');
         if (!response.ok) {
             console.log('Auth check failed, user not authenticated');
             return false;
         }
         const authData = await response.json();
 
-        if (authData.isAuthenticated && authData.student) {
-            console.log('Student authenticated:', authData.student.name);
-            return true;
+        if (authData.success && authData.data) {
+            if (authData.data.isAuthenticated && authData.data.student) {
+                console.log('Student authenticated:', authData.data.student.name);
+                return true;
+            } else {
+                console.log('Student not authenticated');
+                return false;
+            }
         } else {
             console.log('Student not authenticated');
             return false;
@@ -628,14 +633,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     let studentInfo = { name: 'Anonymous Student' }; // Default fallback
 
                     try {
-                        const authResponse = await fetch('/api/check-student-auth');
+                        const authResponse = await fetch('/api/auth/student/check');
                         if (authResponse.ok) {
                             const authData = await authResponse.json();
-                            if (authData.isAuthenticated && authData.student) {
-                                studentInfo = {
-                                    name: authData.student.name,
-                                    id: authData.student.id
-                                };
+                            if (authData.success && authData.data) {
+                                if (authData.data.isAuthenticated && authData.data.student) {
+                                    studentInfo = {
+                                        name: authData.data.student.name,
+                                        id: authData.data.student.id
+                                    };
+                                }
                             }
                         }
                     } catch (authError) {

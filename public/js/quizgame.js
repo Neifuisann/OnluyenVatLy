@@ -25,16 +25,21 @@ document.addEventListener('visibilitychange', () => {
 // --- Student Authentication Functions ---
 async function checkStudentAuthentication() {
     try {
-        const response = await fetch('/api/check-student-auth');
+        const response = await fetch('/api/auth/student/check');
         if (!response.ok) {
             console.log('Auth check failed, user not authenticated');
             return false;
         }
         const authData = await response.json();
 
-        if (authData.isAuthenticated && authData.student) {
-            console.log('Student authenticated:', authData.student.name);
-            return true;
+        if (authData.success && authData.data) {
+            if (authData.data.isAuthenticated && authData.data.student) {
+                console.log('Student authenticated:', authData.data.student.name);
+                return true;
+            } else {
+                console.log('Student not authenticated');
+                return false;
+            }
         } else {
             console.log('Student not authenticated');
             return false;

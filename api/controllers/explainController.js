@@ -7,7 +7,9 @@ class ExplainController {
         
         if (!question || !answer) {
             return res.status(400).json({ 
-                error: 'Question and answer are required' 
+                success: false,
+                error: 'VALIDATION_ERROR',
+                message: 'Question and answer are required' 
             });
         }
         
@@ -36,14 +38,19 @@ Trả lời bằng tiếng Việt, sử dụng ngôn ngữ phù hợp với họ
             const text = response.text();
             
             res.json({ 
-                success: true, 
-                explanation: text 
+                success: true,
+                message: 'Explanation generated successfully',
+                data: { 
+                    explanation: text 
+                }
             });
             
         } catch (error) {
             console.error('Error generating explanation:', error);
             res.status(500).json({ 
-                error: 'Không thể tạo giải thích. Vui lòng thử lại sau.' 
+                success: false,
+                error: 'INTERNAL_SERVER_ERROR',
+                message: 'Không thể tạo giải thích. Vui lòng thử lại sau.' 
             });
         }
     });

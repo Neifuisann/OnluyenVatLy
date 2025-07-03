@@ -4,6 +4,7 @@
     <title>Quản lý học sinh</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin-students.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .device-status, .session-status {
@@ -54,35 +55,59 @@
         <img src="https://styles.redditmedia.com/t5_851o4i/styles/profileIcon_0elfudeu2s5b1.jpg?width=256&height=256&frame=1&auto=webp&crop=256:256,smart&s=86be605407a08efe2894a6bacd089074aca51879" alt="Home">
     </a>
     <div class="admin-container">
-        <h1>Quản lý học sinh</h1>
-        
-        <div class="admin-controls">
-            <a href="/admin" class="button secondary">Quay lại danh sách bài học</a>
-            <a href="/history" class="button secondary">Lịch sử hoạt động</a>
+        <div class="page-header">
+            <h1 class="page-title">Quản lý học sinh</h1>
+            
+            <div class="admin-controls">
+                <a href="/admin" class="button secondary">
+                    <i class="fas fa-arrow-left"></i>
+                    Quay lại danh sách bài học
+                </a>
+                <a href="/history" class="button secondary">
+                    <i class="fas fa-history"></i>
+                    Lịch sử hoạt động
+                </a>
+            </div>
         </div>
 
         <div class="student-management-container">
-            <div class="pending-approvals-section">
-                <h2>Yêu cầu đăng ký học sinh mới</h2>
+            <div class="pending-approvals-section section-card">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-user-clock"></i>
+                        Yêu cầu đăng ký học sinh mới
+                        <span class="section-badge" id="pending-count">0</span>
+                    </h2>
+                </div>
                 <div id="pending-students-container">
                     <!-- Pending students will be displayed here -->
-                    <p class="empty-state" id="empty-pending-state" style="display: none;">Không có yêu cầu đăng ký mới nào.</p>
+                    <p class="empty-state" id="empty-pending-state" style="display: none;">
+                        <i class="fas fa-inbox" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;"></i>
+                        Không có yêu cầu đăng ký mới nào.
+                    </p>
                 </div>
             </div>
             
-            <div class="approved-students-section">
-                <h2>Học sinh đã duyệt</h2>
-                <div class="header-controls">
+            <div class="approved-students-section section-card">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-user-check"></i>
+                        Học sinh đã duyệt
+                        <span class="section-badge" id="approved-count">0</span>
+                    </h2>
+                </div>
+                <div class="search-filter-container">
                     <div class="search-box">
                         <i class="fas fa-search search-icon"></i>
-                        <input type="text" id="student-filter-input" placeholder="Tìm kiếm tên học sinh..." class="modern-input" />
+                        <input type="text" id="student-filter-input" placeholder="Tìm kiếm tên học sinh hoặc số điện thoại..." class="modern-input" />
                         <button id="clear-filter-btn" class="clear-btn">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
                 </div>
-                <div class="table-responsive">
-                    <table class="statistics-table" id="students-table">
+                <div class="table-container">
+                    <div class="table-responsive">
+                        <table class="statistics-table" id="students-table">
                         <thead>
                             <tr>
                                 <th>STT</th>
@@ -98,8 +123,12 @@
                         <tbody id="approved-students-list">
                             <!-- Approved students will be displayed here -->
                         </tbody>
-                    </table>
-                    <p class="empty-state" id="empty-approved-state" style="display: none;">Chưa có học sinh nào được duyệt.</p>
+                        </table>
+                        <p class="empty-state" id="empty-approved-state" style="display: none;">
+                            <i class="fas fa-users" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;"></i>
+                            Chưa có học sinh nào được duyệt.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -164,10 +193,16 @@
     function renderPendingStudents(students) {
         const container = document.getElementById('pending-students-container');
         const emptyState = document.getElementById('empty-pending-state');
+        const countBadge = document.getElementById('pending-count');
         
         if (!container || !emptyState) {
             console.error('Error: Missing required elements for pending students display.');
             return;
+        }
+        
+        // Update count badge
+        if (countBadge) {
+            countBadge.textContent = students ? students.length : 0;
         }
         
         if (!students || students.length === 0) {
@@ -216,10 +251,16 @@
     function renderApprovedStudents(students) {
         const tableBody = document.getElementById('approved-students-list');
         const emptyState = document.getElementById('empty-approved-state');
+        const countBadge = document.getElementById('approved-count');
         
         if (!tableBody || !emptyState) {
             console.error('Error: Missing required elements for approved students display.');
             return;
+        }
+        
+        // Update count badge
+        if (countBadge) {
+            countBadge.textContent = students ? students.length : 0;
         }
         
         if (!students || students.length === 0) {
@@ -242,7 +283,7 @@
             });
             
             // Determine device status and add unbind button if needed
-            let deviceStatus = student.device_status || 'Chưa đăng ký thiết bị';
+            let deviceStatus = student.device_status || 'Chưa liên kết';
             let sessionStatus = student.session_status || 'Không có phiên';
             let actionButton = '';
 

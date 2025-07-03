@@ -1,0 +1,6 @@
+
+> new_year_hoff@1.0.0 start
+> node api/index.js
+
+[dotenv@17.0.0] injecting env (9) from .env – 🔐 encrypt with dotenvx: https://dotenvx.com
+[2025-07-03T04:45:24.613Z] [ERROR] FATAL: Uncaught Exception | {"error":"listen EADDRINUSE: address already in use :::3003","stack":"Error: listen EADDRINUSE: address already in use :::3003\n    at Server.setupListenHandle [as _listen2] (node:net:1940:16)\n    at listenInCluster (node:net:1997:12)\n    at Server.listen (node:net:2102:7)\n    at app.listen (/home/neifui/Documents/OnluyenVatLy/node_modules/express/lib/application.js:635:24)\n    at Object.<anonymous> (/home/neifui/Documents/OnluyenVatLy/api/index.js:221:20)\n    at Module._compile (node:internal/modules/cjs/loader:1734:14)\n    at Object..js (node:internal/modules/cjs/loader:1899:10)\n    at Module.load (node:internal/modules/cjs/loader:1469:32)\n    at Module._load (node:internal/modules/cjs/loader:1286:12)\n    at TracingChannel.traceSync (node:diagnostics_channel:322:14)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:152:5)\n    at node:internal/main/run_main_module:33:47"}

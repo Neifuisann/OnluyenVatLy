@@ -71,7 +71,19 @@ const requireAdminOrOwner = (req, res, next) => {
   const isAdmin = sessionService.isAdminAuthenticated(req);
   const isStudent = sessionService.isStudentAuthenticated(req);
   
+  // Debug logging
+  console.log('[Auth Debug] requireAdminOrOwner check:', {
+    endpoint: req.path,
+    method: req.method,
+    isAdmin,
+    isStudent,
+    sessionId: req.sessionID,
+    studentIdInSession: req.session?.studentId,
+    requestedStudentId: req.params.studentId || req.body.studentId || req.query.studentId
+  });
+  
   if (!isAdmin && !isStudent) {
+    console.log('[Auth Debug] Access denied: No authentication');
     return res.status(401).json({ 
       error: ERROR_MESSAGES.UNAUTHORIZED,
       message: 'Authentication required' 
@@ -83,7 +95,14 @@ const requireAdminOrOwner = (req, res, next) => {
     const studentId = req.session.studentId;
     const requestedStudentId = req.params.studentId || req.body.studentId || req.query.studentId;
     
-    if (requestedStudentId && requestedStudentId !== studentId) {
+    // Convert both to strings for comparison to handle type mismatches
+    if (requestedStudentId && String(requestedStudentId) !== String(studentId)) {
+      console.log('[Auth Debug] Access denied: Student ID mismatch', {
+        sessionStudentId: studentId,
+        requestedStudentId: requestedStudentId,
+        typeOfSession: typeof studentId,
+        typeOfRequested: typeof requestedStudentId
+      });
       return res.status(403).json({ 
         error: ERROR_MESSAGES.FORBIDDEN,
         message: 'Access denied: can only access own data' 
@@ -91,6 +110,7 @@ const requireAdminOrOwner = (req, res, next) => {
     }
   }
 
+  console.log('[Auth Debug] Access granted');
   next();
 };
 

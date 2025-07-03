@@ -101,6 +101,12 @@ function updateStatisticsCards(historyData) {
     document.getElementById('total-submissions').textContent = totalSubmissions;
     document.getElementById('avg-score-history').textContent = (avgScore * 100).toFixed(2) + '%';
     document.getElementById('submissions-today').textContent = submissionsToday;
+    
+    // Update history count badge
+    const historyCountBadge = document.getElementById('history-count');
+    if (historyCountBadge) {
+        historyCountBadge.textContent = totalSubmissions;
+    }
 }
 
 function viewDetails(id) {
@@ -310,12 +316,12 @@ function showErrorMessage(message) {
         <i class="fas fa-exclamation-circle"></i>
         <span>${message}</span>
         <button class="retry-btn" onclick="loadHistory()">
-            <i class="fas fa-redo"></i> Retry
+            <i class="fas fa-redo"></i> Thử lại
         </button>
     `;
     
-    // Insert error message at the top of the history container
-    const container = document.querySelector('.history-container');
+    // Insert error message at the top of the admin container
+    const container = document.querySelector('.admin-container');
     container.insertBefore(errorDiv, container.firstChild);
     
     // Remove error message after 5 seconds
@@ -332,35 +338,48 @@ function showSuccessMessage(message) {
         <span>${message}</span>
     `;
     
-    const container = document.querySelector('.history-container');
+    const container = document.querySelector('.admin-container');
     container.insertBefore(successDiv, container.firstChild);
     
     setTimeout(() => {
         successDiv.remove();
-    }, 3003);
+    }, 3000);
 }
 
 function updateTable() {
     const table = document.getElementById('history-log');
     const tbody = table.querySelector('tbody');
+    const emptyState = document.getElementById('empty-history-state');
     
     if (window.historyData.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="6" class="no-results">
-                    <i class="fas fa-info-circle"></i>
-                    Không tìm thấy kết quả
-                </td>
-            </tr>
-        `;
+        tbody.innerHTML = '';
+        if (emptyState) {
+            emptyState.style.display = 'block';
+        }
         return;
     }
     
+    if (emptyState) {
+        emptyState.style.display = 'none';
+    }
+    
     tbody.innerHTML = window.historyData.map((log, index) => {
-        const submittedAt = new Date(log.submittedAt).toLocaleString();
-        const score = parseFloat(log.score).toFixed(2);
-        const scorePercentage = log.totalPoints ? ((log.score / log.totalPoints) * 100).toFixed(1) + '%' : 'N/A';
-        const scoreClass = (log.score / (log.totalPoints || 10)) >= 0.5 ? 'text-success' : 'text-danger';
+        const submittedAt = new Date(log.submittedAt).toLocaleDateString('vi-VN', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        const score = parseFloat(log.score);
+        const totalPoints = parseFloat(log.totalPoints || 10);
+        const scorePercentage = ((score / totalPoints) * 100).toFixed(1);
+        
+        // Determine score class based on percentage
+        let scoreClass = 'poor';
+        if (scorePercentage >= 90) scoreClass = 'excellent';
+        else if (scorePercentage >= 70) scoreClass = 'good';
+        else if (scorePercentage >= 50) scoreClass = 'average';
         
         // Use the result ID for viewing details
         const resultId = log.resultId; 
@@ -368,32 +387,27 @@ function updateTable() {
         return `<tr>
                     <td>${(currentPage - 1) * itemsPerPage + index + 1}</td>
                     <td>
-                        <div class="student-info">
-                            <i class="fas fa-user-circle"></i>
-                            <span>${log.studentName}</span>
-                        </div>
+                        <i class="fas fa-user-circle" style="margin-right: 0.5rem; color: var(--text-tertiary);"></i>
+                        ${log.studentName}
                     </td>
                     <td>
-                        <div class="lesson-info">
-                            <i class="fas fa-book"></i>
-                            <span>${log.lessonTitle}</span>
-                        </div>
+                        <i class="fas fa-book" style="margin-right: 0.5rem; color: var(--text-tertiary);"></i>
+                        ${log.lessonTitle}
                     </td>
                     <td>
-                        <div class="time-info">
-                            <i class="fas fa-clock"></i>
-                            <span>${submittedAt}</span>
-                        </div>
+                        <i class="fas fa-clock" style="margin-right: 0.5rem; color: var(--text-tertiary);"></i>
+                        ${submittedAt}
                     </td>
                     <td>
-                        <div class="score ${scoreClass}">
+                        <span class="score-display ${scoreClass}">
                             <i class="fas fa-star"></i>
-                            <span>${score} (${scorePercentage})</span>
-                        </div>
+                            ${score.toFixed(1)} (${scorePercentage}%)
+                        </span>
                     </td>
                     <td>
-                        <button class="view-btn" data-result-id="${resultId}"> 
+                        <button class="view-detail-btn" data-result-id="${resultId}" title="Xem chi tiết"> 
                             <i class="fas fa-eye"></i>
+                            Chi tiết
                         </button>
                     </td>
                 </tr>`;
@@ -404,7 +418,7 @@ function updateTable() {
 }
 
 function attachViewButtonListeners() {
-    const viewButtons = document.querySelectorAll('.view-btn');
+    const viewButtons = document.querySelectorAll('.view-detail-btn');
     viewButtons.forEach(button => {
         button.addEventListener('click', () => {
             // Retrieve the result ID from the data attribute
@@ -412,7 +426,7 @@ function attachViewButtonListeners() {
             
             if (!resultId) {
                 console.error('Result ID not found on button.');
-                alert('Could not determine the result to view.');
+                alert('Không thể xác định kết quả để xem.');
                 return;
             }
             

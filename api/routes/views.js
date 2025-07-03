@@ -107,7 +107,7 @@ router.get('/gallery',
   optionalAuth,
   addSessionInfo,
   longCacheMiddleware(1800), // 30 minutes cache
-  serveHTML('gallery.html') // Fixed: should serve gallery.html for theory section
+  serveHTML('gallery.html') // Public gallery access for theory section
 );
 
 router.get('/multiplechoice',
@@ -132,15 +132,8 @@ router.get('/leaderboard',
   serveHTML('leaderboard.html')
 );
 
-router.get('/gallery',
-  requireStudentAuthForHTML,
-  addSessionInfo,
-  longCacheMiddleware(1800), // 30 minutes cache
-  serveHTML('gallery.html')
-);
-
 router.get('/history',
-  requireStudentAuthForHTML,
+  requireAdminAuthForHTML,
   addSessionInfo,
   longCacheMiddleware(1800), // 30 minutes cache
   serveHTML('history.html')

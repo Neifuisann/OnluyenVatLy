@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
     <title>Bài thi - Ôn luyện Vật lí</title>
     
     <!-- Fonts -->
@@ -225,7 +225,7 @@
         .content-wrapper {
             max-width: 900px;
             margin: 0 auto;
-            padding: var(--space-xl);
+            padding: var(--space-lg) var(--space-xl);
         }
 
         /* Question Card */
@@ -233,8 +233,8 @@
             background: var(--bg-secondary);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: var(--space-xl);
-            margin-bottom: var(--space-lg);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-md);
             animation: fadeIn 0.3s ease;
         }
 
@@ -247,7 +247,7 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: var(--space-lg);
+            margin-bottom: var(--space-md);
         }
 
         .question-number {
@@ -289,14 +289,29 @@
 
         .question-text {
             font-size: 1.125rem;
-            line-height: 1.8;
+            line-height: 1.7;
             color: var(--text-primary);
-            margin-bottom: var(--space-lg);
+            margin-bottom: var(--space-md);
         }
 
         .question-image-container {
+            margin-bottom: var(--space-md);
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .lesson-image-container {
             margin-bottom: var(--space-lg);
             text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: var(--space-md);
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
         }
 
         .question-image {
@@ -305,9 +320,20 @@
             border-radius: 8px;
             cursor: zoom-in;
             transition: opacity 0.3s;
+            display: block;
         }
 
-        .question-image:hover {
+        .lesson-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            cursor: zoom-in;
+            transition: opacity 0.3s;
+            display: block;
+        }
+
+        .question-image:hover,
+        .lesson-image:hover {
             opacity: 0.9;
         }
 
@@ -465,8 +491,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: var(--space-xl);
-            padding-top: var(--space-xl);
+            margin-top: var(--space-lg);
+            padding-top: var(--space-lg);
             border-top: 1px solid var(--border-color);
         }
 
@@ -516,6 +542,144 @@
         .submit-button:disabled {
             opacity: 0.7;
             cursor: not-allowed;
+        }
+
+        /* Floating Submit Button */
+        .floating-submit-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: var(--space-sm) var(--space-lg);
+            background: var(--accent-primary);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            min-width: auto;
+        }
+
+        .floating-submit-button:hover {
+            background: var(--accent-secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        .floating-submit-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .floating-submit-button i {
+            font-size: 0.9rem;
+        }
+
+        /* Mobile Sidebar Toggle */
+        .mobile-sidebar-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            z-index: 1001;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .mobile-sidebar-toggle:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        .mobile-sidebar-toggle:active {
+            transform: scale(0.95);
+        }
+
+        /* Sidebar Overlay for Mobile */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Image Modal */
+        .image-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            cursor: zoom-out;
+        }
+
+        .image-modal.show {
+            display: flex;
+        }
+
+        .image-modal img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            border-radius: 8px;
+            cursor: zoom-out;
+        }
+
+        .image-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .image-modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
 
         /* Confirmation Modal */
@@ -623,20 +787,139 @@
         /* Mobile Responsive */
         @media (max-width: 768px) {
             .exam-sidebar {
-                display: none;
+                position: fixed;
+                left: -280px;
+                top: 0;
+                height: 100vh;
+                z-index: 1000;
+                transition: left 0.3s ease;
+            }
+
+            .exam-sidebar.show {
+                left: 0;
+            }
+
+            .mobile-sidebar-toggle {
+                display: flex !important;
+            }
+
+            .floating-submit-button {
+                top: 20px;
+                right: 15px;
+                padding: 12px 20px;
+                font-size: 0.9rem;
             }
 
             .content-wrapper {
                 padding: var(--space-md);
+                padding-top: 80px;
+            }
+
+            .question-card {
+                padding: var(--space-lg);
+                margin-bottom: var(--space-md);
+            }
+
+            .question-text {
+                font-size: 1.1rem;
+                line-height: 1.7;
+            }
+
+            .option-text {
+                font-size: 1rem;
+                line-height: 1.5;
+            }
+
+            .option-card {
+                padding: var(--space-md) var(--space-sm);
             }
 
             .truefalse-item {
                 grid-template-columns: 1fr;
                 gap: var(--space-sm);
+                padding: var(--space-md);
+            }
+
+            .truefalse-text {
+                font-size: 1rem;
+                line-height: 1.6;
             }
 
             .truefalse-buttons {
                 justify-content: flex-start;
+            }
+
+            .truefalse-btn {
+                padding: var(--space-sm) var(--space-md);
+                font-size: 0.95rem;
+            }
+
+            .modern-number-input {
+                font-size: 1.1rem;
+                padding: var(--space-md);
+            }
+
+            .lesson-image {
+                max-height: 250px;
+            }
+
+            .question-image {
+                max-height: 300px;
+            }
+
+            .question-number {
+                font-size: 1.2rem;
+            }
+
+            .btn-flag {
+                padding: var(--space-xs) var(--space-sm);
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .floating-submit-button {
+                padding: 10px 16px;
+                font-size: 0.85rem;
+                top: 15px;
+                right: 15px;
+            }
+
+            .mobile-sidebar-toggle {
+                width: 45px;
+                height: 45px;
+                top: 15px;
+                left: 15px;
+                font-size: 1.1rem;
+            }
+
+            .content-wrapper {
+                padding: var(--space-sm);
+                padding-top: 75px;
+            }
+
+            .question-card {
+                padding: var(--space-md);
+            }
+
+            .question-text {
+                font-size: 1.05rem;
+            }
+
+            .option-text {
+                font-size: 0.95rem;
+            }
+
+            .lesson-image-container {
+                padding: var(--space-sm);
+            }
+
+            .lesson-image {
+                max-height: 200px;
+            }
+
+            .question-image {
+                max-height: 250px;
             }
         }
     </style>
@@ -648,9 +931,20 @@
         <p>Đang tải bài thi...</p>
     </div>
 
+    <!-- Floating Submit Button -->
+    <button class="floating-submit-button" id="submit-quiz-btn">
+        <i class="fas fa-paper-plane"></i>
+        Nộp bài
+    </button>
+
+    <!-- Mobile Sidebar Toggle -->
+    <button class="mobile-sidebar-toggle" id="mobile-sidebar-toggle" style="display: none;">
+        <i class="fas fa-bars"></i>
+    </button>
+
     <div class="exam-container">
         <!-- Sidebar -->
-        <aside class="exam-sidebar">
+        <aside class="exam-sidebar" id="exam-sidebar">
             <div class="exam-header">
                 <h2 class="exam-title" id="lesson-title">Đang tải...</h2>
                 <div class="exam-timer">
@@ -685,10 +979,6 @@
         <!-- Main Content -->
         <main class="exam-content">
             <div class="content-wrapper">
-                <div id="lesson-image-container" class="lesson-image-container" style="display: none;">
-                    <img id="lesson-image" alt="Lesson Image" class="question-image">
-                </div>
-
                 <div id="questions-container">
                     <!-- Questions will be dynamically inserted here -->
                 </div>
@@ -699,11 +989,6 @@
                         Câu trước
                     </button>
                     
-                    <button class="submit-button" id="submit-quiz-btn">
-                        <i class="fas fa-paper-plane"></i>
-                        Nộp bài
-                    </button>
-                    
                     <button class="nav-button" id="next-button" onclick="navigateQuestion(1)">
                         Câu sau
                         <i class="fas fa-chevron-right"></i>
@@ -711,6 +996,17 @@
                 </div>
             </div>
         </main>
+    </div>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- Image Modal -->
+    <div class="image-modal" id="image-modal">
+        <button class="image-modal-close" onclick="closeImageModal()">
+            <i class="fas fa-times"></i>
+        </button>
+        <img id="modal-image" src="" alt="Full size image">
     </div>
 
     <!-- Confirmation Modal -->
@@ -774,20 +1070,23 @@
         // Authentication functions
         async function checkStudentAuthentication() {
             try {
-                const response = await fetch('/api/check-student-auth');
+                const response = await fetch('/api/auth/student/check');
                 if (!response.ok) {
                     console.log('Auth check failed, user not authenticated');
                     return false;
                 }
                 const authData = await response.json();
 
-                if (authData.isAuthenticated && authData.student) {
-                    console.log('Student authenticated:', authData.student.name);
-                    return true;
-                } else {
-                    console.log('Student not authenticated');
-                    return false;
+                // Handle nested response structure
+                if (authData.success && authData.data) {
+                    if (authData.data.isAuthenticated && authData.data.student) {
+                        console.log('Student authenticated:', authData.data.student.name);
+                        return true;
+                    }
                 }
+                
+                console.log('Student not authenticated');
+                return false;
             } catch (error) {
                 console.error('Error checking student authentication:', error);
                 return false;
@@ -954,13 +1253,23 @@
                             </button>
                         </div>
                     </div>
-                    <div class="question-text">${questionText}</div>
                 `;
+
+                // Add lesson image to first question only
+                if (displayIndex === 0 && lesson.lessonImage) {
+                    questionHtml += `
+                        <div class="lesson-image-container">
+                            <img src="${lesson.lessonImage}" alt="Lesson Image" class="lesson-image" onclick="openImageModal('${lesson.lessonImage}')">
+                        </div>
+                    `;
+                }
+
+                questionHtml += `<div class="question-text">${questionText}</div>`;
 
                 if (imageUrl) {
                     questionHtml += `
                         <div class="question-image-container">
-                            <img src="${imageUrl}" alt="Question Image" class="question-image">
+                            <img src="${imageUrl}" alt="Question Image" class="question-image" onclick="openImageModal('${imageUrl}')">
                         </div>
                     `;
                 }
@@ -1271,7 +1580,7 @@
                 // Submit results
                 let studentInfo = { name: 'Anonymous Student' };
                 try {
-                    const authResponse = await fetch('/api/check-student-auth');
+                    const authResponse = await fetch('/api/auth/student/check');
                     if (authResponse.ok) {
                         const authData = await authResponse.json();
                         if (authData.isAuthenticated && authData.student) {
@@ -1355,14 +1664,6 @@
                     titleElement.textContent = lesson.title;
                 }
                 
-                // Display lesson image if present
-                if (lesson.lessonImage) {
-                    const imageContainer = document.getElementById('lesson-image-container');
-                    const imageElement = document.getElementById('lesson-image');
-                    imageElement.src = lesson.lessonImage;
-                    imageContainer.style.display = 'block';
-                }
-                
                 await renderQuestions(lesson);
                 showLoader(false);
                 
@@ -1403,6 +1704,70 @@
             }
 
             initializeLesson();
+        });
+
+        // Mobile sidebar toggle functions
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('exam-sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            const isVisible = sidebar.classList.contains('show');
+            
+            if (isVisible) {
+                sidebar.classList.remove('show');
+                overlay.classList.remove('show');
+                document.body.style.overflow = '';
+            } else {
+                sidebar.classList.add('show');
+                overlay.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        // Image modal functions
+        function openImageModal(imageSrc) {
+            const modal = document.getElementById('image-modal');
+            const modalImage = document.getElementById('modal-image');
+            modalImage.src = imageSrc;
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeImageModal() {
+            const modal = document.getElementById('image-modal');
+            modal.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        // Event listeners for mobile functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mobile sidebar toggle
+            const mobileToggle = document.getElementById('mobile-sidebar-toggle');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+            
+            if (mobileToggle) {
+                mobileToggle.addEventListener('click', toggleMobileSidebar);
+            }
+            
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', toggleMobileSidebar);
+            }
+
+            // Image modal close on click
+            const imageModal = document.getElementById('image-modal');
+            if (imageModal) {
+                imageModal.addEventListener('click', (e) => {
+                    if (e.target === imageModal) {
+                        closeImageModal();
+                    }
+                });
+            }
+
+            // Close modal on ESC key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeImageModal();
+                }
+            });
         });
 
         // Keyboard navigation

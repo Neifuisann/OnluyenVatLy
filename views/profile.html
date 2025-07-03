@@ -144,7 +144,7 @@
             }
 
             try {
-                const response = await fetch(`/api/profile/${studentId}`);
+                const response = await fetch(`/api/students/${studentId}/profile`);
                 
                 if (!response.ok) {
                     const errorData = await response.json();
@@ -156,14 +156,14 @@
                 // Render Profile
                 let profileHTML = `
                     <div class="profile-header">
-                        <div class="profile-avatar">${data.student.full_name?.[0]?.toUpperCase() || '?'}</div>
+                        <div class="profile-avatar">${data.profile.student.full_name?.[0]?.toUpperCase() || '?'}</div>
                         <div class="profile-info">
-                            <h1>${data.student.full_name || 'Vô danh'}</h1>
+                            <h1>${data.profile.student.full_name || 'Vô danh'}</h1>
                             <p class="profile-rating">
-                                <i class="fas fa-star"></i> ${Math.round(data.rating?.rating || 1500)} điểm
-                                <span style="color: ${getRatingColor(data.rating?.rating || 1500)}; font-weight: 700;"> (${getRatingTier(data.rating?.rating || 1500)})</span>
+                                <i class="fas fa-star"></i> ${Math.round(data.profile.rating?.rating || 1500)} điểm
+                                <span style="color: ${getRatingColor(data.profile.rating?.rating || 1500)}; font-weight: 700;"> (${getRatingTier(data.profile.rating?.rating || 1500)})</span>
                             </p>
-                            <p><i class="fas fa-calendar-alt"></i> Tham gia: ${new Date(data.student.created_at).toLocaleDateString('vi-VN')}</p>
+                            <p><i class="fas fa-calendar-alt"></i> Tham gia: ${new Date(data.profile.student.created_at).toLocaleDateString('vi-VN')}</p>
                         </div>
                     </div>
                 `;
@@ -192,7 +192,7 @@
                         </div>
                 `;
                 
-                if (data.ratingHistory && data.ratingHistory.length > 0) {
+                if (data.profile.ratingHistory && data.profile.ratingHistory.length > 0) {
                     profileHTML += `<div class="chart-container"><canvas id="ratingChart"></canvas></div>`;
                 } else {
                     profileHTML += `<div class="no-data">Chưa có dữ liệu điểm số để hiển thị biểu đồ.</div>`;
@@ -201,13 +201,13 @@
                 profileHTML += `</div>`;
 
                 // Render Rating History
-                if (data.ratingHistory && data.ratingHistory.length > 0) {
+                if (data.profile.ratingHistory && data.profile.ratingHistory.length > 0) {
                     profileHTML += `
                         <div class="profile-section">
                             <h2><i class="fas fa-history"></i> Lịch sử thay đổi điểm</h2>
                             <ul class="rating-history-list">
                     `;
-                    data.ratingHistory.forEach(item => {
+                    data.profile.ratingHistory.forEach(item => {
                         let change = item.rating_change;
                         if (change === undefined || change === null) {
                             const prevRating = item.previous_rating || 0;
@@ -246,9 +246,11 @@
                 // Hide loading indicator
                 loadingIndicator.style.display = 'none';
                 
-                // Create Rating Chart if data exists
-                if (data.ratingHistory && data.ratingHistory.length > 0) {
-                    createRatingChart(data.ratingHistory);
+                // Create Rating Chart if data exists (with small delay to ensure DOM is updated)
+                if (data.profile.ratingHistory && data.profile.ratingHistory.length > 0) {
+                    setTimeout(() => {
+                        createRatingChart(data.profile.ratingHistory);
+                    }, 100);
                 }
 
             } catch (error) {
@@ -300,7 +302,12 @@
             }
             
             // Chart configuration
-            const ctx = document.getElementById('ratingChart').getContext('2d');
+            const canvasElement = document.getElementById('ratingChart');
+            if (!canvasElement) {
+                console.error('Canvas element with id "ratingChart" not found');
+                return;
+            }
+            const ctx = canvasElement.getContext('2d');
             
             const chart = new Chart(ctx, {
                 type: 'line',

@@ -160,53 +160,7 @@ app.use('/api/progress', progressRoutes);
 // Setup view routes (HTML pages) - Register early to avoid conflicts
 app.use('/', viewRoutes);
 
-// Add specific route aliases for backward compatibility
-// Import auth controller and middleware for direct route handling
-const authController = require('./controllers/authController');
-const {
-  validateAdminLogin,
-  validateStudentLogin,
-  validateStudentRegistration
-} = require('./middleware/validation');
-const {
-  requireAdminAuth,
-  requireStudentAuth,
-  requireNotAuthenticated,
-  authRateLimit,
-  logAuthEvent
-} = require('./middleware/auth');
-
-app.post('/api/login',
-  authRateLimit,
-  logAuthEvent('admin_login_attempt'),
-  requireNotAuthenticated,
-  validateAdminLogin,
-  authController.adminLogin
-);
-
-app.post('/api/student/login',
-  authRateLimit,
-  logAuthEvent('student_login_attempt'),
-  requireNotAuthenticated,
-  validateStudentLogin,
-  authController.studentLogin
-);
-
-app.post('/api/register',
-  authRateLimit,
-  logAuthEvent('student_register_attempt'),
-  requireNotAuthenticated,
-  validateStudentRegistration,
-  authController.studentRegister
-);
-
-app.get('/api/check-student-auth',
-  authController.checkStudentAuth
-);
-
-app.get('/api/check-auth',
-  authController.checkAuth
-);
+// Duplicate auth routes removed - now handled by /api/auth/* routes
 
 // Student info endpoints for session storage
 app.get('/api/student-info', (req, res) => {

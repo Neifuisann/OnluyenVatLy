@@ -64,9 +64,9 @@ router.post('/:studentId/reset-password',
   studentController.resetStudentPassword
 );
 
-// Student profile routes (admin or owner access)
+// Student profile routes (any authenticated student can view any profile)
 router.get('/:studentId/profile',
-  requireAdminOrOwner,
+  requireStudentAuth,
   validateIdParam('studentId'),
   shortCacheMiddleware(600), // 10 minutes cache
   studentController.getStudentProfile
@@ -80,14 +80,14 @@ router.put('/:studentId/profile',
 );
 
 router.get('/:studentId/statistics',
-  requireAdminOrOwner,
+  requireStudentAuth,
   validateIdParam('studentId'),
   shortCacheMiddleware(300), // 5 minutes cache
   studentController.getStudentStatistics
 );
 
 router.get('/:studentId/activity',
-  requireAdminOrOwner,
+  requireStudentAuth,
   validateIdParam('studentId'),
   validatePagination,
   shortCacheMiddleware(300), // 5 minutes cache

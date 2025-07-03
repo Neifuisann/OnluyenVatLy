@@ -4,7 +4,14 @@
       "Bash(find:*)",
       "Bash(ls:*)",
       "Bash(grep:*)",
-      "Bash(npm start)"
+      "Bash(npm start)",
+      "Bash(curl:*)",
+      "Bash(node:*)",
+      "Bash(rg:*)",
+      "Bash(pkill:*)",
+      "Bash(PORT=3004 npm start)",
+      "Bash(true)",
+      "mcp__browser-tools__takeScreenshot"
     ],
     "deny": []
   }

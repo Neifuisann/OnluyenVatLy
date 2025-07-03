@@ -74,7 +74,7 @@ function createStatsOverview() {
                     <i class="fas fa-check-circle"></i>
                 </div>
                 <div class="stat-widget-value">0</div>
-                <div class="stat-widget-label">Đang hoạt động</div>
+                <div class="stat-widget-label">Hoạt động</div>
             </div>
             <div class="stat-widget students">
                 <div class="stat-widget-icon">
