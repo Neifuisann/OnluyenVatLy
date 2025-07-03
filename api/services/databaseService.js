@@ -236,7 +236,19 @@ class DatabaseService {
 
     const { data: students, error } = await query;
     if (error) throw error;
-    return students || [];
+    
+    // Map database columns to expected frontend properties
+    const mappedStudents = (students || []).map(student => ({
+      ...student,
+      // Map approved_device_id to device_identifier for frontend compatibility
+      device_identifier: student.approved_device_id,
+      // Add device_status based on whether device is linked
+      device_status: student.approved_device_id ? 'Thiết bị đã liên kết' : 'Chưa đăng ký thiết bị',
+      // Add session_status based on whether there's an active session
+      session_status: student.current_session_id ? 'Đang hoạt động' : 'Không có phiên'
+    }));
+    
+    return mappedStudents;
   }
 
   // Results operations
@@ -421,6 +433,14 @@ class DatabaseService {
       }
       throw error;
     }
+    
+    // Map database columns to expected frontend properties for consistency
+    if (student) {
+      student.device_identifier = student.approved_device_id;
+      student.device_status = student.approved_device_id ? 'Thiết bị đã liên kết' : 'Chưa đăng ký thiết bị';
+      student.session_status = student.current_session_id ? 'Đang hoạt động' : 'Không có phiên';
+    }
+    
     return student;
   }
 
