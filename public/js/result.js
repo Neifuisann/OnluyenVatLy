@@ -5,16 +5,21 @@ let sortedQuestions = [];
 // --- Student Authentication Functions (optional) ---
 async function checkStudentAuthentication() {
     try {
-        const response = await fetch('/api/check-student-auth');
+        const response = await fetch('/api/auth/student/check');
         if (!response.ok) {
             console.log('Auth check failed, user not authenticated');
             return false;
         }
         const authData = await response.json();
 
-        if (authData.isAuthenticated && authData.student) {
-            console.log('Student authenticated:', authData.student.name);
-            return true;
+        if (authData.success && authData.data) {
+            if (authData.data.isAuthenticated && authData.data.student) {
+                console.log('Student authenticated:', authData.data.student.name);
+                return true;
+            } else {
+                console.log('Student not authenticated');
+                return false;
+            }
         } else {
             console.log('Student not authenticated');
             return false;
@@ -46,7 +51,7 @@ async function handleLogout() {
 function showLoader(show) {
     const loader = document.getElementById('loading-indicator');
     if (loader) {
-        loader.classList.toggle('hidden', !show);
+        loader.style.display = show ? 'flex' : 'none';
     }
 }
 
@@ -58,14 +63,19 @@ async function displayResults() {
     }
     
     showLoader(true);
-    const resultData = JSON.parse(localStorage.getItem('quizResults'));
-    if (!resultData) {
-        document.getElementById('result').innerHTML = '<p class="no-results">No results found. Please take a quiz first.</p>';
-        return;
-    }
-
+    
     // Get result ID from URL if it exists
     const resultId = window.location.pathname.split('/result/')[1];
+    
+    // If no resultId, check localStorage
+    if (!resultId) {
+        const resultData = JSON.parse(localStorage.getItem('quizResults'));
+        if (!resultData) {
+            document.getElementById('result').innerHTML = '<p class="no-results">No results found. Please take a quiz first.</p>';
+            showLoader(false);
+            return;
+        }
+    }
 
     try {
         if (resultId) {
@@ -74,14 +84,19 @@ async function displayResults() {
             if (!response.ok) throw new Error('Result not found');
             const responseData = await response.json();
             // Extract the actual result data from the API response
-            currentResult = responseData.result || responseData;
+            currentResult = responseData.data?.result || responseData.result || responseData;
         } else {
             // Use the result from localStorage
+            const resultData = JSON.parse(localStorage.getItem('quizResults'));
             currentResult = resultData;
         }
 
         // Log the result for debugging
-        console.log('Result data:', currentResult);
+        if (resultId) {
+            console.log('Raw API response:', responseData);
+        }
+        console.log('Extracted currentResult:', currentResult);
+        console.log('Questions array:', currentResult?.questions || currentResult?.answers || []);
         
         // Store this result in session storage for persistence
         storeResultInSession(currentResult);
@@ -630,7 +645,14 @@ function createParticleEffect(container, color, type) {
 }
 
 function displaySortedResults(sortType) {
-    if (!currentResult) return;
+    console.log('displaySortedResults called with:', sortType);
+    console.log('currentResult:', currentResult);
+    
+    if (!currentResult) {
+        console.error('No currentResult available for display');
+        document.getElementById('result').innerHTML = '<p class="no-results">No result data available.</p>';
+        return;
+    }
 
     // Update active button state
     document.querySelectorAll('.sort-btn').forEach(btn => {
@@ -640,12 +662,17 @@ function displaySortedResults(sortType) {
 
     // Filter questions based on sort type
     const questions = currentResult.questions || currentResult.answers || [];
+    console.log('Questions found:', questions.length);
+    console.log('First question sample:', questions[0]);
+    
     const filteredQuestions = questions.filter(question => {
         if (sortType === 'all') return true;
         if (sortType === 'correct') return question.isCorrect;
         if (sortType === 'incorrect') return !question.isCorrect;
         return true;
     });
+    
+    console.log('Filtered questions:', filteredQuestions.length);
 
     // Helper function to format answers with line breaks
     const formatAnswer = (answer, type) => {
