@@ -2,6 +2,9 @@
 let currentPage = 1;
 let currentSearch = '';
 let currentSort = 'order';
+let currentTags = [];
+let allTags = [];
+let isLoadingTags = false;
 
 // --- Student Authentication Functions ---
 async function checkStudentAuthentication() {
@@ -74,6 +77,97 @@ function shuffleArray(array) {
 
 // This file is for lessons listing page, not individual lesson rendering
 // Individual lesson functionality is handled in lesson.html directly
+
+// --- Tag Management Functions ---
+async function loadTags() {
+    if (isLoadingTags) return;
+
+    isLoadingTags = true;
+    try {
+        const response = await fetch('/api/tags');
+        if (!response.ok) {
+            throw new Error(`Failed to fetch tags: ${response.status}`);
+        }
+
+        allTags = await response.json();
+        console.log('Loaded tags:', allTags);
+        renderCategoryPills();
+    } catch (error) {
+        console.error('Error loading tags:', error);
+        // Fallback to hardcoded tags if API fails
+        allTags = ['dao-dong', 'song-co', 'dien-xoay-chieu', 'dao-dong-dien-tu', 'song-anh-sang', 'luong-tu', 'hat-nhan'];
+        renderCategoryPills();
+    } finally {
+        isLoadingTags = false;
+    }
+}
+
+function renderCategoryPills() {
+    const categoryPillsContainer = document.querySelector('.category-pills');
+    if (!categoryPillsContainer) return;
+
+    // Clear existing pills
+    categoryPillsContainer.innerHTML = '';
+
+    // Add "All" pill
+    const allPill = document.createElement('button');
+    allPill.className = 'category-pill active';
+    allPill.setAttribute('data-category', 'all');
+    allPill.textContent = 'Tất cả';
+    categoryPillsContainer.appendChild(allPill);
+
+    // Add dynamic tag pills (show top 8 most common tags)
+    const topTags = allTags.slice(0, 8);
+    topTags.forEach(tag => {
+        const pill = document.createElement('button');
+        pill.className = 'category-pill';
+        pill.setAttribute('data-category', tag);
+        pill.textContent = formatTagName(tag);
+        categoryPillsContainer.appendChild(pill);
+    });
+
+    // Add event listeners to all pills
+    setupCategoryPillListeners();
+}
+
+function formatTagName(tag) {
+    // Convert tag names to display format
+    const tagMap = {
+        'dao-dong': 'Dao động cơ',
+        'song-co': 'Sóng cơ',
+        'dien-xoay-chieu': 'Điện xoay chiều',
+        'dao-dong-dien-tu': 'Dao động điện từ',
+        'song-anh-sang': 'Sóng ánh sáng',
+        'luong-tu': 'Lượng tử ánh sáng',
+        'hat-nhan': 'Vật lý hạt nhân'
+    };
+
+    return tagMap[tag] || tag.charAt(0).toUpperCase() + tag.slice(1).replace(/-/g, ' ');
+}
+
+function setupCategoryPillListeners() {
+    const categoryPills = document.querySelectorAll('.category-pill');
+    categoryPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+            // Remove active class from all pills
+            categoryPills.forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+
+            const category = pill.dataset.category;
+
+            // Update current tags
+            if (category === 'all') {
+                currentTags = [];
+            } else {
+                currentTags = [category];
+            }
+
+            // Reset page and filter lessons
+            currentPage = 1;
+            filterAndRenderLessons();
+        });
+    });
+}
 
 // --- Continue Learning Banner ---
 function showContinueLearningBanner(lesson) {
@@ -174,7 +268,7 @@ async function initializeLessons() {
 }
 
 // --- Load Lessons Function ---
-async function loadLessons(page = 1, search = '', sort = 'order') {
+async function loadLessons(page = 1, search = '', sort = 'order', tags = []) {
     try {
         const params = new URLSearchParams({
             page: page.toString(),
@@ -182,6 +276,11 @@ async function loadLessons(page = 1, search = '', sort = 'order') {
             search: search,
             sort: sort
         });
+
+        // Add tags parameter if tags are specified
+        if (tags && tags.length > 0) {
+            params.append('tags', tags.join(','));
+        }
 
         const response = await fetch(`/api/lessons?${params}`);
         if (!response.ok) {
@@ -271,7 +370,7 @@ function renderPagination(currentPage, total, limit) {
 
     // Previous button
     if (currentPage > 1) {
-        paginationHTML += `<button class="pagination-btn" onclick="loadLessons(${currentPage - 1})">
+        paginationHTML += `<button class="pagination-btn" onclick="goToPage(${currentPage - 1})">
             <i class="fas fa-chevron-left"></i>
         </button>`;
     }
@@ -282,12 +381,12 @@ function renderPagination(currentPage, total, limit) {
 
     for (let i = startPage; i <= endPage; i++) {
         paginationHTML += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}"
-                          onclick="loadLessons(${i})">${i}</button>`;
+                          onclick="goToPage(${i})">${i}</button>`;
     }
 
     // Next button
     if (currentPage < totalPages) {
-        paginationHTML += `<button class="pagination-btn" onclick="loadLessons(${currentPage + 1})">
+        paginationHTML += `<button class="pagination-btn" onclick="goToPage(${currentPage + 1})">
             <i class="fas fa-chevron-right"></i>
         </button>`;
     }
@@ -295,13 +394,28 @@ function renderPagination(currentPage, total, limit) {
     paginationContainer.innerHTML = paginationHTML;
 }
 
+// --- Pagination Helper Function ---
+async function goToPage(page) {
+    currentPage = page;
+    try {
+        await loadLessons(currentPage, currentSearch, currentSort, currentTags);
+    } catch (error) {
+        console.error('Error loading page:', error);
+    }
+}
+
 // --- Filter and Render Lessons Function ---
 async function filterAndRenderLessons() {
     const searchInput = document.getElementById('search-input');
-    const search = searchInput ? searchInput.value : '';
+    const sortSelect = document.getElementById('sort-select');
+
+    // Update global state
+    currentSearch = searchInput ? searchInput.value : '';
+    currentSort = sortSelect ? sortSelect.value : 'order';
+    currentPage = 1; // Reset to first page when filtering
 
     try {
-        await loadLessons(1, search);
+        await loadLessons(currentPage, currentSearch, currentSort, currentTags);
     } catch (error) {
         console.error('Error filtering lessons:', error);
     }
@@ -314,10 +428,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize lessons listing
     initializeLessons();
 
+    // Load dynamic tags
+    loadTags();
+
     // Set up search functionality
     const searchInput = document.getElementById('search-input');
     if (searchInput) {
         searchInput.addEventListener('input', debounce(filterAndRenderLessons, 300));
+    }
+
+    // Set up sort functionality
+    const sortSelect = document.getElementById('sort-select');
+    if (sortSelect) {
+        sortSelect.addEventListener('change', () => {
+            currentSort = sortSelect.value;
+            currentPage = 1; // Reset to first page when sorting
+            filterAndRenderLessons();
+        });
     }
 });
 

@@ -16,12 +16,11 @@ const {
   requireStudentAuth,
   optionalAuth 
 } = require('../middleware/auth');
-const { 
-  lessonCacheMiddleware, 
+const {
+  lessonCacheMiddleware,
   statisticsCacheMiddleware,
   noCacheMiddleware,
-  shortCacheMiddleware,
-  cacheInvalidationMiddleware
+  shortCacheMiddleware
 } = require('../middleware/cache');
 
 // Public lesson routes (with optional authentication)
@@ -111,7 +110,6 @@ router.put('/:id',
   validateIdParam('id'),
   validateLesson,
   noCacheMiddleware,
-  cacheInvalidationMiddleware('lesson:*'),
   lessonController.updateLesson
 );
 

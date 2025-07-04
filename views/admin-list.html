@@ -244,6 +244,73 @@
             color: white;
             border-color: transparent;
         }
+
+        /* Enhanced Tag Display */
+        .tag-filter {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+        }
+
+        .tag-name {
+            flex: 1;
+        }
+
+        .tag-count {
+            background: rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.9);
+            padding: 0.125rem 0.375rem;
+            border-radius: var(--radius-full);
+            font-size: 0.625rem;
+            font-weight: 600;
+            min-width: 1.25rem;
+            text-align: center;
+        }
+
+        .tag-filter:hover .tag-count {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        .tag-filter.active .tag-count {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        /* Context Menu */
+        .tag-context-menu {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            padding: 0.5rem;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .context-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition-fast);
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            white-space: nowrap;
+        }
+
+        .context-menu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .context-menu-item i {
+            width: 1rem;
+            text-align: center;
+            color: var(--neon-purple);
+        }
         
         /* Main Content */
         .main-content {
@@ -420,6 +487,7 @@
             display: flex;
             gap: 0.75rem;
             align-items: center;
+            justify-content: flex-end;
         }
         
         .action-btn {
@@ -1201,7 +1269,7 @@
                         </div>
                         <div class="meta-item">
                             <i class="fas fa-clock"></i>
-                            <span>${lastActivity}h trước</span>
+                            <span>${lastActivity}</span>
                         </div>
                     </div>
                     ${lesson.tags && lesson.tags.length > 0 ? 
@@ -1289,22 +1357,30 @@
         window.addEventListener('load', function() {
             if (typeof loadLessonsForAdmin === 'function') {
                 const originalLoadLessonsForAdmin = loadLessonsForAdmin;
-        loadLessonsForAdmin = async function() {
-            if (isLoading) return;
-            isLoading = true;
-            showLoader(true);
-            
-            try {
-                const params = new URLSearchParams({
-                    page: currentPage,
-                    limit: lessonsPerPage,
-                    sort: currentSort
-                });
-                
-                if (currentSearch) {
+                console.log('Overriding loadLessonsForAdmin function'); // Debug log to confirm override occurred successfully
+                loadLessonsForAdmin = async function() {
+                    if (isLoading) return;
+                    isLoading = true;
+                    showLoader(true);
+
+                    try {
+                        const params = new URLSearchParams({
+                            page: currentPage,
+                            limit: lessonsPerPage,
+                            sort: currentSort,
+                            includeStats: 'true' // Request statistics for admin view
+                        });
+
+                        if (currentSearch) {
                     params.append('search', currentSearch);
                 }
-                
+
+                if (currentTags && currentTags.length > 0) {
+                    params.append('tags', currentTags.join(','));
+                    console.log('Admin filtering by tags:', currentTags);
+                }
+
+                console.log('Admin lessons API URL:', `/api/lessons?${params.toString()}`);
                 const response = await fetch(`/api/lessons?${params.toString()}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch lessons');
@@ -1313,6 +1389,8 @@
                 const data = await response.json();
                 displayedLessons = data.lessons || [];
                 totalLessons = data.total || 0;
+
+                console.log(`Admin loaded ${displayedLessons.length} lessons (total: ${totalLessons}) with tags:`, currentTags);
                 
                 const sortableContainer = document.getElementById('sortable-lessons');
                 sortableContainer.innerHTML = '';

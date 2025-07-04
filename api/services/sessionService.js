@@ -157,6 +157,9 @@ class SessionService {
     delete req.session.studentId;
     delete req.session.studentName;
     delete req.session.studentInfo;
+    
+    // Set admin-specific timeout
+    this.setUserSpecificTimeout(req, 'admin');
   }
 
   // Set student session
@@ -165,6 +168,9 @@ class SessionService {
     req.session.studentName = student.name;
     // Clear admin session data
     delete req.session.isAuthenticated;
+    
+    // Set student-specific timeout
+    this.setUserSpecificTimeout(req, 'student');
   }
 
   // Clear all session data
@@ -234,6 +240,72 @@ class SessionService {
     if (!this.validateSessionIntegrity(req)) {
       console.log('🧹 Cleaning up invalid session data for session:', req.sessionID);
       this.clearSession(req);
+    }
+  }
+
+  // Import session utilities
+  getSessionTimeout() {
+    const { getSessionTimeout } = require('../config/session');
+    return getSessionTimeout();
+  }
+
+  // Extend session on activity
+  extendSessionOnActivity(req, customTimeout = null) {
+    if (req.session) {
+      const timeout = customTimeout || this.getSessionTimeout();
+      req.session.cookie.maxAge = timeout;
+      req.session.touch(); // Mark as active
+      
+      // Log session extension
+      console.log(`🔄 Session extended for ${req.sessionID} - New timeout: ${timeout}ms`);
+    }
+  }
+
+  // Set different timeouts for different user types
+  setUserSpecificTimeout(req, userType) {
+    if (!req.session) return;
+    
+    let timeoutHours;
+    switch (userType) {
+      case 'admin':
+        timeoutHours = parseInt(process.env.ADMIN_SESSION_TIMEOUT_HOURS) || 24;
+        break;
+      case 'student':
+        timeoutHours = parseInt(process.env.STUDENT_SESSION_TIMEOUT_HOURS) || 8;
+        break;
+      default:
+        timeoutHours = parseInt(process.env.SESSION_TIMEOUT_HOURS) || 24;
+    }
+    
+    const timeout = timeoutHours * 60 * 60 * 1000;
+    req.session.cookie.maxAge = timeout;
+    
+    console.log(`⏱️ Session timeout set for ${userType}: ${timeoutHours} hours`);
+  }
+
+  // Check if session is about to expire
+  isSessionNearExpiry(req, warningThresholdMinutes = 30) {
+    if (!req.session || !req.session.cookie.maxAge) return false;
+    
+    const remainingTime = req.session.cookie.maxAge;
+    const warningThreshold = warningThresholdMinutes * 60 * 1000;
+    
+    return remainingTime < warningThreshold;
+  }
+
+  // Get session time remaining
+  getSessionTimeRemaining(req) {
+    if (!req.session || !req.session.cookie.maxAge) return 0;
+    return req.session.cookie.maxAge;
+  }
+
+  // Manual session refresh
+  refreshSession(req, callback) {
+    if (req.session) {
+      this.extendSessionOnActivity(req);
+      req.session.save(callback);
+    } else if (callback) {
+      callback(new Error('No session to refresh'));
     }
   }
 }

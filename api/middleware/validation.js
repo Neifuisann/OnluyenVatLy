@@ -114,7 +114,7 @@ const validateAdminLogin = (req, res, next) => {
 
 // Validation middleware for lesson creation/update
 const validateLesson = (req, res, next) => {
-  const { title, content, subject, grade, color } = req.body;
+  const { title, content, questions, subject, grade, color, description, tags } = req.body;
   const errors = [];
   
   // Check if this is a partial update (only color field for example)
@@ -126,8 +126,28 @@ const validateLesson = (req, res, next) => {
       errors.push('Tiêu đề bài học không được để trống');
     }
 
-    if (!content || content.trim().length === 0) {
-      errors.push('Nội dung bài học không được để trống');
+    // Modern lessons use questions array instead of content
+    // Accept either content (legacy) or questions (modern)
+    if ((!content || content.trim().length === 0) && (!questions || !Array.isArray(questions) || questions.length === 0)) {
+      errors.push('Bài học phải có nội dung hoặc ít nhất một câu hỏi');
+    }
+
+    // Validate questions structure if provided
+    if (questions && Array.isArray(questions)) {
+      questions.forEach((q, index) => {
+        if (!q.question || typeof q.question !== 'string') {
+          errors.push(`Câu hỏi ${index + 1}: Nội dung câu hỏi không hợp lệ`);
+        }
+        if (!q.type || !['multiple_choice', 'true_false', 'fill_blank'].includes(q.type)) {
+          errors.push(`Câu hỏi ${index + 1}: Loại câu hỏi không hợp lệ`);
+        }
+        if (q.type === 'multiple_choice' && (!q.options || !Array.isArray(q.options) || q.options.length < 2)) {
+          errors.push(`Câu hỏi ${index + 1}: Câu hỏi trắc nghiệm phải có ít nhất 2 lựa chọn`);
+        }
+        if (!q.correctAnswer) {
+          errors.push(`Câu hỏi ${index + 1}: Thiếu đáp án đúng`);
+        }
+      });
     }
   }
 
@@ -143,6 +163,16 @@ const validateLesson = (req, res, next) => {
   // Validate color field if present
   if (color && (typeof color !== 'string' || !/^#[0-9A-Fa-f]{6}$/.test(color))) {
     errors.push('Màu sắc phải là mã hex hợp lệ (ví dụ: #FF0000)');
+  }
+
+  // Validate description if present
+  if (description && typeof description !== 'string') {
+    errors.push('Mô tả phải là chuỗi ký tự');
+  }
+
+  // Validate tags if present
+  if (tags && (!Array.isArray(tags) || tags.some(tag => typeof tag !== 'string'))) {
+    errors.push('Tags phải là mảng các chuỗi ký tự');
   }
 
   if (errors.length > 0) {

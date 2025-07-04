@@ -43,12 +43,37 @@ class CacheService {
   // Check if request should be cached
   shouldCache(req) {
     const path = req.path || req.originalUrl || '';
-    
+
     // Don't cache admin routes or authenticated routes that need fresh data
-    return !path.includes('/admin/') && 
-           !path.includes('/api/admin/') &&
-           !path.includes('/api/history') &&
-           req.method === 'GET'; // Only cache GET requests
+    if (!path.includes('/admin/') &&
+        !path.includes('/api/admin/') &&
+        !path.includes('/api/history') &&
+        req.method === 'GET') {
+
+      // Additional check: Don't cache requests from admin users
+      // Check if user is authenticated as admin via session
+      if (req.session && req.session.adminId) {
+        console.log(`Cache disabled for admin user: ${req.session.adminId} on ${path}`);
+        return false;
+      }
+
+      // Check for admin authentication via headers or other methods
+      const sessionService = require('./sessionService');
+      try {
+        if (sessionService.isAdminAuthenticated(req)) {
+          console.log(`Cache disabled for admin request on ${path}`);
+          return false;
+        }
+      } catch (error) {
+        // If session service fails, err on the side of caution and don't cache
+        console.warn('Session service error in cache check:', error);
+        return false;
+      }
+
+      return true;
+    }
+
+    return false;
   }
 
   // Check if client has valid cache
@@ -169,12 +194,7 @@ class CacheService {
     return { warmed: 0, failed: 0 };
   }
 
-  // Cache invalidation utilities
-  invalidateCache(pattern) {
-    // This would be implemented with a proper cache store
-    console.log(`Cache invalidation for pattern: ${pattern}`);
-    return true;
-  }
+
 
   // Memory usage monitoring
   getMemoryUsage() {

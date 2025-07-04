@@ -155,10 +155,10 @@ function renderTags() {
     tagsList.innerHTML = ''; // Clear current tags
     currentTags.forEach(tag => {
         const tagElement = document.createElement('span');
-        tagElement.className = 'tag';
+        tagElement.className = 'tag-item';
         tagElement.innerHTML = `
             ${tag}
-            <button type="button" onclick="removeTag('${tag}')" title="Remove tag">&times;</button>
+            <button type="button" class="tag-remove" onclick="removeTag('${tag}')" title="Remove tag">&times;</button>
         `;
         tagsList.appendChild(tagElement);
     });
@@ -260,7 +260,83 @@ async function compressImage(file, maxSize = 800, quality = 0.7) {
      }
 }
 
-// --- Final Save Function --- 
+// --- Question Transformation Function ---
+function transformQuestionsForAPI(questions) {
+    console.log('Transforming questions for API. Original questions:', questions);
+
+    const transformedQuestions = questions.map((q, index) => {
+        // Transform question type from Stage 1 format to API format
+        let apiType;
+        switch (q.type) {
+            case 'abcd':
+                apiType = 'multiple_choice';
+                break;
+            case 'truefalse':
+                apiType = 'true_false';
+                break;
+            case 'number':
+                apiType = 'fill_blank';
+                break;
+            default:
+                apiType = 'multiple_choice'; // Default fallback
+        }
+
+        // Transform correct answer format
+        let correctAnswer;
+        if (q.type === 'abcd') {
+            // For ABCD questions, correct is a letter (A, B, C, D)
+            correctAnswer = q.correct || '';
+        } else if (q.type === 'truefalse') {
+            // For true/false questions, keep the array format as the system expects it
+            if (Array.isArray(q.correct)) {
+                correctAnswer = q.correct;
+            } else {
+                // Fallback: if not an array, convert to string
+                correctAnswer = String(q.correct || '');
+            }
+        } else if (q.type === 'number') {
+            // For number questions, correct is the answer string
+            correctAnswer = String(q.correct || '');
+        } else {
+            correctAnswer = q.correct || '';
+        }
+
+        // Transform options format
+        let options = [];
+        if (q.options && Array.isArray(q.options)) {
+            options = q.options.map(opt => {
+                if (typeof opt === 'string') {
+                    return opt;
+                } else if (opt && typeof opt === 'object' && opt.text) {
+                    return opt.text;
+                } else {
+                    return '';
+                }
+            });
+        }
+
+        const transformedQuestion = {
+            question: q.question || '',
+            type: apiType,
+            options: options,
+            correctAnswer: correctAnswer,
+            points: q.points || 1,
+            id: q.id || `q_${Math.random().toString(36).substr(2, 9)}`
+        };
+
+        console.log(`Question ${index + 1} transformed:`, {
+            original: { type: q.type, correct: q.correct },
+            transformed: { type: apiType, correctAnswer: correctAnswer }
+        });
+
+        return transformedQuestion;
+    });
+
+    console.log('All questions transformed:', transformedQuestions);
+    return transformedQuestions;
+}
+
+// --- Final Save Function ---
 async function saveLessonConfiguration() {
     if (!currentConfigData || !currentQuestions) {
         alert('Error: Lesson data is missing. Please start from Stage 1.');
@@ -280,6 +356,9 @@ async function saveLessonConfiguration() {
 
         const now = new Date().toISOString();
 
+        // Transform questions to API format
+        const transformedQuestions = transformQuestionsForAPI(currentQuestions);
+
         // Construct the final payload
         const lessonPayload = {
             // Core metadata from form
@@ -294,10 +373,10 @@ async function saveLessonConfiguration() {
             grade: document.getElementById('lesson-grade')?.value || null,
             subject: document.getElementById('lesson-subject')?.value || null,
             purpose: document.getElementById('lesson-purpose')?.value || null,
-            
-            // Questions from Stage 1
-            questions: currentQuestions, 
-            
+
+            // Questions from Stage 1 (transformed to API format)
+            questions: transformedQuestions,
+
             lastUpdated: now
         };
 

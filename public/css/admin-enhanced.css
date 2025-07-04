@@ -354,7 +354,7 @@ function createLessonCard(lesson, index) {
     // Mock data for demonstration
     const studentCount = lesson.studentCount || Math.floor(Math.random() * 50) + 10;
     const completionRate = lesson.completionRate || Math.floor(Math.random() * 40) + 60;
-    const lastActivity = lesson.lastActivity || `${Math.floor(Math.random() * 24) + 1}h trước`;
+    const lastActivity = lesson.lastActivity || `${Math.floor(Math.random() * 24) + 1}`;
     
     div.innerHTML = `
         <div class="lesson-color" style="background: ${lesson.color || '#a4aeff'};"></div>

@@ -32,6 +32,8 @@ class DatabaseService {
       }
     }
 
+    console.log('[DatabaseService] getLessons called with tag filters:', tagFilters);
+
     if (search) {
       // Use RPC for search
       let rpcQuery = supabase
@@ -76,9 +78,11 @@ class DatabaseService {
 
       // Apply tag filtering at database level for better performance
       if (tagFilters.length > 0) {
+        console.log('[DatabaseService] Applying tag filters to query:', tagFilters);
         // Use PostgreSQL array operators to filter by tags
         // @> operator checks if the left array contains all elements of the right array
         tagFilters.forEach(tag => {
+          console.log(`[DatabaseService] Adding tag filter: ["${tag}"]`);
           query = query.contains('tags', `["${tag}"]`);
         });
       }
@@ -89,6 +93,7 @@ class DatabaseService {
       if (error) throw error;
 
       lessons = data || [];
+      console.log(`[DatabaseService] Query returned ${lessons.length} lessons with tag filters:`, tagFilters);
       total = count || 0;
     }
 
@@ -674,6 +679,85 @@ class DatabaseService {
     }
 
     return Array.from(allTags).sort();
+  }
+
+  // Get popular tags with usage statistics
+  async getPopularTags(limit = 10) {
+    try {
+      console.log(`[DatabaseService] Getting popular tags with limit: ${limit}`);
+
+      // Get all lessons with their tags and views
+      const { data: lessons, error: lessonsError } = await supabase
+        .from('lessons')
+        .select('id, tags, views, created, lastUpdated');
+
+      if (lessonsError) throw lessonsError;
+
+      console.log(`[DatabaseService] Found ${lessons?.length || 0} lessons for tag analysis`);
+
+      // Calculate tag statistics
+      const tagStats = {};
+      const now = new Date();
+      const thirtyDaysAgo = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
+
+      lessons?.forEach(lesson => {
+        if (Array.isArray(lesson.tags)) {
+          const lessonViews = lesson.views || 0;
+          const isRecent = new Date(lesson.lastUpdated || lesson.created) > thirtyDaysAgo;
+
+          lesson.tags.forEach(tag => {
+            if (tag && typeof tag === 'string') {
+              const cleanTag = tag.trim();
+              if (!tagStats[cleanTag]) {
+                tagStats[cleanTag] = {
+                  tag: cleanTag,
+                  lessonCount: 0,
+                  totalViews: 0,
+                  recentActivity: 0,
+                  popularityScore: 0
+                };
+              }
+
+              tagStats[cleanTag].lessonCount += 1;
+              tagStats[cleanTag].totalViews += lessonViews;
+              if (isRecent) {
+                tagStats[cleanTag].recentActivity += 1;
+              }
+            }
+          });
+        }
+      });
+
+      // Calculate popularity scores and sort
+      const popularTags = Object.values(tagStats)
+        .map(tagStat => {
+          // Popularity score based on: lesson count (40%), total views (40%), recent activity (20%)
+          tagStat.popularityScore =
+            (tagStat.lessonCount * 0.4) +
+            (tagStat.totalViews * 0.004) + // Scale down views
+            (tagStat.recentActivity * 0.2);
+
+          return tagStat;
+        })
+        .sort((a, b) => b.popularityScore - a.popularityScore)
+        .slice(0, limit);
+
+      console.log(`[DatabaseService] Calculated ${popularTags.length} popular tags:`,
+        popularTags.map(t => `${t.tag}(${t.lessonCount})`).join(', '));
+
+      return popularTags;
+    } catch (error) {
+      console.error('Error getting popular tags:', error);
+      // Fallback to basic tags if popular tags calculation fails
+      const basicTags = await this.getAllUniqueTags();
+      return basicTags.slice(0, limit).map(tag => ({
+        tag,
+        lessonCount: 0,
+        totalViews: 0,
+        recentActivity: 0,
+        popularityScore: 0
+      }));
+    }
   }
 
   // ===== PROGRESS TRACKING METHODS =====

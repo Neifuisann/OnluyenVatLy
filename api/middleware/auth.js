@@ -204,8 +204,8 @@ const logAuthEvent = (eventType) => {
 // Middleware to rate limit authentication attempts
 const authRateLimit = (() => {
   const attempts = new Map();
-  const MAX_ATTEMPTS = 5;
-  const WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+  const MAX_ATTEMPTS = 10;
+  const WINDOW_MS = 5 * 60 * 1000; // 15 minutes
 
   return (req, res, next) => {
     const key = req.ip;
@@ -239,6 +239,17 @@ const authRateLimit = (() => {
   };
 })();
 
+// Middleware to extend session on activity
+const extendSessionOnActivity = (req, res, next) => {
+  if (req.session) {
+    // Only extend for authenticated users
+    if (sessionService.isAdminAuthenticated(req) || sessionService.isStudentAuthenticated(req)) {
+      sessionService.extendSessionOnActivity(req);
+    }
+  }
+  next();
+};
+
 module.exports = {
   requireAdminAuth,
   requireStudentAuth,
@@ -251,5 +262,6 @@ module.exports = {
   requireNotAuthenticated,
   requireDeviceAuth,
   logAuthEvent,
-  authRateLimit
+  authRateLimit,
+  extendSessionOnActivity
 };

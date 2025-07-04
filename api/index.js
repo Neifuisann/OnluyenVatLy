@@ -142,6 +142,10 @@ app.use((_req, res, next) => {
     next();
 });
 
+// Add session extension middleware for API routes
+const { extendSessionOnActivity } = require('./middleware/auth');
+app.use('/api', extendSessionOnActivity);
+
 // Setup API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/students', studentRoutes);
@@ -180,6 +184,41 @@ app.get('/api/student-info', (req, res) => {
       message: 'No student session found'
     });
   }
+});
+
+// Session management endpoints
+app.post('/api/auth/refresh', (req, res) => {
+  sessionService.refreshSession(req, (err) => {
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to refresh session'
+      });
+    }
+    
+    res.json({
+      success: true,
+      message: 'Session refreshed successfully',
+      timeRemaining: sessionService.getSessionTimeRemaining(req)
+    });
+  });
+});
+
+// Get session status
+app.get('/api/auth/session-status', (req, res) => {
+  const sessionData = sessionService.getSessionData(req);
+  const timeRemaining = sessionService.getSessionTimeRemaining(req);
+  const nearExpiry = sessionService.isSessionNearExpiry(req);
+  
+  res.json({
+    success: true,
+    data: {
+      ...sessionData,
+      timeRemaining,
+      nearExpiry,
+      timeRemainingFormatted: Math.ceil(timeRemaining / (60 * 1000)) + ' minutes'
+    }
+  });
 });
 
 // Student info session endpoint (for backward compatibility)

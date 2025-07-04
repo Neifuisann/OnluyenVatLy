@@ -145,27 +145,7 @@ const conditionalCacheMiddleware = (condition, maxAge) => {
   };
 };
 
-// Cache invalidation middleware
-const cacheInvalidationMiddleware = (pattern) => {
-  return (req, res, next) => {
-    // Store original res.json method
-    const originalJson = res.json;
-    
-    // Override res.json to invalidate cache after successful response
-    res.json = (data) => {
-      const result = originalJson.call(res, data);
-      
-      // Invalidate cache if response was successful
-      if (res.statusCode >= 200 && res.statusCode < 300) {
-        cacheService.invalidateCache(pattern);
-      }
-      
-      return result;
-    };
-    
-    next();
-  };
-};
+
 
 // Cache warming middleware (for important routes)
 const cacheWarmingMiddleware = (routes) => {
@@ -207,13 +187,15 @@ const cacheMonitoringMiddleware = (req, res, next) => {
 const cacheHealthMiddleware = (req, res, next) => {
   const cacheStats = cacheService.getCacheStats();
   const memoryUsage = cacheService.getMemoryUsage();
-  
+
   // Add cache health info to response headers (for monitoring)
   res.setHeader('X-Cache-Enabled', cacheStats.enabled);
   res.setHeader('X-Memory-Usage', `${memoryUsage.heapUsed}MB`);
-  
+
   next();
 };
+
+
 
 module.exports = {
   cacheMiddleware,
@@ -224,7 +206,6 @@ module.exports = {
   shortCacheMiddleware,
   longCacheMiddleware,
   conditionalCacheMiddleware,
-  cacheInvalidationMiddleware,
   cacheWarmingMiddleware,
   cacheMonitoringMiddleware,
   cacheHealthMiddleware

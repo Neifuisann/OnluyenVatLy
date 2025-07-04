@@ -9,8 +9,8 @@ let isLoading = false;
 let allTags = [];
 let currentSearch = '';
 let currentSort = 'newest'; // Default to newest
-let selectedTags = new Set();
-
+let currentTags = [];
+ddd
 // Statistics tracking
 let statsData = {
     total: 0,
@@ -251,12 +251,54 @@ function initializeEventListeners() {
 // ===== DATA LOADING =====
 async function loadTags() {
     try {
-        const response = await fetch('/api/tags');
-        if (!response.ok) throw new Error('Failed to fetch tags');
-        allTags = await response.json();
-        renderTagsList();
+        console.log('Loading popular tags for admin dashboard...');
+        const response = await fetch('/api/tags/popular?limit=8');
+        if (!response.ok) throw new Error('Failed to fetch popular tags');
+
+        const result = await response.json();
+        if (result.success && result.tags) {
+            allTags = result.tags; // Now contains tag objects with statistics
+            console.log('Loaded popular tags for admin:', allTags);
+            renderTagsList();
+        } else {
+            throw new Error('Invalid popular tags response format');
+        }
     } catch (error) {
-        console.error('Error loading tags:', error);
+        console.error('Error loading popular tags:', error);
+        console.log('Falling back to basic tags...');
+
+        // Fallback to basic tags endpoint
+        try {
+            const fallbackResponse = await fetch('/api/tags');
+            if (fallbackResponse.ok) {
+                const basicTags = await fallbackResponse.json();
+                // Convert basic tags to tag objects format
+                allTags = basicTags.slice(0, 8).map(tag => ({
+                    tag,
+                    lessonCount: 0,
+                    totalViews: 0,
+                    recentActivity: 0,
+                    popularityScore: 0
+                }));
+                console.log('Loaded fallback tags:', allTags);
+                renderTagsList();
+            } else {
+                throw new Error('Fallback tags also failed');
+            }
+        } catch (fallbackError) {
+            console.error('Fallback tags failed:', fallbackError);
+            // Final hardcoded fallback
+            allTags = ['dao-dong', 'song-co', 'dien-xoay-chieu', 'dao-dong-dien-tu', 'song-anh-sang', 'luong-tu', 'hat-nhan']
+                .map(tag => ({
+                    tag,
+                    lessonCount: 0,
+                    totalViews: 0,
+                    recentActivity: 0,
+                    popularityScore: 0
+                }));
+            console.log('Using hardcoded fallback tags');
+            renderTagsList();
+        }
     }
 }
 
@@ -299,10 +341,12 @@ async function loadLessonsForAdmin() {
             params.append('search', currentSearch);
         }
         
-        if (selectedTags.size > 0) {
-            params.append('tags', Array.from(selectedTags).join(','));
+        if (currentTags.length > 0) {
+            params.append('tags', currentTags.join(','));
+            console.log('Admin filtering by tags:', currentTags);
         }
-        
+
+        console.log('Admin lessons API URL:', `/api/lessons?${params.toString()}`);
         const response = await fetch(`/api/lessons?${params.toString()}`);
         if (!response.ok) {
             throw new Error('Failed to fetch lessons');
@@ -311,6 +355,8 @@ async function loadLessonsForAdmin() {
         const data = await response.json();
         displayedLessons = data.lessons || [];
         totalLessons = data.total || 0;
+
+        console.log(`Admin loaded ${displayedLessons.length} lessons (total: ${totalLessons}) with tags:`, currentTags);
         
         // Update stats
         updateStatsFromLessons();
@@ -396,11 +442,12 @@ function createLessonCard(lesson, index) {
         </div>
         <div class="lesson-actions">
             <div class="color-picker-wrapper">
-                <input type="color" 
+                <input type="color"
                        class="color-picker"
-                       value="${lesson.color || '#a4aeff'}" 
+                       value="${lesson.color || '#a4aeff'}"
                        onchange="updateLessonColor(${lesson.id}, this.value)"
                        title="Đổi màu">
+                <div class="color-circle" style="background-color: ${lesson.color || '#a4aeff'};"></div>
             </div>
             <div class="edit-dropdown">
                 <a href="/admin/edit/${lesson.id}" class="action-btn" title="Chỉnh sửa với giao diện mới">
@@ -442,37 +489,241 @@ function createLessonCard(lesson, index) {
 function renderTagsList() {
     const tagsContainer = document.querySelector('.tags-container');
     if (!tagsContainer) return;
-    
+
+    console.log('Rendering tags list with data:', allTags);
     tagsContainer.innerHTML = '';
-    
-    // Show top 10 tags
-    const topTags = allTags.slice(0, 10);
-    
-    topTags.forEach(tag => {
+
+    // Add "All" button first
+    const allButton = document.createElement('button');
+    allButton.className = 'tag-filter active';
+    allButton.setAttribute('data-tag', 'all');
+    allButton.innerHTML = `
+        <span class="tag-name">Tất cả</span>
+    `;
+    tagsContainer.appendChild(allButton);
+
+    // Show top 8 popular tags
+    const topTags = allTags.slice(0, 8);
+
+    topTags.forEach(tagData => {
         const tagButton = document.createElement('button');
         tagButton.className = 'tag-filter';
-        tagButton.textContent = tag;
-        
-        if (selectedTags.has(tag)) {
-            tagButton.classList.add('active');
-        }
-        
-        tagButton.onclick = () => {
-            toggleTag(tag);
-            tagButton.classList.toggle('active');
-        };
-        
+
+        // Handle both old format (string) and new format (object)
+        const tagName = typeof tagData === 'string' ? tagData : tagData.tag;
+        const lessonCount = typeof tagData === 'object' ? tagData.lessonCount : 0;
+        const totalViews = typeof tagData === 'object' ? tagData.totalViews : 0;
+
+        tagButton.setAttribute('data-tag', tagName);
+        tagButton.title = `${lessonCount} bài học • ${totalViews} lượt xem`;
+
+        tagButton.innerHTML = `
+            <span class="tag-name">${formatTagName(tagName)}</span>
+            ${lessonCount > 0 ? `<span class="tag-count">${lessonCount}</span>` : ''}
+        `;
+
         tagsContainer.appendChild(tagButton);
     });
-    
-    // Add "show more" if there are more tags
-    if (allTags.length > 10) {
-        const showMoreBtn = document.createElement('button');
-        showMoreBtn.className = 'tag-filter show-more';
-        showMoreBtn.innerHTML = '<i class="fas fa-plus"></i> Xem thêm';
-        showMoreBtn.onclick = () => showAllTags();
-        tagsContainer.appendChild(showMoreBtn);
+
+    // Setup event listeners for all tag buttons
+    setupTagListeners();
+}
+
+function formatTagName(tag) {
+    // Convert tag names to display format (same as lessons page)
+    const tagMap = {
+        'dao-dong': 'Dao động cơ',
+        'song-co': 'Sóng cơ',
+        'dien-xoay-chieu': 'Điện xoay chiều',
+        'dao-dong-dien-tu': 'Dao động điện từ',
+        'song-anh-sang': 'Sóng ánh sáng',
+        'luong-tu': 'Lượng tử',
+        'hat-nhan': 'Hạt nhân',
+        'dien-tu': 'Điện từ',
+        'co-hoc': 'Cơ học',
+        'nhiet-hoc': 'Nhiệt học'
+    };
+    return tagMap[tag] || tag.charAt(0).toUpperCase() + tag.slice(1).replace(/-/g, ' ');
+}
+
+function setupTagListeners() {
+    const tagButtons = document.querySelectorAll('.tags-container .tag-filter');
+
+    tagButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            // Check if user clicked with Ctrl/Cmd for additional options
+            if (e.ctrlKey || e.metaKey) {
+                const tag = button.dataset.tag;
+                if (tag !== 'all') {
+                    // Open lessons page filtered by this tag in new tab
+                    const lessonsUrl = `/lessons?tags=${encodeURIComponent(tag)}`;
+                    window.open(lessonsUrl, '_blank');
+                    return;
+                }
+            }
+
+            // Normal click behavior - filter admin lessons
+            console.log('Tag clicked:', button.dataset.tag);
+
+            // Remove active class from all buttons
+            tagButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+
+            const tag = button.dataset.tag;
+
+            // Update current tags
+            if (tag === 'all') {
+                currentTags = [];
+                console.log('Showing all lessons');
+            } else {
+                currentTags = [tag];
+                console.log('Filtering by tag:', tag);
+            }
+
+            // Reset page and reload lessons
+            currentPage = 1;
+            loadLessonsForAdmin();
+        });
+
+        // Add right-click context menu for additional options
+        button.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            const tag = button.dataset.tag;
+
+            if (tag !== 'all') {
+                // Show context menu with options
+                showTagContextMenu(e, tag);
+            }
+        });
+    });
+}
+
+function showTagContextMenu(event, tag) {
+    // Remove any existing context menu
+    const existingMenu = document.querySelector('.tag-context-menu');
+    if (existingMenu) {
+        existingMenu.remove();
     }
+
+    const menu = document.createElement('div');
+    menu.className = 'tag-context-menu';
+    menu.style.position = 'fixed';
+    menu.style.left = event.clientX + 'px';
+    menu.style.top = event.clientY + 'px';
+    menu.style.zIndex = '10000';
+    menu.style.background = 'var(--glass-bg)';
+    menu.style.border = '1px solid var(--glass-border)';
+    menu.style.borderRadius = 'var(--radius-md)';
+    menu.style.padding = '0.5rem';
+    menu.style.backdropFilter = 'blur(20px)';
+    menu.style.minWidth = '200px';
+
+    menu.innerHTML = `
+        <div class="context-menu-item" onclick="openLessonsPageWithTag('${tag}')">
+            <i class="fas fa-external-link-alt"></i>
+            Xem bài học với tag này
+        </div>
+        <div class="context-menu-item" onclick="showTagStatistics('${tag}')">
+            <i class="fas fa-chart-bar"></i>
+            Xem thống kê tag
+        </div>
+        <div class="context-menu-item" onclick="copyTagName('${tag}')">
+            <i class="fas fa-copy"></i>
+            Sao chép tên tag
+        </div>
+    `;
+
+    document.body.appendChild(menu);
+
+    // Remove menu when clicking elsewhere
+    setTimeout(() => {
+        document.addEventListener('click', function removeMenu() {
+            menu.remove();
+            document.removeEventListener('click', removeMenu);
+        });
+    }, 100);
+}
+
+function openLessonsPageWithTag(tag) {
+    const lessonsUrl = `/lessons?tags=${encodeURIComponent(tag)}`;
+    window.open(lessonsUrl, '_blank');
+}
+
+function showTagStatistics(tag) {
+    const tagData = allTags.find(t => (typeof t === 'string' ? t : t.tag) === tag);
+    if (tagData && typeof tagData === 'object') {
+        alert(`Thống kê cho tag "${formatTagName(tag)}":\n\n` +
+              `• Số bài học: ${tagData.lessonCount}\n` +
+              `• Tổng lượt xem: ${tagData.totalViews}\n` +
+              `• Hoạt động gần đây: ${tagData.recentActivity}\n` +
+              `• Điểm phổ biến: ${tagData.popularityScore.toFixed(2)}`);
+    } else {
+        alert(`Không có thống kê cho tag "${formatTagName(tag)}"`);
+    }
+}
+
+function copyTagName(tag) {
+    navigator.clipboard.writeText(tag).then(() => {
+        showToast(`Đã sao chép tag: ${tag}`, 'success');
+    }).catch(err => {
+        console.error('Failed to copy tag name:', err);
+        showToast('Không thể sao chép tag', 'error');
+    });
+}
+
+// Simple toast notification function
+function showToast(message, type = 'info') {
+    // Remove existing toast
+    const existingToast = document.querySelector('.toast-notification');
+    if (existingToast) {
+        existingToast.remove();
+    }
+
+    const toast = document.createElement('div');
+    toast.className = `toast-notification toast-${type}`;
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-md);
+        padding: 1rem 1.5rem;
+        color: var(--text-primary);
+        backdrop-filter: blur(20px);
+        z-index: 10001;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+        max-width: 300px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    `;
+
+    if (type === 'success') {
+        toast.style.borderColor = '#10b981';
+        toast.innerHTML = `<i class="fas fa-check-circle" style="color: #10b981; margin-right: 0.5rem;"></i>${message}`;
+    } else if (type === 'error') {
+        toast.style.borderColor = '#ef4444';
+        toast.innerHTML = `<i class="fas fa-exclamation-circle" style="color: #ef4444; margin-right: 0.5rem;"></i>${message}`;
+    } else {
+        toast.innerHTML = `<i class="fas fa-info-circle" style="color: var(--neon-purple); margin-right: 0.5rem;"></i>${message}`;
+    }
+
+    document.body.appendChild(toast);
+
+    // Animate in
+    setTimeout(() => {
+        toast.style.transform = 'translateX(0)';
+    }, 100);
+
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        toast.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.remove();
+            }
+        }, 300);
+    }, 3000);
 }
 
 // ===== STATS MANAGEMENT =====
@@ -518,15 +769,6 @@ function animateValue(element, start, end, duration) {
 }
 
 // ===== ACTIONS =====
-function toggleTag(tag) {
-    if (selectedTags.has(tag)) {
-        selectedTags.delete(tag);
-    } else {
-        selectedTags.add(tag);
-    }
-    currentPage = 1;
-    loadLessonsForAdmin();
-}
 
 function copyShareLink(lessonId) {
     const shareUrl = `${window.location.origin}/share/lesson/${lessonId}`;
@@ -604,6 +846,12 @@ async function updateLessonColor(id, color) {
             const colorPicker = lessonCard.querySelector('.color-picker');
             if (colorPicker && colorPicker.value !== color) {
                 colorPicker.value = color;
+            }
+            
+            // Update the color circle
+            const colorCircle = lessonCard.querySelector('.color-circle');
+            if (colorCircle) {
+                colorCircle.style.backgroundColor = color;
             }
         }
         
@@ -808,11 +1056,7 @@ function handleStatWidgetClick(e) {
     }
 }
 
-function showAllTags() {
-    // Implementation for showing all tags in a modal
-    // This would open a modal with all available tags
-    console.log('Show all tags modal');
-}
+
 
 // ===== REVIEW LESSON MODAL =====
 // Keep existing review lesson functions
