@@ -129,6 +129,10 @@
                             Chưa có học sinh nào được duyệt.
                         </p>
                     </div>
+                    <!-- Pagination controls -->
+                    <div id="pagination-controls" class="pagination-controls" style="display: none;">
+                        <!-- Pagination will be dynamically inserted here -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -138,6 +142,12 @@
     // Functions to handle student approval/rejection and display
     let pendingStudents = [];
     let approvedStudents = [];
+    let filteredStudents = [];
+    
+    // Pagination variables
+    let currentPage = 1;
+    const studentsPerPage = 10;
+    let totalPages = 1;
     
     function showLoader(show) {
         const loader = document.getElementById('loading-indicator');
@@ -248,17 +258,18 @@
         });
     }
     
-    function renderApprovedStudents(students) {
+    function renderApprovedStudents(students, page = 1) {
         const tableBody = document.getElementById('approved-students-list');
         const emptyState = document.getElementById('empty-approved-state');
         const countBadge = document.getElementById('approved-count');
+        const paginationControls = document.getElementById('pagination-controls');
         
         if (!tableBody || !emptyState) {
             console.error('Error: Missing required elements for approved students display.');
             return;
         }
         
-        // Update count badge
+        // Update count badge with total count
         if (countBadge) {
             countBadge.textContent = students ? students.length : 0;
         }
@@ -266,13 +277,24 @@
         if (!students || students.length === 0) {
             emptyState.style.display = 'block';
             tableBody.innerHTML = '';
+            paginationControls.style.display = 'none';
             return;
         }
         
         emptyState.style.display = 'none';
         tableBody.innerHTML = '';
         
-        students.forEach((student, index) => {
+        // Calculate pagination
+        totalPages = Math.ceil(students.length / studentsPerPage);
+        currentPage = Math.min(page, totalPages);
+        const startIndex = (currentPage - 1) * studentsPerPage;
+        const endIndex = Math.min(startIndex + studentsPerPage, students.length);
+        const paginatedStudents = students.slice(startIndex, endIndex);
+        
+        // Show pagination controls if needed
+        paginationControls.style.display = totalPages > 1 ? 'flex' : 'none';
+        
+        paginatedStudents.forEach((student, index) => {
             const row = document.createElement('tr');
             
             const dateOfBirth = student.date_of_birth ? new Date(student.date_of_birth).toLocaleDateString('vi-VN') : 'Không có';
@@ -303,7 +325,7 @@
             `;
             
             row.innerHTML = `
-                <td>${index + 1}</td>
+                <td>${startIndex + index + 1}</td>
                 <td>${student.full_name}</td>
                 <td>${student.phone_number}</td>
                 <td>${dateOfBirth}</td>
@@ -315,6 +337,105 @@
             
             tableBody.appendChild(row);
         });
+        
+        // Update pagination controls
+        updatePaginationControls();
+    }
+    
+    function updatePaginationControls() {
+        const paginationControls = document.getElementById('pagination-controls');
+        if (!paginationControls) return;
+        
+        paginationControls.innerHTML = '';
+        
+        // Previous button
+        const prevButton = document.createElement('button');
+        prevButton.innerHTML = '<i class="fas fa-chevron-left"></i> Trước';
+        prevButton.disabled = currentPage === 1;
+        prevButton.onclick = () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderApprovedStudents(filteredStudents.length > 0 ? filteredStudents : approvedStudents, currentPage);
+            }
+        };
+        paginationControls.appendChild(prevButton);
+        
+        // Page numbers
+        const maxVisiblePages = 5;
+        let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+        let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+        
+        if (endPage - startPage + 1 < maxVisiblePages) {
+            startPage = Math.max(1, endPage - maxVisiblePages + 1);
+        }
+        
+        // First page and ellipsis
+        if (startPage > 1) {
+            const firstPageBtn = document.createElement('button');
+            firstPageBtn.textContent = '1';
+            firstPageBtn.onclick = () => {
+                currentPage = 1;
+                renderApprovedStudents(filteredStudents.length > 0 ? filteredStudents : approvedStudents, currentPage);
+            };
+            paginationControls.appendChild(firstPageBtn);
+            
+            if (startPage > 2) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                ellipsis.style.padding = '0 0.5rem';
+                paginationControls.appendChild(ellipsis);
+            }
+        }
+        
+        // Page number buttons
+        for (let i = startPage; i <= endPage; i++) {
+            const pageButton = document.createElement('button');
+            pageButton.textContent = i;
+            pageButton.className = i === currentPage ? 'active-page' : '';
+            pageButton.onclick = () => {
+                currentPage = i;
+                renderApprovedStudents(filteredStudents.length > 0 ? filteredStudents : approvedStudents, currentPage);
+            };
+            paginationControls.appendChild(pageButton);
+        }
+        
+        // Last page and ellipsis
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                ellipsis.style.padding = '0 0.5rem';
+                paginationControls.appendChild(ellipsis);
+            }
+            
+            const lastPageBtn = document.createElement('button');
+            lastPageBtn.textContent = totalPages;
+            lastPageBtn.onclick = () => {
+                currentPage = totalPages;
+                renderApprovedStudents(filteredStudents.length > 0 ? filteredStudents : approvedStudents, currentPage);
+            };
+            paginationControls.appendChild(lastPageBtn);
+        }
+        
+        // Next button
+        const nextButton = document.createElement('button');
+        nextButton.innerHTML = 'Sau <i class="fas fa-chevron-right"></i>';
+        nextButton.disabled = currentPage === totalPages;
+        nextButton.onclick = () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderApprovedStudents(filteredStudents.length > 0 ? filteredStudents : approvedStudents, currentPage);
+            }
+        };
+        paginationControls.appendChild(nextButton);
+        
+        // Page info
+        const pageInfo = document.createElement('span');
+        pageInfo.style.marginLeft = '1rem';
+        pageInfo.style.color = 'var(--text-tertiary)';
+        const totalStudents = filteredStudents.length > 0 ? filteredStudents.length : approvedStudents.length;
+        pageInfo.textContent = `Trang ${currentPage} / ${totalPages} (${totalStudents} học sinh)`;
+        paginationControls.appendChild(pageInfo);
     }
     
     async function approveStudent(studentId) {
@@ -488,7 +609,7 @@
         let debounceTimeout;
         searchInput.addEventListener('input', function() {
             clearTimeout(debounceTimeout);
-            debounceTimeout = setTimeout(filterStudents, 2000); // 2 second debounce
+            debounceTimeout = setTimeout(filterStudents, 300); // 300ms debounce
         });
         
         clearButton.addEventListener('click', () => {
@@ -501,16 +622,19 @@
         const searchTerm = document.getElementById('student-filter-input').value.toLowerCase();
         
         if (!searchTerm) {
-            renderApprovedStudents(approvedStudents);
+            filteredStudents = [];
+            currentPage = 1; // Reset to first page
+            renderApprovedStudents(approvedStudents, currentPage);
             return;
         }
         
-        const filtered = approvedStudents.filter(student => 
+        filteredStudents = approvedStudents.filter(student => 
             student.full_name.toLowerCase().includes(searchTerm) ||
             student.phone_number.includes(searchTerm)
         );
         
-        renderApprovedStudents(filtered);
+        currentPage = 1; // Reset to first page when filtering
+        renderApprovedStudents(filteredStudents, currentPage);
     }
     
     // Load all data

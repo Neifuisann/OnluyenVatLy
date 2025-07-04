@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ôn tập lỗi sai - Ôn luyện Vật lí</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- KaTeX for math rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    
+    <style>
+        /* Review Mistakes Specific Styles */
+        .review-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--space-xl);
+            min-height: 100vh;
+        }
+        
+        .review-header {
+            text-align: center;
+            margin-bottom: var(--space-2xl);
+        }
+        
+        .review-title {
+            font-size: var(--text-3xl);
+            font-weight: 700;
+            margin-bottom: var(--space-md);
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .review-subtitle {
+            color: var(--text-secondary);
+            font-size: var(--text-lg);
+        }
+        
+        .filters-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-xl);
+        }
+        
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-md);
+            align-items: end;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+        }
+        
+        .filter-label {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .filter-select, .filter-input {
+            padding: var(--space-sm);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-md);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-lg);
+            margin-bottom: var(--space-xl);
+        }
+        
+        .stat-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: var(--text-2xl);
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: var(--text-sm);
+        }
+        
+        .mistakes-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-lg);
+        }
+        
+        .mistake-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            transition: all 0.2s ease;
+        }
+        
+        .mistake-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+        }
+        
+        .mistake-card.reviewed {
+            opacity: 0.7;
+            border-color: var(--success-color);
+        }
+        
+        .mistake-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--space-md);
+            flex-wrap: wrap;
+            gap: var(--space-sm);
+        }
+        
+        .mistake-lesson-info {
+            flex: 1;
+        }
+        
+        .lesson-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .lesson-meta {
+            color: var(--text-tertiary);
+            font-size: var(--text-sm);
+            display: flex;
+            gap: var(--space-md);
+            flex-wrap: wrap;
+        }
+        
+        .mistake-actions {
+            display: flex;
+            gap: var(--space-sm);
+            align-items: center;
+        }
+        
+        .mark-reviewed-btn {
+            background: var(--success-color);
+            color: white;
+            border: none;
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-md);
+            font-size: var(--text-sm);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+        
+        .mark-reviewed-btn:hover {
+            background: var(--success-color-dark);
+            transform: translateY(-1px);
+        }
+        
+        .mark-reviewed-btn:disabled {
+            background: var(--text-tertiary);
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .question-content {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            margin-bottom: var(--space-md);
+        }
+        
+        .question-text {
+            font-weight: 500;
+            margin-bottom: var(--space-md);
+            line-height: 1.6;
+        }
+        
+        .answers-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-md);
+        }
+        
+        .answer-section {
+            padding: var(--space-sm);
+            border-radius: var(--radius-sm);
+        }
+        
+        .your-answer {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        
+        .correct-answer {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .answer-label {
+            font-size: var(--text-xs);
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .your-answer .answer-label {
+            color: var(--danger-color);
+        }
+        
+        .correct-answer .answer-label {
+            color: var(--success-color);
+        }
+        
+        .answer-text {
+            font-weight: 500;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: var(--space-sm);
+            margin-top: var(--space-2xl);
+        }
+        
+        .pagination-btn {
+            padding: var(--space-sm) var(--space-md);
+            border: 1px solid var(--border-primary);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .pagination-btn:hover:not(:disabled) {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .pagination-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .bulk-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-lg);
+            flex-wrap: wrap;
+            gap: var(--space-md);
+        }
+        
+        .bulk-select {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .bulk-actions-buttons {
+            display: flex;
+            gap: var(--space-sm);
+        }
+        
+        .bulk-btn {
+            padding: var(--space-sm) var(--space-md);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-md);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: var(--text-sm);
+            font-weight: 500;
+        }
+        
+        .bulk-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: var(--space-3xl);
+            color: var(--text-secondary);
+        }
+        
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: var(--space-lg);
+            opacity: 0.5;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .review-container {
+                padding: var(--space-lg);
+            }
+            
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .answers-comparison {
+                grid-template-columns: 1fr;
+            }
+            
+            .mistake-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .bulk-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Indicator -->
+    <div id="loading-indicator" class="loading-indicator">
+        <div class="spinner"></div>
+        <p>Đang tải lỗi sai...</p>
+    </div>
+
+    <!-- Background Animation -->
+    <canvas id="network-canvas"></canvas>
+    
+    <!-- Home Button -->
+    <a href="/" class="home-button">
+        <img src="https://styles.redditmedia.com/t5_851o4i/styles/profileIcon_0elfudeu2s5b1.jpg?width=256&height=256&frame=1&auto=webp&crop=256:256,smart&s=86be605407a08efe2894a6bacd089074aca51879" alt="Home">
+    </a>
+    
+    <div class="review-container">
+        <div class="review-header">
+            <h1 class="review-title">
+                <i class="fas fa-exclamation-triangle"></i>
+                Ôn tập lỗi sai
+            </h1>
+            <p class="review-subtitle">Xem lại những câu hỏi bạn đã trả lời sai để cải thiện kết quả học tập</p>
+        </div>
+        
+        <!-- Stats Overview -->
+        <div class="stats-overview" id="stats-overview">
+            <!-- Stats will be loaded here -->
+        </div>
+        
+        <!-- Filters Section -->
+        <div class="filters-section">
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label class="filter-label">Môn học</label>
+                    <select id="subject-filter" class="filter-select">
+                        <option value="">Tất cả môn học</option>
+                        <option value="Vật lí">Vật lí</option>
+                        <option value="Toán">Toán</option>
+                        <option value="Hóa học">Hóa học</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Trạng thái</label>
+                    <select id="reviewed-filter" class="filter-select">
+                        <option value="">Tất cả</option>
+                        <option value="false">Chưa ôn tập</option>
+                        <option value="true">Đã ôn tập</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Số câu hỏi</label>
+                    <select id="limit-filter" class="filter-select">
+                        <option value="10">10 câu</option>
+                        <option value="20" selected>20 câu</option>
+                        <option value="50">50 câu</option>
+                        <option value="100">100 câu</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <button id="apply-filters" class="bulk-btn" style="align-self: end;">
+                        <i class="fas fa-filter"></i>
+                        Áp dụng bộ lọc
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bulk Actions -->
+        <div class="bulk-actions">
+            <div class="bulk-select">
+                <input type="checkbox" id="select-all">
+                <label for="select-all">Chọn tất cả</label>
+            </div>
+            
+            <div class="bulk-actions-buttons">
+                <button id="mark-selected-reviewed" class="bulk-btn">
+                    <i class="fas fa-check"></i>
+                    Đánh dấu đã ôn tập
+                </button>
+                <button id="practice-selected" class="bulk-btn">
+                    <i class="fas fa-play"></i>
+                    Luyện tập đã chọn
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mistakes List -->
+        <div class="mistakes-list" id="mistakes-list">
+            <!-- Mistakes will be loaded here -->
+        </div>
+        
+        <!-- Pagination -->
+        <div class="pagination" id="pagination">
+            <!-- Pagination will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/network-animation.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <script src="/js/review-mistakes.js"></script>
+</body>
+</html>

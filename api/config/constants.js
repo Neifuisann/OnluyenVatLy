@@ -3,7 +3,7 @@ const APP_CONFIG = {
   PORT: process.env.PORT || 3003,
   NODE_ENV: process.env.NODE_ENV || 'development',
   SESSION_SECRET: process.env.SESSION_SECRET || 'fallback-secret-replace-me!',
-  GEMINI_API_KEY: process.env.GEMINI_API_KEY || "AIzaSyAxJF-5iBBx7gp9RPwrAfF58ERZi69KzCc"
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY
 };
 
 // Admin credentials

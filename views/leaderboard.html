@@ -175,12 +175,14 @@
                 table.className = 'leaderboard-table';
                 
                 const thead = document.createElement('thead');
+                // Only show change column for time-based filters
+                const showChangeColumn = currentFilter !== 'all';
                 thead.innerHTML = `
                     <tr>
                         <th class="center-align rank-column">Hạng</th>
                         <th class="name-column">Học sinh</th>
                         <th class="center-align score-column">Điểm</th>
-                        <th class="center-align change-column">Thay đổi</th> 
+                        ${showChangeColumn ? '<th class="center-align change-column">Thay đổi</th>' : ''}
                     </tr>
                 `;
                 table.appendChild(thead);
@@ -191,10 +193,21 @@
                     const row = document.createElement('tr');
                     if (rank <= 3) row.className = 'top-3';
 
-                    const ratingChange = 0; // TODO: Implement rating change calculation
+                    // Get rating change from backend response
+                    const ratingChange = rating.ratingChange !== null && rating.ratingChange !== undefined ? rating.ratingChange : 0;
                     const changeClass = ratingChange > 0 ? 'positive' : ratingChange < 0 ? 'negative' : '';
                     const changeSymbol = ratingChange > 0 ? '+' : '';
                     const changeIcon = ratingChange > 0 ? 'arrow-up' : ratingChange < 0 ? 'arrow-down' : 'minus';
+                    
+                    // Build change cell HTML only if showing change column
+                    const changeCell = showChangeColumn ? `
+                        <td class="center-align">
+                            <span class="rating-change ${changeClass}">
+                                ${changeSymbol}${Math.abs(ratingChange)}
+                                <i class="fas fa-${changeIcon}"></i>
+                            </span>
+                        </td>
+                    ` : '';
                     
                     row.innerHTML = `
                         <td class="rank center-align">
@@ -210,12 +223,7 @@
                             </div>
                         </td>
                         <td class="center-align rating-value">${Math.round(rating.rating)}</td>
-                        <td class="center-align">
-                            <span class="rating-change ${changeClass}">
-                                ${changeSymbol}${Math.abs(ratingChange)}
-                                <i class="fas fa-${changeIcon}"></i>
-                            </span>
-                        </td>
+                        ${changeCell}
                     `;
                     tbody.appendChild(row);
                 });

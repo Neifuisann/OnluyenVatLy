@@ -134,17 +134,22 @@
         
         async function loadProfile() {
             const profileContainer = document.getElementById('profile-data');
-            const studentId = window.location.pathname.split('/').pop();
+            const pathParts = window.location.pathname.split('/');
+            const studentId = pathParts[pathParts.length - 1];
             const loadingIndicator = document.getElementById('loading-indicator');
 
-            if (!studentId) {
-                profileContainer.innerHTML = '<div class="error-message"><i class="fas fa-exclamation-circle"></i> Không tìm thấy ID học viên.</div>';
-                loadingIndicator.style.display = 'none';
-                return;
-            }
-
+            // Check if we have a specific student ID in the URL or if we're accessing current student profile
+            const isCurrentStudent = !studentId || studentId === 'profile';
+            
             try {
-                const response = await fetch(`/api/students/${studentId}/profile`);
+                let response;
+                if (isCurrentStudent) {
+                    // Get current student's profile
+                    response = await fetch('/api/students/profile');
+                } else {
+                    // Get specific student's profile
+                    response = await fetch(`/api/students/${studentId}/profile`);
+                }
                 
                 if (!response.ok) {
                     const errorData = await response.json();
@@ -153,6 +158,20 @@
 
                 const data = await response.json();
                 
+                // Fetch progress data if current student
+                let progressData = null;
+                if (isCurrentStudent) {
+                    try {
+                        const progressResponse = await fetch('/api/progress/overview');
+                        if (progressResponse.ok) {
+                            const progressResult = await progressResponse.json();
+                            progressData = progressResult.progress;
+                        }
+                    } catch (error) {
+                        console.error('Error fetching progress:', error);
+                    }
+                }
+
                 // Render Profile
                 let profileHTML = `
                     <div class="profile-header">
@@ -167,6 +186,57 @@
                         </div>
                     </div>
                 `;
+                
+                // Add action buttons for current student
+                if (isCurrentStudent) {
+                    profileHTML += `<div class="profile-actions" style="margin: 1.5rem 0; display: flex; gap: 1rem; flex-wrap: wrap;">`;
+                    
+                    // Continue Learning button if there's an incomplete lesson
+                    if (progressData && progressData.lastIncompleteLesson) {
+                        profileHTML += `
+                            <a href="/lesson/last-incomplete" class="action-btn" style="
+                                display: inline-flex;
+                                align-items: center;
+                                gap: 0.5rem;
+                                padding: 0.75rem 1.5rem;
+                                background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+                                color: white;
+                                border-radius: 12px;
+                                text-decoration: none;
+                                font-weight: 600;
+                                transition: transform 0.2s, box-shadow 0.2s;
+                            " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(99, 102, 241, 0.4)';" 
+                               onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                                <i class="fas fa-play-circle"></i>
+                                Tiếp tục học: ${progressData.lastIncompleteLesson.title}
+                            </a>
+                        `;
+                    }
+                    
+                    // Review Mistakes button if there are mistakes
+                    if (progressData && progressData.mistakesCount > 0) {
+                        profileHTML += `
+                            <a href="/review-mistakes" class="action-btn" style="
+                                display: inline-flex;
+                                align-items: center;
+                                gap: 0.5rem;
+                                padding: 0.75rem 1.5rem;
+                                background: linear-gradient(135deg, #f59e0b, #d97706);
+                                color: white;
+                                border-radius: 12px;
+                                text-decoration: none;
+                                font-weight: 600;
+                                transition: transform 0.2s, box-shadow 0.2s;
+                            " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(245, 158, 11, 0.4)';" 
+                               onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Ôn tập lỗi sai (${progressData.mistakesCount})
+                            </a>
+                        `;
+                    }
+                    
+                    profileHTML += `</div>`;
+                }
                 
                 // Add Rating Chart Section
                 profileHTML += `

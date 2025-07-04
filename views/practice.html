@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>Luyện tập - Ôn luyện Vật lí</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Dark theme colors */
+            --bg-primary: #0f0f14;
+            --bg-secondary: #1a1a24;
+            --bg-tertiary: #252533;
+            --bg-card: #1e1e2a;
+            --bg-card-hover: #262635;
+            
+            /* Text colors */
+            --text-primary: #e4e4e7;
+            --text-secondary: #a1a1aa;
+            --text-tertiary: #71717a;
+            
+            /* Accent colors */
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            
+            /* Borders */
+            --border-color: #2a2a3a;
+            --border-focus: #6366f1;
+            
+            /* Spacing */
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 1.5rem;
+            --space-lg: 2rem;
+            --space-xl: 3rem;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Loading Indicator */
+        .loading-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Main Layout */
+        .practice-container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .practice-sidebar {
+            width: 320px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: var(--space-lg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .practice-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: var(--space-sm);
+            color: var(--text-primary);
+        }
+
+        .practice-info {
+            display: flex;
+            gap: var(--space-md);
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .practice-timer {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .question-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-lg);
+        }
+
+        .question-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: var(--space-sm);
+        }
+
+        .question-nav-item {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .question-nav-item:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent-primary);
+        }
+
+        .question-nav-item.active {
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+        }
+
+        .question-nav-item.answered {
+            background: var(--accent-success);
+            color: white;
+            border-color: var(--accent-success);
+        }
+
+        .question-nav-item.flagged {
+            background: var(--accent-warning);
+            color: white;
+            border-color: var(--accent-warning);
+        }
+
+        .sidebar-footer {
+            padding: var(--space-lg);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: var(--space-md);
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Main Content */
+        .practice-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-xl);
+        }
+
+        .question-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: var(--space-xl);
+            margin-bottom: var(--space-xl);
+            display: none;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--space-lg);
+        }
+
+        .question-number {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--accent-primary);
+        }
+
+        .question-actions {
+            display: flex;
+            gap: var(--space-sm);
+        }
+
+        .flag-btn {
+            padding: var(--space-sm) var(--space-md);
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .flag-btn:hover {
+            background: var(--accent-warning);
+            color: white;
+            border-color: var(--accent-warning);
+        }
+
+        .flag-btn.active {
+            background: var(--accent-warning);
+            color: white;
+            border-color: var(--accent-warning);
+        }
+
+        .question-text {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            margin-bottom: var(--space-xl);
+        }
+
+        .question-image {
+            width: 100%;
+            max-width: 500px;
+            margin: var(--space-md) 0;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        .option-item {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: var(--space-md) var(--space-lg);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .option-item:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent-primary);
+        }
+
+        .option-item.selected {
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+        }
+
+        .option-radio {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .option-item.selected .option-radio {
+            border-color: white;
+        }
+
+        .option-item.selected .option-radio::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .option-label {
+            flex: 1;
+        }
+
+        /* True/False Options */
+        .truefalse-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-md);
+        }
+
+        .truefalse-option {
+            padding: var(--space-lg);
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+
+        /* Number Input */
+        .number-input-container {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+
+        .number-input {
+            padding: var(--space-md);
+            font-size: 1.125rem;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+
+        .number-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            background: var(--bg-card);
+        }
+
+        .number-hint {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* Navigation */
+        .question-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--space-xl);
+            padding-top: var(--space-xl);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .nav-btn {
+            padding: var(--space-sm) var(--space-lg);
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-weight: 500;
+        }
+
+        .nav-btn:hover {
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Confirmation Modal */
+        .confirmation-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .confirmation-modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: var(--space-xl);
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: var(--space-md);
+        }
+
+        .modal-body {
+            color: var(--text-secondary);
+            margin-bottom: var(--space-xl);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: var(--space-md);
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: var(--space-sm) var(--space-lg);
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .modal-btn.cancel {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .modal-btn.confirm {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        /* Mobile Responsive */
+        .mobile-sidebar-toggle {
+            display: none;
+            position: fixed;
+            bottom: var(--space-lg);
+            right: var(--space-lg);
+            width: 56px;
+            height: 56px;
+            background: var(--accent-primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+            cursor: pointer;
+            z-index: 100;
+        }
+
+        @media (max-width: 768px) {
+            .practice-sidebar {
+                position: fixed;
+                left: -100%;
+                top: 0;
+                height: 100vh;
+                z-index: 200;
+                transition: left 0.3s ease;
+            }
+
+            .practice-sidebar.show {
+                left: 0;
+            }
+
+            .mobile-sidebar-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .practice-content {
+                padding: var(--space-md);
+            }
+
+            .question-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Indicator -->
+    <div id="loading-indicator" class="loading-indicator">
+        <div class="spinner"></div>
+        <p>Đang tải câu hỏi luyện tập...</p>
+    </div>
+
+    <div class="practice-container">
+        <!-- Sidebar -->
+        <div class="practice-sidebar" id="practice-sidebar">
+            <div class="sidebar-header">
+                <h2 class="practice-title">Luyện tập lỗi sai</h2>
+                <div class="practice-info">
+                    <div class="practice-timer">
+                        <i class="fas fa-clock"></i>
+                        <span id="timer">00:00:00</span>
+                    </div>
+                    <div class="practice-stats">
+                        <span id="answered-count">0</span>/<span id="total-count">0</span> câu
+                    </div>
+                </div>
+            </div>
+            
+            <div class="question-nav">
+                <div class="question-grid" id="question-grid">
+                    <!-- Question navigation items will be generated here -->
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <button class="submit-btn" id="submit-practice-btn">
+                    <i class="fas fa-paper-plane"></i>
+                    Nộp bài
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="practice-content" id="practice-content">
+            <!-- Question cards will be generated here -->
+        </div>
+    </div>
+
+    <!-- Mobile Sidebar Toggle -->
+    <button class="mobile-sidebar-toggle" id="mobile-sidebar-toggle">
+        <i class="fas fa-th"></i>
+    </button>
+
+    <!-- Confirmation Modal -->
+    <div class="confirmation-modal" id="confirmation-modal">
+        <div class="modal-content">
+            <h3 class="modal-header">Xác nhận nộp bài</h3>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn nộp bài?</p>
+                <p id="unanswered-warning" style="color: var(--accent-warning); margin-top: 1rem; display: none;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Bạn còn <span id="unanswered-count">0</span> câu chưa trả lời.
+                </p>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn cancel" onclick="closeConfirmationModal()">Hủy</button>
+                <button class="modal-btn confirm" onclick="submitPractice()">Nộp bài</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <script src="/js/practice.js"></script>
+</body>
+</html>

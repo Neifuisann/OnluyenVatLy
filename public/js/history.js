@@ -75,18 +75,26 @@ async function loadHistory() {
 }
 
 function updateStatisticsCards(historyData) {
-    // Calculate statistics
-    const uniqueStudents = new Set(historyData.map(log => log.studentName)).size;
+    // Calculate statistics with validation
+    const uniqueStudents = new Set(historyData.map(log => log.studentName).filter(name => name)).size;
     const totalSubmissions = historyData.length > 0 ? totalItems : 0;
     
     // Calculate average score if there are submissions
     let avgScore = 0;
     if (historyData.length > 0) {
-        avgScore = historyData.reduce((sum, log) => {
+        const validScores = historyData.filter(log => {
             const score = parseFloat(log.score);
-            const totalPoints = parseFloat(log.totalPoints || 10); // Default to 10 if not provided
-            return sum + (score / totalPoints);
-        }, 0) / historyData.length;
+            const totalPoints = parseFloat(log.totalPoints || 10);
+            return !isNaN(score) && !isNaN(totalPoints) && totalPoints > 0;
+        });
+        
+        if (validScores.length > 0) {
+            avgScore = validScores.reduce((sum, log) => {
+                const score = parseFloat(log.score);
+                const totalPoints = parseFloat(log.totalPoints || 10);
+                return sum + (score / totalPoints);
+            }, 0) / validScores.length;
+        }
     }
     
     // Count submissions from today
@@ -96,11 +104,16 @@ function updateStatisticsCards(historyData) {
         return submissionDate === today;
     }).length;
 
-    // Update statistics cards
-    document.getElementById('total-students-history').textContent = uniqueStudents;
-    document.getElementById('total-submissions').textContent = totalSubmissions;
-    document.getElementById('avg-score-history').textContent = (avgScore * 100).toFixed(2) + '%';
-    document.getElementById('submissions-today').textContent = submissionsToday;
+    // Update statistics cards with validation
+    const totalStudentsEl = document.getElementById('total-students-history');
+    const totalSubmissionsEl = document.getElementById('total-submissions');
+    const avgScoreEl = document.getElementById('avg-score-history');
+    const submissionsTodayEl = document.getElementById('submissions-today');
+    
+    if (totalStudentsEl) totalStudentsEl.textContent = uniqueStudents;
+    if (totalSubmissionsEl) totalSubmissionsEl.textContent = totalSubmissions;
+    if (avgScoreEl) avgScoreEl.textContent = isNaN(avgScore) ? '0.00%' : (avgScore * 100).toFixed(2) + '%';
+    if (submissionsTodayEl) submissionsTodayEl.textContent = submissionsToday;
     
     // Update history count badge
     const historyCountBadge = document.getElementById('history-count');
@@ -156,9 +169,11 @@ function updatePaginationControls() {
     paginationContainer.innerHTML = ''; // Clear existing controls
     
     if (totalItems <= itemsPerPage) {
-        return; // No pagination needed
+        paginationContainer.style.display = 'none'; // Hide if no pagination needed
+        return;
     }
     
+    paginationContainer.style.display = 'flex'; // Show if pagination needed
     const totalPages = Math.ceil(totalItems / itemsPerPage);
     
     // Previous button
@@ -346,10 +361,30 @@ function showSuccessMessage(message) {
     }, 3000);
 }
 
+// Helper function to escape HTML
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Helper function to truncate text
+function truncateText(text, maxLength) {
+    if (!text) return '';
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+}
+
 function updateTable() {
     const table = document.getElementById('history-log');
     const tbody = table.querySelector('tbody');
     const emptyState = document.getElementById('empty-history-state');
+    
+    if (!table || !tbody) {
+        console.error('Table elements not found');
+        return;
+    }
     
     if (window.historyData.length === 0) {
         tbody.innerHTML = '';
@@ -364,16 +399,33 @@ function updateTable() {
     }
     
     tbody.innerHTML = window.historyData.map((log, index) => {
-        const submittedAt = new Date(log.submittedAt).toLocaleDateString('vi-VN', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
+        // Validate and format date
+        let submittedAt = 'N/A';
+        try {
+            const date = new Date(log.submittedAt);
+            if (!isNaN(date.getTime())) {
+                submittedAt = date.toLocaleDateString('vi-VN', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+        } catch (e) {
+            console.warn('Invalid date format for submission:', log.submittedAt);
+        }
+        
+        // Validate and calculate score
         const score = parseFloat(log.score);
         const totalPoints = parseFloat(log.totalPoints || 10);
-        const scorePercentage = ((score / totalPoints) * 100).toFixed(1);
+        let scorePercentage = 0;
+        let scoreDisplay = 'N/A';
+        
+        if (!isNaN(score) && !isNaN(totalPoints) && totalPoints > 0) {
+            scorePercentage = ((score / totalPoints) * 100);
+            scoreDisplay = `${score.toFixed(1)} (${scorePercentage.toFixed(1)}%)`;
+        }
         
         // Determine score class based on percentage
         let scoreClass = 'poor';
@@ -381,18 +433,20 @@ function updateTable() {
         else if (scorePercentage >= 70) scoreClass = 'good';
         else if (scorePercentage >= 50) scoreClass = 'average';
         
-        // Use the result ID for viewing details
-        const resultId = log.resultId; 
+        // Safely get and escape user data
+        const studentName = escapeHtml(truncateText(log.studentName || 'N/A', 30));
+        const lessonTitle = escapeHtml(truncateText(log.lessonTitle || 'N/A', 40));
+        const resultId = log.resultId || '';
 
         return `<tr>
                     <td>${(currentPage - 1) * itemsPerPage + index + 1}</td>
                     <td>
                         <i class="fas fa-user-circle" style="margin-right: 0.5rem; color: var(--text-tertiary);"></i>
-                        ${log.studentName}
+                        <span title="${escapeHtml(log.studentName || 'N/A')}">${studentName}</span>
                     </td>
                     <td>
                         <i class="fas fa-book" style="margin-right: 0.5rem; color: var(--text-tertiary);"></i>
-                        ${log.lessonTitle}
+                        <span title="${escapeHtml(log.lessonTitle || 'N/A')}">${lessonTitle}</span>
                     </td>
                     <td>
                         <i class="fas fa-clock" style="margin-right: 0.5rem; color: var(--text-tertiary);"></i>
@@ -401,11 +455,11 @@ function updateTable() {
                     <td>
                         <span class="score-display ${scoreClass}">
                             <i class="fas fa-star"></i>
-                            ${score.toFixed(1)} (${scorePercentage}%)
+                            ${scoreDisplay}
                         </span>
                     </td>
                     <td>
-                        <button class="view-detail-btn" data-result-id="${resultId}" title="Xem chi tiết"> 
+                        <button class="view-detail-btn" data-result-id="${escapeHtml(resultId)}" title="Xem chi tiết"> 
                             <i class="fas fa-eye"></i>
                             Chi tiết
                         </button>

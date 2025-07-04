@@ -6,7 +6,7 @@ const { SUCCESS_MESSAGES } = require('../config/constants');
 class LessonController {
   // Get all lessons with pagination and search
   getAllLessons = asyncHandler(async (req, res) => {
-    const { page = 1, limit = 10, search = '', sort = 'order', includeStats = 'false' } = req.query;
+    const { page = 1, limit = 10, search = '', sort = 'order', includeStats = 'false', tags } = req.query;
     let sessionData = null;
 
     try {
@@ -20,11 +20,14 @@ class LessonController {
       page: parseInt(page),
       limit: parseInt(limit),
       search,
-      sort
+      sort,
+      tags
     });
 
     // If includeStats is true and user is admin, add statistics for each lesson
+    console.log('Stats check - includeStats:', includeStats, 'isAdmin:', sessionService.isAdminAuthenticated(req));
     if (includeStats === 'true' && sessionService.isAdminAuthenticated(req)) {
+      console.log('Adding statistics to lessons...');
       try {
         // Get statistics for all lessons
         const lessonsWithStats = await Promise.all(
@@ -35,8 +38,9 @@ class LessonController {
               
               const studentCount = new Set(results.map(r => r.student_id)).size;
               const totalAttempts = results.length;
-              const completionRate = totalAttempts > 0 && studentCount > 0 ? 
-                Math.round((totalAttempts / studentCount) * 100) : 0;
+              // Completion rate is simply the number of unique students who have attempted the lesson
+              // For a more sophisticated metric, we could check if they scored above a threshold
+              const completionRate = studentCount;
               
               // Get last activity
               const lastActivity = results.length > 0 ? 
@@ -222,13 +226,14 @@ class LessonController {
 
   // Search lessons
   searchLessons = asyncHandler(async (req, res) => {
-    const { q: search = '', page = 1, limit = 10, sort = 'order' } = req.query;
+    const { q: search = '', page = 1, limit = 10, sort = 'order', tags } = req.query;
     
     const result = await databaseService.getLessons({
       page: parseInt(page),
       limit: parseInt(limit),
       search,
-      sort
+      sort,
+      tags
     });
     
     res.json({
@@ -275,6 +280,26 @@ class LessonController {
     res.json({
       success: true,
       grade,
+      ...result
+    });
+  });
+
+  // Get lessons by tags
+  getLessonsByTags = asyncHandler(async (req, res) => {
+    const { tags } = req.params;
+    const { page = 1, limit = 10, sort = 'order' } = req.query;
+    
+    const result = await databaseService.getLessons({
+      page: parseInt(page),
+      limit: parseInt(limit),
+      search: '',
+      sort,
+      tags
+    });
+    
+    res.json({
+      success: true,
+      tags,
       ...result
     });
   });

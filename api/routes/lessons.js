@@ -13,13 +13,15 @@ const {
 } = require('../middleware/validation');
 const { 
   requireAdminAuth,
+  requireStudentAuth,
   optionalAuth 
 } = require('../middleware/auth');
 const { 
   lessonCacheMiddleware, 
   statisticsCacheMiddleware,
   noCacheMiddleware,
-  shortCacheMiddleware 
+  shortCacheMiddleware,
+  cacheInvalidationMiddleware
 } = require('../middleware/cache');
 
 // Public lesson routes (with optional authentication)
@@ -67,6 +69,28 @@ router.get('/grade/:grade',
   lessonController.getLessonsByGrade
 );
 
+// Get lessons filtered by tags
+router.get('/tags/:tags',
+  optionalAuth,
+  validatePagination,
+  lessonCacheMiddleware,
+  lessonController.getLessonsByTags
+);
+
+// Get last incomplete lesson for the authenticated student
+router.get('/last-incomplete',
+  requireStudentAuth,
+  noCacheMiddleware,
+  lessonController.getLastIncompleteLesson
+);
+
+// Platform statistics for lessons page (must be before /:id route)
+router.get('/platform-stats',
+  optionalAuth,
+  shortCacheMiddleware(600), // 10 minutes cache
+  lessonController.getPlatformStats
+);
+
 router.get('/:id',
   optionalAuth,
   validateIdParam('id'),
@@ -87,6 +111,7 @@ router.put('/:id',
   validateIdParam('id'),
   validateLesson,
   noCacheMiddleware,
+  cacheInvalidationMiddleware('lesson:*'),
   lessonController.updateLesson
 );
 

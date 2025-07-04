@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tạo bài học mới - Giao diện nâng cao</title>
+    
+    <!-- External Dependencies -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.14/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.14/theme/material-darker.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="/css/admin-new-v2.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Đang khởi tạo trình soạn thảo...</p>
+        </div>
+    </div>
+
+    <!-- Main Application Container -->
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <button class="back-button" onclick="window.location.href='/admin'" title="Quay lại danh sách">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Quay lại</span>
+                </button>
+                <div class="header-title">
+                    <h1>
+                        <i class="fas fa-plus-circle"></i>
+                        <span id="lesson-title">Tạo bài học mới</span>
+                    </h1>
+                    <div class="lesson-status">
+                        <span class="status-indicator" id="save-status">
+                            <i class="fas fa-circle"></i>
+                            <span>Chưa lưu</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="header-actions">
+                <button class="action-btn secondary" id="preview-btn" title="Xem trước toàn màn hình">
+                    <i class="fas fa-eye"></i>
+                    <span>Xem trước</span>
+                </button>
+                <button class="action-btn secondary" id="save-draft-btn" title="Lưu nháp">
+                    <i class="fas fa-save"></i>
+                    <span>Lưu nháp</span>
+                </button>
+                <button class="action-btn primary" id="continue-btn" title="Tiếp tục cấu hình">
+                    <i class="fas fa-arrow-right"></i>
+                    <span>Tiếp tục</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Editor Container -->
+        <main class="admin-editor-container">
+            <!-- Preview Panel (now on left) -->
+            <section class="preview-panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <i class="fas fa-eye"></i>
+                        <h2>Xem trước</h2>
+                    </div>
+                    <div class="panel-actions">
+                        <button class="panel-action-btn" id="refresh-preview-btn" title="Làm mới xem trước">
+                            <i class="fas fa-sync"></i>
+                        </button>
+                        <button class="panel-action-btn" id="fullscreen-preview-btn" title="Toàn màn hình">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="preview-toolbar">
+                    <div class="toolbar-group">
+                        <button class="toolbar-btn active" id="preview-mode-normal" title="Chế độ bình thường">
+                            <i class="fas fa-list"></i>
+                            <span>Danh sách</span>
+                        </button>
+                        <button class="toolbar-btn" id="preview-mode-card" title="Chế độ thẻ">
+                            <i class="fas fa-th-large"></i>
+                            <span>Thẻ</span>
+                        </button>
+                        <button class="toolbar-btn" id="preview-mode-exam" title="Chế độ thi">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Thi</span>
+                        </button>
+                    </div>
+                    
+                    <div class="toolbar-group">
+                        <button class="toolbar-btn" id="zoom-out-btn" title="Thu nhỏ">
+                            <i class="fas fa-search-minus"></i>
+                        </button>
+                        <span class="zoom-level">100%</span>
+                        <button class="toolbar-btn" id="zoom-in-btn" title="Phóng to">
+                            <i class="fas fa-search-plus"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="toolbar-group">
+                        <button class="toolbar-btn" id="validate-btn" title="Kiểm tra lỗi">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Kiểm tra</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="preview-content" id="preview-content">
+                    <div class="preview-placeholder">
+                        <div class="placeholder-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h3>Xem trước câu hỏi</h3>
+                        <p>Nhập câu hỏi bên phải để xem kết quả hiển thị</p>
+                        <div class="placeholder-tips">
+                            <h4>Mẹo sử dụng:</h4>
+                            <ul>
+                                <li>Sử dụng * để đánh dấu đáp án đúng</li>
+                                <li>Định dạng: Câu X: [nội dung câu hỏi]</li>
+                                <li>Tùy chọn: A. B. C. D. cho trắc nghiệm</li>
+                                <li>Hỗ trợ LaTeX với cú pháp $...$ hoặc $$...$$</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="preview-footer">
+                    <div class="validation-status" id="validation-status">
+                        <span class="status-text">Sẵn sàng kiểm tra</span>
+                    </div>
+                    <div class="preview-stats">
+                        <span class="stat-item">
+                            <i class="fas fa-check-circle text-success"></i>
+                            <span id="valid-questions">0</span>
+                        </span>
+                        <span class="stat-item">
+                            <i class="fas fa-exclamation-triangle text-warning"></i>
+                            <span id="warning-questions">0</span>
+                        </span>
+                        <span class="stat-item">
+                            <i class="fas fa-times-circle text-error"></i>
+                            <span id="error-questions">0</span>
+                        </span>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Resize Handle -->
+            <div class="resize-handle" id="resize-handle">
+                <div class="resize-handle-grip">
+                    <div class="grip-line"></div>
+                    <div class="grip-line"></div>
+                    <div class="grip-line"></div>
+                </div>
+            </div>
+            
+            <!-- Editor Panel (now on right) -->
+            <section class="editor-panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <i class="fas fa-code"></i>
+                        <h2>Trình soạn thảo</h2>
+                    </div>
+                    <div class="panel-actions">
+                        <button class="panel-action-btn" id="format-btn" title="Định dạng tự động">
+                            <i class="fas fa-magic"></i>
+                        </button>
+                        <button class="panel-action-btn" id="fullscreen-editor-btn" title="Toàn màn hình">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="editor-toolbar">
+                    <div class="toolbar-group">
+                        <button class="toolbar-btn" id="upload-file-btn" title="Tải lên tài liệu">
+                            <i class="fas fa-upload"></i>
+                            <span>Tải lên</span>
+                        </button>
+                        <button class="toolbar-btn" id="upload-image-btn" title="Thêm hình ảnh">
+                            <i class="fas fa-image"></i>
+                            <span>Hình ảnh</span>
+                        </button>
+                        <button class="toolbar-btn" id="add-latex-btn" title="Thêm công thức LaTeX">
+                            <i class="fas fa-square-root-alt"></i>
+                            <span>LaTeX</span>
+                        </button>
+                    </div>
+                    
+                    <div class="toolbar-group">
+                        <button class="toolbar-btn" id="undo-btn" title="Hoàn tác">
+                            <i class="fas fa-undo"></i>
+                        </button>
+                        <button class="toolbar-btn" id="redo-btn" title="Làm lại">
+                            <i class="fas fa-redo"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="toolbar-group">
+                        <select class="toolbar-select" id="question-type-select">
+                            <option value="abcd">Trắc nghiệm ABCD</option>
+                            <option value="truefalse">Đúng/Sai</option>
+                            <option value="number">Số</option>
+                        </select>
+                    </div>
+                    
+                    <div class="toolbar-info">
+                        <span class="question-count">
+                            <i class="fas fa-list-ol"></i>
+                            <span id="question-counter">0 câu hỏi</span>
+                        </span>
+                        <span class="word-count">
+                            <i class="fas fa-font"></i>
+                            <span id="word-counter">0 từ</span>
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="editor-content">
+                    <textarea id="lesson-editor" placeholder="Nhập nội dung bài học...
+
+Ví dụ:
+Câu 1: Trong cuộc khai thác thuộc địa lần thứ hai ở Đông Dương 1919-1929, thực dân Pháp tập trung đầu tư vào
+*A. Ngành chế tạo máy.
+B. Công nghiệp luyện kim.
+C. Đồn điền cao su.
+D. Công nghiệp hóa chất.
+
+Câu 2: Nội dung nào sau đây phản ánh đúng tình hình Việt Nam sau Hiệp định Gionevo năm 1954 về Đông Dương?
+A. Đất nước tạm thời bị chia cắt làm hai miền Nam, Bắc.
+*B. Miền Bắc chưa được giải phóng.
+C. Miền Nam đã được giải phóng.
+D. Cả nước được giải phóng và tiến lên xây dựng chủ nghĩa xã hội."></textarea>
+                </div>
+                
+                <div class="editor-footer">
+                    <div class="editor-status">
+                        <span class="cursor-position">Dòng 1, Cột 1</span>
+                        <span class="encoding">UTF-8</span>
+                    </div>
+                    <div class="editor-actions">
+                        <button class="editor-action-btn" id="clear-btn" title="Xóa tất cả">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Document Upload Modal -->
+    <div id="document-upload-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>
+                    <i class="fas fa-upload"></i>
+                    Tải lên tài liệu
+                </h3>
+                <button class="modal-close" id="close-upload-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="upload-options">
+                    <div class="upload-option" id="manual-option">
+                        <div class="option-icon">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <div class="option-content">
+                            <h4>Tạo thủ công</h4>
+                            <p>Nhập nội dung bài học trực tiếp</p>
+                        </div>
+                    </div>
+                    <div class="upload-option" id="file-option">
+                        <div class="option-icon">
+                            <i class="fas fa-file-upload"></i>
+                        </div>
+                        <div class="option-content">
+                            <h4>Tải lên file</h4>
+                            <p>AI tự động xử lý PDF/DOCX</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="upload-area" id="upload-area" style="display: none;">
+                    <div class="upload-dropzone">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Kéo thả file vào đây hoặc click để chọn</p>
+                        <input type="file" id="file-input" accept=".pdf,.docx,.txt" multiple>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Upload Modal -->
+    <div id="image-upload-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>
+                    <i class="fas fa-image"></i>
+                    Thêm hình ảnh
+                </h3>
+                <button class="modal-close" id="close-image-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="image-upload-tabs">
+                    <button class="tab-btn active" data-tab="upload">Tải lên</button>
+                    <button class="tab-btn" data-tab="url">URL</button>
+                    <button class="tab-btn" data-tab="gallery">Thư viện</button>
+                </div>
+                <div class="tab-content active" id="upload-tab">
+                    <div class="image-dropzone">
+                        <i class="fas fa-images"></i>
+                        <p>Kéo thả hình ảnh vào đây</p>
+                        <input type="file" id="image-input" accept="image/*" multiple>
+                    </div>
+                </div>
+                <div class="tab-content" id="url-tab">
+                    <div class="url-input-group">
+                        <label for="image-url">URL hình ảnh:</label>
+                        <input type="url" id="image-url" placeholder="https://example.com/image.jpg">
+                        <button class="btn primary" id="add-url-image">Thêm</button>
+                    </div>
+                </div>
+                <div class="tab-content" id="gallery-tab">
+                    <div class="image-gallery">
+                        <p>Đang tải thư viện...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LaTeX Helper Modal -->
+    <div id="latex-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>
+                    <i class="fas fa-square-root-alt"></i>
+                    Trình soạn thảo LaTeX
+                </h3>
+                <button class="modal-close" id="close-latex-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="latex-editor">
+                    <textarea id="latex-input" placeholder="Nhập công thức LaTeX...
+
+Ví dụ:
+\frac{a}{b}
+\sqrt{x^2 + y^2}
+\sum_{i=1}^{n} x_i"></textarea>
+                    <div class="latex-preview">
+                        <div class="preview-title">Xem trước:</div>
+                        <div id="latex-preview-content"></div>
+                    </div>
+                </div>
+                <div class="latex-shortcuts">
+                    <h4>Phím tắt thường dùng:</h4>
+                    <div class="shortcuts-grid">
+                        <button class="shortcut-btn" data-latex="\frac{a}{b}">Phân số</button>
+                        <button class="shortcut-btn" data-latex="\sqrt{x}">Căn bậc hai</button>
+                        <button class="shortcut-btn" data-latex="x^2">Lũy thừa</button>
+                        <button class="shortcut-btn" data-latex="x_1">Chỉ số dưới</button>
+                        <button class="shortcut-btn" data-latex="\sum_{i=1}^{n}">Tổng</button>
+                        <button class="shortcut-btn" data-latex="\int_{a}^{b}">Tích phân</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn secondary" id="cancel-latex">Hủy</button>
+                <button class="btn primary" id="insert-latex">Chèn</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fullscreen Preview Modal -->
+    <div id="fullscreen-preview-modal" class="modal fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Xem trước toàn màn hình</h3>
+                <button class="modal-close" id="close-fullscreen-preview">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="fullscreen-preview-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notification-container" class="notification-container"></div>
+
+    <!-- External Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.14/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.14/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    
+    <!-- Custom Scripts -->
+    <script src="/js/admin-new-v2.js"></script>
+    <script src="/js/document-upload.js"></script>
+    <script src="/js/storage-recovery.js"></script>
+</body>
+</html>

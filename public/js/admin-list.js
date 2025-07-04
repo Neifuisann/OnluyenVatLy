@@ -262,15 +262,22 @@ async function loadTags() {
 
 async function loadDashboardStats() {
     try {
-        // In a real app, this would be an API call
-        const response = await fetch('/api/dashboard/stats');
+        const response = await fetch('/api/admin/dashboard-stats');
         if (response.ok) {
-            statsData = await response.json();
+            const result = await response.json();
+            if (result.success && result.data) {
+                statsData = result.data;
+                updateStatsDisplay();
+            } else {
+                console.error('Failed to load dashboard stats');
+                updateStatsDisplay();
+            }
+        } else {
+            console.error('Failed to fetch dashboard stats:', response.status);
             updateStatsDisplay();
         }
     } catch (error) {
         console.error('Error loading stats:', error);
-        // Use mock data for now
         updateStatsDisplay();
     }
 }
@@ -284,7 +291,8 @@ async function loadLessonsForAdmin() {
         const params = new URLSearchParams({
             page: currentPage,
             limit: lessonsPerPage,
-            sort: currentSort
+            sort: currentSort,
+            includeStats: 'true' // Request statistics for admin view
         });
         
         if (currentSearch) {
@@ -351,26 +359,30 @@ function createLessonCard(lesson, index) {
     div.dataset.id = lesson.id;
     div.style.animationDelay = `${index * 0.05}s`;
     
-    // Mock data for demonstration
-    const studentCount = lesson.studentCount || Math.floor(Math.random() * 50) + 10;
-    const completionRate = lesson.completionRate || Math.floor(Math.random() * 40) + 60;
-    const lastActivity = lesson.lastActivity || `${Math.floor(Math.random() * 24) + 1}h trước`;
+    // Use real data if available, otherwise show N/A
+    const studentCount = lesson.studentCount !== undefined ? lesson.studentCount : 'N/A';
+    const completionRate = lesson.completionRate !== undefined ? lesson.completionRate : 'N/A';
+    const lastActivity = lesson.lastActivity || 'N/A';
+    
+    // Calculate lesson number based on current page and index
+    const lessonNumber = (currentPage - 1) * lessonsPerPage + index + 1;
     
     div.innerHTML = `
+        <div class="lesson-status"></div>
+        <div class="lesson-number">${lessonNumber}</div>
         <div class="lesson-color" style="background: ${lesson.color || '#a4aeff'};"></div>
         <div class="lesson-details">
             <div class="lesson-header">
                 <h3 class="lesson-title" title="${lesson.title}">${lesson.title}</h3>
-                <span class="lesson-status">Hoạt động</span>
             </div>
             <div class="lesson-meta">
                 <div class="meta-item">
                     <i class="fas fa-users"></i>
-                    <span>${studentCount} học sinh</span>
+                    <span>${studentCount !== 'N/A' ? `${studentCount} học sinh` : 'N/A'}</span>
                 </div>
                 <div class="meta-item">
                     <i class="fas fa-chart-line"></i>
-                    <span>${completionRate}% hoàn thành</span>
+                    <span>${completionRate !== 'N/A' ? `${completionRate} đã học` : 'N/A'}</span>
                 </div>
                 <div class="meta-item">
                     <i class="fas fa-clock"></i>
@@ -390,11 +402,26 @@ function createLessonCard(lesson, index) {
                        onchange="updateLessonColor(${lesson.id}, this.value)"
                        title="Đổi màu">
             </div>
-            <a href="/admin/edit/${lesson.id}" class="action-btn">
-                <i class="fas fa-edit"></i>
-                <span>Sửa</span>
-            </a>
-            <a href="/admin/statistics/${lesson.id}" class="action-btn">
+            <div class="edit-dropdown">
+                <a href="/admin/edit/${lesson.id}" class="action-btn" title="Chỉnh sửa với giao diện mới">
+                    <i class="fas fa-edit"></i>
+                    <span>Sửa</span>
+                </a>
+                <button class="dropdown-toggle" onclick="toggleEditDropdown(${lesson.id})" title="Tùy chọn chỉnh sửa">
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="dropdown-menu" id="edit-dropdown-${lesson.id}">
+                    <a href="/admin/edit/${lesson.id}" class="dropdown-item">
+                        <i class="fas fa-magic"></i>
+                        <span>Giao diện mới</span>
+                    </a>
+                    <a href="/admin/edit-legacy/${lesson.id}" class="dropdown-item">
+                        <i class="fas fa-edit"></i>
+                        <span>Giao diện cũ</span>
+                    </a>
+                </div>
+            </div>
+            <a href="/admin/lessons/${lesson.id}/statistics" class="action-btn">
                 <i class="fas fa-chart-bar"></i>
                 <span>Thống kê</span>
             </a>
@@ -458,16 +485,16 @@ function updateStatsDisplay() {
     };
     
     if (statWidgets.total) {
-        animateValue(statWidgets.total, 0, statsData.total || totalLessons, 1000);
+        animateValue(statWidgets.total, 0, statsData.totalLessons || totalLessons, 1000);
     }
     if (statWidgets.active) {
-        animateValue(statWidgets.active, 0, statsData.active || Math.floor(totalLessons * 0.8), 1000);
+        animateValue(statWidgets.active, 0, statsData.activeLessons || Math.floor(totalLessons * 0.8), 1000);
     }
     if (statWidgets.students) {
-        animateValue(statWidgets.students, 0, statsData.students || Math.floor(totalLessons * 15), 1000);
+        animateValue(statWidgets.students, 0, statsData.totalStudents || Math.floor(totalLessons * 15), 1000);
     }
     if (statWidgets.recent) {
-        animateValue(statWidgets.recent, 0, statsData.recent || Math.floor(Math.random() * 20) + 5, 1000);
+        animateValue(statWidgets.recent, 0, statsData.recentActivity || Math.floor(Math.random() * 20) + 5, 1000);
     }
 }
 
@@ -547,12 +574,18 @@ async function updateLessonColor(id, color) {
         const response = await fetch(`/api/lessons/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
             body: JSON.stringify({ color: color })
         });
 
         if (!response.ok) {
-            throw new Error('Failed to update lesson color');
+            const errorData = await response.json();
+            console.error('Color update failed:', errorData);
+            throw new Error(errorData.message || 'Failed to update lesson color');
         }
+        
+        const result = await response.json();
+        console.log('Color update result:', result);
         
         // Update local data
         const lesson = displayedLessons.find(l => l.id == id);
@@ -567,13 +600,18 @@ async function updateLessonColor(id, color) {
             if (colorBar) {
                 colorBar.style.background = color;
             }
+            
+            const colorPicker = lessonCard.querySelector('.color-picker');
+            if (colorPicker && colorPicker.value !== color) {
+                colorPicker.value = color;
+            }
         }
         
         showToast('Đã cập nhật màu sắc', 'success');
         
     } catch (error) {
         console.error('Error updating lesson color:', error);
-        showToast('Không thể cập nhật màu sắc', 'error');
+        showToast(error.message || 'Không thể cập nhật màu sắc', 'error');
     }
 }
 
@@ -885,6 +923,31 @@ async function handleReviewLessonSubmit(e) {
     }
 }
 
+// Toggle edit dropdown menu
+function toggleEditDropdown(lessonId) {
+    const dropdown = document.getElementById(`edit-dropdown-${lessonId}`);
+    const allDropdowns = document.querySelectorAll('.dropdown-menu');
+    
+    // Close all other dropdowns
+    allDropdowns.forEach(d => {
+        if (d !== dropdown) {
+            d.classList.remove('active');
+        }
+    });
+    
+    // Toggle current dropdown
+    dropdown.classList.toggle('active');
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.edit-dropdown')) {
+        document.querySelectorAll('.dropdown-menu').forEach(dropdown => {
+            dropdown.classList.remove('active');
+        });
+    }
+});
+
 // Export functions for global access
 window.updateLessonColor = updateLessonColor;
 window.copyShareLink = copyShareLink;
@@ -893,3 +956,4 @@ window.openReviewLessonModal = openReviewLessonModal;
 window.closeReviewLessonModal = closeReviewLessonModal;
 window.addReviewRow = addReviewRow;
 window.removeReviewRow = removeReviewRow;
+window.toggleEditDropdown = toggleEditDropdown;

@@ -1639,11 +1639,37 @@
             const isAuthenticated = await checkStudentAuthentication();
             
             showLoader(true);
-            const lessonId = window.location.pathname.split('/')[2];
+            let lessonId = window.location.pathname.split('/')[2];
             document.title = 'Loading lesson...';
             
             try {
-                const response = await fetch(`/api/lessons/${lessonId}`);
+                let response;
+                
+                // Check if we're loading the last incomplete lesson
+                if (lessonId === 'last-incomplete') {
+                    response = await fetch('/api/lessons/last-incomplete');
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch last incomplete lesson: ${response.status}`);
+                    }
+                    
+                    const result = await response.json();
+                    if (!result.lesson) {
+                        // No incomplete lessons, redirect to lessons page
+                        alert('Chúc mừng! Bạn đã hoàn thành tất cả các bài học.');
+                        window.location.href = '/lessons';
+                        return;
+                    }
+                    
+                    // Update the URL to show the actual lesson ID
+                    lessonId = result.lesson.id;
+                    window.history.replaceState({}, '', `/lesson/${lessonId}`);
+                    
+                    // Now fetch the full lesson data
+                    response = await fetch(`/api/lessons/${lessonId}`);
+                } else {
+                    response = await fetch(`/api/lessons/${lessonId}`);
+                }
+                
                 if (!response.ok) {
                     throw new Error(`Failed to fetch lesson: ${response.status}`);
                 }

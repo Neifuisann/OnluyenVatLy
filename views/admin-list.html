@@ -132,6 +132,7 @@
             grid-template-columns: 280px 1fr;
             gap: 2rem;
             margin-top: 2rem;
+            align-items: start;
         }
         
         /* Sidebar */
@@ -303,9 +304,10 @@
             padding: 1.5rem;
             transition: var(--transition-normal);
             display: grid;
-            grid-template-columns: auto 1fr auto;
+            grid-template-columns: auto auto 1fr auto;
             gap: 1.5rem;
             align-items: center;
+            position: relative;
         }
         
         .lesson-card:hover {
@@ -314,16 +316,36 @@
             transform: translateX(5px);
         }
         
+        /* Lesson numbering */
+        .lesson-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+        }
+
         /* Color indicator */
         .lesson-color {
-            width: 4px;
+            width: 8px;
             height: 60px;
-            border-radius: var(--radius-sm);
+            border-radius: var(--radius-md);
             background: var(--primary-gradient);
+            flex-shrink: 0;
         }
         
         .lesson-details {
             flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
         }
         
         .lesson-header {
@@ -331,6 +353,7 @@
             align-items: center;
             gap: 1rem;
             margin-bottom: 0.75rem;
+            width: 100%;
         }
         
         .lesson-title {
@@ -338,21 +361,30 @@
             font-weight: 600;
             color: var(--text-primary);
             margin: 0;
+            flex: 1;
+            text-align: left;
+            width: 100%;
         }
         
         .lesson-status {
-            padding: 0.25rem 0.75rem;
-            background: linear-gradient(135deg, rgba(67, 233, 123, 0.1) 0%, rgba(56, 249, 215, 0.1) 100%);
-            border: 1px solid rgba(67, 233, 123, 0.3);
-            border-radius: var(--radius-full);
-            font-size: 0.75rem;
-            color: #43e97b;
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            width: 12px;
+            height: 12px;
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            border-radius: 50%;
+            border: 2px solid rgba(67, 233, 123, 0.3);
+            z-index: 1;
+            box-shadow: 0 0 8px rgba(67, 233, 123, 0.4);
         }
         
         .lesson-meta {
             display: flex;
             gap: 2rem;
             margin-bottom: 0.75rem;
+            width: 100%;
+            justify-content: flex-start;
         }
         
         .meta-item {
@@ -371,6 +403,8 @@
             display: flex;
             gap: 0.5rem;
             flex-wrap: wrap;
+            width: 100%;
+            justify-content: flex-start;
         }
         
         .lesson-tag {
@@ -455,6 +489,46 @@
             padding-top: 2rem;
             border-top: 1px solid var(--glass-border);
         }
+
+        .pagination-controls button {
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 40px;
+            justify-content: center;
+        }
+
+        .pagination-controls button:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--neon-purple);
+            color: var(--text-primary);
+            transform: translateY(-1px);
+        }
+
+        .pagination-controls button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .pagination-controls button.active-page {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+        }
+
+        .pagination-controls span {
+            color: var(--text-tertiary);
+            padding: 0 0.5rem;
+        }
         
         /* Quick Actions */
         .quick-actions {
@@ -505,13 +579,33 @@
             }
             
             .lesson-card {
-                grid-template-columns: 1fr;
+                grid-template-columns: auto auto 1fr;
+                grid-template-areas: 
+                    "number color details"
+                    "actions actions actions";
                 gap: 1rem;
             }
             
+            .lesson-number {
+                grid-area: number;
+                width: 32px;
+                height: 32px;
+                font-size: 0.75rem;
+            }
+            
             .lesson-color {
-                width: 100%;
-                height: 4px;
+                grid-area: color;
+                width: 6px;
+                height: 40px;
+            }
+            
+            .lesson-details {
+                grid-area: details;
+            }
+            
+            .lesson-actions {
+                grid-area: actions;
+                justify-self: stretch;
             }
             
             .lesson-actions {
@@ -670,10 +764,384 @@
     
     <!-- Quick Actions FAB -->
     <div class="quick-actions">
-        <a href="/admin/new" class="fab-btn" title="Tạo bài học mới">
-            <i class="fas fa-plus"></i>
-        </a>
+        <div class="fab-container">
+            <a href="/admin/new" class="fab-btn main-fab" title="Tạo bài học mới (Giao diện mới)">
+                <i class="fas fa-plus"></i>
+            </a>
+            <div class="fab-menu">
+                <a href="/admin/new" class="fab-menu-item" title="Giao diện mới - Modern Editor">
+                    <i class="fas fa-magic"></i>
+                    <span>Giao diện mới</span>
+                </a>
+                <a href="/admin/new-legacy" class="fab-menu-item" title="Giao diện cũ - Legacy Editor">
+                    <i class="fas fa-edit"></i>
+                    <span>Giao diện cũ</span>
+                </a>
+            </div>
+            <button class="fab-toggle" onclick="toggleFabMenu()" title="Tùy chọn tạo bài">
+                <i class="fas fa-chevron-up"></i>
+            </button>
+        </div>
     </div>
+
+    <style>
+        .fab-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .fab-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .fab-menu.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .fab-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            color: var(--text-primary);
+            text-decoration: none;
+            backdrop-filter: blur(20px);
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            font-size: 0.875rem;
+        }
+
+        .fab-menu-item:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateX(-5px);
+        }
+
+        .fab-menu-item i {
+            font-size: 1rem;
+        }
+
+        .fab-toggle {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            backdrop-filter: blur(20px);
+            transition: all 0.3s ease;
+        }
+
+        .fab-toggle:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .fab-toggle.active i {
+            transform: rotate(180deg);
+        }
+
+        .main-fab {
+            order: 2;
+        }
+
+        @media (max-width: 768px) {
+            .fab-menu-item span {
+                display: none;
+            }
+            
+            .fab-menu-item {
+                padding: 0.75rem;
+                min-width: 3rem;
+                justify-content: center;
+            }
+        }
+
+        /* Edit Dropdown Styles */
+        .edit-dropdown {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .dropdown-toggle {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            padding: 0.5rem;
+            cursor: pointer;
+            border-radius: var(--radius-md);
+            transition: all 0.3s ease;
+            margin-left: 0.25rem;
+        }
+
+        .dropdown-toggle:hover {
+            background: var(--glass-bg);
+            color: var(--text-primary);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            min-width: 150px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-menu.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .dropdown-item:first-child {
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        }
+
+        .dropdown-item:last-child {
+            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+        }
+
+        .dropdown-item i {
+            font-size: 1rem;
+        }
+
+        /* Notification Banner Styles */
+        .notification-banner {
+            background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(164, 174, 255, 0.3);
+        }
+
+        .notification-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" stroke-width="0.5" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            pointer-events: none;
+        }
+
+        .banner-content {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .banner-icon {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 3rem;
+            height: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .banner-text {
+            flex: 1;
+            color: white;
+        }
+
+        .banner-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .banner-description {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        .banner-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .banner-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+        }
+
+        .banner-btn.primary {
+            background: white;
+            color: var(--neon-purple);
+        }
+
+        .banner-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .banner-btn.secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .banner-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .banner-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .banner-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .notification-banner.hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .banner-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .banner-actions {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .banner-btn {
+                flex: 1;
+                max-width: 150px;
+            }
+        }
+    </style>
+
+    <script>
+        function toggleFabMenu() {
+            const menu = document.querySelector('.fab-menu');
+            const toggle = document.querySelector('.fab-toggle');
+            
+            menu.classList.toggle('active');
+            toggle.classList.toggle('active');
+        }
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const fabContainer = document.querySelector('.fab-container');
+            if (!fabContainer.contains(event.target)) {
+                document.querySelector('.fab-menu').classList.remove('active');
+                document.querySelector('.fab-toggle').classList.remove('active');
+            }
+        });
+
+        // Banner management
+        function dismissBanner() {
+            const banner = document.getElementById('new-interface-banner');
+            banner.style.transform = 'translateY(-100%)';
+            banner.style.opacity = '0';
+            
+            setTimeout(() => {
+                banner.classList.add('hidden');
+            }, 300);
+            
+            // Save preference to not show again for 30 days
+            localStorage.setItem('newInterfaceBannerDismissed', Date.now());
+        }
+
+        // Check if banner should be shown
+        document.addEventListener('DOMContentLoaded', function() {
+            const banner = document.getElementById('new-interface-banner');
+            const dismissedTime = localStorage.getItem('newInterfaceBannerDismissed');
+            
+            if (dismissedTime) {
+                const thirtyDays = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
+                if (Date.now() - parseInt(dismissedTime) < thirtyDays) {
+                    banner.classList.add('hidden');
+                }
+            }
+        });
+    </script>
     
     <!-- Review Lesson Modal (keep existing) -->
     <div id="review-lesson-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; z-index: 2000;">
@@ -710,17 +1178,17 @@
             div.className = 'lesson-card';
             div.dataset.id = lesson.id;
             
-            // Calculate some mock statistics (in real app, these would come from API)
-            const studentCount = Math.floor(Math.random() * 50) + 10;
-            const completionRate = Math.floor(Math.random() * 40) + 60;
-            const lastActivity = Math.floor(Math.random() * 24) + 1;
+            // Get lesson statistics (placeholder values for now, will be populated by API)
+            const studentCount = lesson.studentCount || 0;
+            const completionRate = lesson.completionRate || 0;
+            const lastActivity = lesson.lastActivity || 'N/A';
             
             div.innerHTML = `
+                <div class="lesson-status"></div>
                 <div class="lesson-color" style="background: ${lesson.color || '#a4aeff'};"></div>
                 <div class="lesson-details">
                     <div class="lesson-header">
                         <h3 class="lesson-title">${lesson.title}</h3>
-                        <span class="lesson-status">Hoạt động</span>
                     </div>
                     <div class="lesson-meta">
                         <div class="meta-item">
@@ -753,7 +1221,7 @@
                         <i class="fas fa-edit"></i>
                         <span>Sửa</span>
                     </a>
-                    <a href="/admin/statistics/${lesson.id}" class="action-btn">
+                    <a href="/admin/lessons/${lesson.id}/statistics" class="action-btn">
                         <i class="fas fa-chart-bar"></i>
                         <span>Thống kê</span>
                     </a>
@@ -771,13 +1239,33 @@
             return div;
         }
         
-        // Update stats overview
-        function updateStatsOverview() {
-            // In real app, these would come from API
-            document.querySelector('.stat-widget.total .stat-widget-value').textContent = totalLessons;
-            document.querySelector('.stat-widget.active .stat-widget-value').textContent = Math.floor(totalLessons * 0.8);
-            document.querySelector('.stat-widget.students .stat-widget-value').textContent = Math.floor(totalLessons * 15);
-            document.querySelector('.stat-widget.recent .stat-widget-value').textContent = Math.floor(Math.random() * 20) + 5;
+        // Update stats overview with real data from API
+        async function updateStatsOverview() {
+            try {
+                const response = await fetch('/api/admin/dashboard-stats');
+                const { success, data } = await response.json();
+                
+                if (success && data) {
+                    document.querySelector('.stat-widget.total .stat-widget-value').textContent = data.totalLessons || 0;
+                    document.querySelector('.stat-widget.active .stat-widget-value').textContent = data.activeLessons || 0;
+                    document.querySelector('.stat-widget.students .stat-widget-value').textContent = data.totalStudents || 0;
+                    document.querySelector('.stat-widget.recent .stat-widget-value').textContent = data.recentActivity || 0;
+                } else {
+                    console.error('Failed to load dashboard stats:', data);
+                    // Keep existing values or show fallback
+                    document.querySelector('.stat-widget.total .stat-widget-value').textContent = totalLessons;
+                    document.querySelector('.stat-widget.active .stat-widget-value').textContent = Math.floor(totalLessons * 0.8);
+                    document.querySelector('.stat-widget.students .stat-widget-value').textContent = Math.floor(totalLessons * 15);
+                    document.querySelector('.stat-widget.recent .stat-widget-value').textContent = 5;
+                }
+            } catch (error) {
+                console.error('Error fetching dashboard stats:', error);
+                // Fallback to lesson count
+                document.querySelector('.stat-widget.total .stat-widget-value').textContent = totalLessons;
+                document.querySelector('.stat-widget.active .stat-widget-value').textContent = Math.floor(totalLessons * 0.8);
+                document.querySelector('.stat-widget.students .stat-widget-value').textContent = Math.floor(totalLessons * 15);
+                document.querySelector('.stat-widget.recent .stat-widget-value').textContent = 5;
+            }
         }
         
         // View toggle functionality
@@ -797,8 +1285,10 @@
             });
         });
         
-        // Override the loadLessonsForAdmin function to use enhanced rendering
-        const originalLoadLessonsForAdmin = loadLessonsForAdmin;
+        // Override the loadLessonsForAdmin function after scripts are loaded
+        window.addEventListener('load', function() {
+            if (typeof loadLessonsForAdmin === 'function') {
+                const originalLoadLessonsForAdmin = loadLessonsForAdmin;
         loadLessonsForAdmin = async function() {
             if (isLoading) return;
             isLoading = true;
@@ -848,6 +1338,8 @@
                 isLoading = false;
             }
         };
+            }
+        });
     </script>
     
     <!-- Keep existing scripts -->

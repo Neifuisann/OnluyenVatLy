@@ -452,7 +452,7 @@
         
         function reviewMistakes() {
             // Navigate to review mode
-            window.location.href = '/review/mistakes';
+            window.location.href = 'review-mistakes';
         }
         
         function practiceMode() {
@@ -463,11 +463,34 @@
         // Update total lessons count
         async function updateStats() {
             try {
-                const response = await fetch('/api/lessons?limit=1');
-                const data = await response.json();
-                document.getElementById('total-lessons').textContent = data.total || 0;
+                // Fetch platform statistics from new endpoint
+                const statsResponse = await fetch('/api/lessons/platform-stats');
+                const statsData = await statsResponse.json();
+                
+                if (statsData.success && statsData.data) {
+                    document.getElementById('total-lessons').textContent = statsData.data.totalLessons || 0;
+                    document.getElementById('total-students').textContent = statsData.data.totalStudents || 0;
+                    document.getElementById('completion-rate').textContent = `${statsData.data.completionRate || 0}%`;
+                    document.getElementById('avg-score').textContent = (statsData.data.avgScore || 0).toFixed(1);
+                } else {
+                    // Fallback to original method for total lessons
+                    const response = await fetch('/api/lessons?limit=1');
+                    const data = await response.json();
+                    document.getElementById('total-lessons').textContent = data.total || 0;
+                    
+                    // Keep existing hardcoded values for other stats if API fails
+                    console.warn('Platform stats API failed, using fallback values');
+                }
             } catch (error) {
                 console.error('Error loading stats:', error);
+                // Fallback to original method
+                try {
+                    const response = await fetch('/api/lessons?limit=1');
+                    const data = await response.json();
+                    document.getElementById('total-lessons').textContent = data.total || 0;
+                } catch (fallbackError) {
+                    console.error('Fallback stats loading also failed:', fallbackError);
+                }
             }
         }
         

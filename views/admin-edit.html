@@ -133,7 +133,7 @@
 
     <div class="lesson-editor stage-1">
         <div class="editor-header">
-            <h1>Chỉnh sửa nội dung bài học</h1>
+            <h1><i class="fas fa-chalkboard-teacher"></i> Chỉnh sửa nội dung bài học</h1>
             <div class="header-actions">
                 <button onclick="proceedToConfiguration()" class="next-btn">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 17l5-5-5-5M6 17l5-5-5-5"/></svg>
@@ -150,18 +150,10 @@
 
         <!-- Editor and Preview Section -->
         <div class="editor-preview-container">
-            <!-- Swapped Order: Preview Panel First -->
-            <div class="preview-panel">
-                 <h2>Xem trước</h2>
-                 <div id="realtime-preview" class="azota-preview">
-                     <p>Xem trước sẽ xuất hiện ở đây...</p>
-                 </div>
-            </div>
-            
-            <!-- Swapped Order: Text Editor Panel Second -->
+            <!-- Text Editor Panel - Left Side -->
             <div class="text-editor-main-panel">
                 <div class="editor-toolbar">
-                     <h2>Câu hỏi (Nhập văn bản)</h2>
+                     <h2><i class="fas fa-edit"></i> Câu hỏi (Nhập văn bản)</h2>
                      <div class="toolbar-buttons">
                          <button onclick="triggerImageUpload()" title="Tải ảnh lên"><i class="fas fa-upload"></i> Tải ảnh</button> 
                          <button onclick="addImageFromUrl()" title="Thêm ảnh từ URL"><i class="fas fa-link"></i> Ảnh URL</button>
@@ -170,9 +162,21 @@
                          <!-- Add other toolbar buttons if needed -->
                      </div>
                  </div>
-                <textarea id="text-editor" spellcheck="false"></textarea>
+                <textarea id="text-editor" spellcheck="false" placeholder="Nhập nội dung bài học tại đây...&#10;&#10;Ví dụ:&#10;Câu 1: Trong cuộc khai thác thuộc địa lần thứ hai ở Đông Dương 1919-1929, thực dân Pháp tập trung đầu tư vào&#10;A. Ngành chế tạo máy.&#10;B. Công nghiệp luyện kim.&#10;C. Đồn điền cao su.&#10;D. Công nghiệp hóa chất."></textarea>
                 <!-- Add hidden file input for image uploads -->
                 <input type="file" id="image-upload-input" accept="image/*" style="display: none;">
+            </div>
+            
+            <!-- Preview Panel - Right Side -->
+            <div class="preview-panel">
+                 <h2><i class="fas fa-eye"></i> Xem trước</h2>
+                 <div id="realtime-preview" class="azota-preview">
+                     <p class="preview-placeholder">
+                         <i class="fas fa-file-alt"></i><br>
+                         Xem trước sẽ xuất hiện ở đây...<br>
+                         <small>Nhập nội dung bên trái để xem kết quả hiển thị</small>
+                     </p>
+                 </div>
             </div>
         </div>
         

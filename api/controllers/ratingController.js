@@ -11,14 +11,8 @@ class RatingController {
     // Calculate offset for pagination
     const offset = (parseInt(page) - 1) * parseInt(limit);
 
-    // Get ratings based on filter
-    let ratings;
-    if (filter === 'all') {
-      ratings = await ratingService.getLeaderboard(parseInt(limit), offset);
-    } else {
-      // For now, treat all filters as 'all' - can be extended later
-      ratings = await ratingService.getLeaderboard(parseInt(limit), offset);
-    }
+    // Get ratings with the filter applied
+    const ratings = await ratingService.getLeaderboard(parseInt(limit), offset, filter);
 
     // Add tier information to each rating
     const ratingsWithTiers = ratings.map(rating => ({

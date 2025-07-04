@@ -170,7 +170,12 @@ class ProgressController {
     // Get mistakes to review
     getMistakesToReview = asyncHandler(async (req, res) => {
         const studentId = req.session.studentId;
-        const { limit = 20 } = req.query;
+        const { 
+            limit = 20, 
+            page = 1,
+            subject,
+            reviewed 
+        } = req.query;
         
         if (!studentId) {
             return res.status(401).json({
@@ -180,11 +185,26 @@ class ProgressController {
         }
 
         try {
-            const mistakes = await databaseService.getStudentMistakes(studentId, parseInt(limit));
+            const offset = (parseInt(page) - 1) * parseInt(limit);
+            const mistakes = await databaseService.getStudentMistakes(
+                studentId, 
+                parseInt(limit),
+                offset,
+                { subject, reviewed }
+            );
+            
+            // Get total count for pagination
+            const totalCount = await databaseService.getStudentMistakesCount(studentId, { subject, reviewed });
             
             res.json({
                 success: true,
-                mistakes
+                mistakes,
+                pagination: {
+                    page: parseInt(page),
+                    limit: parseInt(limit),
+                    total: totalCount,
+                    totalPages: Math.ceil(totalCount / parseInt(limit))
+                }
             });
         } catch (error) {
             console.error('Error getting mistakes:', error);
@@ -250,6 +270,113 @@ class ProgressController {
             res.status(500).json({
                 success: false,
                 message: 'Error retrieving achievements'
+            });
+        }
+    });
+
+    // Mark mistakes as reviewed
+    markMistakesReviewed = asyncHandler(async (req, res) => {
+        const studentId = req.session.studentId;
+        const { mistakeIds } = req.body;
+        
+        if (!studentId) {
+            return res.status(401).json({
+                success: false,
+                message: 'Student authentication required'
+            });
+        }
+
+        if (!mistakeIds || !Array.isArray(mistakeIds) || mistakeIds.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'Mistake IDs are required'
+            });
+        }
+
+        try {
+            await databaseService.markMistakesReviewed(studentId, mistakeIds);
+            
+            res.json({
+                success: true,
+                message: 'Mistakes marked as reviewed'
+            });
+        } catch (error) {
+            console.error('Error marking mistakes as reviewed:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error marking mistakes as reviewed'
+            });
+        }
+    });
+
+    // Get practice session questions from mistakes
+    getPracticeQuestions = asyncHandler(async (req, res) => {
+        const studentId = req.session.studentId;
+        const { mistakeIds, count = 10 } = req.body;
+        
+        if (!studentId) {
+            return res.status(401).json({
+                success: false,
+                message: 'Student authentication required'
+            });
+        }
+
+        try {
+            const practiceQuestions = await databaseService.createPracticeSession(
+                studentId, 
+                mistakeIds, 
+                parseInt(count)
+            );
+            
+            res.json({
+                success: true,
+                questions: practiceQuestions,
+                sessionInfo: {
+                    totalQuestions: practiceQuestions.length,
+                    source: 'mistakes',
+                    createdAt: new Date().toISOString()
+                }
+            });
+        } catch (error) {
+            console.error('Error creating practice session:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error creating practice session'
+            });
+        }
+    });
+
+    // Submit practice session results
+    submitPracticeResults = asyncHandler(async (req, res) => {
+        const studentId = req.session.studentId;
+        const { questions, score, totalQuestions, timeSpent } = req.body;
+        
+        if (!studentId) {
+            return res.status(401).json({
+                success: false,
+                message: 'Student authentication required'
+            });
+        }
+
+        try {
+            const result = await databaseService.savePracticeResults(studentId, {
+                questions,
+                score,
+                totalQuestions,
+                timeSpent,
+                timestamp: new Date().toISOString()
+            });
+            
+            res.json({
+                success: true,
+                result,
+                message: 'Practice results saved successfully'
+            });
+        } catch (error) {
+            console.error('Error saving practice results:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error saving practice results'
             });
         }
     });

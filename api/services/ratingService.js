@@ -65,9 +65,9 @@ class RatingService {
   }
 
   // Get leaderboard data
-  async getLeaderboard(limit = 100, offset = 0) {
+  async getLeaderboard(limit = 100, offset = 0, filter = 'all') {
     try {
-      const ratings = await databaseService.getRatings(limit, offset);
+      const ratings = await databaseService.getRatingsWithChanges(limit, offset, filter);
       return ratings;
     } catch (error) {
       console.error('Error fetching leaderboard:', error);

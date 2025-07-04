@@ -23,4 +23,7 @@ router.delete('/students/:studentId/device', adminController.unbindDevice);
 // Student profile
 router.get('/students/:studentId/profile', adminController.getStudentProfile);
 
+// Dashboard statistics
+router.get('/dashboard-stats', adminController.getDashboardStats);
+
 module.exports = router;

@@ -3,24 +3,43 @@ let scoreChartInstance = null;
 
 async function loadStatistics() {
     try {
-        const lessonId = window.location.pathname.split('/').pop();
+        // Extract lesson ID from URL path like /admin/lessons/1744597118421/statistics
+        const pathParts = window.location.pathname.split('/');
+        const lessonId = pathParts[pathParts.length - 2]; // Get the ID before 'statistics'
         const response = await fetch(`/api/lessons/${lessonId}/statistics`);
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const stats = await response.json();
+        const data = await response.json();
+        
+        // Handle both old and new response structures
+        const stats = data.statistics || data;
+        
+        // Ensure all required fields exist with defaults
+        const defaultStats = {
+            uniqueStudents: 0,
+            totalAttempts: 0,
+            averageScore: 0,
+            lowScores: 0,
+            highScores: 0,
+            scoreDistribution: { labels: [], data: [] },
+            topScorers: [],
+            questionStats: [],
+            views: 0,
+            ...stats
+        };
         
         // Store stats globally for export
-        window.lessonStats = stats;
+        window.lessonStats = defaultStats;
 
         // Update basic stats - Add null checks
-        safeUpdateText('total-students', stats.uniqueStudents);
-        safeUpdateText('total-attempts', stats.totalAttempts);
-        safeUpdateText('avg-score', (parseFloat(stats.averageScore) || 0).toFixed(2));
-        safeUpdateText('low-scores', stats.lowScores);
-        safeUpdateText('high-scores', stats.highScores);
+        safeUpdateText('total-students', defaultStats.uniqueStudents);
+        safeUpdateText('total-attempts', defaultStats.totalAttempts);
+        safeUpdateText('avg-score', (parseFloat(defaultStats.averageScore) || 0).toFixed(2));
+        safeUpdateText('low-scores', defaultStats.lowScores);
+        safeUpdateText('high-scores', defaultStats.highScores);
 
         // Update the stats card labels - Add null checks
         safeUpdateLabel('low-scores', 'Tỉ lệ đúng < 50%');
@@ -38,10 +57,10 @@ async function loadStatistics() {
             scoreChartInstance = new Chart(scoreChart, {
                 type: 'bar',
                 data: {
-                    labels: stats.scoreDistribution.labels,
+                    labels: defaultStats.scoreDistribution.labels,
                     datasets: [{
                         label: 'Số lượt làm bài',
-                        data: stats.scoreDistribution.data,
+                        data: defaultStats.scoreDistribution.data,
                         backgroundColor: 'rgba(54, 162, 235, 0.5)',
                         borderColor: 'rgba(54, 162, 235, 1)',
                         borderWidth: 1
@@ -106,7 +125,7 @@ async function loadStatistics() {
                     </tr>
                 </thead>
                 <tbody>
-                    ${stats.questionStats.map((q, idx) => `
+                    ${defaultStats.questionStats.map((q, idx) => `
                         <tr>
                             <td>${idx + 1}</td>
                             <td>${q.question}</td>
@@ -134,7 +153,7 @@ async function loadStatistics() {
                     </tr>
                 </thead>
                 <tbody>
-                    ${stats.transcripts.map((t, idx) => `
+                    ${(defaultStats.transcripts || defaultStats.topScorers || []).map((t, idx) => `
                         <tr>
                             <td>${idx + 1}</td>
                             <td>${t.name}</td>

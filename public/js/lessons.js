@@ -75,15 +75,86 @@ function shuffleArray(array) {
 // This file is for lessons listing page, not individual lesson rendering
 // Individual lesson functionality is handled in lesson.html directly
 
+// --- Continue Learning Banner ---
+function showContinueLearningBanner(lesson) {
+    const lessonsContainer = document.querySelector('.lessons-container');
+    if (!lessonsContainer) return;
+    
+    const banner = document.createElement('div');
+    banner.className = 'continue-learning-banner';
+    banner.style.cssText = `
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        color: white;
+        padding: 1.5rem;
+        border-radius: 16px;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        flex-wrap: wrap;
+        gap: 1rem;
+    `;
+    
+    banner.innerHTML = `
+        <div style="flex: 1;">
+            <h3 style="margin: 0 0 0.5rem 0; font-size: 1.25rem;">
+                <i class="fas fa-book-open" style="margin-right: 0.5rem;"></i>
+                Tiếp tục học tập
+            </h3>
+            <p style="margin: 0; opacity: 0.9;">
+                Bạn đang làm dở: <strong>${lesson.title}</strong>
+            </p>
+        </div>
+        <a href="/lesson/last-incomplete" class="continue-btn" style="
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background 0.2s;
+            backdrop-filter: blur(10px);
+        " onmouseover="this.style.background='rgba(255, 255, 255, 0.3)'" 
+           onmouseout="this.style.background='rgba(255, 255, 255, 0.2)'">
+            <i class="fas fa-play-circle"></i>
+            Tiếp tục
+        </a>
+    `;
+    
+    // Insert banner at the top of lessons container
+    lessonsContainer.insertBefore(banner, lessonsContainer.firstChild);
+}
+
 // --- Initialize Lessons Listing ---
 async function initializeLessons() {
     // Check authentication (for potential future use)
-    await checkStudentAuthentication();
+    const isAuthenticated = await checkStudentAuthentication();
 
     showLoader(true);
 
     try {
         console.log('Loading lessons listing...');
+        
+        // Check for last incomplete lesson if authenticated
+        if (isAuthenticated) {
+            try {
+                const progressResponse = await fetch('/api/progress/overview');
+                if (progressResponse.ok) {
+                    const progressData = await progressResponse.json();
+                    if (progressData.progress && progressData.progress.lastIncompleteLesson) {
+                        const lesson = progressData.progress.lastIncompleteLesson;
+                        showContinueLearningBanner(lesson);
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching progress:', error);
+            }
+        }
+        
         await loadLessons();
         showLoader(false);
 

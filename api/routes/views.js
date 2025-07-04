@@ -95,6 +95,27 @@ router.get('/lessons',
   serveHTML('lessons.html')
 );
 
+router.get('/lesson/last-incomplete',
+  requireStudentAuthForHTML,
+  addSessionInfo,
+  noCacheMiddleware,
+  serveHTML('lesson.html')
+);
+
+router.get('/review-mistakes',
+  requireStudentAuthForHTML,
+  addSessionInfo,
+  noCacheMiddleware,
+  serveHTML('review-mistakes.html')
+);
+
+router.get('/practice',
+  requireStudentAuthForHTML,
+  addSessionInfo,
+  noCacheMiddleware,
+  serveHTML('practice.html')
+);
+
 router.get('/lesson/:id',
   requireStudentAuthForHTML,
   addSessionInfo,
@@ -212,33 +233,48 @@ router.get('/admin/lessons',
   serveHTML('admin-list.html')  // Fixed: admin-lessons.html -> admin-list.html (lessons are managed in main admin page)
 );
 
+// Modern Split-Screen Editor (Default Interface)
 router.get('/admin/new',
   requireAdminAuthForHTML,
   addSessionInfo,
   noCacheMiddleware,
-  serveHTML('admin-edit.html')  // Route for creating new lessons
+  serveHTML('admin-new-v2.html')  // Route for creating new lessons - now uses modern interface
 );
 
 router.get('/admin/lessons/new',
   requireAdminAuthForHTML,
   addSessionInfo,
   noCacheMiddleware,
-  serveHTML('admin-edit.html')  // Fixed: admin-lesson-new.html -> admin-edit.html
+  serveHTML('admin-new-v2.html')  // Route for creating new lessons - now uses modern interface
 );
 
 router.get('/admin/lessons/:id/edit',
   requireAdminAuthForHTML,
   addSessionInfo,
   noCacheMiddleware,
-  serveHTML('admin-edit.html')  // Fixed: admin-lesson-edit.html -> admin-edit.html
+  serveHTML('admin-new-v2.html')  // Route for editing lessons - now uses modern interface
 );
 
-// Add missing admin edit route (from original server structure)
 router.get('/admin/edit/:id',
   requireAdminAuthForHTML,
   addSessionInfo,
   noCacheMiddleware,
-  serveHTML('admin-edit.html')
+  serveHTML('admin-new-v2.html')  // Route for editing lessons - now uses modern interface
+);
+
+// Legacy Interface (For Fallback)
+router.get('/admin/new-legacy',
+  requireAdminAuthForHTML,
+  addSessionInfo,
+  noCacheMiddleware,
+  serveHTML('admin-edit.html')  // Legacy interface available as fallback
+);
+
+router.get('/admin/edit-legacy/:id',
+  requireAdminAuthForHTML,
+  addSessionInfo,
+  noCacheMiddleware,
+  serveHTML('admin-edit.html')  // Legacy edit interface available as fallback
 );
 
 // Admin configure page (for lesson configuration after editing)

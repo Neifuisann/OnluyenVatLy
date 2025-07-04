@@ -3,7 +3,7 @@ const { supabase, supabaseAdmin } = require('../config/database');
 class DatabaseService {
   // Lesson operations
   async getLessons(options = {}) {
-    const { page = 1, limit = 10, search = '', sort = 'order' } = options;
+    const { page = 1, limit = 10, search = '', sort = 'order', tags = [] } = options;
     const startIndex = (page - 1) * limit;
 
     // Determine sorting parameters
@@ -22,6 +22,16 @@ class DatabaseService {
     let lessons = [];
     let total = 0;
 
+    // Parse tags parameter - can be string (comma-separated) or array
+    let tagFilters = [];
+    if (tags) {
+      if (typeof tags === 'string') {
+        tagFilters = tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+      } else if (Array.isArray(tags)) {
+        tagFilters = tags.filter(tag => tag && typeof tag === 'string');
+      }
+    }
+
     if (search) {
       // Use RPC for search
       let rpcQuery = supabase
@@ -33,6 +43,19 @@ class DatabaseService {
       if (rpcError) throw rpcError;
 
       lessons = rpcData || [];
+
+      // Apply tag filtering to search results if specified
+      if (tagFilters.length > 0) {
+        lessons = lessons.filter(lesson => {
+          if (!lesson.tags || !Array.isArray(lesson.tags)) return false;
+          // Check if lesson contains ALL specified tags (AND logic)
+          return tagFilters.every(tagFilter =>
+            lesson.tags.some(lessonTag =>
+              lessonTag && lessonTag.toLowerCase().includes(tagFilter.toLowerCase())
+            )
+          );
+        });
+      }
 
       // Get total count for search results
       const { count, error: countError } = await supabase
@@ -49,8 +72,18 @@ class DatabaseService {
       let query = supabase
         .from('lessons')
         .select('id, title, color, created, lastUpdated, views, order, subject, grade, tags, description, purpose, pricing, lessonImage, randomQuestions', { count: 'exact' })
-        .order(orderColumn, { ascending: orderAscending })
-        .range(startIndex, startIndex + limit - 1);
+        .order(orderColumn, { ascending: orderAscending });
+
+      // Apply tag filtering at database level for better performance
+      if (tagFilters.length > 0) {
+        // Use PostgreSQL array operators to filter by tags
+        // @> operator checks if the left array contains all elements of the right array
+        tagFilters.forEach(tag => {
+          query = query.contains('tags', `["${tag}"]`);
+        });
+      }
+
+      query = query.range(startIndex, startIndex + limit - 1);
 
       const { data, error, count } = await query;
       if (error) throw error;
@@ -59,7 +92,7 @@ class DatabaseService {
       total = count || 0;
     }
 
-    return { lessons, total, page, limit, search, sort };
+    return { lessons, total, page, limit, search, sort, tags: tagFilters };
   }
 
   async getLessonById(id) {
@@ -181,6 +214,26 @@ class DatabaseService {
     return true;
   }
 
+  // Database connection validation
+  async validateConnection() {
+    try {
+      const { data, error } = await supabase
+        .from('lessons')
+        .select('id')
+        .limit(1);
+      
+      if (error) {
+        console.error('Database connection validation failed:', error);
+        throw new Error('Database connection unavailable');
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Database connection validation error:', error);
+      throw new Error('Database connection unavailable');
+    }
+  }
+
   // Student operations
   async getStudentByPhone(phoneNumber) {
     const { data: student, error } = await supabase
@@ -271,6 +324,8 @@ class DatabaseService {
   }
 
   async getResultById(id) {
+    console.log('🔍 getResultById called with id:', id);
+    
     const { data: result, error } = await supabase
       .from('results')
       .select('*')
@@ -278,10 +333,21 @@ class DatabaseService {
       .single();
 
     if (error) {
+      console.error('🚨 Database error in getResultById:', error);
       if (error.code === 'PGRST116') {
         throw new Error('Result not found');
       }
       throw error;
+    }
+
+    console.log('✅ Raw result from database:', JSON.stringify(result, null, 2));
+    console.log('🔍 Result questions array:', result?.questions);
+    console.log('🔍 Questions array length:', result?.questions?.length || 0);
+    
+    if (result?.questions && Array.isArray(result.questions) && result.questions.length > 0) {
+      console.log('🔍 First question sample:', JSON.stringify(result.questions[0], null, 2));
+    } else {
+      console.warn('⚠️  No questions found in result or questions is not an array');
     }
 
     return result;
@@ -323,6 +389,79 @@ class DatabaseService {
 
     if (error) throw error;
     return ratings || [];
+  }
+
+  // Get ratings with changes for specific time period
+  async getRatingsWithChanges(limit = 100, offset = 0, filter = 'all') {
+    // First get current ratings
+    const { data: currentRatings, error: ratingsError } = await supabase
+      .from('ratings')
+      .select(`
+        *,
+        students ( full_name )
+      `)
+      .order('rating', { ascending: false })
+      .range(offset, offset + limit - 1);
+
+    if (ratingsError) throw ratingsError;
+    if (!currentRatings || currentRatings.length === 0) return [];
+
+    // If filter is 'all', no change calculation needed
+    if (filter === 'all') {
+      return currentRatings.map(rating => ({
+        ...rating,
+        ratingChange: null // No change for 'all' view
+      }));
+    }
+
+    // Calculate date range based on filter
+    const now = new Date();
+    let startDate;
+    
+    if (filter === 'week') {
+      startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    } else if (filter === 'month') {
+      startDate = new Date(now.getFullYear(), now.getMonth(), 1); // First day of current month
+    } else {
+      // Default to all if unknown filter
+      return currentRatings.map(rating => ({
+        ...rating,
+        ratingChange: null
+      }));
+    }
+
+    // Get rating changes for each student in the time period
+    const ratingsWithChanges = await Promise.all(
+      currentRatings.map(async (rating) => {
+        try {
+          // Get the total rating change from rating_history in the time period
+          const { data: historyData, error: historyError } = await supabase
+            .from('rating_history')
+            .select('rating_change')
+            .eq('student_id', rating.student_id)
+            .gte('timestamp', startDate.toISOString())
+            .order('timestamp', { ascending: true });
+
+          if (historyError) {
+            console.error(`Error fetching history for student ${rating.student_id}:`, historyError);
+            return { ...rating, ratingChange: 0 };
+          }
+
+          // Sum all rating changes in the period
+          const totalChange = historyData?.reduce((sum, record) => sum + (record.rating_change || 0), 0) || 0;
+
+          return {
+            ...rating,
+            ratingChange: totalChange
+          };
+        } catch (error) {
+          console.error(`Error calculating change for student ${rating.student_id}:`, error);
+          return { ...rating, ratingChange: 0 };
+        }
+      })
+    );
+
+    return ratingsWithChanges;
   }
 
   async getStudentRating(studentId) {
@@ -603,29 +742,56 @@ class DatabaseService {
 
   // Get last incomplete lesson for student
   async getLastIncompleteLesson(studentId) {
-    // Get all lessons
-    const { data: allLessons, error: lessonsError } = await supabase
-      .from('lessons')
-      .select('id, title, subject, grade')
-      .order('order', { ascending: true });
+    try {
+      // Input validation
+      if (!studentId) {
+        console.warn('getLastIncompleteLesson called without studentId');
+        return null;
+      }
 
-    if (lessonsError) throw lessonsError;
+      // Get all lessons with error handling
+      const { data: allLessons, error: lessonsError } = await supabase
+        .from('lessons')
+        .select('id, title, subject, grade')
+        .order('order', { ascending: true });
 
-    // Get completed lesson IDs
-    const completedLessons = await this.getStudentCompletedLessons(studentId);
-    const completedIds = completedLessons.map(lesson => lesson.lessonId);
+      if (lessonsError) {
+        console.error('Database error getting lessons in getLastIncompleteLesson:', lessonsError);
+        throw lessonsError;
+      }
 
-    // Find first incomplete lesson
-    const incompleteLesson = allLessons.find(lesson => !completedIds.includes(lesson.id));
-    return incompleteLesson || null;
+      // Validate lessons data
+      if (!allLessons || !Array.isArray(allLessons)) {
+        console.warn('No lessons found or invalid lessons data');
+        return null;
+      }
+
+      // Get completed lesson IDs with proper error handling
+      const completedLessons = await this.getStudentCompletedLessons(studentId);
+      const completedIds = (completedLessons || []).map(lesson => lesson.lessonId);
+
+      // Find first incomplete lesson
+      const incompleteLesson = allLessons.find(lesson => !completedIds.includes(lesson.id));
+      return incompleteLesson || null;
+    } catch (error) {
+      console.error('Error in getLastIncompleteLesson:', error);
+      throw error;
+    }
   }
 
   // Get student's mistakes count for review
-  async getStudentMistakesCount(studentId) {
-    const { data, error } = await supabase
+  async getStudentMistakesCount(studentId, filters = {}) {
+    let query = supabase
       .from('results')
-      .select('questions')
+      .select('questions, lessons(subject)')
       .eq('student_id', studentId);
+
+    // Apply subject filter if provided
+    if (filters.subject) {
+      query = query.eq('lessons.subject', filters.subject);
+    }
+
+    const { data, error } = await query;
 
     if (error) throw error;
 
@@ -635,6 +801,13 @@ class DatabaseService {
         if (result.questions && Array.isArray(result.questions)) {
           result.questions.forEach(question => {
             if (question.isCorrect === false) {
+              // Apply reviewed filter if provided
+              if (filters.reviewed !== undefined) {
+                // For now, we'll assume mistakes are not reviewed by default
+                const isReviewed = false;
+                if (filters.reviewed === 'true' && !isReviewed) return;
+                if (filters.reviewed === 'false' && isReviewed) return;
+              }
               mistakesCount++;
             }
           });
@@ -643,6 +816,119 @@ class DatabaseService {
     }
 
     return mistakesCount;
+  }
+
+  // Mark mistakes as reviewed
+  async markMistakesReviewed(studentId, mistakeIds) {
+    // For now, we'll store reviewed mistakes in localStorage on frontend
+    // In a full implementation, we'd create a reviewed_mistakes table
+    // and store the reviewed status there
+    
+    // Validate that the mistake IDs belong to this student
+    const validMistakes = [];
+    
+    for (const mistakeId of mistakeIds) {
+      const [resultId, questionIndex] = mistakeId.split('_');
+      
+      const { data, error } = await supabase
+        .from('results')
+        .select('student_id, questions')
+        .eq('id', resultId)
+        .eq('student_id', studentId)
+        .single();
+      
+      if (!error && data && data.questions[parseInt(questionIndex)]) {
+        validMistakes.push(mistakeId);
+      }
+    }
+    
+    // For now, just return success if mistakes exist
+    // In a full implementation, we'd insert into reviewed_mistakes table
+    return {
+      success: true,
+      reviewedMistakes: validMistakes,
+      message: `${validMistakes.length} mistakes marked as reviewed`
+    };
+  }
+
+  // Create practice session from mistakes
+  async createPracticeSession(studentId, mistakeIds = [], count = 10) {
+    if (mistakeIds && mistakeIds.length > 0) {
+      // Practice specific mistakes
+      const practiceQuestions = [];
+      
+      for (const mistakeId of mistakeIds.slice(0, count)) {
+        const [resultId, questionIndex] = mistakeId.split('_');
+        
+        const { data, error } = await supabase
+          .from('results')
+          .select('lessonId, questions, lessons(title, subject)')
+          .eq('id', resultId)
+          .eq('student_id', studentId)
+          .single();
+        
+        if (!error && data && data.questions[parseInt(questionIndex)]) {
+          const question = data.questions[parseInt(questionIndex)];
+          practiceQuestions.push({
+            id: mistakeId,
+            lessonId: data.lessonId,
+            lessonTitle: data.lessons?.title || 'Unknown Lesson',
+            subject: data.lessons?.subject || 'Unknown',
+            question: question.question,
+            options: question.options || [],
+            correctAnswer: question.correctAnswer,
+            type: question.type || 'multiple_choice',
+            explanation: question.explanation || '',
+            source: 'mistake'
+          });
+        }
+      }
+      
+      return practiceQuestions;
+    } else {
+      // Practice random questions from recent mistakes
+      const mistakes = await this.getStudentMistakes(studentId, count);
+      return mistakes.map(mistake => ({
+        id: mistake.id,
+        lessonId: mistake.lessonId,
+        lessonTitle: mistake.lessonTitle,
+        subject: mistake.subject,
+        question: mistake.question,
+        options: [], // Would need to fetch original question options
+        correctAnswer: mistake.correctAnswer,
+        type: mistake.type,
+        explanation: '',
+        source: 'mistake'
+      }));
+    }
+  }
+
+  // Save practice session results
+  async savePracticeResults(studentId, practiceData) {
+    // For now, we'll store practice results in the same results table
+    // with a special flag or in localStorage on frontend
+    // In a full implementation, we'd create a practice_sessions table
+    
+    const practiceResult = {
+      student_id: studentId,
+      lessonId: 'practice_session',
+      score: practiceData.score,
+      totalQuestions: practiceData.totalQuestions,
+      percentage: Math.round((practiceData.score / practiceData.totalQuestions) * 100),
+      timeSpent: practiceData.timeTaken,
+      questions: practiceData.questions,
+      timestamp: practiceData.timestamp,
+      type: 'practice',
+      source: 'mistakes'
+    };
+    
+    // For now, just return the practice result without saving to database
+    // In a full implementation, we'd save to practice_sessions table
+    return {
+      id: `practice_${Date.now()}`,
+      ...practiceResult,
+      message: 'Practice session completed'
+    };
   }
 
   // Get progress by topic/subject
@@ -840,31 +1126,57 @@ class DatabaseService {
   }
 
   // Get student's mistakes for review
-  async getStudentMistakes(studentId, limit = 20) {
-    const { data, error } = await supabase
+  async getStudentMistakes(studentId, limit = 20, offset = 0, filters = {}) {
+    let query = supabase
       .from('results')
-      .select('lessonId, questions, timestamp, lessons(title)')
+      .select('id, lessonId, questions, timestamp, lessons(title, subject)')
       .eq('student_id', studentId)
-      .order('timestamp', { ascending: false })
-      .limit(50); // Get recent results
+      .order('timestamp', { ascending: false });
+
+    // Apply subject filter if provided
+    if (filters.subject) {
+      query = query.eq('lessons.subject', filters.subject);
+    }
+
+    const { data, error } = await query.limit(100); // Get more results to filter properly
 
     if (error) throw error;
 
     const mistakes = [];
+    let mistakeIndex = 0;
     if (data) {
       data.forEach(result => {
         if (result.questions && Array.isArray(result.questions)) {
-          result.questions.forEach(question => {
-            if (question.isCorrect === false && mistakes.length < limit) {
-              mistakes.push({
-                lessonId: result.lessonId,
-                lessonTitle: result.lessons?.title || 'Unknown Lesson',
-                question: question.question,
-                userAnswer: question.userAnswer,
-                correctAnswer: question.correctAnswer,
-                timestamp: result.timestamp,
-                type: question.type || 'multiple_choice'
-              });
+          result.questions.forEach((question, questionIndex) => {
+            if (question.isCorrect === false) {
+              // Create unique ID for this mistake
+              const mistakeId = `${result.id}_${questionIndex}`;
+              
+              // Apply reviewed filter if provided
+              if (filters.reviewed !== undefined) {
+                // For now, we'll assume mistakes are not reviewed by default
+                // In a full implementation, we'd check a reviewed_mistakes table
+                const isReviewed = false;
+                if (filters.reviewed === 'true' && !isReviewed) return;
+                if (filters.reviewed === 'false' && isReviewed) return;
+              }
+
+              // Apply pagination
+              if (mistakeIndex >= offset && mistakes.length < limit) {
+                mistakes.push({
+                  id: mistakeId,
+                  lessonId: result.lessonId,
+                  lessonTitle: result.lessons?.title || 'Unknown Lesson',
+                  subject: result.lessons?.subject || 'Unknown',
+                  question: question.question,
+                  userAnswer: question.userAnswer,
+                  correctAnswer: question.correctAnswer,
+                  timestamp: result.timestamp,
+                  type: question.type || 'multiple_choice',
+                  reviewed: false // For now, default to not reviewed
+                });
+              }
+              mistakeIndex++;
             }
           });
         }
@@ -1167,6 +1479,654 @@ class DatabaseService {
       page,
       limit
     };
+  }
+
+  // Calculate platform-wide statistics for dashboard
+  async calculatePlatformStats() {
+    try {
+      // Get total lessons count
+      const { count: totalLessons, error: lessonsError } = await supabase
+        .from('lessons')
+        .select('*', { count: 'exact', head: true });
+
+      if (lessonsError) throw lessonsError;
+
+      // Get total students count
+      const { count: totalStudents, error: studentsError } = await supabase
+        .from('students')
+        .select('*', { count: 'exact', head: true })
+        .eq('is_approved', true);
+
+      if (studentsError) throw studentsError;
+
+      // Get active lessons (lessons with recent activity in last 7 days)
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      
+      const { data: activeLessonsData, error: activeError } = await supabase
+        .from('results')
+        .select('lessonId', { count: 'exact' })
+        .gte('timestamp', sevenDaysAgo.toISOString())
+        .not('lessonId', 'eq', 'quiz_game');
+
+      if (activeError) throw activeError;
+
+      const activeLessons = new Set(activeLessonsData?.map(r => r.lessonId) || []).size;
+
+      // Get recent activity (submissions in last 24 hours)
+      const oneDayAgo = new Date();
+      oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+
+      const { count: recentActivity, error: recentError } = await supabase
+        .from('results')
+        .select('*', { count: 'exact', head: true })
+        .gte('timestamp', oneDayAgo.toISOString());
+
+      if (recentError) throw recentError;
+
+      // Calculate average score from all results
+      const { data: scoreData, error: scoreError } = await supabase
+        .from('results')
+        .select('score, totalPoints')
+        .not('lessonId', 'eq', 'quiz_game')
+        .not('totalPoints', 'is', null)
+        .gt('totalPoints', 0);
+
+      if (scoreError) throw scoreError;
+
+      let averageScore = 0;
+      if (scoreData && scoreData.length > 0) {
+        const totalScore = scoreData.reduce((sum, result) => {
+          const percentage = (result.score / result.totalPoints) * 100;
+          return sum + percentage;
+        }, 0);
+        averageScore = Math.round(totalScore / scoreData.length);
+      }
+
+      return {
+        totalLessons: totalLessons || 0,
+        totalStudents: totalStudents || 0,
+        activeLessons: activeLessons || 0,
+        recentActivity: recentActivity || 0,
+        averageScore: averageScore,
+        lastUpdated: new Date().toISOString()
+      };
+    } catch (error) {
+      console.error('Error calculating platform stats:', error);
+      // Return fallback values instead of throwing
+      return {
+        totalLessons: 0,
+        totalStudents: 0,
+        activeLessons: 0,
+        recentActivity: 0,
+        averageScore: 0,
+        lastUpdated: new Date().toISOString(),
+        error: 'Failed to calculate statistics'
+      };
+    }
+  }
+
+  // Calculate individual student statistics
+  async calculateStudentStats(studentId) {
+    try {
+      // Get student's completed lessons
+      const { data: results, error: resultsError } = await supabase
+        .from('results')
+        .select('score, totalPoints, timestamp, timeTaken, lessonId')
+        .eq('student_id', studentId)
+        .not('lessonId', 'eq', 'quiz_game'); // Exclude quiz game results
+
+      if (resultsError) throw resultsError;
+
+      const totalLessonsCompleted = results?.length || 0;
+      
+      // Calculate average score
+      let averageScore = 0;
+      if (results && results.length > 0) {
+        const totalPercentage = results.reduce((sum, result) => {
+          if (result.totalPoints > 0) {
+            return sum + (result.score / result.totalPoints) * 100;
+          }
+          return sum;
+        }, 0);
+        averageScore = Math.round(totalPercentage / results.length);
+      }
+
+      // Calculate total time spent (in minutes)
+      const totalTimeSpent = results?.reduce((sum, result) => {
+        return sum + (result.timeTaken || 0);
+      }, 0) || 0;
+
+      // Get current and best streak
+      const currentStreak = await this.getStudentCurrentStreak(studentId);
+      
+      // Calculate best streak from results
+      let bestStreak = 0;
+      if (results && results.length > 0) {
+        const sortedResults = results
+          .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+        
+        let tempStreak = 1;
+        let maxStreak = 1;
+        
+        for (let i = 1; i < sortedResults.length; i++) {
+          const prevDate = new Date(sortedResults[i-1].timestamp);
+          const currDate = new Date(sortedResults[i].timestamp);
+          const daysDiff = Math.floor((currDate - prevDate) / (1000 * 60 * 60 * 24));
+          
+          if (daysDiff === 1) {
+            tempStreak++;
+            maxStreak = Math.max(maxStreak, tempStreak);
+          } else {
+            tempStreak = 1;
+          }
+        }
+        bestStreak = maxStreak;
+      }
+
+      // Get last activity timestamp
+      const lastActivity = results && results.length > 0 ? 
+        Math.max(...results.map(r => new Date(r.timestamp))) : null;
+
+      return {
+        totalLessonsCompleted,
+        averageScore,
+        totalTimeSpent: Math.round(totalTimeSpent / 60), // Convert to minutes
+        currentStreak,
+        bestStreak,
+        lastActivity: lastActivity ? new Date(lastActivity).toISOString() : null
+      };
+    } catch (error) {
+      console.error('Error calculating student stats:', error);
+      return {
+        totalLessonsCompleted: 0,
+        averageScore: 0,
+        totalTimeSpent: 0,
+        currentStreak: 0,
+        bestStreak: 0,
+        lastActivity: null
+      };
+    }
+  }
+
+  // Get student activity log
+  async getStudentActivityLog(studentId, limit = 50) {
+    try {
+      const { data: activities, error } = await supabase
+        .from('results')
+        .select(`
+          id,
+          timestamp,
+          score,
+          totalPoints,
+          timeTaken,
+          lessonId,
+          lessons ( title, subject )
+        `)
+        .eq('student_id', studentId)
+        .order('timestamp', { ascending: false })
+        .limit(limit);
+
+      if (error) throw error;
+
+      return activities?.map(activity => ({
+        id: activity.id,
+        type: 'lesson_completion',
+        timestamp: activity.timestamp,
+        lessonId: activity.lessonId,
+        lessonTitle: activity.lessons?.title || 
+          (activity.lessonId === 'quiz_game' ? 'Trò chơi chinh phục' : 'Unknown Lesson'),
+        subject: activity.lessons?.subject || 'Unknown',
+        score: activity.score,
+        totalPoints: activity.totalPoints,
+        scorePercentage: activity.totalPoints > 0 ? 
+          Math.round((activity.score / activity.totalPoints) * 100) : 0,
+        timeSpent: activity.timeTaken || 0,
+        description: `Completed ${activity.lessons?.title || 'lesson'} with ${
+          activity.totalPoints > 0 ? 
+          Math.round((activity.score / activity.totalPoints) * 100) : 0
+        }% score`
+      })) || [];
+    } catch (error) {
+      console.error('Error getting student activity log:', error);
+      return [];
+    }
+  }
+
+  // Reset student password (admin only)
+  async resetStudentPassword(studentId, newPassword) {
+    try {
+      const bcrypt = require('bcrypt');
+      const saltRounds = 10;
+      
+      // Hash the new password
+      const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+      
+      // Update password in database
+      const { error } = await supabase
+        .from('students')
+        .update({ password_hash: hashedPassword })
+        .eq('id', studentId);
+      
+      if (error) throw error;
+      
+      return {
+        success: true,
+        message: 'Password reset successfully'
+      };
+    } catch (error) {
+      console.error('Error resetting student password:', error);
+      throw new Error('Failed to reset password');
+    }
+  }
+
+  // Get all results with pagination and filtering
+  async getAllResults(page = 1, limit = 50, filters = {}) {
+    try {
+      const offset = (page - 1) * limit;
+      
+      let query = supabase
+        .from('results')
+        .select(`
+          id,
+          student_id,
+          timestamp,
+          score,
+          totalPoints,
+          timeTaken,
+          lessonId,
+          students!inner ( full_name, phone_number ),
+          lessons ( title, subject )
+        `, { count: 'exact' });
+
+      // Apply filters if provided
+      if (filters.studentId) {
+        query = query.eq('student_id', filters.studentId);
+      }
+      if (filters.lessonId) {
+        query = query.eq('lessonId', filters.lessonId);
+      }
+      if (filters.dateFrom) {
+        query = query.gte('timestamp', filters.dateFrom);
+      }
+      if (filters.dateTo) {
+        query = query.lte('timestamp', filters.dateTo);
+      }
+
+      const { data: results, error, count } = await query
+        .order('timestamp', { ascending: false })
+        .range(offset, offset + limit - 1);
+
+      if (error) throw error;
+
+      const formattedResults = results?.map(result => ({
+        id: result.id,
+        studentId: result.student_id,
+        studentName: result.students?.full_name || 'Unknown Student',
+        studentPhone: result.students?.phone_number || 'N/A',
+        lessonId: result.lessonId,
+        lessonTitle: result.lessons?.title || 
+          (result.lessonId === 'quiz_game' ? 'Trò chơi chinh phục' : 'Unknown Lesson'),
+        subject: result.lessons?.subject || 'Unknown',
+        timestamp: result.timestamp,
+        score: result.score,
+        totalPoints: result.totalPoints,
+        scorePercentage: result.totalPoints > 0 ? 
+          Math.round((result.score / result.totalPoints) * 100) : 0,
+        timeSpent: result.timeTaken || 0
+      })) || [];
+
+      return {
+        results: formattedResults,
+        total: count || 0,
+        page: parseInt(page),
+        limit: parseInt(limit)
+      };
+    } catch (error) {
+      console.error('Error getting all results:', error);
+      return {
+        results: [],
+        total: 0,
+        page: parseInt(page),
+        limit: parseInt(limit)
+      };
+    }
+  }
+
+  // Get results by student with pagination
+  async getResultsByStudent(studentId, page = 1, limit = 50) {
+    try {
+      const offset = (page - 1) * limit;
+      
+      const { data: results, error, count } = await supabase
+        .from('results')
+        .select(`
+          id,
+          timestamp,
+          score,
+          totalPoints,
+          timeTaken,
+          lessonId,
+          lessons ( title, subject )
+        `, { count: 'exact' })
+        .eq('student_id', studentId)
+        .order('timestamp', { ascending: false })
+        .range(offset, offset + limit - 1);
+
+      if (error) throw error;
+
+      const formattedResults = results?.map(result => ({
+        id: result.id,
+        lessonId: result.lessonId,
+        lessonTitle: result.lessons?.title || 
+          (result.lessonId === 'quiz_game' ? 'Trò chơi chinh phục' : 'Unknown Lesson'),
+        subject: result.lessons?.subject || 'Unknown',
+        timestamp: result.timestamp,
+        score: result.score,
+        totalPoints: result.totalPoints,
+        scorePercentage: result.totalPoints > 0 ? 
+          Math.round((result.score / result.totalPoints) * 100) : 0,
+        timeSpent: result.timeTaken || 0
+      })) || [];
+
+      return {
+        results: formattedResults,
+        total: count || 0,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        studentId
+      };
+    } catch (error) {
+      console.error('Error getting results by student:', error);
+      return {
+        results: [],
+        total: 0,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        studentId
+      };
+    }
+  }
+
+  // Calculate result statistics
+  async calculateResultStatistics(filters = {}) {
+    try {
+      let query = supabase
+        .from('results')
+        .select(`
+          score,
+          totalPoints,
+          timeTaken,
+          lessonId,
+          timestamp,
+          lessons ( title, subject )
+        `);
+
+      // Apply filters if provided
+      if (filters.dateFrom) {
+        query = query.gte('timestamp', filters.dateFrom);
+      }
+      if (filters.dateTo) {
+        query = query.lte('timestamp', filters.dateTo);
+      }
+      if (filters.subject) {
+        query = query.eq('lessons.subject', filters.subject);
+      }
+
+      const { data: results, error } = await query;
+      if (error) throw error;
+
+      const totalResults = results?.length || 0;
+      
+      // Calculate average score
+      let averageScore = 0;
+      let totalValidResults = 0;
+      let totalTime = 0;
+      
+      if (results && results.length > 0) {
+        const validResults = results.filter(r => r.totalPoints > 0);
+        totalValidResults = validResults.length;
+        
+        if (totalValidResults > 0) {
+          const totalPercentage = validResults.reduce((sum, result) => {
+            return sum + (result.score / result.totalPoints) * 100;
+          }, 0);
+          averageScore = Math.round(totalPercentage / totalValidResults);
+        }
+
+        // Calculate total time spent
+        totalTime = results.reduce((sum, result) => {
+          return sum + (result.timeTaken || 0);
+        }, 0);
+      }
+
+      // Get completion rate (percentage of students who completed at least one lesson)
+      const { count: totalStudents } = await supabase
+        .from('students')
+        .select('*', { count: 'exact', head: true })
+        .eq('is_approved', true);
+
+      const { data: studentsWithResults } = await supabase
+        .from('results')
+        .select('student_id')
+        .not('lessonId', 'eq', 'quiz_game');
+
+      const uniqueStudents = new Set(studentsWithResults?.map(r => r.student_id) || []).size;
+      const completionRate = totalStudents > 0 ? Math.round((uniqueStudents / totalStudents) * 100) : 0;
+
+      // Get top performing lessons
+      const lessonStats = {};
+      results?.forEach(result => {
+        if (result.lessonId !== 'quiz_game' && result.totalPoints > 0) {
+          if (!lessonStats[result.lessonId]) {
+            lessonStats[result.lessonId] = {
+              lessonId: result.lessonId,
+              title: result.lessons?.title || 'Unknown Lesson',
+              subject: result.lessons?.subject || 'Unknown',
+              totalAttempts: 0,
+              totalScore: 0,
+              averageScore: 0
+            };
+          }
+          lessonStats[result.lessonId].totalAttempts++;
+          lessonStats[result.lessonId].totalScore += (result.score / result.totalPoints) * 100;
+        }
+      });
+
+      const topPerformingLessons = Object.values(lessonStats)
+        .map(lesson => ({
+          ...lesson,
+          averageScore: Math.round(lesson.totalScore / lesson.totalAttempts)
+        }))
+        .sort((a, b) => b.averageScore - a.averageScore)
+        .slice(0, 5);
+
+      // Get recent activity (last 10 results)
+      const { data: recentResults } = await supabase
+        .from('results')
+        .select(`
+          timestamp,
+          score,
+          totalPoints,
+          students ( full_name ),
+          lessons ( title )
+        `)
+        .order('timestamp', { ascending: false })
+        .limit(10);
+
+      const recentActivity = recentResults?.map(result => ({
+        timestamp: result.timestamp,
+        studentName: result.students?.full_name || 'Unknown Student',
+        lessonTitle: result.lessons?.title || 'Unknown Lesson',
+        scorePercentage: result.totalPoints > 0 ? 
+          Math.round((result.score / result.totalPoints) * 100) : 0
+      })) || [];
+
+      return {
+        totalResults,
+        averageScore,
+        completionRate,
+        averageTime: totalResults > 0 ? Math.round(totalTime / totalResults) : 0,
+        topPerformingLessons,
+        recentActivity,
+        totalStudentsWithResults: uniqueStudents,
+        calculatedAt: new Date().toISOString()
+      };
+    } catch (error) {
+      console.error('Error calculating result statistics:', error);
+      return {
+        totalResults: 0,
+        averageScore: 0,
+        completionRate: 0,
+        averageTime: 0,
+        topPerformingLessons: [],
+        recentActivity: [],
+        totalStudentsWithResults: 0,
+        calculatedAt: new Date().toISOString(),
+        error: 'Failed to calculate statistics'
+      };
+    }
+  }
+
+  // Get detailed lesson statistics for admin dashboard
+  async getLessonDetailedStatistics(lessonId) {
+    try {
+      // Get lesson basic info
+      const lesson = await this.getLessonById(lessonId);
+      
+      // Get all results for this lesson
+      const { data: results, error } = await supabase
+        .from('results')
+        .select(`
+          score,
+          totalPoints,
+          timeTaken,
+          timestamp,
+          questions,
+          students ( full_name )
+        `)
+        .eq('lessonId', lessonId);
+
+      if (error) throw error;
+
+      const totalAttempts = results?.length || 0;
+      const uniqueStudents = new Set(results?.map(r => r.students?.full_name) || []).size;
+      
+      // Calculate basic statistics
+      let averageScore = 0;
+      let lowScores = 0;
+      let highScores = 0;
+      
+      if (results && results.length > 0) {
+        const scores = results.map(r => {
+          if (r.totalPoints > 0) {
+            return (r.score / r.totalPoints) * 100;
+          }
+          return 0;
+        });
+        
+        averageScore = scores.reduce((sum, score) => sum + score, 0) / scores.length;
+        lowScores = scores.filter(score => score < 50).length;
+        highScores = scores.filter(score => score >= 50).length;
+      }
+
+      // Create score distribution for chart
+      const scoreRanges = ['0-20%', '21-40%', '41-60%', '61-80%', '81-100%'];
+      const scoreDistribution = {
+        labels: scoreRanges,
+        data: [0, 0, 0, 0, 0]
+      };
+
+      results?.forEach(result => {
+        if (result.totalPoints > 0) {
+          const percentage = (result.score / result.totalPoints) * 100;
+          if (percentage <= 20) scoreDistribution.data[0]++;
+          else if (percentage <= 40) scoreDistribution.data[1]++;
+          else if (percentage <= 60) scoreDistribution.data[2]++;
+          else if (percentage <= 80) scoreDistribution.data[3]++;
+          else scoreDistribution.data[4]++;
+        }
+      });
+
+      // Create top scorers list
+      const topScorers = results
+        ?.filter(r => r.totalPoints > 0)
+        .map(r => ({
+          name: r.students?.full_name || 'Unknown',
+          score: Math.round((r.score / r.totalPoints) * 100),
+          dob: '', // Not available in current schema
+          timestamp: r.timestamp
+        }))
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 10) || [];
+
+      // Analyze questions if available
+      let questionStats = [];
+      if (lesson.quiz_data && lesson.quiz_data.questions) {
+        questionStats = lesson.quiz_data.questions.map((question, index) => {
+          let correct = 0;
+          let incorrect = 0;
+          let completed = 0;
+
+          results?.forEach(result => {
+            if (result.questions && result.questions[index]) {
+              completed++;
+              if (result.questions[index].correct) {
+                correct++;
+              } else {
+                incorrect++;
+              }
+            }
+          });
+
+          return {
+            question: question.question || `Question ${index + 1}`,
+            totalStudents: uniqueStudents,
+            completed,
+            notCompleted: uniqueStudents - completed,
+            correct,
+            incorrect
+          };
+        });
+      }
+
+      return {
+        success: true,
+        lessonId,
+        lessonTitle: lesson.title,
+        totalAttempts,
+        averageScore: Math.round(averageScore * 100) / 100,
+        completionRate: totalAttempts > 0 ? Math.round((totalAttempts / uniqueStudents) * 100) : 0,
+        averageTime: totalAttempts > 0 ? 
+          Math.round(results.reduce((sum, r) => sum + (r.timeTaken || 0), 0) / totalAttempts) : 0,
+        views: lesson.views || 0,
+        lastUpdated: lesson.lastUpdated,
+        uniqueStudents,
+        lowScores,
+        highScores,
+        scoreDistribution,
+        topScorers,
+        questionStats
+      };
+    } catch (error) {
+      console.error('Error getting detailed lesson statistics:', error);
+      return {
+        success: false,
+        message: 'Failed to load lesson statistics',
+        lessonId,
+        totalAttempts: 0,
+        averageScore: 0,
+        completionRate: 0,
+        averageTime: 0,
+        views: 0,
+        uniqueStudents: 0,
+        lowScores: 0,
+        highScores: 0,
+        scoreDistribution: { labels: [], data: [] },
+        topScorers: [],
+        questionStats: []
+      };
+    }
   }
 }
 

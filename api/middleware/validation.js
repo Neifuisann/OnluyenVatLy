@@ -114,23 +114,35 @@ const validateAdminLogin = (req, res, next) => {
 
 // Validation middleware for lesson creation/update
 const validateLesson = (req, res, next) => {
-  const { title, content, subject, grade } = req.body;
+  const { title, content, subject, grade, color } = req.body;
   const errors = [];
+  
+  // Check if this is a partial update (only color field for example)
+  const isPartialUpdate = req.method === 'PUT' && Object.keys(req.body).length === 1;
+  
+  // For partial updates, skip required field validation
+  if (!isPartialUpdate) {
+    if (!title || title.trim().length === 0) {
+      errors.push('Tiêu đề bài học không được để trống');
+    }
 
-  if (!title || title.trim().length === 0) {
-    errors.push('Tiêu đề bài học không được để trống');
+    if (!content || content.trim().length === 0) {
+      errors.push('Nội dung bài học không được để trống');
+    }
   }
 
-  if (!content || content.trim().length === 0) {
-    errors.push('Nội dung bài học không được để trống');
-  }
-
+  // Validate optional fields if present
   if (subject && typeof subject !== 'string') {
     errors.push('Môn học phải là chuỗi ký tự');
   }
 
   if (grade && (typeof grade !== 'string' && typeof grade !== 'number')) {
     errors.push('Lớp học không hợp lệ');
+  }
+  
+  // Validate color field if present
+  if (color && (typeof color !== 'string' || !/^#[0-9A-Fa-f]{6}$/.test(color))) {
+    errors.push('Màu sắc phải là mã hex hợp lệ (ví dụ: #FF0000)');
   }
 
   if (errors.length > 0) {

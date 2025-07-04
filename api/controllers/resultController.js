@@ -146,18 +146,18 @@ class ResultController {
   getAllResults = asyncHandler(async (req, res) => {
     const { page = 1, limit = 50 } = req.query;
     
-    // This would need to be implemented in databaseService
-    // For now, return empty array
-    const results = [];
+    // Get real results from database with pagination and filtering
+    const filters = {};
+    if (req.query.studentId) filters.studentId = req.query.studentId;
+    if (req.query.lessonId) filters.lessonId = req.query.lessonId;
+    if (req.query.dateFrom) filters.dateFrom = req.query.dateFrom;
+    if (req.query.dateTo) filters.dateTo = req.query.dateTo;
+    
+    const data = await databaseService.getAllResults(page, limit, filters);
     
     res.json({
       success: true,
-      data: {
-        results,
-        page: parseInt(page),
-        limit: parseInt(limit),
-        total: 0
-      }
+      data
     });
   });
 
@@ -186,33 +186,24 @@ class ResultController {
     const { studentId } = req.params;
     const { page = 1, limit = 50 } = req.query;
     
-    // This would need to be implemented in databaseService
-    // For now, return empty array
-    const results = [];
+    // Get real results by student from database
+    const data = await databaseService.getResultsByStudent(studentId, page, limit);
     
     res.json({
       success: true,
-      data: {
-        results,
-        page: parseInt(page),
-        limit: parseInt(limit),
-        total: 0,
-        studentId
-      }
+      data
     });
   });
 
   // Get result statistics
   getResultStatistics = asyncHandler(async (req, res) => {
-    // This would calculate overall result statistics
-    const statistics = {
-      totalResults: 0,
-      averageScore: 0,
-      completionRate: 0,
-      averageTime: 0,
-      topPerformingLessons: [],
-      recentActivity: []
-    };
+    // Get real result statistics from database
+    const filters = {};
+    if (req.query.dateFrom) filters.dateFrom = req.query.dateFrom;
+    if (req.query.dateTo) filters.dateTo = req.query.dateTo;
+    if (req.query.subject) filters.subject = req.query.subject;
+    
+    const statistics = await databaseService.calculateResultStatistics(filters);
     
     res.json({
       success: true,

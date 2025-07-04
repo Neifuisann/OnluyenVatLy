@@ -46,6 +46,23 @@ router.get('/mistakes',
   progressController.getMistakesToReview
 );
 
+// Mark mistakes as reviewed
+router.post('/mistakes/review',
+  noCacheMiddleware,
+  progressController.markMistakesReviewed
+);
+
+// Practice mode endpoints
+router.post('/practice/questions',
+  noCacheMiddleware,
+  progressController.getPracticeQuestions
+);
+
+router.post('/practice/submit',
+  noCacheMiddleware,
+  progressController.submitPracticeResults
+);
+
 // Get student achievements
 router.get('/achievements',
   shortCacheMiddleware(600), // 10 minutes cache

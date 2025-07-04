@@ -65,6 +65,12 @@ router.post('/:studentId/reset-password',
 );
 
 // Student profile routes (any authenticated student can view any profile)
+router.get('/profile',
+  requireStudentAuth,
+  shortCacheMiddleware(600), // 10 minutes cache
+  studentController.getCurrentStudentProfile
+);
+
 router.get('/:studentId/profile',
   requireStudentAuth,
   validateIdParam('studentId'),

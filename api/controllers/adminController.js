@@ -98,6 +98,23 @@ class AdminController {
         const profile = await databaseService.getStudentProfile(studentId);
         res.json(profile);
     });
+
+    // Get dashboard statistics
+    getDashboardStats = asyncHandler(async (req, res) => {
+        try {
+            const stats = await databaseService.calculatePlatformStats();
+            res.json({
+                success: true,
+                data: stats
+            });
+        } catch (error) {
+            console.error('Error getting dashboard stats:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error calculating dashboard statistics'
+            });
+        }
+    });
 }
 
 module.exports = new AdminController();

@@ -85,13 +85,22 @@ async function displayResults() {
     try {
         if (resultId) {
             // Fetch result from server
+            console.log('🔍 Fetching result with ID:', resultId);
             const response = await fetch(`/api/results/${resultId}`, {
                 credentials: 'include' // Include cookies for authentication
             });
-            if (!response.ok) throw new Error('Result not found');
+            console.log('🔍 Response status:', response.status, response.statusText);
+            if (!response.ok) {
+                console.error('❌ Response not OK:', response.status, response.statusText);
+                const errorText = await response.text();
+                console.error('❌ Error response:', errorText);
+                throw new Error('Result not found');
+            }
             const responseData = await response.json();
+            console.log('🔍 Raw API response:', JSON.stringify(responseData, null, 2));
             // Extract the actual result data from the API response
             currentResult = responseData.data?.result || responseData.result || responseData;
+            console.log('🔍 Extracted currentResult:', JSON.stringify(currentResult, null, 2));
         } else {
             // Use the result from localStorage
             const resultData = JSON.parse(localStorage.getItem('quizResults'));
@@ -99,9 +108,6 @@ async function displayResults() {
         }
 
         // Log the result for debugging
-        if (resultId) {
-            console.log('Raw API response:', responseData);
-        }
         console.log('Extracted currentResult:', currentResult);
         console.log('Questions array:', currentResult?.questions || currentResult?.answers || []);
         
@@ -153,29 +159,57 @@ function storeResultInSession(result) {
 }
 
 function updateStatisticsCards(result) {
+    console.log('🔍 Updating statistics with result:', result);
+    
     // Handle different data structures - questions might be in different properties
-    const questions = result.questions || result.answers || [];
+    let questions = [];
+    if (result.questions && Array.isArray(result.questions)) {
+        questions = result.questions;
+    } else if (result.answers && Array.isArray(result.answers)) {
+        questions = result.answers;
+    } else if (result.data && result.data.questions && Array.isArray(result.data.questions)) {
+        questions = result.data.questions;
+    } else if (result.data && result.data.answers && Array.isArray(result.data.answers)) {
+        questions = result.data.answers;
+    }
+
+    console.log('🔍 Questions for statistics:', questions.length);
 
     // Calculate statistics
     const totalQuestions = questions.length;
     const correctAnswers = questions.filter(q => q.isCorrect).length;
     const incorrectAnswers = totalQuestions - correctAnswers;
     const accuracy = totalQuestions > 0 ? ((correctAnswers / totalQuestions) * 100).toFixed(1) : '0.0';
-    const score = result.score || 0;
-    const totalPoints = result.totalPoints || totalQuestions;
+    const score = result.score !== undefined ? result.score : 0;
+    const totalPoints = result.totalPoints !== undefined ? result.totalPoints : totalQuestions;
     const scorePercentage = totalPoints > 0 ? ((score / totalPoints) * 100).toFixed(1) : '0.0';
 
+    console.log('🔍 Statistics calculated:', { score, totalPoints, totalQuestions, correctAnswers });
+
     // Update statistics cards
-    document.getElementById('score-value').textContent = `${score}/${totalPoints}`;
+    const scoreElement = document.getElementById('score-value');
+    if (scoreElement) {
+        scoreElement.textContent = `${score}/${totalPoints}`;
+    }
     
     // Get lesson name
     if (result.lessonId) {
         fetchLessonName(result.lessonId);
+    } else {
+        const lessonElement = document.getElementById('lesson-name');
+        if (lessonElement) {
+            lessonElement.textContent = 'Unknown Lesson';
+        }
     }
     
     // Get user ranking
-    if (result.lessonId) {
+    if (result.lessonId && totalPoints > 0) {
         fetchUserRanking(result.lessonId, score, totalPoints);
+    } else {
+        const rankElement = document.getElementById('user-rank');
+        if (rankElement) {
+            rankElement.textContent = 'No ranking data';
+        }
     }
 }
 
@@ -656,11 +690,11 @@ function createParticleEffect(container, color, type) {
 }
 
 function displaySortedResults(sortType) {
-    console.log('displaySortedResults called with:', sortType);
-    console.log('currentResult:', currentResult);
+    console.log('🔍 displaySortedResults called with:', sortType);
+    console.log('🔍 currentResult:', currentResult);
     
     if (!currentResult) {
-        console.error('No currentResult available for display');
+        console.error('❌ No currentResult available for display');
         document.getElementById('result').innerHTML = '<p class="no-results">No result data available.</p>';
         return;
     }
@@ -669,12 +703,59 @@ function displaySortedResults(sortType) {
     document.querySelectorAll('.sort-btn').forEach(btn => {
         btn.classList.remove('active');
     });
-    document.querySelector(`[onclick="sortResults('${sortType}')"]`).classList.add('active');
+    const activeButton = document.querySelector(`[onclick="sortResults('${sortType}')"]`);
+    if (activeButton) {
+        activeButton.classList.add('active');
+    }
 
-    // Filter questions based on sort type
-    const questions = currentResult.questions || currentResult.answers || [];
-    console.log('Questions found:', questions.length);
-    console.log('First question sample:', questions[0]);
+    // Try to find questions in various possible locations
+    let questions = [];
+    
+    // Check multiple possible locations for questions data
+    if (currentResult.questions && Array.isArray(currentResult.questions)) {
+        questions = currentResult.questions;
+        console.log('✅ Found questions in currentResult.questions');
+    } else if (currentResult.answers && Array.isArray(currentResult.answers)) {
+        questions = currentResult.answers;
+        console.log('✅ Found questions in currentResult.answers');
+    } else if (currentResult.data && currentResult.data.questions && Array.isArray(currentResult.data.questions)) {
+        questions = currentResult.data.questions;
+        console.log('✅ Found questions in currentResult.data.questions');
+    } else if (currentResult.data && currentResult.data.answers && Array.isArray(currentResult.data.answers)) {
+        questions = currentResult.data.answers;
+        console.log('✅ Found questions in currentResult.data.answers');
+    }
+    
+    console.log('🔍 Questions found:', questions.length);
+    console.log('🔍 Questions array:', questions);
+    console.log('🔍 First question sample:', questions[0]);
+    console.log('🔍 currentResult keys:', Object.keys(currentResult || {}));
+    
+    // If still no questions, show debug info
+    if (questions.length === 0) {
+        console.warn('⚠️  No questions found in any expected location');
+        console.log('🔍 Full currentResult structure:', JSON.stringify(currentResult, null, 2));
+        
+        // Try to show some basic info if available
+        const debugInfo = `
+            <div class="debug-info" style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; margin: 20px 0;">
+                <h3>Debug Information</h3>
+                <p><strong>Result ID:</strong> ${currentResult.id || 'N/A'}</p>
+                <p><strong>Lesson ID:</strong> ${currentResult.lessonId || 'N/A'}</p>
+                <p><strong>Score:</strong> ${currentResult.score || 'N/A'}</p>
+                <p><strong>Total Points:</strong> ${currentResult.totalPoints || 'N/A'}</p>
+                <p><strong>Available keys:</strong> ${Object.keys(currentResult).join(', ')}</p>
+                <p><strong>Questions/Answers found:</strong> ${questions.length}</p>
+                <details style="margin-top: 10px;">
+                    <summary>Raw Data Structure</summary>
+                    <pre style="background: rgba(0,0,0,0.3); padding: 10px; margin-top: 10px; overflow: auto; max-height: 300px;">${JSON.stringify(currentResult, null, 2)}</pre>
+                </details>
+            </div>
+        `;
+        
+        document.getElementById('result').innerHTML = debugInfo;
+        return;
+    }
     
     const filteredQuestions = questions.filter(question => {
         if (sortType === 'all') return true;
@@ -683,7 +764,7 @@ function displaySortedResults(sortType) {
         return true;
     });
     
-    console.log('Filtered questions:', filteredQuestions.length);
+    console.log('🔍 Filtered questions:', filteredQuestions.length);
 
     // Helper function to format answers with line breaks
     const formatAnswer = (answer, type) => {
@@ -1127,51 +1208,37 @@ async function getExplanation(button, question, userAnswer, correctAnswer) {
         }
         // ---
         
-        // Direct API call to Google Gemini API
-        const API_KEY = "AIzaSyAxJF-5iBBx7gp9RPwrAfF58ERZi69KzCc"; // This is the same key from server-side
-        const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
-        
-        const response = await fetch(`${GEMINI_URL}?key=${API_KEY}`, {
+        // Secure API call to backend explanation endpoint
+        const response = await fetch('/api/explain', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: `Hãy giải thích câu hỏi này từng bước bằng tiếng Việt. Hãy luôn trả lời bằng các thông tin chính xác và nếu cần thiết hãy đưa ra ghi chú:
-Câu hỏi: ${decodedQuestion}
-${optionsText ? 'Lựa chọn:\n' + JSON.parse(optionsText).map((opt, i) => `${String.fromCharCode(65 + i)}) ${opt}`).join('\n') + '\n' : ''}Đáp án của bạn: ${userAnswerText}
-Đáp án đúng: ${correctAnswerText}`
-                    }]
-                }],
-                generationConfig: {
-                    temperature: 0.3,
-                    topK: 64,
-                    topP: 0.95,
-                    maxOutputTokens: 8192
-                }
+                question: decodedQuestion,
+                answer: `Đáp án của bạn: ${userAnswerText}`,
+                explanation: `Đáp án đúng: ${correctAnswerText}${optionsText ? '\n\nLựa chọn:\n' + JSON.parse(optionsText).map((opt, i) => `${String.fromCharCode(65 + i)}) ${opt}`).join('\n') : ''}`
             })
         });
         
         if (!response.ok) {
-            const errorData = await response.text();
-            console.error('Gemini API error:', {
+            const errorData = await response.json();
+            console.error('Explain API error:', {
                 status: response.status,
                 statusText: response.statusText,
-                body: errorData
+                error: errorData
             });
-            throw new Error(`API responded with status: ${response.status} - ${response.statusText}`);
+            throw new Error(`API responded with status: ${response.status} - ${errorData.message || response.statusText}`);
         }
         
         const data = await response.json();
         
-        if (!data.candidates?.[0]?.content?.parts?.[0]?.text) {
-            console.error('Invalid Gemini API response format:', data);
-            throw new Error('Invalid response format from Gemini API');
+        if (!data.success || !data.data?.explanation) {
+            console.error('Invalid API response format:', data);
+            throw new Error('Invalid response format from explain API');
         }
         
-        const explanationText = data.candidates[0].content.parts[0].text;
+        const explanationText = data.data.explanation;
         const htmlContent = marked.parse(explanationText);
         
         explanationContent.innerHTML = htmlContent;

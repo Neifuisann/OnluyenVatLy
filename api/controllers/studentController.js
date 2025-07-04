@@ -87,6 +87,22 @@ class StudentController {
     });
   });
 
+  // Get current student's profile
+  getCurrentStudentProfile = asyncHandler(async (req, res) => {
+    const sessionData = sessionService.getSessionData(req);
+    
+    if (!sessionData.studentId) {
+      throw new AuthenticationError('Student authentication required');
+    }
+    
+    const profile = await databaseService.getStudentProfile(sessionData.studentId);
+    
+    res.json({
+      success: true,
+      profile
+    });
+  });
+
   // Update student profile
   updateStudentProfile = asyncHandler(async (req, res) => {
     const { studentId } = req.params;
@@ -193,16 +209,8 @@ class StudentController {
     // Authorization already handled by requireAdminOrOwner middleware
     // No need for additional checks here
     
-    // This would need to be implemented to gather student statistics
-    // For now, return basic info
-    const stats = {
-      totalLessonsCompleted: 0,
-      averageScore: 0,
-      totalTimeSpent: 0,
-      currentStreak: 0,
-      bestStreak: 0,
-      lastActivity: null
-    };
+    // Get real student statistics from database
+    const stats = await databaseService.calculateStudentStats(studentId);
     
     res.json({
       success: true,
@@ -218,9 +226,8 @@ class StudentController {
     // Authorization already handled by requireAdminOrOwner middleware
     // No need for additional checks here
     
-    // This would need to be implemented to get activity history
-    // For now, return empty array
-    const activities = [];
+    // Get real student activity history from database
+    const activities = await databaseService.getStudentActivityLog(studentId, parseInt(limit));
     
     res.json({
       success: true,
@@ -238,12 +245,10 @@ class StudentController {
       throw new ValidationError('New password is required');
     }
     
-    // This would need to be implemented in authService
-    // For now, just return success
-    res.json({
-      success: true,
-      message: 'Password reset successfully'
-    });
+    // Reset password using database service
+    const result = await databaseService.resetStudentPassword(studentId, newPassword);
+    
+    res.json(result);
   });
 }
 

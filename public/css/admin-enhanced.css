@@ -394,7 +394,7 @@ function createLessonCard(lesson, index) {
                 <i class="fas fa-edit"></i>
                 <span>Sửa</span>
             </a>
-            <a href="/admin/statistics/${lesson.id}" class="action-btn">
+            <a href="/admin/lessons/${lesson.id}/statistics" class="action-btn">
                 <i class="fas fa-chart-bar"></i>
                 <span>Thống kê</span>
             </a>
