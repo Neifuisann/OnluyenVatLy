@@ -1401,41 +1401,108 @@ class AdminEditorV2 {
 
     async loadExistingContent() {
         const pathParts = window.location.pathname.split('/');
+        console.log('🔍 URL pathname:', window.location.pathname);
+        console.log('🔍 Path parts:', pathParts);
+        console.log('🔍 Contains edit:', pathParts.includes('edit'));
+
         if (pathParts.includes('edit')) {
             const idIndex = pathParts.indexOf('edit') + 1;
+            console.log('🔍 Edit index:', pathParts.indexOf('edit'), 'ID index:', idIndex);
+
             if (idIndex < pathParts.length) {
                 this.editingId = pathParts[idIndex];
+                console.log('🔍 Extracted lesson ID:', this.editingId);
                 await this.loadLessonContent(this.editingId);
+            } else {
+                console.log('❌ No lesson ID found in URL');
             }
+        } else {
+            console.log('ℹ️ Not an edit URL, skipping content loading');
         }
     }
 
     async loadLessonContent(lessonId) {
         try {
+            console.log('🔍 Loading lesson content for ID:', lessonId);
             const response = await fetch(`/api/lessons/${lessonId}`);
             if (!response.ok) {
                 throw new Error('Failed to load lesson content');
             }
-            
-            const lessonData = await response.json();
-            const textContent = this.generateTextFromQuestions(lessonData.questions || []);
-            
+
+            const responseData = await response.json();
+            console.log('📦 Raw API response:', responseData);
+
+            // Extract the actual lesson data from the API response
+            const lessonData = responseData.lesson || responseData;
+            console.log('📦 Actual lesson data:', lessonData);
+            console.log('🔍 All lesson data keys:', Object.keys(lessonData));
+            console.log('❓ Questions data:', lessonData.questions);
+            console.log('🎯 Quiz data:', lessonData.quiz_data);
+            console.log('📝 Content data:', lessonData.content);
+            console.log('📊 Questions type:', typeof lessonData.questions);
+            console.log('📏 Questions length:', Array.isArray(lessonData.questions) ? lessonData.questions.length : 'Not an array');
+
+            // Check if questions are in quiz_data
+            if (lessonData.quiz_data && lessonData.quiz_data.questions) {
+                console.log('✅ Found questions in quiz_data.questions:', lessonData.quiz_data.questions);
+            }
+
+            // Try to find questions in different possible locations
+            let questionsData = lessonData.questions || [];
+
+            // Check if questions are in quiz_data.questions
+            if ((!questionsData || questionsData.length === 0) && lessonData.quiz_data && lessonData.quiz_data.questions) {
+                console.log('🔄 Using questions from quiz_data.questions');
+                questionsData = lessonData.quiz_data.questions;
+            }
+
+            // Check if questions are in content field
+            if ((!questionsData || questionsData.length === 0) && lessonData.content) {
+                console.log('🔄 Checking content field for questions');
+                if (Array.isArray(lessonData.content)) {
+                    questionsData = lessonData.content;
+                } else if (lessonData.content.questions) {
+                    questionsData = lessonData.content.questions;
+                }
+            }
+
+            console.log('🎯 Final questions data to use:', questionsData);
+
+            const textContent = this.generateTextFromQuestions(questionsData);
+            console.log('📝 Generated text content:', textContent);
+            console.log('📏 Text content length:', textContent.length);
+
             this.editor.setValue(textContent);
             this.updateLessonTitle(lessonData.title || 'Chỉnh sửa bài học');
-            
+
             this.notifications.show('success', 'Tải thành công', 'Đã tải nội dung bài học');
-            
+
         } catch (error) {
-            console.error('Error loading lesson content:', error);
+            console.error('❌ Error loading lesson content:', error);
             this.notifications.show('error', 'Lỗi tải', 'Không thể tải nội dung bài học');
         }
     }
 
     generateTextFromQuestions(questions) {
+        console.log('🔧 generateTextFromQuestions called with:', questions);
+        console.log('🔧 Questions is array:', Array.isArray(questions));
+        console.log('🔧 Questions length:', Array.isArray(questions) ? questions.length : 'N/A');
+
         let text = '';
-        if (!Array.isArray(questions)) return '';
+        if (!Array.isArray(questions)) {
+            console.log('❌ Questions is not an array, returning empty string');
+            return '';
+        }
+
+        if (questions.length === 0) {
+            console.log('⚠️ Questions array is empty');
+            return '';
+        }
 
         questions.forEach((q, index) => {
+            console.log(`🔧 Processing question ${index + 1}:`, q);
+            console.log(`🔧 Question type: ${q.type}, Question text: "${q.question}"`);
+
             text += `Câu ${index + 1}: ${q.question || ''}\n`;
 
             if (q.points && q.points !== 1) {
@@ -1443,6 +1510,7 @@ class AdminEditorV2 {
             }
 
             if (q.type === 'abcd') {
+                console.log(`🔧 Processing ABCD question - options:`, q.options, 'correct:', q.correct);
                 (q.options || []).forEach((opt, optIndex) => {
                     const letter = String.fromCharCode(65 + optIndex);
                     const optText = typeof opt === 'string' ? opt : (opt.text || '');
@@ -1451,8 +1519,10 @@ class AdminEditorV2 {
                     text += `${prefix}${letter}. ${optText}\n`;
                 });
             } else if (q.type === 'number') {
+                console.log(`🔧 Processing number question - correct:`, q.correct);
                 text += `Answer: ${q.correct || ''}\n`;
             } else if (q.type === 'truefalse') {
+                console.log(`🔧 Processing true/false - options:`, q.options, 'correct:', q.correct);
                 if (Array.isArray(q.correct)) {
                     (q.options || []).forEach((opt, optIndex) => {
                         const letter = String.fromCharCode(97 + optIndex);
@@ -1465,8 +1535,11 @@ class AdminEditorV2 {
             }
             text += '\n';
         });
-        
-        return text.trim();
+
+        const finalText = text.trim();
+        console.log('🔧 Final generated text:', finalText);
+        console.log('🔧 Final text length:', finalText.length);
+        return finalText;
     }
 
     getInitialContent() {
@@ -1881,7 +1954,7 @@ D. Cả nước được giải phóng và tiến lên xây dựng chủ nghĩa 
 
             if (response.ok && result.success) {
                 // Insert processed content into editor
-                const content = result.content || result.data?.content || '';
+                const content = result.formattedContent || result.content || result.data?.content || '';
                 if (content) {
                     this.editor.setValue(content);
                     this.closeAllModals();

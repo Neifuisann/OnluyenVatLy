@@ -1229,10 +1229,38 @@
         <p>Đang tải kết quả tuyệt vời của bạn...</p>
     </div>
 
-    <!-- Home Button -->
-    <a href="/" class="home-button">
-        <img src="https://styles.redditmedia.com/t5_851o4i/styles/profileIcon_0elfudeu2s5b1.jpg?width=256&height=256&frame=1&auto=webp&crop=256:256,smart&s=86be605407a08efe2894a6bacd089074aca51879" alt="Home">
-    </a>
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <i class="fas fa-atom"></i>
+                <span>Học Vật Lý</span>
+            </a>
+            
+            <div class="nav-links" id="nav-links">
+                <a href="/" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    <span>Trang chủ</span>
+                </a>
+                <a href="#lessons" class="nav-link">
+                    <i class="fas fa-book"></i>
+                    <span>Bài học</span>
+                </a>
+                <a href="/leaderboard" class="nav-link">
+                    <i class="fas fa-trophy"></i>
+                    <span>Bảng xếp hạng</span>
+                </a>
+                <a href="/profile" class="nav-link" id="profile-link">
+                    <i class="fas fa-user"></i>
+                    <span>Hồ sơ</span>
+                </a>
+            </div>
+            
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
 
     <!-- Image Zoom Modal -->
     <div id="image-modal" class="image-modal">
@@ -1372,6 +1400,16 @@
                 card.style.setProperty('--mouse-y', `${y}px`);
             });
         });
+        
+        // Mobile menu toggle functionality
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const navLinks = document.getElementById('nav-links');
+        
+        if (mobileMenuToggle && navLinks) {
+            mobileMenuToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+            });
+        }
     </script>
 </body>
 </html>

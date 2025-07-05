@@ -21,25 +21,30 @@ const serveHTML = (filename) => {
   };
 };
 
-// Middleware specifically for HTML pages that require student authentication
+// Middleware specifically for HTML pages that require student authentication (or admin with student privileges)
 const requireStudentAuthForHTML = (req, res, next) => {
-  const isAuthenticated = sessionService.isStudentAuthenticated(req);
+  const isStudentAuthenticated = sessionService.isStudentAuthenticated(req);
+  const isAdminAuthenticated = sessionService.isAdminAuthenticated(req);
+  const hasAccess = sessionService.isStudentOrAdminAuthenticated(req);
+
   console.log('🔐 requireStudentAuthForHTML check:', {
     url: req.originalUrl,
     sessionId: req.sessionID,
     userAgent: req.headers['user-agent'],
-    isAuthenticated,
+    isStudentAuthenticated,
+    isAdminAuthenticated,
+    hasAccess,
     studentId: req.session?.studentId,
     studentName: req.session?.studentName
   });
 
-  if (!isAuthenticated) {
-    console.log('❌ Student not authenticated, redirecting to login');
+  if (!hasAccess) {
+    console.log('❌ User not authenticated, redirecting to login');
     // For HTML requests, redirect to student login
     return res.redirect('/student/login?redirect=' + encodeURIComponent(req.originalUrl));
   }
 
-  console.log('✅ Student authenticated, proceeding');
+  console.log('✅ User authenticated (student or admin), proceeding');
   next();
 };
 
@@ -180,6 +185,13 @@ router.get('/profile/:studentId',
   addSessionInfo,
   noCacheMiddleware,
   serveHTML('profile.html')
+);
+
+router.get('/settings',
+  requireStudentAuthForHTML,
+  addSessionInfo,
+  noCacheMiddleware,
+  serveHTML('settings.html')
 );
 
 // Student-only pages
@@ -340,6 +352,14 @@ router.get('/admin/lessons/:id/statistics',
   addSessionInfo,
   noCacheMiddleware,
   serveHTML('lesson-statistics.html')  // Individual lesson statistics page
+);
+
+// AI Tools admin page
+router.get('/admin/ai-tools',
+  requireAdminAuthForHTML,
+  addSessionInfo,
+  noCacheMiddleware,
+  serveHTML('admin-ai-tools.html')
 );
 
 // Result viewing pages

@@ -1,10 +1,43 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Mobile menu toggle functionality (copied from lessons page)
+    const mobileToggle = document.getElementById('mobile-menu-toggle');
+    const navLinks = document.getElementById('nav-links');
+    
+    if (mobileToggle && navLinks) {
+        console.log('DEBUG: Mobile menu toggle elements found, adding event listener');
+        
+        mobileToggle.addEventListener('click', function() {
+            console.log('DEBUG: Mobile menu toggle clicked');
+            navLinks.classList.toggle('active');
+            
+            // Toggle hamburger icon
+            const icon = mobileToggle.querySelector('i');
+            if (navLinks.classList.contains('active')) {
+                icon.className = 'fas fa-times';
+            } else {
+                icon.className = 'fas fa-bars';
+            }
+        });
+        
+        // Close mobile menu when clicking on nav links
+        const navLinkElements = navLinks.querySelectorAll('.nav-link');
+        navLinkElements.forEach(link => {
+            link.addEventListener('click', () => {
+                console.log('DEBUG: Nav link clicked, closing mobile menu');
+                navLinks.classList.remove('active');
+                mobileToggle.querySelector('i').className = 'fas fa-bars';
+            });
+        });
+    } else {
+        console.error('DEBUG: Mobile menu toggle elements not found');
+    }
+
     // Get the modal
     const modal = document.getElementById('user-info-modal');
     const userInfoForm = document.getElementById('user-info-form');
 
-    // Get the "Chinh phục" button
-    const conquestButton = document.querySelector('.nav-bar a[href="#chinh-phuc"]');
+    // Get the "Chinh phục" button (updated selector for new nav structure)
+    const conquestButton = document.querySelector('.main-nav a[href="/quizgame"]');
     if (conquestButton) {
         conquestButton.addEventListener('click', function(e) {
             e.preventDefault();

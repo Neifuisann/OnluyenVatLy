@@ -300,7 +300,7 @@ async function processDocument() {
         const formData = new FormData();
         formData.append('document', selectedFile);
         
-        const response = await fetch('/api/admin/process-document', {
+        const response = await fetch('/api/admin/upload-document', {
             method: 'POST',
             body: formData
         });
@@ -651,4 +651,120 @@ function showSuccessToast(message) {
             document.body.removeChild(toast);
         }, 300);
     }, 3000);
+}
+
+// Close upload modal
+function closeUploadModal() {
+    const modal = document.getElementById('document-upload-modal');
+    if (modal) {
+        modal.classList.remove('active');
+        modal.style.display = 'none';
+    }
+
+    // Reset file selection
+    resetFileSelection();
+}
+
+// Hide upload error
+function hideUploadError() {
+    const uploadError = document.getElementById('upload-error');
+    if (uploadError) {
+        uploadError.style.display = 'none';
+    }
+
+    // Reset to file selection state
+    resetFileSelection();
+}
+
+// Show upload error
+function showUploadError(message) {
+    const uploadError = document.getElementById('upload-error');
+    const errorMessage = document.getElementById('error-message');
+
+    if (uploadError && errorMessage) {
+        errorMessage.textContent = message;
+        uploadError.style.display = 'flex';
+    }
+
+    // Hide processing status
+    const processingStatus = document.getElementById('processing-status');
+    if (processingStatus) {
+        processingStatus.style.display = 'none';
+    }
+}
+
+// Update processing step status
+function updateProcessingStep(stepId, status) {
+    const step = document.getElementById(`${stepId}-step`);
+    if (!step) return;
+
+    // Remove all status classes
+    step.classList.remove('active', 'complete', 'error');
+
+    // Add new status class
+    if (status === 'active') {
+        step.classList.add('active');
+
+        // Update icon to spinner
+        const icon = step.querySelector('.step-status i');
+        if (icon) {
+            icon.className = 'fas fa-spinner fa-spin';
+        }
+    } else if (status === 'completed' || status === 'complete') {
+        step.classList.add('complete');
+
+        // Update icon to check
+        const icon = step.querySelector('.step-status i');
+        if (icon) {
+            icon.className = 'fas fa-check';
+        }
+    } else if (status === 'error') {
+        step.classList.add('error');
+
+        // Update icon to error
+        const icon = step.querySelector('.step-status i');
+        if (icon) {
+            icon.className = 'fas fa-times';
+        }
+    }
+}
+
+// Update progress bar
+function updateProgress(percentage) {
+    const progressFill = document.getElementById('progress-fill');
+    const progressText = document.getElementById('progress-text');
+
+    if (progressFill) {
+        progressFill.style.width = `${percentage}%`;
+    }
+
+    if (progressText) {
+        progressText.textContent = `${percentage}%`;
+    }
+}
+
+// Show processing error
+function showProcessingError(message) {
+    // Hide processing status
+    const processingStatus = document.getElementById('processing-status');
+    if (processingStatus) {
+        processingStatus.style.display = 'none';
+    }
+
+    // Show error
+    showUploadError(message);
+
+    // Reset processing state
+    isProcessing = false;
+}
+
+// Update processing message
+function updateProcessingMessage(message) {
+    console.log('Processing update:', message);
+    // This could be used to show additional status messages if needed
+}
+
+// Close upload interface
+function closeUploadInterface() {
+    closeUploadModal();
 }

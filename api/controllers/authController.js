@@ -2,6 +2,7 @@ const authService = require('../services/authService');
 const sessionService = require('../services/sessionService');
 const { asyncHandler, AuthenticationError, ValidationError } = require('../middleware/errorHandler');
 const { SUCCESS_MESSAGES } = require('../config/constants');
+const { isValidPassword } = require('../middleware/validation');
 
 class AuthController {
   // Admin login
@@ -10,13 +11,21 @@ class AuthController {
 
     const result = await authService.authenticateAdmin(username, password);
     
-    // Set admin session
-    sessionService.setAdminSession(req);
-    
-    res.json({
-      success: true,
-      message: result.message,
-      user: { type: 'admin', username }
+    // Regenerate session ID to prevent session fixation
+    req.session.regenerate((err) => {
+      if (err) {
+        console.error('Session regeneration failed:', err);
+        throw new Error('Session regeneration failed');
+      }
+      
+      // Set admin session
+      sessionService.setAdminSession(req);
+      
+      res.json({
+        success: true,
+        message: result.message,
+        user: { type: 'admin', username }
+      });
     });
   });
 
@@ -35,29 +44,37 @@ class AuthController {
 
     const result = await authService.authenticateStudent(phone_number, password, deviceIdentifier);
     
-    // Handle session management
-    await sessionService.terminateExistingSessions(result.student.id, req.sessionID);
-    
-    // Set student session
-    sessionService.setStudentSession(req, result.student);
-    
-    // Update student session in database
-    await sessionService.updateStudentSession(result.student.id, req.sessionID, deviceIdentifier);
-    
-    console.log('[Auth Debug] Student login successful:', {
-      studentId: result.student.id,
-      studentName: result.student.name,
-      sessionId: req.sessionID
-    });
-    
-    res.json({
-      success: true,
-      message: result.message,
-      user: {
-        type: 'student',
-        id: result.student.id,
-        name: result.student.name
+    // Regenerate session ID to prevent session fixation
+    req.session.regenerate(async (err) => {
+      if (err) {
+        console.error('Session regeneration failed:', err);
+        throw new Error('Session regeneration failed');
       }
+      
+      // Handle session management
+      await sessionService.terminateExistingSessions(result.student.id, req.sessionID);
+      
+      // Set student session
+      sessionService.setStudentSession(req, result.student);
+      
+      // Update student session in database
+      await sessionService.updateStudentSession(result.student.id, req.sessionID, deviceIdentifier);
+      
+      console.log('[Auth Debug] Student login successful:', {
+        studentId: result.student.id,
+        studentName: result.student.name,
+        sessionId: req.sessionID
+      });
+      
+      res.json({
+        success: true,
+        message: result.message,
+        user: {
+          type: 'student',
+          id: result.student.id,
+          name: result.student.name
+        }
+      });
     });
   });
 
@@ -169,11 +186,47 @@ class AuthController {
       throw new ValidationError('Current password and new password are required');
     }
 
-    // This would need to be implemented in authService
-    // For now, just return success
+    if (!isValidPassword(newPassword)) {
+      throw new ValidationError('New password must be at least 8 characters long and contain uppercase, lowercase, number, and special characters');
+    }
+
+    // Call authService to change password (this will clear all sessions)
+    await authService.changeStudentPassword(sessionData.studentId, currentPassword, newPassword);
+
+    // Destroy current session to force re-login
+    req.session.destroy((err) => {
+      if (err) {
+        console.error('Error destroying session after password change:', err);
+      }
+    });
+
     res.json({
       success: true,
-      message: 'Password changed successfully'
+      message: 'Password changed successfully. Please log in again with your new password.'
+    });
+  });
+
+  // Logout from all devices
+  logoutAllDevices = asyncHandler(async (req, res) => {
+    const sessionData = sessionService.getSessionData(req);
+    
+    if (!sessionData.studentId) {
+      throw new AuthenticationError('Student authentication required');
+    }
+
+    // Clear all sessions for this student
+    await sessionService.clearStudentSessions(sessionData.studentId);
+
+    // Destroy current session
+    req.session.destroy((err) => {
+      if (err) {
+        console.error('Error destroying session:', err);
+      }
+    });
+
+    res.json({
+      success: true,
+      message: 'Logged out from all devices successfully'
     });
   });
 
@@ -230,10 +283,12 @@ class AuthController {
     });
   });
 
-  // Student check endpoint
+  // Student check endpoint (also accepts admin with student privileges)
   checkStudentAuth = asyncHandler(async (req, res) => {
     const sessionData = sessionService.getSessionData(req);
     const isStudent = !!sessionData.studentId;
+    const isAdmin = sessionService.isAdminAuthenticated(req);
+    const hasStudentAccess = sessionService.isStudentOrAdminAuthenticated(req);
 
     // Debug logging
     console.log('[Auth Debug] Student check:', {
@@ -242,21 +297,29 @@ class AuthController {
       studentId: sessionData.studentId,
       studentName: sessionData.studentName,
       isStudent,
+      isAdmin,
+      hasStudentAccess,
       headers: {
         'x-device-id': req.headers['x-device-id']
       }
     });
 
+    // For admin users, provide a mock student object for compatibility
+    const studentData = isStudent ? {
+      id: sessionData.studentId,
+      name: sessionData.studentName
+    } : isAdmin ? {
+      id: 'admin',
+      name: 'Administrator'
+    } : null;
+
     res.json({
       success: true,
       data: {
-        isStudent,
-        authenticated: isStudent,
-        isAuthenticated: isStudent, // Add this for client compatibility
-        student: isStudent ? {
-          id: sessionData.studentId,
-          name: sessionData.studentName
-        } : null
+        isStudent: hasStudentAccess, // Return true for both students and admins
+        authenticated: hasStudentAccess,
+        isAuthenticated: hasStudentAccess, // Add this for client compatibility
+        student: studentData
       }
     });
   });

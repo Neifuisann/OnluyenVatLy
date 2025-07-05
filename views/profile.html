@@ -91,10 +91,38 @@
     <!-- Background Animation -->
     <canvas id="network-canvas"></canvas>
     
-    <!-- Home Button -->
-    <a href="/" class="home-button">
-        <img src="https://styles.redditmedia.com/t5_851o4i/styles/profileIcon_0elfudeu2s5b1.jpg?width=256&height=256&frame=1&auto=webp&crop=256:256,smart&s=86be605407a08efe2894a6bacd089074aca51879" alt="Home">
-    </a>
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <i class="fas fa-atom"></i>
+                <span>Học Vật Lý</span>
+            </a>
+            
+            <div class="nav-links" id="nav-links">
+                <a href="/" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    <span>Trang chủ</span>
+                </a>
+                <a href="/lessons" class="nav-link">
+                    <i class="fas fa-book"></i>
+                    <span>Bài học</span>
+                </a>
+                <a href="/leaderboard" class="nav-link">
+                    <i class="fas fa-trophy"></i>
+                    <span>Bảng xếp hạng</span>
+                </a>
+                <a href="/profile" class="nav-link active" id="profile-link">
+                    <i class="fas fa-user"></i>
+                    <span>Hồ sơ</span>
+                </a>
+            </div>
+            
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
     
     <div class="profile-container" id="profile-data">
         <!-- Profile content will be loaded here -->
@@ -234,6 +262,26 @@
                             </a>
                         `;
                     }
+                    
+                    // Settings button - always available for current student
+                    profileHTML += `
+                        <a href="/settings" class="action-btn" style="
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 0.5rem;
+                            padding: 0.75rem 1.5rem;
+                            background: linear-gradient(135deg, #667eea, #764ba2);
+                            color: white;
+                            border-radius: 12px;
+                            text-decoration: none;
+                            font-weight: 600;
+                            transition: transform 0.2s, box-shadow 0.2s;
+                        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.4)';" 
+                           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                            <i class="fas fa-cog"></i>
+                            Cài đặt
+                        </a>
+                    `;
                     
                     profileHTML += `</div>`;
                 }
@@ -471,6 +519,16 @@
         }
 
         document.addEventListener('DOMContentLoaded', loadProfile);
+        
+        // Mobile menu toggle functionality
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const navLinks = document.getElementById('nav-links');
+        
+        if (mobileMenuToggle && navLinks) {
+            mobileMenuToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+            });
+        }
     </script>
 </body>
 </html>

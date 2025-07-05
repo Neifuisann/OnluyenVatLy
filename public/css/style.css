@@ -4420,15 +4420,33 @@ textarea::placeholder {
     overflow: hidden;
 }
 
-.lesson-card-image img {
+.lesson-card-image img,
+.lesson-card-image picture {
     width: 100%;
     height: 100%;
+}
+
+.lesson-card-image img {
     object-fit: cover;
     transition: transform var(--transition-slow);
+    /* Optimize for performance */
+    will-change: transform;
+    backface-visibility: hidden;
+    transform: translateZ(0); /* Hardware acceleration */
 }
 
 .lesson-card:hover .lesson-card-image img {
-    transform: scale(1.05);
+    transform: scale(1.05) translateZ(0);
+}
+
+/* Responsive image optimization */
+.lesson-card-image picture {
+    display: block;
+}
+
+.lesson-card-image source,
+.lesson-card-image img {
+    display: block;
 }
 
 .lesson-image-placeholder {

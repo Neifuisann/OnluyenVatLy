@@ -2,6 +2,8 @@ const databaseService = require('../services/databaseService');
 const sessionService = require('../services/sessionService');
 const { asyncHandler, NotFoundError, ValidationError } = require('../middleware/errorHandler');
 const { SUCCESS_MESSAGES } = require('../config/constants');
+const aiService = require('../services/ai/aiService');
+const imageGenerationService = require('../services/ai/imageGenerationService');
 
 class LessonController {
   // Get all lessons with pagination and search
@@ -25,39 +27,38 @@ class LessonController {
     });
 
     // If includeStats is true and user is admin, add statistics for each lesson
-    console.log('Stats check - includeStats:', includeStats, 'isAdmin:', sessionService.isAdminAuthenticated(req));
     if (includeStats === 'true' && sessionService.isAdminAuthenticated(req)) {
-      console.log('Adding statistics to lessons...');
       try {
-        // Get statistics for all lessons
-        const lessonsWithStats = await Promise.all(
-          result.lessons.map(async (lesson) => {
-            try {
-              // Get lesson results to calculate stats
-              const results = await databaseService.getLessonResults(lesson.id);
-              
-              const studentCount = new Set(results.map(r => r.student_id)).size;
-              const totalAttempts = results.length;
-              // Completion rate is simply the number of unique students who have attempted the lesson
-              // For a more sophisticated metric, we could check if they scored above a threshold
-              const completionRate = studentCount;
-              
-              // Get last activity
-              const lastActivity = results.length > 0 ? 
-                new Date(Math.max(...results.map(r => new Date(r.timestamp)))).toLocaleString('vi-VN') : null;
-              
-              return {
-                ...lesson,
-                studentCount,
-                completionRate,
-                lastActivity: lastActivity || 'Chưa có hoạt động'
-              };
-            } catch (error) {
-              console.error(`Error getting stats for lesson ${lesson.id}:`, error);
-              return lesson;
-            }
-          })
-        );
+        // Get statistics for all lessons using bulk query (fixes N+1 query issue)
+        const lessonIds = result.lessons.map(lesson => lesson.id);
+        const allResults = await databaseService.getBulkLessonResults(lessonIds);
+        
+        // Calculate stats for each lesson
+        const lessonsWithStats = result.lessons.map(lesson => {
+          try {
+            const results = allResults[lesson.id] || [];
+            
+            const studentCount = new Set(results.map(r => r.student_id)).size;
+            const totalAttempts = results.length;
+            // Completion rate is simply the number of unique students who have attempted the lesson
+            // For a more sophisticated metric, we could check if they scored above a threshold
+            const completionRate = studentCount;
+            
+            // Get last activity
+            const lastActivity = results.length > 0 ? 
+              new Date(Math.max(...results.map(r => new Date(r.timestamp)))).toLocaleString('vi-VN') : null;
+            
+            return {
+              ...lesson,
+              studentCount,
+              completionRate,
+              lastActivity: lastActivity || 'Chưa có hoạt động'
+            };
+          } catch (error) {
+            console.error(`Error getting stats for lesson ${lesson.id}:`, error);
+            return lesson;
+          }
+        });
         
         result.lessons = lessonsWithStats;
       } catch (error) {
@@ -146,12 +147,33 @@ class LessonController {
   createLesson = asyncHandler(async (req, res) => {
     const lessonData = req.body;
     
+    // Generate AI summary if description is blank
+    if (!lessonData.description || lessonData.description.trim() === '') {
+      try {
+        const aiSummary = await aiService.generateLessonSummary({
+          title: lessonData.title,
+          questions: lessonData.quiz?.questions || [],
+          grade: lessonData.grade,
+          subject: lessonData.subject || 'Vật lý',
+          tags: lessonData.tags || []
+        });
+        
+        lessonData.description = aiSummary;
+        lessonData.ai_summary = aiSummary;
+        lessonData.ai_summary_generated_at = new Date().toISOString();
+      } catch (error) {
+        console.error('Error generating AI summary:', error);
+        // Continue without AI summary if generation fails
+      }
+    }
+    
     const newLesson = await databaseService.createLesson(lessonData);
     
     res.status(201).json({
       success: true,
       message: 'Lesson created successfully',
-      lesson: newLesson
+      lesson: newLesson,
+      aiGenerated: !!lessonData.ai_summary
     });
   });
 
@@ -160,12 +182,36 @@ class LessonController {
     const { id } = req.params;
     const updateData = req.body;
     
+    // Check if we need to regenerate AI summary
+    if (updateData.regenerateAiSummary || 
+        (!updateData.description || updateData.description.trim() === '')) {
+      try {
+        // Get existing lesson data if needed
+        const existingLesson = await databaseService.getLessonById(id);
+        
+        const aiSummary = await aiService.generateLessonSummary({
+          title: updateData.title || existingLesson.title,
+          questions: updateData.quiz?.questions || existingLesson.quiz?.questions || [],
+          grade: updateData.grade || existingLesson.grade,
+          subject: updateData.subject || existingLesson.subject || 'Vật lý',
+          tags: updateData.tags || existingLesson.tags || []
+        });
+        
+        updateData.description = aiSummary;
+        updateData.ai_summary = aiSummary;
+        updateData.ai_summary_generated_at = new Date().toISOString();
+      } catch (error) {
+        console.error('Error regenerating AI summary:', error);
+      }
+    }
+    
     const updatedLesson = await databaseService.updateLesson(id, updateData);
     
     res.json({
       success: true,
       message: SUCCESS_MESSAGES.UPDATE_SUCCESS,
-      lesson: updatedLesson[0]
+      lesson: updatedLesson[0],
+      aiRegenerated: !!updateData.ai_summary
     });
   });
 
@@ -433,6 +479,178 @@ class LessonController {
       res.status(500).json({
         success: false,
         message: 'Error calculating platform statistics'
+      });
+    }
+  });
+
+  // Generate AI image for lesson
+  generateLessonImage = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { regenerate = false } = req.body;
+    
+    // Get lesson data
+    const lesson = await databaseService.getLessonById(id);
+    if (!lesson) {
+      throw new NotFoundError('Lesson not found');
+    }
+    
+    // Check if we should generate a new image
+    if (lesson.ai_image_url && !regenerate) {
+      return res.json({
+        success: true,
+        message: 'Lesson already has an AI-generated image',
+        imageUrl: lesson.ai_image_url,
+        prompt: lesson.ai_image_prompt
+      });
+    }
+    
+    try {
+      // Generate image using AI
+      const result = await imageGenerationService.generateLessonImage(lesson);
+      
+      if (result.success) {
+        // Update lesson with generated image info
+        await databaseService.updateLesson(id, {
+          ai_image_url: result.imageUrl,
+          ai_image_prompt: result.prompt,
+          auto_generated_image: true,
+          ai_image_generated_at: new Date().toISOString()
+        });
+        
+        res.json({
+          success: true,
+          message: 'Image generated successfully',
+          imageUrl: result.imageUrl,
+          prompt: result.prompt
+        });
+      } else {
+        throw new Error(result.error || 'Failed to generate image');
+      }
+    } catch (error) {
+      console.error('Error generating lesson image:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to generate image',
+        error: error.message
+      });
+    }
+  });
+
+  // Generate image variations for lesson
+  generateImageVariations = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { count = 3 } = req.body;
+    
+    // Get lesson data
+    const lesson = await databaseService.getLessonById(id);
+    if (!lesson) {
+      throw new NotFoundError('Lesson not found');
+    }
+    
+    try {
+      const result = await imageGenerationService.generateImageVariations(lesson, count);
+      
+      res.json({
+        success: result.success,
+        message: result.success ? 'Image variations generated successfully' : 'Failed to generate all variations',
+        variations: result.variations,
+        error: result.error
+      });
+    } catch (error) {
+      console.error('Error generating image variations:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to generate image variations',
+        error: error.message
+      });
+    }
+  });
+
+  // Generate AI summary for a lesson
+  generateLessonSummary = asyncHandler(async (req, res) => {
+    const lessonData = req.body;
+    
+    try {
+      const summary = await aiService.generateLessonSummary(lessonData);
+      
+      res.json({
+        success: true,
+        summary: summary
+      });
+    } catch (error) {
+      console.error('Error generating lesson summary:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to generate summary',
+        error: error.message
+      });
+    }
+  });
+
+  // Bulk generate AI summaries for lessons without descriptions
+  bulkGenerateAiSummaries = asyncHandler(async (req, res) => {
+    const { limit = 10, dryRun = false } = req.body;
+    
+    try {
+      // Get lessons without descriptions
+      const lessonsWithoutDescriptions = await databaseService.getLessonsWithoutDescriptions(limit);
+      
+      if (dryRun) {
+        return res.json({
+          success: true,
+          message: `Found ${lessonsWithoutDescriptions.length} lessons without descriptions`,
+          lessons: lessonsWithoutDescriptions.map(l => ({ id: l.id, title: l.title }))
+        });
+      }
+      
+      const results = [];
+      
+      for (const lesson of lessonsWithoutDescriptions) {
+        try {
+          const aiSummary = await aiService.generateLessonSummary({
+            title: lesson.title,
+            questions: lesson.quiz?.questions || [],
+            grade: lesson.grade,
+            subject: lesson.subject || 'Vật lý',
+            tags: lesson.tags || []
+          });
+          
+          await databaseService.updateLesson(lesson.id, {
+            description: aiSummary,
+            ai_summary: aiSummary,
+            ai_summary_generated_at: new Date().toISOString()
+          });
+          
+          results.push({
+            id: lesson.id,
+            title: lesson.title,
+            success: true,
+            summary: aiSummary
+          });
+        } catch (error) {
+          console.error(`Error generating summary for lesson ${lesson.id}:`, error);
+          results.push({
+            id: lesson.id,
+            title: lesson.title,
+            success: false,
+            error: error.message
+          });
+        }
+      }
+      
+      const successCount = results.filter(r => r.success).length;
+      
+      res.json({
+        success: true,
+        message: `Generated summaries for ${successCount} out of ${results.length} lessons`,
+        results: results
+      });
+    } catch (error) {
+      console.error('Error in bulk summary generation:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to generate summaries',
+        error: error.message
       });
     }
   });

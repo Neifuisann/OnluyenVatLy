@@ -922,6 +922,43 @@
                 max-height: 250px;
             }
         }
+        
+        /* Practice Mode Indicator */
+        .practice-mode-indicator {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            padding: var(--space-sm) var(--space-lg);
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-weight: 500;
+            margin-top: var(--space-sm);
+            margin-bottom: var(--space-md);
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .practice-mode-indicator i {
+            font-size: 1.25rem;
+        }
+        
+        /* Countdown Timer Animation */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body>
@@ -1275,8 +1312,20 @@
                 }
 
                 // Render options based on question type
-                switch(q.type) {
+                // Handle both old format (multiple_choice) and new format (abcd)
+                const normalizedType = q.type === 'multiple_choice' ? 'abcd' :
+                                     q.type === 'true_false' ? 'truefalse' :
+                                     q.type === 'fill_blank' ? 'number' : q.type;
+
+                switch(normalizedType) {
                     case 'abcd':
+                        // Ensure options exist and handle both string and object formats
+                        if (!q.options || !Array.isArray(q.options)) {
+                            console.warn('ABCD question missing options:', q);
+                            questionHtml += '<div class="error-message">Error: No options available for this question</div>';
+                            break;
+                        }
+
                         const optionsWithIndices = q.options.map((option, idx) => ({
                             text: typeof option === 'string' ? option : (option.text || ''),
                             originalIndex: idx,
@@ -1312,7 +1361,7 @@
                         break;
 
                     case 'truefalse':
-                        if (Array.isArray(q.options)) {
+                        if (Array.isArray(q.options) && q.options.length > 0) {
                             questionHtml += '<div class="truefalse-container">';
                             q.options.forEach((option, idx) => {
                                 const optionText = typeof option === 'string' ? option : (option.text || '');
@@ -1321,14 +1370,14 @@
                                         <div class="truefalse-text">${String.fromCharCode(65 + idx)}) ${optionText}</div>
                                         <div class="truefalse-buttons">
                                             <label class="truefalse-btn" onclick="selectTrueFalse(${originalIndex}, ${idx}, true, this)">
-                                                <input type="radio" 
-                                                       name="q${originalIndex}_${idx}" 
+                                                <input type="radio"
+                                                       name="q${originalIndex}_${idx}"
                                                        value="true">
                                                 Đúng
                                             </label>
                                             <label class="truefalse-btn" onclick="selectTrueFalse(${originalIndex}, ${idx}, false, this)">
-                                                <input type="radio" 
-                                                       name="q${originalIndex}_${idx}" 
+                                                <input type="radio"
+                                                       name="q${originalIndex}_${idx}"
                                                        value="false">
                                                 Sai
                                             </label>
@@ -1337,6 +1386,9 @@
                                 `;
                             });
                             questionHtml += '</div>';
+                        } else {
+                            console.warn('True/false question missing options:', q);
+                            questionHtml += '<div class="error-message">Error: No options available for this true/false question</div>';
                         }
                         break;
 
@@ -1495,23 +1547,31 @@
                     }
 
                     // Process answers based on question type
-                    if (q.type === 'truefalse' && Array.isArray(q.options)) {
+                    // Handle both old format (multiple_choice) and new format (abcd)
+                    const normalizedType = q.type === 'multiple_choice' ? 'abcd' :
+                                         q.type === 'true_false' ? 'truefalse' :
+                                         q.type === 'fill_blank' ? 'number' : q.type;
+
+                    // Get correct answer from either 'correct' or 'correctAnswer' property
+                    const correctAnswerValue = q.correct !== undefined ? q.correct : q.correctAnswer;
+
+                    if (normalizedType === 'truefalse' && Array.isArray(q.options)) {
                         const userAnswersArray = q.options.map((_, idx) => {
                             const selectedInput = document.querySelector(`input[name="q${originalIndex}_${idx}"]:checked`);
                             return selectedInput ? selectedInput.value === 'true' : null;
                         });
-                        
-                        const correctAnswersArray = q.correct;
+
+                        const correctAnswersArray = correctAnswerValue;
                         optionsText = q.options.map(opt => opt.text || opt);
 
-                        isCorrect = Array.isArray(correctAnswersArray) && 
-                                    correctAnswersArray.every((correctAns, idx) => 
+                        isCorrect = Array.isArray(correctAnswersArray) &&
+                                    correctAnswersArray.every((correctAns, idx) =>
                                         userAnswersArray[idx] !== null && userAnswersArray[idx] === correctAns
                                     );
 
                         userAnswer = userAnswersArray;
                         correctAnswer = correctAnswersArray;
-                    } else if (q.type === 'abcd') {
+                    } else if (normalizedType === 'abcd') {
                         const selectedRadio = document.querySelector(`input[name="q${originalIndex}"]:checked`);
                         const selectedValue = selectedRadio ? selectedRadio.value : null;
 
@@ -1529,7 +1589,7 @@
                                 const option = q.options[selectedMapping.originalIndex];
                                 userAnswer = option.text || option;
                                 
-                                const correctIndex = q.correct.toUpperCase().charCodeAt(0) - 65;
+                                const correctIndex = correctAnswerValue.toUpperCase().charCodeAt(0) - 65;
                                 if (correctIndex >= 0 && correctIndex < q.options.length) {
                                     const correctOption = q.options[correctIndex];
                                     correctAnswer = correctOption.text || correctOption;
@@ -1541,7 +1601,7 @@
                             }
                         } else {
                             userAnswer = 'No answer';
-                            const correctIndex = q.correct.toUpperCase().charCodeAt(0) - 65;
+                            const correctIndex = correctAnswerValue.toUpperCase().charCodeAt(0) - 65;
                             if (correctIndex >= 0 && correctIndex < q.options.length) {
                                 const correctOption = q.options[correctIndex];
                                 correctAnswer = correctOption.text || correctOption;

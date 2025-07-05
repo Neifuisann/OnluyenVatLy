@@ -26,26 +26,68 @@ class UploadController {
     }
 
     try {
-      // Process image with Sharp
-      const processedImageBuffer = await sharp(file.buffer)
+      // Generate unique filename base
+      const timestamp = Date.now();
+      const filenameBase = `lesson-${timestamp}`;
+      
+      // Create multiple optimized versions for responsive images
+      const sizes = [
+        { width: 400, suffix: '-sm' },
+        { width: 800, suffix: '-md' }, 
+        { width: 1200, suffix: '-lg' }
+      ];
+      
+      const uploadPromises = [];
+      
+      // Create WebP versions (better compression)
+      for (const size of sizes) {
+        const webpBuffer = await sharp(file.buffer)
+          .resize(size.width, null, {
+            fit: 'inside',
+            withoutEnlargement: true
+          })
+          .webp({ quality: 80 })
+          .toBuffer();
+          
+        uploadPromises.push(
+          supabaseAdmin.storage
+            .from(UPLOAD_CONFIG.IMAGE_BUCKET)
+            .upload(`${filenameBase}${size.suffix}.webp`, webpBuffer, {
+              contentType: 'image/webp',
+              cacheControl: '31536000' // 1 year cache
+            })
+        );
+      }
+      
+      // Create fallback JPEG (for browser compatibility)
+      const jpegBuffer = await sharp(file.buffer)
         .resize(UPLOAD_CONFIG.MAX_IMAGE_DIMENSION, UPLOAD_CONFIG.MAX_IMAGE_DIMENSION, {
-          fit: 'inside',
+          fit: 'inside', 
           withoutEnlargement: true
         })
         .jpeg({ quality: 85 })
         .toBuffer();
-
-      // Generate unique filename
-      const timestamp = Date.now();
-      const filename = `lesson-${timestamp}.jpg`;
-
-      // Upload to Supabase Storage
-      const { data, error } = await supabaseAdmin.storage
-        .from(UPLOAD_CONFIG.IMAGE_BUCKET)
-        .upload(filename, processedImageBuffer, {
-          contentType: 'image/jpeg',
-          cacheControl: '3600'
-        });
+        
+      uploadPromises.push(
+        supabaseAdmin.storage
+          .from(UPLOAD_CONFIG.IMAGE_BUCKET)
+          .upload(`${filenameBase}.jpg`, jpegBuffer, {
+            contentType: 'image/jpeg',
+            cacheControl: '31536000' // 1 year cache
+          })
+      );
+      
+      // Upload all versions concurrently
+      const results = await Promise.all(uploadPromises);
+      const errors = results.filter(result => result.error);
+      
+      if (errors.length > 0) {
+        console.error('Some image uploads failed:', errors);
+        throw new Error('Failed to upload optimized images');
+      }
+      
+      // Use the main JPEG as the primary image URL
+      const { data, error } = results[results.length - 1]; // Last one is the JPEG
 
       if (error) {
         console.error('Supabase upload error:', error);

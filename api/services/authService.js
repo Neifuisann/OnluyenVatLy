@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const { ADMIN_CREDENTIALS, ERROR_MESSAGES, SUCCESS_MESSAGES } = require('../config/constants');
 const databaseService = require('./databaseService');
+const sessionService = require('./sessionService');
 
 class AuthService {
   // Admin authentication
@@ -134,6 +135,45 @@ class AuthService {
       return session && session.studentId && session.studentName;
     }
     return false;
+  }
+
+  // Change student password
+  async changeStudentPassword(studentId, currentPassword, newPassword) {
+    if (!studentId || !currentPassword || !newPassword) {
+      throw new Error('Missing required parameters');
+    }
+
+    // Get student from database
+    const student = await databaseService.getStudentById(studentId);
+    if (!student) {
+      throw new Error('Student not found');
+    }
+
+    // Verify current password
+    const passwordMatch = await bcrypt.compare(currentPassword, student.password_hash);
+    if (!passwordMatch) {
+      throw new Error('Current password is incorrect');
+    }
+
+    // Hash new password
+    const saltRounds = 10;
+    const newPasswordHash = await bcrypt.hash(newPassword, saltRounds);
+
+    // Update password in database
+    await databaseService.updateStudent(studentId, {
+      password_hash: newPasswordHash
+    });
+
+    // Clear all sessions for this student to force re-authentication
+    // This ensures that any existing sessions become invalid after password change
+    try {
+      await sessionService.clearStudentSessions(studentId);
+    } catch (error) {
+      console.error('Error clearing student sessions after password change:', error);
+      // Don't fail the password change if session clearing fails
+    }
+
+    return { success: true, message: 'Password changed successfully' };
   }
 }
 

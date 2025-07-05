@@ -35,7 +35,7 @@
                 <div class="header-title">
                     <h1>
                         <i class="fas fa-cog"></i>
-                        <span id="lesson-title">Cấu hình bài học</span>
+                        <span id="header-lesson-title">Cấu hình bài học</span>
                     </h1>
                     <div class="lesson-status">
                         <span class="status-indicator" id="save-status">
@@ -50,6 +50,330 @@
         <!-- Main Content Container -->
         <main class="configure-content">
             <div class="configure-container">
+                <!-- Mode Configuration Section -->
+                <div class="setting-block">
+                    <h3 class="section-title">
+                        <i class="fas fa-toggle-on"></i>
+                        Chế độ bài tập
+                    </h3>
+                    <div class="config-box">
+                        <div class="mode-toggle-container">
+                            <div class="mode-toggle">
+                                <input type="radio" id="test-mode" name="lesson-mode" value="test" checked>
+                                <label for="test-mode" class="mode-option">
+                                    <i class="fas fa-clipboard-check"></i>
+                                    <span class="mode-title">Chế độ kiểm tra</span>
+                                    <span class="mode-description">Một lần làm bài, có giới hạn thời gian, không hiển thị đáp án</span>
+                                </label>
+                            </div>
+                            <div class="mode-toggle">
+                                <input type="radio" id="practice-mode" name="lesson-mode" value="practice">
+                                <label for="practice-mode" class="mode-option">
+                                    <i class="fas fa-graduation-cap"></i>
+                                    <span class="mode-title">Chế độ luyện tập</span>
+                                    <span class="mode-description">Làm lại nhiều lần, có gợi ý, hiển thị đáp án ngay</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Time Limit Configuration Section -->
+                <div class="setting-block">
+                    <h3 class="section-title">
+                        <i class="fas fa-clock"></i>
+                        Giới hạn thời gian
+                    </h3>
+                    <div class="config-box">
+                        <div class="time-limit-container">
+                            <div class="time-limit-toggle">
+                                <input type="checkbox" id="enable-time-limit" class="toggle-checkbox">
+                                <label for="enable-time-limit" class="toggle-label">
+                                    <span class="toggle-switch"></span>
+                                    <span class="toggle-text">Bật giới hạn thời gian</span>
+                                </label>
+                            </div>
+                            
+                            <div class="time-limit-controls" id="time-limit-controls" style="display: none;">
+                                <div class="time-input-row">
+                                    <div class="time-input-group">
+                                        <label for="time-hours" class="time-label">Giờ</label>
+                                        <input type="number" id="time-hours" class="time-input" min="0" max="23" value="0">
+                                    </div>
+                                    <div class="time-input-group">
+                                        <label for="time-minutes" class="time-label">Phút</label>
+                                        <input type="number" id="time-minutes" class="time-input" min="0" max="59" value="30">
+                                    </div>
+                                    <div class="time-input-group">
+                                        <label for="time-seconds" class="time-label">Giây</label>
+                                        <input type="number" id="time-seconds" class="time-input" min="0" max="59" value="0">
+                                    </div>
+                                </div>
+                                
+                                <div class="time-limit-options">
+                                    <div class="option-item">
+                                        <input type="checkbox" id="show-countdown" class="option-checkbox" checked>
+                                        <label for="show-countdown" class="option-label">
+                                            <i class="fas fa-stopwatch"></i>
+                                            Hiển thị đồng hồ đếm ngược
+                                        </label>
+                                    </div>
+                                    <div class="option-item">
+                                        <input type="checkbox" id="auto-submit" class="option-checkbox" checked>
+                                        <label for="auto-submit" class="option-label">
+                                            <i class="fas fa-paper-plane"></i>
+                                            Tự động nộp bài khi hết giờ
+                                        </label>
+                                    </div>
+                                    <div class="option-item">
+                                        <input type="checkbox" id="warning-alerts" class="option-checkbox">
+                                        <label for="warning-alerts" class="option-label">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                            Cảnh báo khi còn 5 phút
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="time-preview">
+                                    <span class="preview-label">Thời gian:</span>
+                                    <span class="preview-time" id="time-preview">30:00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question Randomization Section -->
+                <div class="setting-block">
+                    <h3 class="section-title">
+                        <i class="fas fa-random"></i>
+                        Tùy chọn câu hỏi ngẫu nhiên
+                    </h3>
+                    <div class="config-box">
+                        <div class="randomization-container">
+                            <!-- Question Order Shuffling -->
+                            <div class="randomization-group">
+                                <div class="randomization-toggle">
+                                    <input type="checkbox" id="shuffle-questions" class="toggle-checkbox">
+                                    <label for="shuffle-questions" class="toggle-label">
+                                        <span class="toggle-switch"></span>
+                                        <span class="toggle-text">Xáo trộn thứ tự câu hỏi</span>
+                                    </label>
+                                </div>
+                                <p class="randomization-description">Các câu hỏi sẽ xuất hiện theo thứ tự ngẫu nhiên cho mỗi học sinh</p>
+                            </div>
+
+                            <!-- Answer Choice Shuffling -->
+                            <div class="randomization-group">
+                                <div class="randomization-toggle">
+                                    <input type="checkbox" id="shuffle-answers" class="toggle-checkbox">
+                                    <label for="shuffle-answers" class="toggle-label">
+                                        <span class="toggle-switch"></span>
+                                        <span class="toggle-text">Xáo trộn đáp án trắc nghiệm</span>
+                                    </label>
+                                </div>
+                                <p class="randomization-description">Các đáp án A, B, C, D sẽ được xáo trộn vị trí cho mỗi học sinh</p>
+                            </div>
+
+                            <!-- Question Pool Selection -->
+                            <div class="randomization-group">
+                                <div class="randomization-toggle">
+                                    <input type="checkbox" id="enable-question-pool" class="toggle-checkbox">
+                                    <label for="enable-question-pool" class="toggle-label">
+                                        <span class="toggle-switch"></span>
+                                        <span class="toggle-text">Chọn ngẫu nhiên từ bộ câu hỏi</span>
+                                    </label>
+                                </div>
+                                <p class="randomization-description">Mỗi học sinh sẽ nhận được một tập con câu hỏi được chọn ngẫu nhiên</p>
+                                
+                                <div class="question-pool-controls" id="question-pool-controls" style="display: none;">
+                                    <div class="pool-setting">
+                                        <label for="pool-size" class="pool-label">Số câu hỏi cho mỗi học sinh:</label>
+                                        <div class="pool-input-group">
+                                            <input type="number" id="pool-size" class="pool-input" min="1" value="5">
+                                            <span class="pool-max" id="pool-max-display">/ 0 câu có sẵn</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="pool-setting">
+                                        <label class="pool-label">Phân bố theo độ khó:</label>
+                                        <div class="difficulty-distribution">
+                                            <div class="difficulty-item">
+                                                <label for="easy-ratio" class="difficulty-label">Dễ</label>
+                                                <input type="number" id="easy-ratio" class="difficulty-input" min="0" max="100" value="30">
+                                                <span class="difficulty-percent">%</span>
+                                            </div>
+                                            <div class="difficulty-item">
+                                                <label for="medium-ratio" class="difficulty-label">Trung bình</label>
+                                                <input type="number" id="medium-ratio" class="difficulty-input" min="0" max="100" value="50">
+                                                <span class="difficulty-percent">%</span>
+                                            </div>
+                                            <div class="difficulty-item">
+                                                <label for="hard-ratio" class="difficulty-label">Khó</label>
+                                                <input type="number" id="hard-ratio" class="difficulty-input" min="0" max="100" value="20">
+                                                <span class="difficulty-percent">%</span>
+                                            </div>
+                                        </div>
+                                        <div class="difficulty-total" id="difficulty-total">Tổng: 100%</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Randomization Seed -->
+                            <div class="randomization-group">
+                                <div class="randomization-setting">
+                                    <label for="randomization-seed" class="setting-label">
+                                        <i class="fas fa-dice"></i>
+                                        Seed ngẫu nhiên (tùy chọn)
+                                    </label>
+                                    <input type="text" id="randomization-seed" class="form-control" placeholder="Để trống cho seed tự động">
+                                    <p class="randomization-description">Seed giống nhau sẽ tạo ra cùng một pattern xáo trộn</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Multiple Attempts Configuration Section -->
+                <div class="setting-block">
+                    <h3 class="section-title">
+                        <i class="fas fa-redo"></i>
+                        Quản lý lần thử
+                    </h3>
+                    <div class="config-box">
+                        <div class="attempts-container">
+                            <!-- Enable Multiple Attempts -->
+                            <div class="attempts-group">
+                                <div class="attempts-toggle">
+                                    <input type="checkbox" id="enable-multiple-attempts" class="toggle-checkbox">
+                                    <label for="enable-multiple-attempts" class="toggle-label">
+                                        <span class="toggle-switch"></span>
+                                        <span class="toggle-text">Cho phép nhiều lần thử</span>
+                                    </label>
+                                </div>
+                                <p class="attempts-description">Học sinh có thể làm bài nhiều lần (mặc định: chỉ 1 lần)</p>
+                            </div>
+
+                            <div class="attempts-controls" id="attempts-controls" style="display: none;">
+                                <!-- Number of Attempts -->
+                                <div class="attempts-group">
+                                    <div class="attempts-setting">
+                                        <label for="max-attempts" class="setting-label">
+                                            <i class="fas fa-hashtag"></i>
+                                            Số lần thử tối đa
+                                        </label>
+                                        <div class="attempts-input-group">
+                                            <input type="number" id="max-attempts" class="attempts-input" min="1" max="20" value="3">
+                                            <div class="attempts-options">
+                                                <label class="attempts-option">
+                                                    <input type="radio" name="attempts-limit" value="limited" checked>
+                                                    <span>Giới hạn</span>
+                                                </label>
+                                                <label class="attempts-option">
+                                                    <input type="radio" name="attempts-limit" value="unlimited">
+                                                    <span>Không giới hạn</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <p class="attempts-description">0 = không giới hạn số lần thử</p>
+                                    </div>
+                                </div>
+
+                                <!-- Cooldown Period -->
+                                <div class="attempts-group">
+                                    <div class="attempts-setting">
+                                        <label for="cooldown-period" class="setting-label">
+                                            <i class="fas fa-clock"></i>
+                                            Thời gian chờ giữa các lần thử
+                                        </label>
+                                        <div class="cooldown-controls">
+                                            <div class="cooldown-input-row">
+                                                <div class="cooldown-input-group">
+                                                    <input type="number" id="cooldown-hours" class="cooldown-input" min="0" max="23" value="0">
+                                                    <label class="cooldown-label">Giờ</label>
+                                                </div>
+                                                <div class="cooldown-input-group">
+                                                    <input type="number" id="cooldown-minutes" class="cooldown-input" min="0" max="59" value="30">
+                                                    <label class="cooldown-label">Phút</label>
+                                                </div>
+                                                <div class="cooldown-input-group">
+                                                    <input type="number" id="cooldown-seconds" class="cooldown-input" min="0" max="59" value="0">
+                                                    <label class="cooldown-label">Giây</label>
+                                                </div>
+                                            </div>
+                                            <div class="cooldown-preview">
+                                                <span class="cooldown-preview-label">Thời gian chờ:</span>
+                                                <span class="cooldown-preview-time" id="cooldown-preview">30 phút</span>
+                                            </div>
+                                        </div>
+                                        <p class="attempts-description">Học sinh phải chờ trước khi làm lại bài</p>
+                                    </div>
+                                </div>
+
+                                <!-- Score Recording Options -->
+                                <div class="attempts-group">
+                                    <div class="attempts-setting">
+                                        <label class="setting-label">
+                                            <i class="fas fa-chart-line"></i>
+                                            Cách tính điểm
+                                        </label>
+                                        <div class="score-recording-options">
+                                            <label class="score-option">
+                                                <input type="radio" name="score-recording" value="highest" checked>
+                                                <div class="score-option-content">
+                                                    <span class="score-option-title">Điểm cao nhất</span>
+                                                    <span class="score-option-description">Lấy điểm cao nhất trong tất cả lần thử</span>
+                                                </div>
+                                            </label>
+                                            <label class="score-option">
+                                                <input type="radio" name="score-recording" value="latest">
+                                                <div class="score-option-content">
+                                                    <span class="score-option-title">Điểm lần cuối</span>
+                                                    <span class="score-option-description">Lấy điểm của lần thử gần nhất</span>
+                                                </div>
+                                            </label>
+                                            <label class="score-option">
+                                                <input type="radio" name="score-recording" value="average">
+                                                <div class="score-option-content">
+                                                    <span class="score-option-title">Điểm trung bình</span>
+                                                    <span class="score-option-description">Tính trung bình của tất cả lần thử</span>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Additional Options -->
+                                <div class="attempts-group">
+                                    <div class="attempts-advanced-options">
+                                        <div class="advanced-option-item">
+                                            <input type="checkbox" id="show-previous-attempts" class="option-checkbox" checked>
+                                            <label for="show-previous-attempts" class="option-label">
+                                                <i class="fas fa-history"></i>
+                                                Hiển thị kết quả lần thử trước
+                                            </label>
+                                        </div>
+                                        <div class="advanced-option-item">
+                                            <input type="checkbox" id="allow-review-before-retry" class="option-checkbox">
+                                            <label for="allow-review-before-retry" class="option-label">
+                                                <i class="fas fa-eye"></i>
+                                                Cho phép xem lại đáp án trước khi thử lại
+                                            </label>
+                                        </div>
+                                        <div class="advanced-option-item">
+                                            <input type="checkbox" id="reset-timer-each-attempt" class="option-checkbox" checked>
+                                            <label for="reset-timer-each-attempt" class="option-label">
+                                                <i class="fas fa-stopwatch"></i>
+                                                Đặt lại thời gian cho mỗi lần thử
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- General Configuration Section -->
                 <div class="setting-block">
                     <h3 class="section-title">
@@ -125,9 +449,17 @@
                             <label for="lesson-description" class="form-label">
                                 <i class="fas fa-align-left"></i>
                                 Mô tả
+                                <button type="button" class="ai-generate-btn" id="generate-description-btn" title="Tạo mô tả bằng AI">
+                                    <i class="fas fa-magic"></i>
+                                    AI
+                                </button>
                             </label>
                             <div class="setting-input">
                                 <textarea id="lesson-description" class="form-control" rows="4" placeholder="Nhập mô tả cho bài học..."></textarea>
+                                <div class="ai-status" id="description-ai-status" style="display: none;">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <span>Đang tạo mô tả...</span>
+                                </div>
                             </div>
                         </div>
 
@@ -137,12 +469,20 @@
                                 <label for="lesson-image" class="form-label">
                                     <i class="fas fa-image"></i>
                                     Ảnh minh họa
+                                    <button type="button" class="ai-generate-btn" id="generate-image-btn" title="Tạo ảnh bằng AI">
+                                        <i class="fas fa-magic"></i>
+                                        AI
+                                    </button>
                                 </label>
                                 <div class="file-upload-container image-upload-container">
                                     <input type="file" id="lesson-image" accept="image/*" class="form-file">
                                     <div class="file-upload-preview" id="image-preview" style="display: none;">
                                         <img id="lesson-image-preview" style="display: none;" alt="Preview">
                                         <button type="button" class="remove-image-btn" style="display: none;">Remove</button>
+                                    </div>
+                                    <div class="ai-status" id="image-ai-status" style="display: none;">
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                        <span>Đang tạo ảnh...</span>
                                     </div>
                                 </div>
                             </div>

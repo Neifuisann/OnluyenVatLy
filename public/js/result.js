@@ -800,7 +800,10 @@ function displaySortedResults(sortType) {
         // --- END NEW ---
 
         const isMultiTrueFalse = question.type === 'truefalse' && Array.isArray(question.optionsText);
-        const isMultipleChoice = question.type === 'abcd' && Array.isArray(question.optionsText);
+        // Handle both old format (multiple_choice) and new format (abcd)
+        // Check for options in multiple possible locations
+        const hasOptions = Array.isArray(question.optionsText) || Array.isArray(question.options);
+        const isMultipleChoice = (question.type === 'abcd' || question.type === 'multiple_choice') && hasOptions;
 
         let answerSectionHTML = '';
         if (isMultiTrueFalse) {
@@ -832,7 +835,9 @@ function displaySortedResults(sortType) {
         } else if (isMultipleChoice) {
              // --- Render all options for multiple choice ---
              answerSectionHTML = '<div class="answer-section multiple-choice-options">';
-             question.optionsText.forEach((optionText, i) => {
+             // Get options from either optionsText or options property
+             const optionsArray = question.optionsText || (question.options ? question.options.map(opt => opt.text || opt) : []);
+             optionsArray.forEach((optionText, i) => {
                  const isCorrectOption = optionText === question.correctAnswer;
                  const isUserSelected = optionText === question.userAnswer;
                  let optionClass = 'option-item';

@@ -157,4 +157,36 @@ router.get('/:id/rankings',
   lessonController.getStudentRankings
 );
 
+// AI Generation routes (admin only)
+router.post('/generate-summary',
+  requireAdminAuth,
+  noCacheMiddleware,
+  lessonController.generateLessonSummary
+);
+
+router.post('/generate-image',
+  requireAdminAuth,
+  noCacheMiddleware,
+  lessonController.generateLessonImage
+);
+
+router.post('/:id/generate-image',
+  requireAdminAuth,
+  validateIdParam('id'),
+  noCacheMiddleware,
+  lessonController.generateLessonImage
+);
+
+router.post('/generate-image-variations',
+  requireAdminAuth,
+  noCacheMiddleware,
+  lessonController.generateImageVariations
+);
+
+router.post('/bulk-generate-summaries',
+  requireAdminAuth,
+  noCacheMiddleware,
+  lessonController.bulkGenerateAiSummaries
+);
+
 module.exports = router;

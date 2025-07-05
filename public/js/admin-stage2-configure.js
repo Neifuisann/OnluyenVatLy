@@ -45,11 +45,47 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.error("Error loading existing lesson config:", error);
             alert(`Failed to load existing lesson configuration: ${error.message}`);
             // Continue with default/empty config but keep questions and ID
-            currentConfigData = { 
-                id: editingId, 
-                questions: currentQuestions, 
-                tags: [], 
-                color: '#a4aeff' 
+            currentConfigData = {
+                id: editingId,
+                questions: currentQuestions,
+                tags: [],
+                color: '#a4aeff',
+                title: '',
+                description: '',
+                grade: '',
+                subject: '',
+                purpose: '',
+                randomQuestions: 0,
+                mode: 'test',
+                timeLimitEnabled: false,
+                timeLimitHours: 0,
+                timeLimitMinutes: 30,
+                timeLimitSeconds: 0,
+                showCountdown: true,
+                autoSubmit: true,
+                warningAlerts: false,
+                // Randomization settings
+                shuffleQuestions: false,
+                shuffleAnswers: false,
+                enableQuestionPool: false,
+                questionPoolSize: 5,
+                difficultyRatios: {
+                    easy: 30,
+                    medium: 50,
+                    hard: 20
+                },
+                randomizationSeed: '',
+                // Multiple attempts settings
+                enableMultipleAttempts: false,
+                maxAttempts: 3,
+                isUnlimitedAttempts: false,
+                cooldownHours: 0,
+                cooldownMinutes: 30,
+                cooldownSeconds: 0,
+                scoreRecording: 'highest',
+                showPreviousAttempts: true,
+                allowReviewBeforeRetry: false,
+                resetTimerEachAttempt: true
             };
             currentTags = new Set();
         }
@@ -58,7 +94,43 @@ document.addEventListener('DOMContentLoaded', async () => {
         currentConfigData = {
             questions: currentQuestions,
             tags: [],
-            color: '#a4aeff' 
+            color: '#a4aeff',
+            title: '',
+            description: '',
+            grade: '',
+            subject: '',
+            purpose: '',
+            randomQuestions: 0,
+            mode: 'test',
+            timeLimitEnabled: false,
+            timeLimitHours: 0,
+            timeLimitMinutes: 30,
+            timeLimitSeconds: 0,
+            showCountdown: true,
+            autoSubmit: true,
+            warningAlerts: false,
+            // Randomization settings
+            shuffleQuestions: false,
+            shuffleAnswers: false,
+            enableQuestionPool: false,
+            questionPoolSize: 5,
+            difficultyRatios: {
+                easy: 30,
+                medium: 50,
+                hard: 20
+            },
+            randomizationSeed: '',
+            // Multiple attempts settings
+            enableMultipleAttempts: false,
+            maxAttempts: 3,
+            isUnlimitedAttempts: false,
+            cooldownHours: 0,
+            cooldownMinutes: 30,
+            cooldownSeconds: 0,
+            scoreRecording: 'highest',
+            showPreviousAttempts: true,
+            allowReviewBeforeRetry: false,
+            resetTimerEachAttempt: true
             // Initialize other fields as needed
         };
         currentTags = new Set();
@@ -78,11 +150,92 @@ function populateForm() {
     document.getElementById('lesson-color').value = currentConfigData.color || '#a4aeff';
     document.getElementById('random-questions').value = currentConfigData.randomQuestions || 0;
     document.getElementById('lesson-description').value = currentConfigData.description || '';
-    
+
     // Populate new fields (Grade, Subject, Purpose)
     document.getElementById('lesson-grade').value = currentConfigData.grade || '';
     document.getElementById('lesson-subject').value = currentConfigData.subject || '';
     document.getElementById('lesson-purpose').value = currentConfigData.purpose || '';
+    
+    // Populate mode selection
+    const mode = currentConfigData.mode || 'test';
+    const modeRadio = document.getElementById(mode + '-mode');
+    if (modeRadio) {
+        modeRadio.checked = true;
+    }
+    
+    // Populate time limit settings
+    document.getElementById('enable-time-limit').checked = currentConfigData.timeLimitEnabled || false;
+    document.getElementById('time-hours').value = currentConfigData.timeLimitHours || 0;
+    document.getElementById('time-minutes').value = currentConfigData.timeLimitMinutes || 30;
+    document.getElementById('time-seconds').value = currentConfigData.timeLimitSeconds || 0;
+    document.getElementById('show-countdown').checked = currentConfigData.showCountdown !== false;
+    document.getElementById('auto-submit').checked = currentConfigData.autoSubmit !== false;
+    document.getElementById('warning-alerts').checked = currentConfigData.warningAlerts || false;
+    
+    // Show/hide time limit controls based on checkbox
+    const timeLimitControls = document.getElementById('time-limit-controls');
+    if (timeLimitControls) {
+        timeLimitControls.style.display = currentConfigData.timeLimitEnabled ? 'block' : 'none';
+    }
+    
+    // Update time preview
+    updateTimePreview();
+    
+    // Populate randomization settings
+    document.getElementById('shuffle-questions').checked = currentConfigData.shuffleQuestions || false;
+    document.getElementById('shuffle-answers').checked = currentConfigData.shuffleAnswers || false;
+    document.getElementById('enable-question-pool').checked = currentConfigData.enableQuestionPool || false;
+    document.getElementById('pool-size').value = currentConfigData.questionPoolSize || 5;
+    document.getElementById('randomization-seed').value = currentConfigData.randomizationSeed || '';
+    
+    // Populate difficulty ratios
+    if (currentConfigData.difficultyRatios) {
+        document.getElementById('easy-ratio').value = currentConfigData.difficultyRatios.easy || 30;
+        document.getElementById('medium-ratio').value = currentConfigData.difficultyRatios.medium || 50;
+        document.getElementById('hard-ratio').value = currentConfigData.difficultyRatios.hard || 20;
+    }
+    
+    // Show/hide question pool controls
+    const questionPoolControls = document.getElementById('question-pool-controls');
+    if (questionPoolControls) {
+        questionPoolControls.style.display = currentConfigData.enableQuestionPool ? 'block' : 'none';
+    }
+    
+    // Update pool max display and difficulty total
+    updatePoolMaxDisplay();
+    updateDifficultyTotal();
+    
+    // Populate attempts settings
+    document.getElementById('enable-multiple-attempts').checked = currentConfigData.enableMultipleAttempts || false;
+    document.getElementById('max-attempts').value = currentConfigData.maxAttempts || 3;
+    document.getElementById('cooldown-hours').value = currentConfigData.cooldownHours || 0;
+    document.getElementById('cooldown-minutes').value = currentConfigData.cooldownMinutes || 30;
+    document.getElementById('cooldown-seconds').value = currentConfigData.cooldownSeconds || 0;
+    
+    // Set attempts limit radio
+    if (currentConfigData.isUnlimitedAttempts) {
+        document.querySelector('input[name="attempts-limit"][value="unlimited"]').checked = true;
+    } else {
+        document.querySelector('input[name="attempts-limit"][value="limited"]').checked = true;
+    }
+    
+    // Set score recording radio
+    const scoreRecording = currentConfigData.scoreRecording || 'highest';
+    document.querySelector(`input[name="score-recording"][value="${scoreRecording}"]`).checked = true;
+    
+    // Set advanced options
+    document.getElementById('show-previous-attempts').checked = currentConfigData.showPreviousAttempts !== false;
+    document.getElementById('allow-review-before-retry').checked = currentConfigData.allowReviewBeforeRetry || false;
+    document.getElementById('reset-timer-each-attempt').checked = currentConfigData.resetTimerEachAttempt !== false;
+    
+    // Show/hide attempts controls
+    const attemptsControls = document.getElementById('attempts-controls');
+    if (attemptsControls) {
+        attemptsControls.style.display = currentConfigData.enableMultipleAttempts ? 'block' : 'none';
+    }
+    
+    // Update cooldown preview
+    updateCooldownPreview();
 
     // Populate Image
     if (currentConfigData.lessonImage) {
@@ -101,13 +254,154 @@ function populateForm() {
 
 function setupEventListeners() {
     // Add listeners for all configurable fields on this page
-    document.getElementById('lesson-title')?.addEventListener('input', (e) => { currentConfigData.title = e.target.value; });
+    document.getElementById('lesson-title')?.addEventListener('input', (e) => {
+        currentConfigData.title = e.target.value;
+    });
     document.getElementById('lesson-color')?.addEventListener('input', (e) => { currentConfigData.color = e.target.value; });
     document.getElementById('random-questions')?.addEventListener('input', (e) => { currentConfigData.randomQuestions = parseInt(e.target.value) || 0; });
     document.getElementById('lesson-description')?.addEventListener('input', (e) => { currentConfigData.description = e.target.value; });
     document.getElementById('lesson-grade')?.addEventListener('change', (e) => { currentConfigData.grade = e.target.value; });
     document.getElementById('lesson-subject')?.addEventListener('change', (e) => { currentConfigData.subject = e.target.value; });
     document.getElementById('lesson-purpose')?.addEventListener('change', (e) => { currentConfigData.purpose = e.target.value; });
+    
+    // Add mode toggle listeners
+    document.querySelectorAll('input[name="lesson-mode"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                currentConfigData.mode = e.target.value;
+                console.log('Mode changed to:', currentConfigData.mode);
+            }
+        });
+    });
+    
+    // Add time limit toggle listener
+    document.getElementById('enable-time-limit')?.addEventListener('change', (e) => {
+        currentConfigData.timeLimitEnabled = e.target.checked;
+        const timeLimitControls = document.getElementById('time-limit-controls');
+        if (timeLimitControls) {
+            timeLimitControls.style.display = e.target.checked ? 'block' : 'none';
+        }
+    });
+    
+    // Add time input listeners
+    document.getElementById('time-hours')?.addEventListener('input', (e) => {
+        currentConfigData.timeLimitHours = parseInt(e.target.value) || 0;
+        updateTimePreview();
+    });
+    document.getElementById('time-minutes')?.addEventListener('input', (e) => {
+        currentConfigData.timeLimitMinutes = parseInt(e.target.value) || 0;
+        updateTimePreview();
+    });
+    document.getElementById('time-seconds')?.addEventListener('input', (e) => {
+        currentConfigData.timeLimitSeconds = parseInt(e.target.value) || 0;
+        updateTimePreview();
+    });
+    
+    // Add time limit option listeners
+    document.getElementById('show-countdown')?.addEventListener('change', (e) => {
+        currentConfigData.showCountdown = e.target.checked;
+    });
+    document.getElementById('auto-submit')?.addEventListener('change', (e) => {
+        currentConfigData.autoSubmit = e.target.checked;
+    });
+    document.getElementById('warning-alerts')?.addEventListener('change', (e) => {
+        currentConfigData.warningAlerts = e.target.checked;
+    });
+    
+    // Add randomization toggle listeners
+    document.getElementById('shuffle-questions')?.addEventListener('change', (e) => {
+        currentConfigData.shuffleQuestions = e.target.checked;
+    });
+    
+    document.getElementById('shuffle-answers')?.addEventListener('change', (e) => {
+        currentConfigData.shuffleAnswers = e.target.checked;
+    });
+    
+    document.getElementById('enable-question-pool')?.addEventListener('change', (e) => {
+        currentConfigData.enableQuestionPool = e.target.checked;
+        const questionPoolControls = document.getElementById('question-pool-controls');
+        if (questionPoolControls) {
+            questionPoolControls.style.display = e.target.checked ? 'block' : 'none';
+        }
+    });
+    
+    document.getElementById('pool-size')?.addEventListener('input', (e) => {
+        currentConfigData.questionPoolSize = parseInt(e.target.value) || 5;
+        updatePoolMaxDisplay();
+    });
+    
+    document.getElementById('randomization-seed')?.addEventListener('input', (e) => {
+        currentConfigData.randomizationSeed = e.target.value;
+    });
+    
+    // Add difficulty ratio listeners
+    ['easy-ratio', 'medium-ratio', 'hard-ratio'].forEach(id => {
+        document.getElementById(id)?.addEventListener('input', (e) => {
+            const difficulty = id.split('-')[0];
+            if (!currentConfigData.difficultyRatios) {
+                currentConfigData.difficultyRatios = { easy: 30, medium: 50, hard: 20 };
+            }
+            currentConfigData.difficultyRatios[difficulty] = parseInt(e.target.value) || 0;
+            updateDifficultyTotal();
+        });
+    });
+    
+    // Add attempts configuration listeners
+    document.getElementById('enable-multiple-attempts')?.addEventListener('change', (e) => {
+        currentConfigData.enableMultipleAttempts = e.target.checked;
+        const attemptsControls = document.getElementById('attempts-controls');
+        if (attemptsControls) {
+            attemptsControls.style.display = e.target.checked ? 'block' : 'none';
+        }
+    });
+    
+    document.getElementById('max-attempts')?.addEventListener('input', (e) => {
+        currentConfigData.maxAttempts = parseInt(e.target.value) || 3;
+    });
+    
+    // Attempts limit radio listeners
+    document.querySelectorAll('input[name="attempts-limit"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                currentConfigData.isUnlimitedAttempts = e.target.value === 'unlimited';
+                const maxAttemptsInput = document.getElementById('max-attempts');
+                if (maxAttemptsInput) {
+                    maxAttemptsInput.disabled = currentConfigData.isUnlimitedAttempts;
+                }
+            }
+        });
+    });
+    
+    // Cooldown time input listeners
+    ['cooldown-hours', 'cooldown-minutes', 'cooldown-seconds'].forEach(id => {
+        document.getElementById(id)?.addEventListener('input', (e) => {
+            const type = id.split('-')[1];
+            currentConfigData[`cooldown${type.charAt(0).toUpperCase() + type.slice(1)}`] = parseInt(e.target.value) || 0;
+            updateCooldownPreview();
+        });
+    });
+    
+    // Score recording radio listeners
+    document.querySelectorAll('input[name="score-recording"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                currentConfigData.scoreRecording = e.target.value;
+            }
+        });
+    });
+    
+    // Advanced options listeners
+    document.getElementById('show-previous-attempts')?.addEventListener('change', (e) => {
+        currentConfigData.showPreviousAttempts = e.target.checked;
+    });
+    
+    document.getElementById('allow-review-before-retry')?.addEventListener('change', (e) => {
+        currentConfigData.allowReviewBeforeRetry = e.target.checked;
+    });
+    
+    document.getElementById('reset-timer-each-attempt')?.addEventListener('change', (e) => {
+        currentConfigData.resetTimerEachAttempt = e.target.checked;
+    });
     
     document.getElementById('lesson-image')?.addEventListener('change', handleLessonImageUpload);
     document.querySelector('.remove-image-btn')?.addEventListener('click', removeLessonImage);
@@ -265,23 +559,17 @@ function transformQuestionsForAPI(questions) {
     console.log('Transforming questions for API. Original questions:', questions);
 
     const transformedQuestions = questions.map((q, index) => {
-        // Transform question type from Stage 1 format to API format
-        let apiType;
-        switch (q.type) {
-            case 'abcd':
-                apiType = 'multiple_choice';
-                break;
-            case 'truefalse':
-                apiType = 'true_false';
-                break;
-            case 'number':
-                apiType = 'fill_blank';
-                break;
-            default:
-                apiType = 'multiple_choice'; // Default fallback
+        // Keep the original question type format that lesson display expects
+        // DO NOT transform types - lesson display expects 'abcd', 'truefalse', 'number'
+        let questionType = q.type;
+
+        // Validate and normalize question type
+        if (!['abcd', 'truefalse', 'number'].includes(questionType)) {
+            console.warn(`Question ${index + 1}: Unknown type '${questionType}', defaulting to 'abcd'`);
+            questionType = 'abcd';
         }
 
-        // Transform correct answer format
+        // Transform correct answer format - use 'correct' property (not 'correctAnswer')
         let correctAnswer;
         if (q.type === 'abcd') {
             // For ABCD questions, correct is a letter (A, B, C, D)
@@ -301,32 +589,32 @@ function transformQuestionsForAPI(questions) {
             correctAnswer = q.correct || '';
         }
 
-        // Transform options format
+        // Transform options format - keep as objects with text property for compatibility
         let options = [];
         if (q.options && Array.isArray(q.options)) {
             options = q.options.map(opt => {
                 if (typeof opt === 'string') {
-                    return opt;
+                    return { text: opt };
                 } else if (opt && typeof opt === 'object' && opt.text) {
-                    return opt.text;
+                    return { text: opt.text };
                 } else {
-                    return '';
+                    return { text: '' };
                 }
             });
         }
 
         const transformedQuestion = {
             question: q.question || '',
-            type: apiType,
-            options: options,
-            correctAnswer: correctAnswer,
+            type: questionType, // Keep original type format
+            options: options, // Array of objects with text property
+            correct: correctAnswer, // Use 'correct' property name
             points: q.points || 1,
             id: q.id || `q_${Math.random().toString(36).substr(2, 9)}`
         };
 
         console.log(`Question ${index + 1} transformed:`, {
-            original: { type: q.type, correct: q.correct },
-            transformed: { type: apiType, correctAnswer: correctAnswer }
+            original: { type: q.type, correct: q.correct, options: q.options },
+            transformed: { type: questionType, correct: correctAnswer, options: options }
         });
 
         return transformedQuestion;
@@ -345,12 +633,19 @@ async function saveLessonConfiguration() {
 
     try {
         // --- Validation ---
-        currentConfigData.title = document.getElementById('lesson-title')?.value.trim();
-        currentConfigData.description = document.getElementById('lesson-description')?.value.trim();
+        const titleElement = document.getElementById('lesson-title');
+        const titleValue = titleElement?.value.trim();
 
-        if (!currentConfigData.title) {
+        // Update currentConfigData with current form values to ensure we have the latest data
+        currentConfigData.title = titleValue || '';
+        currentConfigData.description = document.getElementById('lesson-description')?.value.trim() || '';
+
+        // Validate that title is not empty
+        if (!currentConfigData.title || currentConfigData.title.length === 0) {
             alert('Please enter a lesson title.');
-            document.getElementById('lesson-title')?.focus();
+            if (titleElement) {
+                titleElement.focus();
+            }
             return;
         }
 
@@ -373,6 +668,36 @@ async function saveLessonConfiguration() {
             grade: document.getElementById('lesson-grade')?.value || null,
             subject: document.getElementById('lesson-subject')?.value || null,
             purpose: document.getElementById('lesson-purpose')?.value || null,
+            mode: currentConfigData.mode || 'test',
+            
+            // Time limit configuration
+            timeLimitEnabled: currentConfigData.timeLimitEnabled || false,
+            timeLimitHours: currentConfigData.timeLimitHours || 0,
+            timeLimitMinutes: currentConfigData.timeLimitMinutes || 30,
+            timeLimitSeconds: currentConfigData.timeLimitSeconds || 0,
+            showCountdown: currentConfigData.showCountdown !== false,
+            autoSubmit: currentConfigData.autoSubmit !== false,
+            warningAlerts: currentConfigData.warningAlerts || false,
+            
+            // Randomization configuration
+            shuffleQuestions: currentConfigData.shuffleQuestions || false,
+            shuffleAnswers: currentConfigData.shuffleAnswers || false,
+            enableQuestionPool: currentConfigData.enableQuestionPool || false,
+            questionPoolSize: currentConfigData.questionPoolSize || 5,
+            difficultyRatios: currentConfigData.difficultyRatios || { easy: 30, medium: 50, hard: 20 },
+            randomizationSeed: currentConfigData.randomizationSeed || '',
+            
+            // Multiple attempts configuration
+            enableMultipleAttempts: currentConfigData.enableMultipleAttempts || false,
+            maxAttempts: currentConfigData.isUnlimitedAttempts ? 0 : (currentConfigData.maxAttempts || 3),
+            isUnlimitedAttempts: currentConfigData.isUnlimitedAttempts || false,
+            cooldownHours: currentConfigData.cooldownHours || 0,
+            cooldownMinutes: currentConfigData.cooldownMinutes || 30,
+            cooldownSeconds: currentConfigData.cooldownSeconds || 0,
+            scoreRecording: currentConfigData.scoreRecording || 'highest',
+            showPreviousAttempts: currentConfigData.showPreviousAttempts !== false,
+            allowReviewBeforeRetry: currentConfigData.allowReviewBeforeRetry || false,
+            resetTimerEachAttempt: currentConfigData.resetTimerEachAttempt !== false,
 
             // Questions from Stage 1 (transformed to API format)
             questions: transformedQuestions,
@@ -421,6 +746,254 @@ async function saveLessonConfiguration() {
         if (saveButton) saveButton.disabled = false;
     }
 }
+
+// Function to update time preview
+function updateTimePreview() {
+    const hours = currentConfigData.timeLimitHours || 0;
+    const minutes = currentConfigData.timeLimitMinutes || 0;
+    const seconds = currentConfigData.timeLimitSeconds || 0;
+    
+    const previewElement = document.getElementById('time-preview');
+    if (previewElement) {
+        let timeText = '';
+        if (hours > 0) {
+            timeText += `${hours.toString().padStart(2, '0')}:`;
+        }
+        timeText += `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        previewElement.textContent = timeText;
+    }
+}
+
+// Function to update pool max display
+function updatePoolMaxDisplay() {
+    const poolMaxElement = document.getElementById('pool-max-display');
+    if (poolMaxElement) {
+        const totalQuestions = currentQuestions ? currentQuestions.length : 0;
+        poolMaxElement.textContent = `/ ${totalQuestions} câu có sẵn`;
+        
+        // Update pool size max attribute
+        const poolSizeInput = document.getElementById('pool-size');
+        if (poolSizeInput) {
+            poolSizeInput.max = totalQuestions;
+            
+            // Ensure pool size doesn't exceed total questions
+            const currentPoolSize = parseInt(poolSizeInput.value) || 5;
+            if (currentPoolSize > totalQuestions) {
+                poolSizeInput.value = totalQuestions;
+                currentConfigData.questionPoolSize = totalQuestions;
+            }
+        }
+    }
+}
+
+// Function to update difficulty total display
+function updateDifficultyTotal() {
+    const easyRatio = parseInt(document.getElementById('easy-ratio')?.value) || 0;
+    const mediumRatio = parseInt(document.getElementById('medium-ratio')?.value) || 0;
+    const hardRatio = parseInt(document.getElementById('hard-ratio')?.value) || 0;
+    
+    const total = easyRatio + mediumRatio + hardRatio;
+    const totalElement = document.getElementById('difficulty-total');
+    
+    if (totalElement) {
+        totalElement.textContent = `Tổng: ${total}%`;
+        
+        // Update visual feedback
+        if (total === 100) {
+            totalElement.classList.remove('invalid');
+        } else {
+            totalElement.classList.add('invalid');
+        }
+    }
+}
+
+// Function to update cooldown preview
+function updateCooldownPreview() {
+    const hours = currentConfigData.cooldownHours || 0;
+    const minutes = currentConfigData.cooldownMinutes || 0;
+    const seconds = currentConfigData.cooldownSeconds || 0;
+    
+    const previewElement = document.getElementById('cooldown-preview');
+    if (previewElement) {
+        let timeText = '';
+        const parts = [];
+        
+        if (hours > 0) {
+            parts.push(`${hours} giờ`);
+        }
+        if (minutes > 0) {
+            parts.push(`${minutes} phút`);
+        }
+        if (seconds > 0) {
+            parts.push(`${seconds} giây`);
+        }
+        
+        if (parts.length === 0) {
+            timeText = 'Không có thời gian chờ';
+        } else {
+            timeText = parts.join(' ');
+        }
+        
+        previewElement.textContent = timeText;
+    }
+}
+
+// AI Generation Functions
+async function generateAIDescription() {
+    const generateBtn = document.getElementById('generate-description-btn');
+    const descriptionTextarea = document.getElementById('lesson-description');
+    const aiStatus = document.getElementById('description-ai-status');
+    
+    // Disable button and show loading
+    generateBtn.disabled = true;
+    aiStatus.style.display = 'flex';
+    aiStatus.className = 'ai-status';
+    aiStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Đang tạo mô tả bằng AI...</span>';
+    
+    try {
+        // Gather lesson data for AI
+        const lessonData = {
+            title: currentConfigData.title || document.getElementById('lesson-title').value,
+            questions: currentQuestions,
+            grade: currentConfigData.grade || document.getElementById('lesson-grade').value,
+            subject: currentConfigData.subject || document.getElementById('lesson-subject').value || 'Vật lý',
+            tags: Array.from(currentTags)
+        };
+        
+        // Call API to generate AI summary
+        const response = await fetch('/api/lessons/generate-summary', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(lessonData)
+        });
+        
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Failed to generate AI description');
+        }
+        
+        const result = await response.json();
+        
+        // Update textarea with generated description
+        descriptionTextarea.value = result.summary;
+        currentConfigData.description = result.summary;
+        
+        // Show success status
+        aiStatus.className = 'ai-status success';
+        aiStatus.innerHTML = '<i class="fas fa-check-circle"></i><span>Mô tả đã được tạo thành công!</span>';
+        
+        // Hide status after 3 seconds
+        setTimeout(() => {
+            aiStatus.style.display = 'none';
+        }, 3000);
+        
+    } catch (error) {
+        console.error('Error generating AI description:', error);
+        
+        // Show error status
+        aiStatus.className = 'ai-status error';
+        aiStatus.innerHTML = `<i class="fas fa-times-circle"></i><span>Lỗi: ${error.message}</span>`;
+        
+        // Hide status after 5 seconds
+        setTimeout(() => {
+            aiStatus.style.display = 'none';
+        }, 5000);
+    } finally {
+        generateBtn.disabled = false;
+    }
+}
+
+async function generateAIImage() {
+    const generateBtn = document.getElementById('generate-image-btn');
+    const imagePreview = document.getElementById('image-preview');
+    const imagePreviewImg = document.getElementById('lesson-image-preview');
+    const aiStatus = document.getElementById('image-ai-status');
+    
+    // Disable button and show loading
+    generateBtn.disabled = true;
+    aiStatus.style.display = 'flex';
+    aiStatus.className = 'ai-status';
+    aiStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Đang tạo ảnh bằng AI...</span>';
+    
+    try {
+        // Gather lesson data for AI
+        const lessonData = {
+            title: currentConfigData.title || document.getElementById('lesson-title').value,
+            questions: currentQuestions,
+            grade: currentConfigData.grade || document.getElementById('lesson-grade').value,
+            subject: currentConfigData.subject || document.getElementById('lesson-subject').value || 'Vật lý',
+            tags: Array.from(currentTags)
+        };
+        
+        // Call API to generate AI image
+        const response = await fetch('/api/lessons/generate-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ lessonData })
+        });
+        
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Failed to generate AI image');
+        }
+        
+        const result = await response.json();
+        
+        // Update image preview
+        imagePreviewImg.src = result.imageUrl;
+        imagePreviewImg.style.display = 'block';
+        imagePreview.style.display = 'block';
+        
+        // Store the AI generated image URL
+        currentConfigData.ai_image_url = result.imageUrl;
+        currentConfigData.ai_image_prompt = result.prompt;
+        
+        // Show success status
+        aiStatus.className = 'ai-status success';
+        aiStatus.innerHTML = '<i class="fas fa-check-circle"></i><span>Ảnh đã được tạo thành công!</span>';
+        
+        // Hide status after 3 seconds
+        setTimeout(() => {
+            aiStatus.style.display = 'none';
+        }, 3000);
+        
+    } catch (error) {
+        console.error('Error generating AI image:', error);
+        
+        // Show error status
+        aiStatus.className = 'ai-status error';
+        aiStatus.innerHTML = `<i class="fas fa-times-circle"></i><span>Lỗi: ${error.message}</span>`;
+        
+        // Hide status after 5 seconds
+        setTimeout(() => {
+            aiStatus.style.display = 'none';
+        }, 5000);
+    } finally {
+        generateBtn.disabled = false;
+    }
+}
+
+// Add AI button event listeners
+function setupAIEventListeners() {
+    const generateDescriptionBtn = document.getElementById('generate-description-btn');
+    const generateImageBtn = document.getElementById('generate-image-btn');
+    
+    if (generateDescriptionBtn) {
+        generateDescriptionBtn.addEventListener('click', generateAIDescription);
+    }
+    
+    if (generateImageBtn) {
+        generateImageBtn.addEventListener('click', generateAIImage);
+    }
+}
+
+// Call this in setupEventListeners function
+// Make sure to add this to the existing setupEventListeners function
+const existingSetupEventListeners = setupEventListeners;
+setupEventListeners = function() {
+    existingSetupEventListeners();
+    setupAIEventListeners();
+};
 
 // Optional: Clear sessionStorage if the user navigates away without saving
 window.addEventListener('beforeunload', () => {

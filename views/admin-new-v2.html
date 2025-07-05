@@ -295,10 +295,113 @@ D. Cả nước được giải phóng và tiến lên xây dựng chủ nghĩa 
                     </div>
                 </div>
                 <div class="upload-area" id="upload-area" style="display: none;">
-                    <div class="upload-dropzone">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <p>Kéo thả file vào đây hoặc click để chọn</p>
-                        <input type="file" id="file-input" accept=".pdf,.docx,.txt" multiple>
+                    <div class="upload-dropzone" id="upload-dropzone">
+                        <div class="dropzone-content">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Kéo thả file vào đây hoặc click để chọn</p>
+                            <input type="file" id="file-input" accept=".pdf,.docx,.txt" multiple>
+                        </div>
+
+                        <!-- File Preview -->
+                        <div id="file-preview" class="file-preview" style="display: none;">
+                            <div class="file-info">
+                                <i class="file-icon fas fa-file"></i>
+                                <div class="file-details">
+                                    <div class="file-name">Tên file</div>
+                                    <div class="file-size">Kích thước</div>
+                                </div>
+                                <button class="remove-file-btn" onclick="removeFile()" title="Xóa file">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upload Actions -->
+                    <div class="upload-actions" style="margin-top: 20px;">
+                        <button class="btn secondary" onclick="closeUploadModal()">Hủy</button>
+                        <button class="btn primary" id="process-document-btn" onclick="processDocument()" disabled>
+                            <i class="fas fa-cog"></i>
+                            Xử lý tài liệu
+                        </button>
+                    </div>
+
+                    <!-- Processing Status -->
+                    <div id="processing-status" class="processing-status" style="display: none;">
+                        <div class="processing-steps">
+                            <div class="processing-step" id="upload-step">
+                                <div class="step-icon">
+                                    <i class="fas fa-upload"></i>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-title">Tải lên file</div>
+                                    <div class="step-description">Đang tải file lên server...</div>
+                                </div>
+                                <div class="step-status">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                </div>
+                            </div>
+
+                            <div class="processing-step" id="extract-step">
+                                <div class="step-icon">
+                                    <i class="fas fa-file-text"></i>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-title">Trích xuất nội dung</div>
+                                    <div class="step-description">Đang đọc và trích xuất văn bản...</div>
+                                </div>
+                                <div class="step-status">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                            </div>
+
+                            <div class="processing-step" id="ai-step">
+                                <div class="step-icon">
+                                    <i class="fas fa-brain"></i>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-title">Xử lý AI</div>
+                                    <div class="step-description">AI đang định dạng nội dung bài học...</div>
+                                </div>
+                                <div class="step-status">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                            </div>
+
+                            <div class="processing-step" id="complete-step">
+                                <div class="step-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-title">Hoàn thành</div>
+                                    <div class="step-description">Đang chèn nội dung vào trình soạn thảo...</div>
+                                </div>
+                                <div class="step-status">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="processing-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progress-fill"></div>
+                            </div>
+                            <div class="progress-text" id="progress-text">0%</div>
+                        </div>
+                    </div>
+
+                    <!-- Upload Error -->
+                    <div id="upload-error" class="upload-error" style="display: none;">
+                        <div class="error-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="error-content">
+                            <div class="error-title">Lỗi xử lý tài liệu</div>
+                            <div class="error-message" id="error-message">Đã xảy ra lỗi khi xử lý tài liệu.</div>
+                        </div>
+                        <div class="error-actions">
+                            <button class="btn secondary" onclick="hideUploadError()">Thử lại</button>
+                        </div>
                     </div>
                 </div>
             </div>

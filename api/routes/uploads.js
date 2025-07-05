@@ -18,6 +18,7 @@ const {
   shortCacheMiddleware 
 } = require('../middleware/cache');
 const { uploadErrorHandler } = require('../middleware/errorHandler');
+const { uploadRateLimit } = require('../middleware/rateLimiting');
 
 // Configure multer for file uploads
 const storage = multer.memoryStorage();
@@ -49,6 +50,7 @@ const upload = multer({
 // Apply admin authentication to all upload routes
 router.use(requireAdminAuth);
 router.use(noCacheMiddleware);
+router.use(uploadRateLimit);
 
 // Image upload routes
 router.post('/image',

@@ -152,52 +152,7 @@
             }
         }
         
-        /* Navigation Bar */
-        .nav-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            padding: 1rem 2rem;
-            background: rgba(10, 10, 15, 0.8);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--glass-border);
-            z-index: 1000;
-            transition: var(--transition-normal);
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            justify-content: center;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .nav-bar a {
-            color: var(--text-primary);
-            text-decoration: none;
-            font-weight: 600;
-            padding: 0.75rem 1.5rem;
-            border-radius: var(--radius-full);
-            transition: var(--transition-fast);
-            position: relative;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .nav-bar a:hover {
-            background: var(--glass-bg);
-            color: var(--neon-purple);
-            transform: translateY(-2px);
-        }
-        
-        .nav-bar a svg {
-            width: 20px;
-            height: 20px;
-        }
+        /* Custom navigation styles removed to use global .main-nav styles */
         
         /* Features Section */
         .features-section {
@@ -394,24 +349,34 @@
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="nav-bar">
-        <div class="nav-links">
-            <a href="/gallery" class="nav-link">
-                <i class="fas fa-book"></i>
-                <span>Bài học</span>
+    <!-- Navigation copied from lessons page with main-nav structure -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <i class="fas fa-atom"></i>
+                <span>Học Vật Lý</span>
             </a>
-            <a href="/lessons" class="nav-link">
-                <i class="fas fa-tasks"></i>
-                <span>Luyện tập</span>
-            </a>
-            <a href="/quizgame" class="nav-link">
-                <i class="fas fa-trophy"></i>
-                <span>Chinh phục</span>
-            </a>
-            <a href="/leaderboard" class="nav-link">
-                <i class="fas fa-chart-line"></i>
-                <span>Xếp hạng</span>
-            </a>
+            <div class="nav-links" id="nav-links">
+                <a href="/" class="nav-link active">
+                    <i class="fas fa-home"></i>
+                    <span>Trang chủ</span>
+                </a>
+                <a href="/lessons" class="nav-link">
+                    <i class="fas fa-book"></i>
+                    <span>Bài học</span>
+                </a>
+                <a href="/leaderboard" class="nav-link">
+                    <i class="fas fa-trophy"></i>
+                    <span>Bảng xếp hạng</span>
+                </a>
+                <a href="/profile" class="nav-link" id="profile-link">
+                    <i class="fas fa-user"></i>
+                    <span>Hồ sơ</span>
+                </a>
+            </div>
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
         </div>
     </nav>
     

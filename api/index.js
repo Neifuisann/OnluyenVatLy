@@ -4,6 +4,7 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const compression = require('compression');
 // const { inject } = require('@vercel/analytics');
 
 // Import configuration modules
@@ -28,6 +29,13 @@ const explainRoutes = require('./routes/explain');
 const adminRoutes = require('./routes/admin');
 const historyRoutes = require('./routes/history');
 const progressRoutes = require('./routes/progress');
+const settingsRoutes = require('./routes/settings');
+const streakRoutes = require('./routes/streaks');
+const xpRoutes = require('./routes/xp');
+const achievementRoutes = require('./routes/achievements');
+const questRoutes = require('./routes/quests');
+const activityRoutes = require('./routes/activity');
+const leagueRoutes = require('./routes/leagues');
 
 // Import utilities
 const logger = require('./utils/logger');
@@ -87,6 +95,18 @@ app.use((req, res, next) => {
     next();
 });
 
+// Add compression middleware for better performance
+app.use(compression({
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) {
+      return false;
+    }
+    return compression.filter(req, res);
+  },
+  level: 6,
+  threshold: 1024 // Only compress responses above 1KB
+}));
+
 app.use(cookieParser());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true, parameterLimit: 50000 }));
@@ -97,17 +117,27 @@ app.use(express.static(path.join(process.cwd(), 'public'), {
     setHeaders: (res, filePath) => {
         const ext = path.extname(filePath);
 
-        // Force no-cache for CSS and JS files to prevent theme issues
+        // Optimize cache headers for better performance
         if (ext === '.css' || ext === '.js') {
-            res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-            res.setHeader('Pragma', 'no-cache');
-            res.setHeader('Expires', '0');
+            // Use versioned caching with cache busting for CSS/JS
+            res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+            res.setHeader('ETag', `"${process.env.CACHE_VERSION || Date.now()}"`);
+            res.setHeader('Vary', 'Accept-Encoding');
         } else if (ext === '.html') {
             res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+        } else if (['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'].includes(ext)) {
+            // Long-term cache for images
+            res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+            res.setHeader('Vary', 'Accept-Encoding');
         } else {
-            // Images and other assets can be cached
+            // Other assets can be cached for 1 day
             res.setHeader('Cache-Control', 'public, max-age=86400'); // 1 day
         }
+        
+        // Add security headers for all static assets
+        res.setHeader('X-Content-Type-Options', 'nosniff');
+        res.setHeader('X-Frame-Options', 'DENY');
+        res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     }
 }));
 
@@ -118,29 +148,49 @@ app.use(sessionConfig);
 // Initialize session service with session store
 sessionService.initialize(sessionStore);
 
-// Add session cleanup middleware only for non-static routes
-app.use((req, _res, next) => {
-    // Skip session cleanup for static files and assets
+// Optimized middleware for non-static routes
+app.use((req, res, next) => {
+    // Skip all dynamic processing for static files and assets
     if (req.url.startsWith('/css/') ||
         req.url.startsWith('/js/') ||
         req.url.startsWith('/images/') ||
-        req.url.startsWith('/favicon.ico')) {
+        req.url.startsWith('/audio/') ||
+        req.url.startsWith('/lesson_images/') ||
+        req.url.startsWith('/favicon.ico') ||
+        req.url.endsWith('.ico') ||
+        req.url.endsWith('.png') ||
+        req.url.endsWith('.jpg') ||
+        req.url.endsWith('.jpeg') ||
+        req.url.endsWith('.gif') ||
+        req.url.endsWith('.svg') ||
+        req.url.endsWith('.webp')) {
         return next();
     }
 
-    // Ensure session integrity for dynamic routes
+    // Consolidate session cleanup and cache version for dynamic routes
     if (req.session) {
         sessionService.cleanupSession(req);
     }
+    
+    // Add cache version for dynamic content
+    res.locals.cacheVersion = process.env.CACHE_VERSION || Date.now();
+    
     next();
 });
 
-// Add cache busting for theme changes
-app.use((_req, res, next) => {
-    // Add cache buster to prevent theme caching issues
-    res.locals.cacheVersion = process.env.CACHE_VERSION || Date.now();
-    next();
-});
+// Add CSRF protection
+const { addCSRFToken, validateCSRFToken, getCSRFTokenEndpoint } = require('./middleware/csrf');
+app.use(addCSRFToken);
+
+// CSRF token endpoint
+app.get('/api/csrf-token', getCSRFTokenEndpoint);
+
+// Add CSRF validation for API routes (except login endpoints)
+app.use('/api', validateCSRFToken);
+
+// Add rate limiting to API routes
+const { generalAPIRateLimit } = require('./middleware/rateLimiting');
+app.use('/api', generalAPIRateLimit);
 
 // Add session extension middleware for API routes
 const { extendSessionOnActivity } = require('./middleware/auth');
@@ -160,15 +210,23 @@ app.use('/api/explain', explainRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/history', historyRoutes);
 app.use('/api/progress', progressRoutes);
+app.use('/api/settings', settingsRoutes);
+app.use('/api/streaks', streakRoutes);
+app.use('/api/xp', xpRoutes);
+app.use('/api/achievements', achievementRoutes);
+app.use('/api/quests', questRoutes);
+app.use('/api/activity', activityRoutes);
+app.use('/api/leagues', leagueRoutes);
 
 // Setup view routes (HTML pages) - Register early to avoid conflicts
 app.use('/', viewRoutes);
 
 // Duplicate auth routes removed - now handled by /api/auth/* routes
 
-// Student info endpoints for session storage
+// Student info endpoints for session storage (supports admin as student)
 app.get('/api/student-info', (req, res) => {
   const sessionData = sessionService.getSessionData(req);
+  const isAdmin = sessionService.isAdminAuthenticated(req);
 
   if (sessionData.studentId) {
     res.json({
@@ -176,6 +234,15 @@ app.get('/api/student-info', (req, res) => {
       student: {
         id: sessionData.studentId,
         name: sessionData.studentName
+      }
+    });
+  } else if (isAdmin) {
+    // Provide admin as student info for compatibility
+    res.json({
+      success: true,
+      student: {
+        id: 'admin',
+        name: 'Administrator'
       }
     });
   } else {

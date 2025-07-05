@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cài đặt - Ôn luyện Vật lí</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/settings.css">
+    
+    <style>
+        /* Page specific styles */
+        .settings-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: var(--space-xl);
+            padding: var(--space-lg) 0;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm) var(--space-md);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition-fast);
+            margin-right: var(--space-lg);
+        }
+        
+        .back-button:hover {
+            background: var(--glass-bg);
+            border-color: var(--neon-purple);
+            color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+        
+        .settings-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0;
+        }
+        
+        .settings-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: var(--space-xl);
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--space-lg);
+        }
+        
+        .settings-sidebar {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            backdrop-filter: blur(10px);
+            padding: var(--space-lg);
+            height: fit-content;
+            position: sticky;
+            top: var(--space-lg);
+        }
+        
+        .settings-main {
+            min-height: 600px;
+        }
+        
+        .tab-button {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            width: 100%;
+            padding: var(--space-md) var(--space-lg);
+            margin-bottom: var(--space-sm);
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            text-align: left;
+        }
+        
+        .tab-button:hover {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+        }
+        
+        .tab-button.active {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .tab-content {
+            display: none;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            backdrop-filter: blur(10px);
+            padding: var(--space-xl);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .tab-content h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: var(--space-lg);
+            color: var(--text-primary);
+        }
+        
+        .form-section {
+            margin-bottom: var(--space-xl);
+        }
+        
+        .form-section:last-child {
+            margin-bottom: 0;
+        }
+        
+        .form-section h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: var(--space-md);
+            color: var(--text-primary);
+        }
+        
+        .form-group {
+            margin-bottom: var(--space-lg);
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: var(--space-sm);
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: var(--space-md);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: var(--transition-fast);
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+        }
+        
+        .form-input::placeholder {
+            color: var(--text-tertiary);
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-md) var(--space-lg);
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+        }
+        
+        .btn-danger {
+            background: var(--danger-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(244, 59, 71, 0.3);
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(244, 59, 71, 0.4);
+        }
+        
+        .device-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-md);
+        }
+        
+        .device-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .device-details h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .device-details p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        .device-status {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--neon-purple);
+        }
+        
+        .status-indicator.active {
+            background: var(--success-gradient);
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 32px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+        
+        .toggle-switch.active {
+            background: var(--primary-gradient);
+            border-color: var(--neon-purple);
+        }
+        
+        .toggle-switch::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 26px;
+            height: 26px;
+            background: white;
+            border-radius: 50%;
+            transition: var(--transition-fast);
+        }
+        
+        .toggle-switch.active::before {
+            transform: translateX(28px);
+        }
+        
+        .alert {
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .alert-success {
+            background: rgba(67, 233, 123, 0.1);
+            border: 1px solid rgba(67, 233, 123, 0.3);
+            color: #43e97b;
+        }
+        
+        .alert-error {
+            background: rgba(244, 59, 71, 0.1);
+            border: 1px solid rgba(244, 59, 71, 0.3);
+            color: #f43b47;
+        }
+        
+        .alert-info {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #3b82f6;
+        }
+        
+        .password-strength {
+            margin-top: var(--space-sm);
+        }
+        
+        .strength-indicator {
+            height: 4px;
+            background: var(--glass-bg);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+        }
+        
+        .strength-bar {
+            height: 100%;
+            transition: var(--transition-fast);
+            border-radius: var(--radius-full);
+        }
+        
+        .strength-bar.weak {
+            width: 25%;
+            background: var(--danger-gradient);
+        }
+        
+        .strength-bar.medium {
+            width: 50%;
+            background: var(--warning-gradient);
+        }
+        
+        .strength-bar.strong {
+            width: 75%;
+            background: var(--accent-gradient);
+        }
+        
+        .strength-bar.very-strong {
+            width: 100%;
+            background: var(--success-gradient);
+        }
+        
+        .strength-text {
+            font-size: 0.875rem;
+            margin-top: var(--space-xs);
+            color: var(--text-secondary);
+        }
+        
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .settings-container {
+                grid-template-columns: 1fr;
+                padding: var(--space-md);
+            }
+            
+            .settings-sidebar {
+                position: static;
+                order: 2;
+                margin-top: var(--space-lg);
+            }
+            
+            .settings-main {
+                order: 1;
+            }
+            
+            .tab-button {
+                display: none;
+            }
+            
+            .mobile-tab-switcher {
+                display: flex;
+                overflow-x: auto;
+                gap: var(--space-sm);
+                margin-bottom: var(--space-lg);
+                padding-bottom: var(--space-sm);
+            }
+            
+            .mobile-tab-button {
+                flex: 0 0 auto;
+                padding: var(--space-sm) var(--space-md);
+                background: var(--glass-bg);
+                border: 1px solid var(--glass-border);
+                border-radius: var(--radius-md);
+                color: var(--text-secondary);
+                font-weight: 500;
+                font-size: 0.875rem;
+                cursor: pointer;
+                transition: var(--transition-fast);
+                white-space: nowrap;
+            }
+            
+            .mobile-tab-button.active {
+                background: var(--primary-gradient);
+                color: white;
+            }
+            
+            .settings-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Indicator -->
+    <div id="loading-indicator" class="loading-indicator">
+        <div class="spinner"></div>
+        <p>Đang tải cài đặt...</p>
+    </div>
+
+    <!-- Background Animation -->
+    <canvas id="network-canvas"></canvas>
+    
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <i class="fas fa-atom"></i>
+                <span>Học Vật Lý</span>
+            </a>
+            
+            <div class="nav-links" id="nav-links">
+                <a href="/" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    <span>Trang chủ</span>
+                </a>
+                <a href="/lessons" class="nav-link">
+                    <i class="fas fa-book"></i>
+                    <span>Bài học</span>
+                </a>
+                <a href="/leaderboard" class="nav-link">
+                    <i class="fas fa-trophy"></i>
+                    <span>Bảng xếp hạng</span>
+                </a>
+                <a href="/profile" class="nav-link">
+                    <i class="fas fa-user"></i>
+                    <span>Hồ sơ</span>
+                </a>
+            </div>
+            
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="settings-header">
+                <a href="/profile" class="back-button">
+                    <i class="fas fa-arrow-left"></i>
+                    Quay lại
+                </a>
+                <h1 class="settings-title">Cài đặt</h1>
+            </div>
+            
+            <!-- Mobile Tab Switcher -->
+            <div class="mobile-tab-switcher">
+                <button class="mobile-tab-button active" data-tab="profile">
+                    <i class="fas fa-user"></i>
+                    Hồ sơ
+                </button>
+                <button class="mobile-tab-button" data-tab="security">
+                    <i class="fas fa-shield-alt"></i>
+                    Bảo mật
+                </button>
+                <button class="mobile-tab-button" data-tab="preferences">
+                    <i class="fas fa-cog"></i>
+                    Tùy chọn
+                </button>
+                <button class="mobile-tab-button" data-tab="privacy">
+                    <i class="fas fa-lock"></i>
+                    Quyền riêng tư
+                </button>
+                <button class="mobile-tab-button" data-tab="data">
+                    <i class="fas fa-database"></i>
+                    Dữ liệu
+                </button>
+            </div>
+            
+            <div class="settings-container">
+                <!-- Sidebar -->
+                <div class="settings-sidebar">
+                    <button class="tab-button active" data-tab="profile">
+                        <i class="fas fa-user"></i>
+                        Hồ sơ cá nhân
+                    </button>
+                    <button class="tab-button" data-tab="security">
+                        <i class="fas fa-shield-alt"></i>
+                        Bảo mật
+                    </button>
+                    <button class="tab-button" data-tab="preferences">
+                        <i class="fas fa-cog"></i>
+                        Tùy chọn học tập
+                    </button>
+                    <button class="tab-button" data-tab="privacy">
+                        <i class="fas fa-lock"></i>
+                        Quyền riêng tư
+                    </button>
+                    <button class="tab-button" data-tab="data">
+                        <i class="fas fa-database"></i>
+                        Quản lý dữ liệu
+                    </button>
+                </div>
+                
+                <!-- Main Content -->
+                <div class="settings-main">
+                    <!-- Profile Tab -->
+                    <section class="tab-content active" id="profile-tab">
+                        <h2>Hồ sơ cá nhân</h2>
+                        
+                        <div class="form-section">
+                            <h3>Thông tin cơ bản</h3>
+                            <form id="profile-form">
+                                <div class="form-group">
+                                    <label class="form-label">Họ và tên</label>
+                                    <input type="text" class="form-input" id="full-name" placeholder="Nhập họ và tên">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Số điện thoại</label>
+                                    <input type="tel" class="form-input" id="phone-number" placeholder="Nhập số điện thoại">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Trường học</label>
+                                    <input type="text" class="form-input" id="school-name" placeholder="Nhập tên trường">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Lớp</label>
+                                    <select class="form-input" id="grade-level">
+                                        <option value="">Chọn lớp</option>
+                                        <option value="10">Lớp 10</option>
+                                        <option value="11">Lớp 11</option>
+                                        <option value="12">Lớp 12</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Giới thiệu bản thân</label>
+                                    <textarea class="form-input" id="bio" rows="4" placeholder="Viết vài dòng về bạn..."></textarea>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i>
+                                    Lưu thay đổi
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <div class="form-section">
+                            <h3>Ảnh đại diện</h3>
+                            <div class="avatar-section">
+                                <div class="current-avatar" id="current-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="avatar-actions">
+                                    <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
+                                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('avatar-upload').click()">
+                                        <i class="fas fa-upload"></i>
+                                        Tải ảnh lên
+                                    </button>
+                                    <button type="button" class="btn btn-danger" id="remove-avatar">
+                                        <i class="fas fa-trash"></i>
+                                        Xóa ảnh
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Security Tab -->
+                    <section class="tab-content" id="security-tab">
+                        <h2>Bảo mật tài khoản</h2>
+                        
+                        <div class="form-section">
+                            <h3>Thay đổi mật khẩu</h3>
+                            <form id="password-form">
+                                <div class="form-group">
+                                    <label class="form-label">Mật khẩu hiện tại</label>
+                                    <input type="password" class="form-input" id="current-password" placeholder="Nhập mật khẩu hiện tại">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Mật khẩu mới</label>
+                                    <input type="password" class="form-input" id="new-password" placeholder="Nhập mật khẩu mới">
+                                    <div class="password-strength">
+                                        <div class="strength-indicator">
+                                            <div class="strength-bar" id="strength-bar"></div>
+                                        </div>
+                                        <p class="strength-text" id="strength-text">Nhập mật khẩu để kiểm tra độ mạnh</p>
+                                    </div>
+                                    <div class="password-requirements">
+                                        <h5>Yêu cầu mật khẩu:</h5>
+                                        <ul class="requirement-list">
+                                            <li class="requirement-item" id="req-length">
+                                                <i class="fas fa-circle"></i>
+                                                Ít nhất 8 ký tự
+                                            </li>
+                                            <li class="requirement-item" id="req-uppercase">
+                                                <i class="fas fa-circle"></i>
+                                                Có chữ hoa (A-Z)
+                                            </li>
+                                            <li class="requirement-item" id="req-lowercase">
+                                                <i class="fas fa-circle"></i>
+                                                Có chữ thường (a-z)
+                                            </li>
+                                            <li class="requirement-item" id="req-number">
+                                                <i class="fas fa-circle"></i>
+                                                Có số (0-9)
+                                            </li>
+                                            <li class="requirement-item" id="req-special">
+                                                <i class="fas fa-circle"></i>
+                                                Có ký tự đặc biệt (!@#$%^&*)
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Xác nhận mật khẩu mới</label>
+                                    <input type="password" class="form-input" id="confirm-password" placeholder="Nhập lại mật khẩu mới">
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-key"></i>
+                                    Cập nhật mật khẩu
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <div class="form-section">
+                            <h3>Thiết bị đã liên kết</h3>
+                            <div id="devices-list">
+                                <!-- Devices will be loaded here -->
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <h3>Phiên đăng nhập</h3>
+                            <div class="session-info">
+                                <p>Phiên hiện tại: <span id="current-session">Đang tải...</span></p>
+                                <p>Đăng nhập lần cuối: <span id="last-login">Đang tải...</span></p>
+                                <button class="btn btn-danger" id="logout-all">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    Đăng xuất khỏi tất cả thiết bị
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Preferences Tab -->
+                    <section class="tab-content" id="preferences-tab">
+                        <h2>Tùy chọn học tập</h2>
+                        
+                        <div class="form-section">
+                            <h3>Cài đặt quiz</h3>
+                            <div class="form-group">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Âm thanh hiệu ứng</h4>
+                                        <p>Phát âm thanh khi trả lời đúng/sai</p>
+                                    </div>
+                                    <div class="toggle-switch" data-setting="sound-effects">
+                                        <input type="checkbox" id="sound-effects" checked>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Hiệu ứng động</h4>
+                                        <p>Hiển thị hiệu ứng chuyển động trong quiz</p>
+                                    </div>
+                                    <div class="toggle-switch" data-setting="animations">
+                                        <input type="checkbox" id="animations" checked>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Thời gian mỗi câu hỏi (giây)</label>
+                                <select class="form-input" id="question-time">
+                                    <option value="30">30 giây</option>
+                                    <option value="60" selected>60 giây</option>
+                                    <option value="90">90 giây</option>
+                                    <option value="120">120 giây</option>
+                                    <option value="0">Không giới hạn</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <h3>Thông báo</h3>
+                            <div class="form-group">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Nhắc nhở học tập</h4>
+                                        <p>Nhận thông báo nhắc nhở học tập hàng ngày</p>
+                                    </div>
+                                    <div class="toggle-switch" data-setting="study-reminders">
+                                        <input type="checkbox" id="study-reminders" checked>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Thông báo thành tích</h4>
+                                        <p>Nhận thông báo khi đạt được thành tích mới</p>
+                                    </div>
+                                    <div class="toggle-switch" data-setting="achievement-notifications">
+                                        <input type="checkbox" id="achievement-notifications" checked>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <button class="btn btn-primary" id="save-preferences">
+                                <i class="fas fa-save"></i>
+                                Lưu tùy chọn
+                            </button>
+                        </div>
+                    </section>
+                    
+                    <!-- Privacy Tab -->
+                    <section class="tab-content" id="privacy-tab">
+                        <h2>Quyền riêng tư</h2>
+                        
+                        <div class="form-section">
+                            <h3>Hiển thị hồ sơ</h3>
+                            <div class="form-group">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Hồ sơ công khai</h4>
+                                        <p>Cho phép người khác xem hồ sơ của bạn</p>
+                                    </div>
+                                    <div class="toggle-switch" data-setting="public-profile">
+                                        <input type="checkbox" id="public-profile" checked>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Hiển thị trên bảng xếp hạng</h4>
+                                        <p>Tham gia bảng xếp hạng công khai</p>
+                                    </div>
+                                    <div class="toggle-switch" data-setting="leaderboard-visible">
+                                        <input type="checkbox" id="leaderboard-visible" checked>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Hiển thị tiến độ học tập</h4>
+                                        <p>Cho phép thầy cô xem tiến độ học tập của bạn</p>
+                                    </div>
+                                    <div class="toggle-switch" data-setting="progress-visible">
+                                        <input type="checkbox" id="progress-visible" checked>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <button class="btn btn-primary" id="save-privacy">
+                                <i class="fas fa-save"></i>
+                                Lưu cài đặt
+                            </button>
+                        </div>
+                    </section>
+                    
+                    <!-- Data Tab -->
+                    <section class="tab-content" id="data-tab">
+                        <h2>Quản lý dữ liệu</h2>
+                        
+                        <div class="form-section">
+                            <h3>Xuất dữ liệu</h3>
+                            <div class="data-export">
+                                <p>Tải xuống dữ liệu học tập của bạn</p>
+                                <button class="btn btn-secondary" id="export-data">
+                                    <i class="fas fa-download"></i>
+                                    Xuất dữ liệu
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <h3>Thống kê sử dụng</h3>
+                            <div class="usage-stats">
+                                <div class="stat-item">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-book"></i>
+                                    </div>
+                                    <div class="stat-info">
+                                        <div class="stat-value" id="total-lessons-completed">0</div>
+                                        <div class="stat-label">Bài học hoàn thành</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="stat-item">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <div class="stat-info">
+                                        <div class="stat-value" id="total-study-time">0</div>
+                                        <div class="stat-label">Thời gian học tập</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="stat-item">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-trophy"></i>
+                                    </div>
+                                    <div class="stat-info">
+                                        <div class="stat-value" id="total-achievements">0</div>
+                                        <div class="stat-label">Thành tích đạt được</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <h3>Xóa tài khoản</h3>
+                            <div class="alert alert-error">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Thao tác này sẽ xóa vĩnh viễn tài khoản và tất cả dữ liệu của bạn.
+                            </div>
+                            <button class="btn btn-danger" id="delete-account">
+                                <i class="fas fa-trash"></i>
+                                Yêu cầu xóa tài khoản
+                            </button>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Scripts -->
+    <script src="/js/network-animation.js"></script>
+    <script src="/js/settings.js"></script>
+    <script>
+        // Mobile menu toggle
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const navLinks = document.getElementById('nav-links');
+        
+        if (mobileMenuToggle && navLinks) {
+            mobileMenuToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+            });
+        }
+        
+        // Hide loading indicator
+        document.addEventListener('DOMContentLoaded', () => {
+            const loadingIndicator = document.getElementById('loading-indicator');
+            if (loadingIndicator) {
+                loadingIndicator.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

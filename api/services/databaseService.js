@@ -32,7 +32,7 @@ class DatabaseService {
       }
     }
 
-    console.log('[DatabaseService] getLessons called with tag filters:', tagFilters);
+    // Tag filters applied for lesson query
 
     if (search) {
       // Use RPC for search
@@ -78,11 +78,11 @@ class DatabaseService {
 
       // Apply tag filtering at database level for better performance
       if (tagFilters.length > 0) {
-        console.log('[DatabaseService] Applying tag filters to query:', tagFilters);
+        // Applying tag filters to lesson query
         // Use PostgreSQL array operators to filter by tags
         // @> operator checks if the left array contains all elements of the right array
         tagFilters.forEach(tag => {
-          console.log(`[DatabaseService] Adding tag filter: ["${tag}"]`);
+          // Adding tag filter to query
           query = query.contains('tags', `["${tag}"]`);
         });
       }
@@ -93,7 +93,7 @@ class DatabaseService {
       if (error) throw error;
 
       lessons = data || [];
-      console.log(`[DatabaseService] Query returned ${lessons.length} lessons with tag filters:`, tagFilters);
+      // Query completed with tag filters applied
       total = count || 0;
     }
 
@@ -219,6 +219,17 @@ class DatabaseService {
     return true;
   }
 
+  async getLessonsWithoutDescriptions(limit = 10) {
+    const { data, error } = await supabase
+      .from('lessons')
+      .select('id, title, quiz, grade, subject, tags, description')
+      .or('description.is.null,description.eq.')
+      .limit(limit);
+
+    if (error) throw error;
+    return data || [];
+  }
+
   // Database connection validation
   async validateConnection() {
     try {
@@ -312,8 +323,7 @@ class DatabaseService {
   // Results operations
   async createResult(resultData) {
     // Debug: Log the exact data being sent to Supabase
-    console.log('🔍 databaseService.createResult - Data being sent to Supabase:', JSON.stringify(resultData, null, 2));
-    console.log('🔍 databaseService.createResult - Data keys:', Object.keys(resultData));
+    // Creating result with provided data
 
     const { data: savedResult, error } = await supabase
       .from('results')
@@ -322,14 +332,14 @@ class DatabaseService {
       .single();
 
     if (error) {
-      console.log('🚨 databaseService.createResult - Supabase error:', error);
+      // Database error during result creation
       throw error;
     }
     return savedResult;
   }
 
   async getResultById(id) {
-    console.log('🔍 getResultById called with id:', id);
+    // Retrieving result by ID
     
     const { data: result, error } = await supabase
       .from('results')
@@ -345,13 +355,8 @@ class DatabaseService {
       throw error;
     }
 
-    console.log('✅ Raw result from database:', JSON.stringify(result, null, 2));
-    console.log('🔍 Result questions array:', result?.questions);
-    console.log('🔍 Questions array length:', result?.questions?.length || 0);
-    
-    if (result?.questions && Array.isArray(result.questions) && result.questions.length > 0) {
-      console.log('🔍 First question sample:', JSON.stringify(result.questions[0], null, 2));
-    } else {
+    // Validate result structure
+    if (!result?.questions || !Array.isArray(result.questions) || result.questions.length === 0) {
       console.warn('⚠️  No questions found in result or questions is not an array');
     }
 
@@ -379,6 +384,35 @@ class DatabaseService {
 
     if (error) throw error;
     return results || [];
+  }
+
+  // Bulk method to get results for multiple lessons at once
+  async getBulkLessonResults(lessonIds) {
+    if (!lessonIds || lessonIds.length === 0) return {};
+
+    const { data: results, error } = await supabase
+      .from('results')
+      .select(`
+        *,
+        students ( full_name )
+      `)
+      .in('lessonId', lessonIds);
+
+    if (error) throw error;
+    
+    // Group results by lesson ID
+    const groupedResults = {};
+    lessonIds.forEach(lessonId => {
+      groupedResults[lessonId] = [];
+    });
+    
+    (results || []).forEach(result => {
+      if (groupedResults[result.lessonId]) {
+        groupedResults[result.lessonId].push(result);
+      }
+    });
+    
+    return groupedResults;
   }
 
   // Rating operations
@@ -435,36 +469,34 @@ class DatabaseService {
       }));
     }
 
-    // Get rating changes for each student in the time period
-    const ratingsWithChanges = await Promise.all(
-      currentRatings.map(async (rating) => {
-        try {
-          // Get the total rating change from rating_history in the time period
-          const { data: historyData, error: historyError } = await supabase
-            .from('rating_history')
-            .select('rating_change')
-            .eq('student_id', rating.student_id)
-            .gte('timestamp', startDate.toISOString())
-            .order('timestamp', { ascending: true });
+    // Get rating changes for all students in a single query (fixes N+1 query issue)
+    const studentIds = currentRatings.map(rating => rating.student_id);
+    const { data: allHistoryData, error: historyError } = await supabase
+      .from('rating_history')
+      .select('student_id, rating_change')
+      .in('student_id', studentIds)
+      .gte('timestamp', startDate.toISOString())
+      .order('timestamp', { ascending: true });
 
-          if (historyError) {
-            console.error(`Error fetching history for student ${rating.student_id}:`, historyError);
-            return { ...rating, ratingChange: 0 };
-          }
+    if (historyError) {
+      console.error('Error fetching bulk rating history:', historyError);
+      return currentRatings.map(rating => ({ ...rating, ratingChange: 0 }));
+    }
 
-          // Sum all rating changes in the period
-          const totalChange = historyData?.reduce((sum, record) => sum + (record.rating_change || 0), 0) || 0;
+    // Group rating changes by student ID
+    const ratingChangesMap = {};
+    (allHistoryData || []).forEach(record => {
+      if (!ratingChangesMap[record.student_id]) {
+        ratingChangesMap[record.student_id] = 0;
+      }
+      ratingChangesMap[record.student_id] += record.rating_change || 0;
+    });
 
-          return {
-            ...rating,
-            ratingChange: totalChange
-          };
-        } catch (error) {
-          console.error(`Error calculating change for student ${rating.student_id}:`, error);
-          return { ...rating, ratingChange: 0 };
-        }
-      })
-    );
+    // Map rating changes to current ratings
+    const ratingsWithChanges = currentRatings.map(rating => ({
+      ...rating,
+      ratingChange: ratingChangesMap[rating.student_id] || 0
+    }));
 
     return ratingsWithChanges;
   }

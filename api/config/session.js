@@ -27,7 +27,7 @@ const sessionConfig = session({
   cookie: {
     secure: process.env.NODE_ENV === 'production', // HTTPS only in production
     httpOnly: true, // Prevent client-side JS access
-    sameSite: 'lax', // CSRF protection
+    sameSite: 'strict', // Stronger CSRF protection
     path: '/', // Valid for all paths
     maxAge: getSessionTimeout() // Dynamic session timeout
   },

@@ -2,3 +2,8 @@
 node_modules
 logs
 .augment-guidelines
+.roo
+.claude
+.env
+.env.local
+.env.production

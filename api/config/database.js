@@ -22,12 +22,20 @@ if (!connectionString) {
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey || supabaseAnonKey);
 
-// PostgreSQL connection pool configuration
+// Optimized PostgreSQL connection pool configuration
 const pgPool = new Pool({
   connectionString: connectionString,
   ssl: {
     rejectUnauthorized: false // Adjust as per Supabase requirements or use proper CA certs
-  }
+  },
+  // Performance optimization settings
+  max: 20,                      // Maximum pool size
+  min: 2,                       // Minimum pool size
+  idleTimeoutMillis: 30000,     // Close idle connections after 30 seconds
+  connectionTimeoutMillis: 2000, // Timeout for getting connection from pool
+  maxUses: 7500,                // Retire connections after 7500 uses
+  allowExitOnIdle: true,        // Allow process to exit when all connections idle
+  application_name: 'onluyen_vatly_app' // Application name for monitoring
 });
 
 // PostgreSQL pool error handling

@@ -18,13 +18,6 @@
         "/home/neifui/Documents/"
       ]
     },
-    "puppeteer": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-puppeteer"
-      ]
-    },
     "postgrest": {
       "command": "npx",
       "args": [
@@ -36,6 +29,18 @@
         "",
         "--schema",
         "public"
+      ]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp@latest",
+        "--vision"
+      ],
+      "alwaysAllow": [
+        "browser_navigate",
+        "browser_screen_capture"
       ]
     }
   }

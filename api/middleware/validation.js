@@ -8,8 +8,32 @@ const isValidPhoneNumber = (phone) => {
 };
 
 const isValidPassword = (password) => {
-  // At least 6 characters
-  return password && password.length >= 6;
+  // At least 8 characters with complexity requirements
+  if (!password || password.length < 8) {
+    return false;
+  }
+  
+  // Must contain at least one uppercase letter
+  if (!/[A-Z]/.test(password)) {
+    return false;
+  }
+  
+  // Must contain at least one lowercase letter
+  if (!/[a-z]/.test(password)) {
+    return false;
+  }
+  
+  // Must contain at least one number
+  if (!/\d/.test(password)) {
+    return false;
+  }
+  
+  // Must contain at least one special character
+  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    return false;
+  }
+  
+  return true;
 };
 
 const isValidName = (name) => {
@@ -46,7 +70,7 @@ const validateStudentRegistration = (req, res, next) => {
   }
 
   if (!password || !isValidPassword(password)) {
-    errors.push('Mật khẩu phải có ít nhất 6 ký tự');
+    errors.push('Mật khẩu phải có ít nhất 8 ký tự, bao gồm: chữ hoa, chữ thường, số và ký tự đặc biệt');
   }
 
   if (date_of_birth && !isValidDate(date_of_birth)) {

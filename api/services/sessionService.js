@@ -201,6 +201,16 @@ class SessionService {
     return req.session && req.session.studentId;
   }
 
+  // Check if admin should have student privileges (admin-as-student mode)
+  adminHasStudentPrivileges(req) {
+    return this.isAdminAuthenticated(req);
+  }
+
+  // Enhanced student authentication check that includes admin privileges
+  isStudentOrAdminAuthenticated(req) {
+    return this.isStudentAuthenticated(req) || this.adminHasStudentPrivileges(req);
+  }
+
   // Check if student has required info
   hasStudentInfo(req) {
     return req.session && req.session.studentInfo;
@@ -306,6 +316,70 @@ class SessionService {
       req.session.save(callback);
     } else if (callback) {
       callback(new Error('No session to refresh'));
+    }
+  }
+
+  // Clear all sessions for a specific student
+  async clearStudentSessions(studentId) {
+    if (!this.sessionStore) {
+      console.warn('Session store not initialized');
+      return;
+    }
+
+    try {
+      // Get all session IDs from the store
+      const self = this;
+      return new Promise((resolve, reject) => {
+        this.sessionStore.all((err, sessions) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+
+          if (!sessions) {
+            resolve();
+            return;
+          }
+
+          const sessionIds = Object.keys(sessions);
+          let destroyCount = 0;
+          let totalToDestroy = 0;
+
+          // Count sessions to destroy
+          sessionIds.forEach(sessionId => {
+            const session = sessions[sessionId];
+            if (session && session.studentId === studentId) {
+              totalToDestroy++;
+            }
+          });
+
+          if (totalToDestroy === 0) {
+            resolve();
+            return;
+          }
+
+          // Destroy matching sessions
+          sessionIds.forEach(sessionId => {
+            const session = sessions[sessionId];
+            if (session && session.studentId === studentId) {
+              this.sessionStore.destroy(sessionId, (destroyErr) => {
+                if (destroyErr) {
+                  console.error('Error destroying session:', destroyErr);
+                }
+                destroyCount++;
+                if (destroyCount === totalToDestroy) {
+                  // Clear student cache
+                  self.clearStudentCache(studentId);
+                  resolve();
+                }
+              });
+            }
+          });
+        });
+      });
+    } catch (error) {
+      console.error('Error clearing student sessions:', error);
+      throw error;
     }
   }
 }

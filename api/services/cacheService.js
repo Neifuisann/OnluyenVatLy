@@ -2,6 +2,10 @@ const crypto = require('crypto');
 const { CACHE_CONFIG } = require('../config/constants');
 
 class CacheService {
+  constructor() {
+    this.aiCache = new Map();
+  }
+
   // Generate ETag for data
   generateETag(data) {
     if (!data) {
@@ -205,6 +209,25 @@ class CacheService {
       heapUsed: Math.round(usage.heapUsed / 1024 / 1024), // MB
       external: Math.round(usage.external / 1024 / 1024) // MB
     };
+  }
+
+  // Simple in-memory cache for AI features (replace with Redis in production)
+
+  async get(key) {
+    const item = this.aiCache.get(key);
+    if (!item) return null;
+    
+    if (item.expiresAt && Date.now() > item.expiresAt) {
+      this.aiCache.delete(key);
+      return null;
+    }
+    
+    return item.data;
+  }
+
+  async set(key, value, ttl = 3600) {
+    const expiresAt = ttl ? Date.now() + (ttl * 1000) : null;
+    this.aiCache.set(key, { data: value, expiresAt });
   }
 }
 

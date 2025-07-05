@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tools - OnluyenVatLy Admin</title>
+    
+    <!-- External Dependencies -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="/css/admin-new-v2.css">
+    <link rel="stylesheet" href="/css/ai-tools.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Đang xử lý...</p>
+        </div>
+    </div>
+
+    <!-- Main Application Container -->
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <button class="back-button" onclick="window.location.href='/admin'" title="Quay lại admin">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Quay lại</span>
+                </button>
+                <div class="header-title">
+                    <h1>
+                        <i class="fas fa-magic"></i>
+                        <span>AI Tools</span>
+                    </h1>
+                    <div class="subtitle">Công cụ AI cho quản lý bài học</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="ai-tools-content">
+            <div class="tools-container">
+                
+                <!-- Bulk Summary Generation -->
+                <div class="tool-card">
+                    <div class="tool-header">
+                        <div class="tool-icon">
+                            <i class="fas fa-align-left"></i>
+                        </div>
+                        <div class="tool-info">
+                            <h3>Tạo mô tả hàng loạt</h3>
+                            <p>Tự động tạo mô tả cho các bài học không có mô tả</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tool-content">
+                        <div class="tool-stats" id="summary-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Bài học không có mô tả:</span>
+                                <span class="stat-value" id="lessons-without-desc">-</span>
+                            </div>
+                        </div>
+                        
+                        <div class="tool-controls">
+                            <div class="control-group">
+                                <label for="summary-limit">Số lượng xử lý:</label>
+                                <input type="number" id="summary-limit" min="1" max="50" value="10" class="form-control">
+                            </div>
+                            
+                            <div class="tool-actions">
+                                <button class="btn btn-secondary" onclick="checkSummaryStats()">
+                                    <i class="fas fa-search"></i>
+                                    Kiểm tra
+                                </button>
+                                <button class="btn btn-primary" onclick="generateBulkSummaries()">
+                                    <i class="fas fa-magic"></i>
+                                    Tạo mô tả
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="tool-results" id="summary-results" style="display: none;">
+                            <h4>Kết quả:</h4>
+                            <div class="results-list" id="summary-results-list"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cache Management -->
+                <div class="tool-card">
+                    <div class="tool-header">
+                        <div class="tool-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="tool-info">
+                            <h3>Quản lý Cache AI</h3>
+                            <p>Xem và quản lý cache để tối ưu hóa chi phí</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tool-content">
+                        <div class="tool-stats" id="cache-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Items trong cache:</span>
+                                <span class="stat-value" id="cache-items">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Tỷ lệ sử dụng:</span>
+                                <span class="stat-value" id="cache-usage">-</span>
+                            </div>
+                        </div>
+                        
+                        <div class="tool-actions">
+                            <button class="btn btn-secondary" onclick="getCacheStats()">
+                                <i class="fas fa-chart-bar"></i>
+                                Xem thống kê
+                            </button>
+                            <button class="btn btn-warning" onclick="clearCache('summary')">
+                                <i class="fas fa-trash"></i>
+                                Xóa cache mô tả
+                            </button>
+                            <button class="btn btn-danger" onclick="clearCache()">
+                                <i class="fas fa-trash-alt"></i>
+                                Xóa tất cả cache
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Usage Statistics -->
+                <div class="tool-card">
+                    <div class="tool-header">
+                        <div class="tool-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="tool-info">
+                            <h3>Thống kê sử dụng AI</h3>
+                            <p>Theo dõi việc sử dụng và chi phí AI</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tool-content">
+                        <div class="tool-stats" id="usage-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Tổng requests hôm nay:</span>
+                                <span class="stat-value" id="daily-requests">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Cache hit rate:</span>
+                                <span class="stat-value" id="cache-hit-rate">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Chi phí ước tính:</span>
+                                <span class="stat-value" id="estimated-cost">-</span>
+                            </div>
+                        </div>
+                        
+                        <div class="tool-actions">
+                            <button class="btn btn-primary" onclick="getUsageStats()">
+                                <i class="fas fa-sync"></i>
+                                Cập nhật thống kê
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image Generation Tools -->
+                <div class="tool-card">
+                    <div class="tool-header">
+                        <div class="tool-icon">
+                            <i class="fas fa-image"></i>
+                        </div>
+                        <div class="tool-info">
+                            <h3>Tạo ảnh hàng loạt</h3>
+                            <p>Tạo ảnh minh họa cho các bài học</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tool-content">
+                        <div class="tool-stats" id="image-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Bài học không có ảnh:</span>
+                                <span class="stat-value" id="lessons-without-images">-</span>
+                            </div>
+                        </div>
+                        
+                        <div class="tool-controls">
+                            <div class="control-group">
+                                <label for="image-limit">Số lượng xử lý:</label>
+                                <input type="number" id="image-limit" min="1" max="20" value="5" class="form-control">
+                            </div>
+                            
+                            <div class="tool-actions">
+                                <button class="btn btn-secondary" onclick="checkImageStats()">
+                                    <i class="fas fa-search"></i>
+                                    Kiểm tra
+                                </button>
+                                <button class="btn btn-primary" onclick="generateBulkImages()">
+                                    <i class="fas fa-magic"></i>
+                                    Tạo ảnh
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="tool-results" id="image-results" style="display: none;">
+                            <h4>Kết quả:</h4>
+                            <div class="results-list" id="image-results-list"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notification-container" class="notification-container"></div>
+
+    <!-- Custom Scripts -->
+    <script src="/js/admin-ai-tools.js"></script>
+</body>
+</html>

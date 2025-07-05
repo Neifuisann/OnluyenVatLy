@@ -1,5 +1,10 @@
 const databaseService = require('../services/databaseService');
 const ratingService = require('../services/ratingService');
+const streakService = require('../services/streakService');
+const xpService = require('../services/xpService');
+const achievementService = require('../services/achievementService');
+const questService = require('../services/questService');
+const activityService = require('../services/activityService');
 const sessionService = require('../services/sessionService');
 const { asyncHandler, NotFoundError, ValidationError, AuthorizationError } = require('../middleware/errorHandler');
 const { SUCCESS_MESSAGES } = require('../config/constants');
@@ -7,7 +12,7 @@ const { SUCCESS_MESSAGES } = require('../config/constants');
 class ResultController {
   // Submit lesson result
   submitResult = asyncHandler(async (req, res) => {
-    const { lessonId, answers, timeTaken, studentInfo } = req.body;
+    const { lessonId, answers, timeTaken, studentInfo, mode = 'test' } = req.body;
     const sessionData = sessionService.getSessionData(req);
 
     // Get lesson to validate answers
@@ -39,7 +44,8 @@ class ResultController {
       totalPoints,
       studentInfo,
       timestamp: new Date().toISOString(),
-      ipAddress: req.ip || req.connection.remoteAddress || 'unknown'
+      ipAddress: req.ip || req.connection.remoteAddress || 'unknown',
+      mode: mode // Add mode field
     };
 
     // Debug: Log the exact data being sent to database
@@ -47,20 +53,133 @@ class ResultController {
 
     const savedResult = await databaseService.createResult(resultData);
     
-    // Update rating if student is authenticated
+    // Update rating, streak, and XP if student is authenticated
     let ratingUpdate = null;
+    let streakUpdate = null;
+    let xpUpdate = null;
+    
     if (sessionData.studentId && score > 0) {
       try {
+        // Update student streak (only for successful completion)
+        streakUpdate = await streakService.recordDailyActivity(sessionData.studentId);
+        
+        // Award XP for lesson completion
+        xpUpdate = await xpService.awardLessonCompletionXP(
+          sessionData.studentId,
+          lessonId,
+          score,
+          totalPoints,
+          timeTaken,
+          savedResult.id
+        );
+        
+        // Check for streak milestones and award XP
+        const currentStreak = streakUpdate?.stats?.currentStreak || 0;
+        if (currentStreak > 0) {
+          const milestoneXP = await xpService.awardStreakMilestoneXP(sessionData.studentId, currentStreak);
+          if (milestoneXP) {
+            console.log(`Streak milestone XP awarded: ${milestoneXP.xpAwarded} for ${currentStreak} days`);
+          }
+        }
+        
+        // Check for achievements
+        const newAchievements = await achievementService.checkAndAwardAchievements(
+          sessionData.studentId,
+          'lesson_completion',
+          {
+            lessonId,
+            score,
+            totalPoints,
+            accuracy: totalPoints > 0 ? (score / totalPoints) * 100 : 0,
+            timeTaken,
+            streakDays: currentStreak,
+            resultId: savedResult.id
+          }
+        );
+        
+        // Update rating with calculated streak
         ratingUpdate = await ratingService.updateStudentRating(
           sessionData.studentId,
           lessonId,
           score,
           totalPoints,
           timeTaken,
-          0 // streak would need to be calculated
+          currentStreak
         );
+        
+        // Check and update daily quests
+        const updatedQuests = await questService.checkAndUpdateQuests(
+          sessionData.studentId,
+          'lesson_completion',
+          {
+            lessonId,
+            score,
+            totalPoints,
+            accuracy: totalPoints > 0 ? (score / totalPoints) * 100 : 0,
+            timeTaken,
+            streakDays: currentStreak,
+            resultId: savedResult.id
+          }
+        );
+        
+        // Log lesson completion activity
+        try {
+          await activityService.logLessonCompletion(
+            sessionData.studentId,
+            lessonId,
+            lesson,
+            score,
+            totalPoints,
+            true // Make public for scores above 70%
+          );
+        } catch (error) {
+          console.error('Error logging lesson completion activity:', error);
+        }
+        
+        // Log achievements if any were earned
+        if (newAchievements.length > 0) {
+          console.log(`Student ${sessionData.studentId} earned ${newAchievements.length} achievement(s):`, 
+            newAchievements.map(a => a.achievement.title));
+          
+          // Log achievement activities
+          for (const achievementRecord of newAchievements) {
+            try {
+              await activityService.logAchievementEarned(sessionData.studentId, achievementRecord.achievement);
+            } catch (error) {
+              console.error('Error logging achievement activity:', error);
+            }
+          }
+        }
+        
+        // Log completed quests if any
+        const completedQuests = updatedQuests.filter(q => q.completed);
+        if (completedQuests.length > 0) {
+          console.log(`Student ${sessionData.studentId} completed ${completedQuests.length} quest(s):`, 
+            completedQuests.map(q => q.daily_quests.title));
+          
+          // Log quest completion activities
+          for (const questProgress of completedQuests) {
+            try {
+              await activityService.logQuestCompletion(sessionData.studentId, questProgress.daily_quests);
+            } catch (error) {
+              console.error('Error logging quest completion activity:', error);
+            }
+          }
+        }
+        
+        // Log streak milestone activity if applicable
+        if (currentStreak > 0 && [3, 7, 14, 30, 50, 100].includes(currentStreak)) {
+          try {
+            const milestoneXP = await xpService.awardStreakMilestoneXP(sessionData.studentId, currentStreak);
+            if (milestoneXP) {
+              await activityService.logStreakMilestone(sessionData.studentId, currentStreak, milestoneXP.xpAwarded);
+            }
+          } catch (error) {
+            console.error('Error logging streak milestone activity:', error);
+          }
+        }
       } catch (error) {
-        console.error('Rating update failed:', error);
+        console.error('Rating, streak, XP, achievement, or quest update failed:', error);
       }
     }
     
@@ -70,7 +189,11 @@ class ResultController {
       resultId: savedResult.id,
       score,
       totalPoints,
-      rating: ratingUpdate
+      rating: ratingUpdate,
+      streak: streakUpdate?.stats || null,
+      xp: xpUpdate || null,
+      achievements: newAchievements || [],
+      quests: completedQuests || []
     });
   });
 

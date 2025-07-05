@@ -2,6 +2,7 @@ const databaseService = require('../services/databaseService');
 const sessionService = require('../services/sessionService');
 const { asyncHandler, NotFoundError, AuthorizationError, ValidationError, AuthenticationError } = require('../middleware/errorHandler');
 const { SUCCESS_MESSAGES } = require('../config/constants');
+const { sanitizeObject } = require('../utils/sanitization');
 
 class StudentController {
   // Get all students (admin only)
@@ -117,7 +118,17 @@ class StudentController {
     delete updateData.approved_device_id;
     delete updateData.current_session_id;
     
-    await databaseService.updateStudent(studentId, updateData);
+    // Sanitize user input fields to prevent XSS
+    const sanitizedData = sanitizeObject(updateData, [
+      'full_name',
+      'bio',
+      'school_name',
+      'grade_level',
+      'email',
+      'address'
+    ]);
+    
+    await databaseService.updateStudent(studentId, sanitizedData);
     
     res.json({
       success: true,
@@ -151,7 +162,8 @@ class StudentController {
       throw new ValidationError('Student name is required');
     }
     
-    const studentInfo = { name, school, grade };
+    // Sanitize user input to prevent XSS
+    const studentInfo = sanitizeObject({ name, school, grade }, ['name', 'school', 'grade']);
     sessionService.setStudentInfo(req, studentInfo);
     
     res.json({
@@ -250,6 +262,40 @@ class StudentController {
     
     res.json(result);
   });
+
+  // Avatar management methods (delegated to settings controller)
+  uploadAvatar = (req, res, next) => {
+    const settingsController = require('./settingsController');
+    return settingsController.uploadAvatar(req, res, next);
+  };
+
+  removeAvatar = (req, res, next) => {
+    const settingsController = require('./settingsController');
+    return settingsController.removeAvatar(req, res, next);
+  };
+
+  // Device management methods (delegated to settings controller)
+  getDevices = (req, res, next) => {
+    const settingsController = require('./settingsController');
+    return settingsController.getStudentDevices(req, res, next);
+  };
+
+  removeDevice = (req, res, next) => {
+    const settingsController = require('./settingsController');
+    return settingsController.removeDevice(req, res, next);
+  };
+
+  // Data export method (delegated to settings controller)
+  exportData = (req, res, next) => {
+    const settingsController = require('./settingsController');
+    return settingsController.exportStudentData(req, res, next);
+  };
+
+  // Account deletion request (delegated to settings controller)
+  requestAccountDeletion = (req, res, next) => {
+    const settingsController = require('./settingsController');
+    return settingsController.requestAccountDeletion(req, res, next);
+  };
 }
 
 module.exports = new StudentController();

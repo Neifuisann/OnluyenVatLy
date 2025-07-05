@@ -121,4 +121,45 @@ router.get('/info',
   studentController.getStudentInfo
 );
 
+// Avatar management routes
+router.post('/avatar',
+  requireStudentAuth,
+  noCacheMiddleware,
+  studentController.uploadAvatar
+);
+
+router.delete('/avatar',
+  requireStudentAuth,
+  noCacheMiddleware,
+  studentController.removeAvatar
+);
+
+// Device management routes
+router.get('/devices',
+  requireStudentAuth,
+  noCacheMiddleware,
+  studentController.getDevices
+);
+
+router.delete('/devices/:deviceId',
+  requireStudentAuth,
+  validateIdParam('deviceId'),
+  noCacheMiddleware,
+  studentController.removeDevice
+);
+
+// Data export route
+router.get('/export-data',
+  requireStudentAuth,
+  noCacheMiddleware,
+  studentController.exportData
+);
+
+// Account deletion request
+router.post('/delete-request',
+  requireStudentAuth,
+  noCacheMiddleware,
+  studentController.requestAccountDeletion
+);
+
 module.exports = router;

@@ -8,7 +8,7 @@ let currentFilters = {
 let mistakesData = [];
 let selectedMistakes = new Set();
 
-// Authentication functions
+// Authentication functions (supports both students and admins)
 async function checkStudentAuthentication() {
     try {
         const response = await fetch('/api/auth/student/check');
@@ -20,15 +20,16 @@ async function checkStudentAuthentication() {
 
         if (authData.success && authData.data) {
             if (authData.data.isAuthenticated && authData.data.student) {
-                console.log('Student authenticated:', authData.data.student.name);
+                console.log('User authenticated:', authData.data.student.name,
+                    authData.data.student.id === 'admin' ? '(Admin)' : '(Student)');
                 return true;
             }
         }
-        
-        console.log('Student not authenticated');
+
+        console.log('User not authenticated');
         return false;
     } catch (error) {
-        console.error('Error checking student authentication:', error);
+        console.error('Error checking authentication:', error);
         return false;
     }
 }

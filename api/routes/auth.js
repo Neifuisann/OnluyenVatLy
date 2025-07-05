@@ -93,9 +93,17 @@ router.post('/refresh',
 
 // Password management routes
 router.post('/change-password',
+  authRateLimit,
   requireStudentAuth,
   logAuthEvent('password_change_attempt'),
   authController.changePassword
+);
+
+// Logout from all devices
+router.post('/logout-all',
+  requireStudentAuth,
+  logAuthEvent('logout_all_devices'),
+  authController.logoutAllDevices
 );
 
 // Device management routes

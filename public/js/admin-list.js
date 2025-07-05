@@ -10,7 +10,7 @@ let allTags = [];
 let currentSearch = '';
 let currentSort = 'newest'; // Default to newest
 let currentTags = [];
-ddd
+
 // Statistics tracking
 let statsData = {
     total: 0,

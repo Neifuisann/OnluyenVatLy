@@ -12,14 +12,31 @@ const requireAdminAuth = (req, res, next) => {
   next();
 };
 
-// Middleware to check if user is authenticated as student
+// Middleware to check if user is authenticated as student (or admin with student privileges)
 const requireStudentAuth = (req, res, next) => {
-  if (!sessionService.isStudentAuthenticated(req)) {
-    return res.status(401).json({ 
+  const isStudent = sessionService.isStudentAuthenticated(req);
+  const isAdmin = sessionService.isAdminAuthenticated(req);
+  const hasAccess = sessionService.isStudentOrAdminAuthenticated(req);
+
+  // Debug logging
+  console.log('[Auth Debug] requireStudentAuth check:', {
+    endpoint: req.path,
+    method: req.method,
+    sessionId: req.sessionID,
+    isStudent,
+    isAdmin,
+    hasAccess
+  });
+
+  if (!hasAccess) {
+    console.log('[Auth Debug] Access denied in requireStudentAuth');
+    return res.status(401).json({
       error: ERROR_MESSAGES.UNAUTHORIZED,
-      message: 'Student authentication required' 
+      message: 'Student authentication required'
     });
   }
+
+  console.log('[Auth Debug] Access granted in requireStudentAuth');
   next();
 };
 
