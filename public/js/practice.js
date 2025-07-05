@@ -305,19 +305,44 @@ function saveNumberAnswer(questionIndex) {
 
 // Toggle flag
 function toggleFlag(questionIndex) {
+    console.log('toggleFlag called for question:', questionIndex);
+    
+    // Validate questionIndex
+    if (questionIndex < 0 || questionIndex >= practiceQuestions.length) {
+        console.error('Invalid questionIndex:', questionIndex, 'total questions:', practiceQuestions.length);
+        return;
+    }
+    
     if (flaggedQuestions.has(questionIndex)) {
         flaggedQuestions.delete(questionIndex);
     } else {
         flaggedQuestions.add(questionIndex);
     }
     
-    // Update flag button
-    const flagBtn = document.querySelector(`#question-${questionIndex} .flag-btn`);
+    // Update flag button with improved error handling
+    const questionContainer = document.getElementById(`question-${questionIndex}`);
+    console.log('Question container found:', questionContainer ? 'yes' : 'no');
+    
+    if (!questionContainer) {
+        console.error('Question container not found for index:', questionIndex);
+        return;
+    }
+    
+    const flagBtn = questionContainer.querySelector('.flag-btn');
+    console.log('Flag button found:', flagBtn ? 'yes' : 'no');
+    
     if (flagBtn) {
-        flagBtn.classList.toggle('active');
-        flagBtn.innerHTML = flaggedQuestions.has(questionIndex) 
-            ? '<i class="fas fa-flag"></i> Đã đánh dấu'
-            : '<i class="fas fa-flag"></i> Đánh dấu';
+        try {
+            flagBtn.classList.toggle('active');
+            flagBtn.innerHTML = flaggedQuestions.has(questionIndex)
+                ? '<i class="fas fa-flag"></i> Đã đánh dấu'
+                : '<i class="fas fa-flag"></i> Đánh dấu';
+            console.log('Flag button updated successfully');
+        } catch (error) {
+            console.error('Error updating flag button:', error);
+        }
+    } else {
+        console.error('Flag button not found in question container');
     }
     
     updateNavigationItem(questionIndex);
@@ -393,19 +418,29 @@ async function submitPractice() {
         });
         
         const timeSpent = Math.floor((Date.now() - startTime) / 1000); // in seconds
-        
+
+        // Get CSRF token before making the request
+        const csrfResponse = await fetch('/api/csrf-token');
+        if (!csrfResponse.ok) {
+            throw new Error('Failed to get CSRF token');
+        }
+        const csrfData = await csrfResponse.json();
+
+        const payload = {
+            questions: results,
+            score: score,
+            totalQuestions: practiceQuestions.length,
+            timeSpent: timeSpent,
+            csrfToken: csrfData.csrfToken
+        };
+
         // Submit results
         const response = await fetch('/api/progress/practice/submit', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                questions: results,
-                score: score,
-                totalQuestions: practiceQuestions.length,
-                timeSpent: timeSpent
-            })
+            body: JSON.stringify(payload)
         });
         
         if (response.ok) {

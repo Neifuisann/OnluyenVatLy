@@ -57,12 +57,15 @@ class ResultController {
     let ratingUpdate = null;
     let streakUpdate = null;
     let xpUpdate = null;
-    
+    let newAchievements = [];
+    let completedQuests = [];
+    let updatedQuests = [];
+
     if (sessionData.studentId && score > 0) {
       try {
         // Update student streak (only for successful completion)
         streakUpdate = await streakService.recordDailyActivity(sessionData.studentId);
-        
+
         // Award XP for lesson completion
         xpUpdate = await xpService.awardLessonCompletionXP(
           sessionData.studentId,
@@ -72,7 +75,7 @@ class ResultController {
           timeTaken,
           savedResult.id
         );
-        
+
         // Check for streak milestones and award XP
         const currentStreak = streakUpdate?.stats?.currentStreak || 0;
         if (currentStreak > 0) {
@@ -81,9 +84,9 @@ class ResultController {
             console.log(`Streak milestone XP awarded: ${milestoneXP.xpAwarded} for ${currentStreak} days`);
           }
         }
-        
+
         // Check for achievements
-        const newAchievements = await achievementService.checkAndAwardAchievements(
+        newAchievements = await achievementService.checkAndAwardAchievements(
           sessionData.studentId,
           'lesson_completion',
           {
@@ -108,7 +111,7 @@ class ResultController {
         );
         
         // Check and update daily quests
-        const updatedQuests = await questService.checkAndUpdateQuests(
+        updatedQuests = await questService.checkAndUpdateQuests(
           sessionData.studentId,
           'lesson_completion',
           {
@@ -152,7 +155,7 @@ class ResultController {
         }
         
         // Log completed quests if any
-        const completedQuests = updatedQuests.filter(q => q.completed);
+        completedQuests = updatedQuests.filter(q => q.completed);
         if (completedQuests.length > 0) {
           console.log(`Student ${sessionData.studentId} completed ${completedQuests.length} quest(s):`, 
             completedQuests.map(q => q.daily_quests.title));

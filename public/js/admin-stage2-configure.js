@@ -74,18 +74,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     medium: 50,
                     hard: 20
                 },
-                randomizationSeed: '',
-                // Multiple attempts settings
-                enableMultipleAttempts: false,
-                maxAttempts: 3,
-                isUnlimitedAttempts: false,
-                cooldownHours: 0,
-                cooldownMinutes: 30,
-                cooldownSeconds: 0,
-                scoreRecording: 'highest',
-                showPreviousAttempts: true,
-                allowReviewBeforeRetry: false,
-                resetTimerEachAttempt: true
+                randomizationSeed: ''
             };
             currentTags = new Set();
         }
@@ -119,18 +108,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 medium: 50,
                 hard: 20
             },
-            randomizationSeed: '',
-            // Multiple attempts settings
-            enableMultipleAttempts: false,
-            maxAttempts: 3,
-            isUnlimitedAttempts: false,
-            cooldownHours: 0,
-            cooldownMinutes: 30,
-            cooldownSeconds: 0,
-            scoreRecording: 'highest',
-            showPreviousAttempts: true,
-            allowReviewBeforeRetry: false,
-            resetTimerEachAttempt: true
+            randomizationSeed: ''
             // Initialize other fields as needed
         };
         currentTags = new Set();
@@ -204,38 +182,6 @@ function populateForm() {
     // Update pool max display and difficulty total
     updatePoolMaxDisplay();
     updateDifficultyTotal();
-    
-    // Populate attempts settings
-    document.getElementById('enable-multiple-attempts').checked = currentConfigData.enableMultipleAttempts || false;
-    document.getElementById('max-attempts').value = currentConfigData.maxAttempts || 3;
-    document.getElementById('cooldown-hours').value = currentConfigData.cooldownHours || 0;
-    document.getElementById('cooldown-minutes').value = currentConfigData.cooldownMinutes || 30;
-    document.getElementById('cooldown-seconds').value = currentConfigData.cooldownSeconds || 0;
-    
-    // Set attempts limit radio
-    if (currentConfigData.isUnlimitedAttempts) {
-        document.querySelector('input[name="attempts-limit"][value="unlimited"]').checked = true;
-    } else {
-        document.querySelector('input[name="attempts-limit"][value="limited"]').checked = true;
-    }
-    
-    // Set score recording radio
-    const scoreRecording = currentConfigData.scoreRecording || 'highest';
-    document.querySelector(`input[name="score-recording"][value="${scoreRecording}"]`).checked = true;
-    
-    // Set advanced options
-    document.getElementById('show-previous-attempts').checked = currentConfigData.showPreviousAttempts !== false;
-    document.getElementById('allow-review-before-retry').checked = currentConfigData.allowReviewBeforeRetry || false;
-    document.getElementById('reset-timer-each-attempt').checked = currentConfigData.resetTimerEachAttempt !== false;
-    
-    // Show/hide attempts controls
-    const attemptsControls = document.getElementById('attempts-controls');
-    if (attemptsControls) {
-        attemptsControls.style.display = currentConfigData.enableMultipleAttempts ? 'block' : 'none';
-    }
-    
-    // Update cooldown preview
-    updateCooldownPreview();
 
     // Populate Image
     if (currentConfigData.lessonImage) {
@@ -344,63 +290,6 @@ function setupEventListeners() {
             currentConfigData.difficultyRatios[difficulty] = parseInt(e.target.value) || 0;
             updateDifficultyTotal();
         });
-    });
-    
-    // Add attempts configuration listeners
-    document.getElementById('enable-multiple-attempts')?.addEventListener('change', (e) => {
-        currentConfigData.enableMultipleAttempts = e.target.checked;
-        const attemptsControls = document.getElementById('attempts-controls');
-        if (attemptsControls) {
-            attemptsControls.style.display = e.target.checked ? 'block' : 'none';
-        }
-    });
-    
-    document.getElementById('max-attempts')?.addEventListener('input', (e) => {
-        currentConfigData.maxAttempts = parseInt(e.target.value) || 3;
-    });
-    
-    // Attempts limit radio listeners
-    document.querySelectorAll('input[name="attempts-limit"]').forEach(radio => {
-        radio.addEventListener('change', (e) => {
-            if (e.target.checked) {
-                currentConfigData.isUnlimitedAttempts = e.target.value === 'unlimited';
-                const maxAttemptsInput = document.getElementById('max-attempts');
-                if (maxAttemptsInput) {
-                    maxAttemptsInput.disabled = currentConfigData.isUnlimitedAttempts;
-                }
-            }
-        });
-    });
-    
-    // Cooldown time input listeners
-    ['cooldown-hours', 'cooldown-minutes', 'cooldown-seconds'].forEach(id => {
-        document.getElementById(id)?.addEventListener('input', (e) => {
-            const type = id.split('-')[1];
-            currentConfigData[`cooldown${type.charAt(0).toUpperCase() + type.slice(1)}`] = parseInt(e.target.value) || 0;
-            updateCooldownPreview();
-        });
-    });
-    
-    // Score recording radio listeners
-    document.querySelectorAll('input[name="score-recording"]').forEach(radio => {
-        radio.addEventListener('change', (e) => {
-            if (e.target.checked) {
-                currentConfigData.scoreRecording = e.target.value;
-            }
-        });
-    });
-    
-    // Advanced options listeners
-    document.getElementById('show-previous-attempts')?.addEventListener('change', (e) => {
-        currentConfigData.showPreviousAttempts = e.target.checked;
-    });
-    
-    document.getElementById('allow-review-before-retry')?.addEventListener('change', (e) => {
-        currentConfigData.allowReviewBeforeRetry = e.target.checked;
-    });
-    
-    document.getElementById('reset-timer-each-attempt')?.addEventListener('change', (e) => {
-        currentConfigData.resetTimerEachAttempt = e.target.checked;
     });
     
     document.getElementById('lesson-image')?.addEventListener('change', handleLessonImageUpload);
@@ -569,24 +458,31 @@ function transformQuestionsForAPI(questions) {
             questionType = 'abcd';
         }
 
-        // Transform correct answer format - use 'correct' property (not 'correctAnswer')
+        // Transform correct answer format - handle both 'correct' and 'correctAnswer' properties
         let correctAnswer;
+        const sourceCorrect = q.correct || q.correctAnswer || q.answer || '';
+        
         if (q.type === 'abcd') {
             // For ABCD questions, correct is a letter (A, B, C, D)
-            correctAnswer = q.correct || '';
+            correctAnswer = sourceCorrect;
         } else if (q.type === 'truefalse') {
             // For true/false questions, keep the array format as the system expects it
-            if (Array.isArray(q.correct)) {
-                correctAnswer = q.correct;
+            if (Array.isArray(sourceCorrect)) {
+                correctAnswer = sourceCorrect;
             } else {
                 // Fallback: if not an array, convert to string
-                correctAnswer = String(q.correct || '');
+                correctAnswer = String(sourceCorrect);
             }
         } else if (q.type === 'number') {
             // For number questions, correct is the answer string
-            correctAnswer = String(q.correct || '');
+            correctAnswer = String(sourceCorrect);
         } else {
-            correctAnswer = q.correct || '';
+            correctAnswer = sourceCorrect;
+        }
+        
+        // Log if no correct answer found
+        if (!correctAnswer) {
+            console.warn(`Question ${index + 1}: No correct answer found. Properties checked: correct=${q.correct}, correctAnswer=${q.correctAnswer}, answer=${q.answer}`);
         }
 
         // Transform options format - keep as objects with text property for compatibility
@@ -686,18 +582,6 @@ async function saveLessonConfiguration() {
             questionPoolSize: currentConfigData.questionPoolSize || 5,
             difficultyRatios: currentConfigData.difficultyRatios || { easy: 30, medium: 50, hard: 20 },
             randomizationSeed: currentConfigData.randomizationSeed || '',
-            
-            // Multiple attempts configuration
-            enableMultipleAttempts: currentConfigData.enableMultipleAttempts || false,
-            maxAttempts: currentConfigData.isUnlimitedAttempts ? 0 : (currentConfigData.maxAttempts || 3),
-            isUnlimitedAttempts: currentConfigData.isUnlimitedAttempts || false,
-            cooldownHours: currentConfigData.cooldownHours || 0,
-            cooldownMinutes: currentConfigData.cooldownMinutes || 30,
-            cooldownSeconds: currentConfigData.cooldownSeconds || 0,
-            scoreRecording: currentConfigData.scoreRecording || 'highest',
-            showPreviousAttempts: currentConfigData.showPreviousAttempts !== false,
-            allowReviewBeforeRetry: currentConfigData.allowReviewBeforeRetry || false,
-            resetTimerEachAttempt: currentConfigData.resetTimerEachAttempt !== false,
 
             // Questions from Stage 1 (transformed to API format)
             questions: transformedQuestions,
@@ -717,6 +601,16 @@ async function saveLessonConfiguration() {
 
         const saveButton = document.querySelector('.save-btn');
         if (saveButton) saveButton.disabled = true;
+
+        // Get CSRF token before making the request
+        const csrfResponse = await fetch('/api/csrf-token');
+        if (!csrfResponse.ok) {
+            throw new Error('Failed to get CSRF token');
+        }
+        const csrfData = await csrfResponse.json();
+
+        // Add CSRF token to the payload
+        lessonPayload.csrfToken = csrfData.csrfToken;
 
         const response = await fetch(url, {
             method,
@@ -807,37 +701,6 @@ function updateDifficultyTotal() {
     }
 }
 
-// Function to update cooldown preview
-function updateCooldownPreview() {
-    const hours = currentConfigData.cooldownHours || 0;
-    const minutes = currentConfigData.cooldownMinutes || 0;
-    const seconds = currentConfigData.cooldownSeconds || 0;
-    
-    const previewElement = document.getElementById('cooldown-preview');
-    if (previewElement) {
-        let timeText = '';
-        const parts = [];
-        
-        if (hours > 0) {
-            parts.push(`${hours} giờ`);
-        }
-        if (minutes > 0) {
-            parts.push(`${minutes} phút`);
-        }
-        if (seconds > 0) {
-            parts.push(`${seconds} giây`);
-        }
-        
-        if (parts.length === 0) {
-            timeText = 'Không có thời gian chờ';
-        } else {
-            timeText = parts.join(' ');
-        }
-        
-        previewElement.textContent = timeText;
-    }
-}
-
 // AI Generation Functions
 async function generateAIDescription() {
     const generateBtn = document.getElementById('generate-description-btn');
@@ -859,7 +722,17 @@ async function generateAIDescription() {
             subject: currentConfigData.subject || document.getElementById('lesson-subject').value || 'Vật lý',
             tags: Array.from(currentTags)
         };
-        
+
+        // Get CSRF token before making the request
+        const csrfResponse = await fetch('/api/csrf-token');
+        if (!csrfResponse.ok) {
+            throw new Error('Failed to get CSRF token');
+        }
+        const csrfData = await csrfResponse.json();
+
+        // Add CSRF token to the payload
+        lessonData.csrfToken = csrfData.csrfToken;
+
         // Call API to generate AI summary
         const response = await fetch('/api/lessons/generate-summary', {
             method: 'POST',
@@ -924,12 +797,24 @@ async function generateAIImage() {
             subject: currentConfigData.subject || document.getElementById('lesson-subject').value || 'Vật lý',
             tags: Array.from(currentTags)
         };
-        
+
+        // Get CSRF token before making the request
+        const csrfResponse = await fetch('/api/csrf-token');
+        if (!csrfResponse.ok) {
+            throw new Error('Failed to get CSRF token');
+        }
+        const csrfData = await csrfResponse.json();
+
+        const payload = {
+            lessonData,
+            csrfToken: csrfData.csrfToken
+        };
+
         // Call API to generate AI image
         const response = await fetch('/api/lessons/generate-image', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ lessonData })
+            body: JSON.stringify(payload)
         });
         
         if (!response.ok) {

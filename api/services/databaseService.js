@@ -289,7 +289,7 @@ class DatabaseService {
 
   async getStudents(options = {}) {
     const { limit = 100, approved = null } = options;
-    
+
     let query = supabase
       .from('students')
       .select('*')

@@ -48,13 +48,16 @@ const validateCSRFToken = (req, res, next) => {
   if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
     return next();
   }
-  
+
   // Skip CSRF for certain public endpoints
   const skipPaths = [
-    '/api/auth/student/login',
-    '/api/auth/admin/login'
+    '/auth/student/login',
+    '/auth/admin/login',
+    '/webhooks/', // Supabase webhooks
+    '/supabase/', // Supabase callbacks
+    '/database/webhooks' // Database webhooks
   ];
-  
+
   if (skipPaths.some(path => req.path.startsWith(path))) {
     return next();
   }

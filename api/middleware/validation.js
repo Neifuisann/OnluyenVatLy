@@ -138,6 +138,20 @@ const validateAdminLogin = (req, res, next) => {
 
 // Validation middleware for lesson creation/update
 const validateLesson = (req, res, next) => {
+  console.log('validateLesson - Request body keys:', Object.keys(req.body));
+  console.log('validateLesson - Questions structure:');
+  if (req.body.questions && Array.isArray(req.body.questions)) {
+    req.body.questions.forEach((q, idx) => {
+      console.log(`  Question ${idx + 1}:`, {
+        type: q.type,
+        hasCorrect: 'correct' in q,
+        hasCorrectAnswer: 'correctAnswer' in q,
+        correctValue: q.correct,
+        correctAnswerValue: q.correctAnswer,
+        options: Array.isArray(q.options) ? q.options.length : 'not array'
+      });
+    });
+  }
   const { title, content, questions, subject, grade, color, description, tags } = req.body;
   const errors = [];
   
@@ -162,13 +176,18 @@ const validateLesson = (req, res, next) => {
         if (!q.question || typeof q.question !== 'string') {
           errors.push(`Câu hỏi ${index + 1}: Nội dung câu hỏi không hợp lệ`);
         }
-        if (!q.type || !['multiple_choice', 'true_false', 'fill_blank'].includes(q.type)) {
+        // Accept both old and new question type formats
+        const validTypes = ['multiple_choice', 'true_false', 'fill_blank', 'abcd', 'truefalse', 'number'];
+        if (!q.type || !validTypes.includes(q.type)) {
           errors.push(`Câu hỏi ${index + 1}: Loại câu hỏi không hợp lệ`);
         }
-        if (q.type === 'multiple_choice' && (!q.options || !Array.isArray(q.options) || q.options.length < 2)) {
+        // For multiple choice questions (both formats)
+        if ((q.type === 'multiple_choice' || q.type === 'abcd') &&
+            (!q.options || !Array.isArray(q.options) || q.options.length < 2)) {
           errors.push(`Câu hỏi ${index + 1}: Câu hỏi trắc nghiệm phải có ít nhất 2 lựa chọn`);
         }
-        if (!q.correctAnswer) {
+        // Accept both 'correctAnswer' and 'correct' properties
+        if (!q.correctAnswer && !q.correct) {
           errors.push(`Câu hỏi ${index + 1}: Thiếu đáp án đúng`);
         }
       });

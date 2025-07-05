@@ -486,12 +486,21 @@ class LessonController {
   // Generate AI image for lesson
   generateLessonImage = asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const { regenerate = false } = req.body;
+    const { regenerate = false, lessonData } = req.body;
     
-    // Get lesson data
-    const lesson = await databaseService.getLessonById(id);
-    if (!lesson) {
-      throw new NotFoundError('Lesson not found');
+    let lesson;
+    
+    // If ID is provided, get lesson from database
+    if (id) {
+      lesson = await databaseService.getLessonById(id);
+      if (!lesson) {
+        throw new NotFoundError('Lesson not found');
+      }
+    } else if (lessonData) {
+      // If lessonData is provided (for new lessons), use it directly
+      lesson = lessonData;
+    } else {
+      throw new ValidationError('Either lesson ID or lesson data must be provided');
     }
     
     // Check if we should generate a new image

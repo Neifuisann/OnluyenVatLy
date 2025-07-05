@@ -377,41 +377,56 @@ async function initializeLesson() {
         if (lesson.lessonImage) {
             const imageContainer = document.getElementById('lesson-image-container');
             const imageElement = document.getElementById('lesson-image');
-            
-            // Set up responsive image with srcset if it's a modern image URL
-            const isModernImageURL = lesson.lessonImage.includes('.webp') || 
-                                    lesson.lessonImage.includes('supabase.co') || 
-                                    lesson.lessonImage.includes('_storage/');
-                                    
-            if (isModernImageURL) {
-                // Extract the base URL without extension if possible
-                let baseUrl = lesson.lessonImage;
-                let extension = '.jpg';
-                
-                if (baseUrl.includes('.webp')) {
-                    baseUrl = baseUrl.replace('.webp', '');
-                    extension = '.webp';
-                } else if (baseUrl.match(/\.(jpe?g|png|gif)$/i)) {
-                    const match = baseUrl.match(/\.(jpe?g|png|gif)$/i);
-                    if (match) {
-                        extension = match[0];
-                        baseUrl = baseUrl.replace(extension, '');
+
+            console.log('Lesson image data:', {
+                imageType: typeof lesson.lessonImage,
+                isDataURL: lesson.lessonImage.startsWith('data:'),
+                imagePreview: lesson.lessonImage.substring(0, 50) + '...'
+            });
+
+            // Check if this is a base64 data URL
+            if (lesson.lessonImage.startsWith('data:')) {
+                // Handle base64 data URLs - use them directly
+                imageElement.src = lesson.lessonImage;
+                imageElement.removeAttribute('srcset'); // Remove any existing srcset
+                console.log('Using base64 data URL directly for lesson image');
+            } else {
+                // Handle regular file paths with responsive images
+                const isModernImageURL = lesson.lessonImage.includes('.webp') ||
+                                        lesson.lessonImage.includes('supabase.co') ||
+                                        lesson.lessonImage.includes('_storage/');
+
+                if (isModernImageURL) {
+                    // Extract the base URL without extension if possible
+                    let baseUrl = lesson.lessonImage;
+                    let extension = '.jpg';
+
+                    if (baseUrl.includes('.webp')) {
+                        baseUrl = baseUrl.replace('.webp', '');
+                        extension = '.webp';
+                    } else if (baseUrl.match(/\.(jpe?g|png|gif)$/i)) {
+                        const match = baseUrl.match(/\.(jpe?g|png|gif)$/i);
+                        if (match) {
+                            extension = match[0];
+                            baseUrl = baseUrl.replace(extension, '');
+                        }
                     }
+
+                    // Preload the image in the background
+                    const preloadLink = document.createElement('link');
+                    preloadLink.rel = 'preload';
+                    preloadLink.as = 'image';
+                    preloadLink.href = lesson.lessonImage;
+                    document.head.appendChild(preloadLink);
+
+                    // Set the srcset attribute for responsive loading
+                    imageElement.srcset = `${lesson.lessonImage} 1x`;
                 }
-                
-                // Preload the image in the background
-                const preloadLink = document.createElement('link');
-                preloadLink.rel = 'preload';
-                preloadLink.as = 'image';
-                preloadLink.href = lesson.lessonImage;
-                document.head.appendChild(preloadLink);
-                
-                // Set the srcset attribute for responsive loading
-                imageElement.srcset = `${lesson.lessonImage} 1x`;
+
+                // Always set the src as fallback
+                imageElement.src = lesson.lessonImage;
             }
-            
-            // Always set the src as fallback
-            imageElement.src = lesson.lessonImage;
+
             imageContainer.style.display = 'block';
         }
         
@@ -741,6 +756,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     };
 
                     console.log('Debug - resultPayload:', resultPayload);
+
+                    // Get CSRF token before making the request
+                    const csrfResponse = await fetch('/api/csrf-token');
+                    if (!csrfResponse.ok) {
+                        throw new Error('Failed to get CSRF token');
+                    }
+                    const csrfData = await csrfResponse.json();
+
+                    // Add CSRF token to the payload
+                    resultPayload.csrfToken = csrfData.csrfToken;
 
                     const saveResponse = await fetch('/api/results', {
                         method: 'POST',

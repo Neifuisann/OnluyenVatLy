@@ -94,10 +94,10 @@ class UploadController {
         throw new Error('Failed to upload image to storage');
       }
 
-      // Get public URL
+      // Get public URL using the uploaded file path
       const { data: urlData } = supabaseAdmin.storage
         .from(UPLOAD_CONFIG.IMAGE_BUCKET)
-        .getPublicUrl(filename);
+        .getPublicUrl(data.path);
 
       res.json({
         success: true,

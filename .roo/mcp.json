@@ -40,7 +40,9 @@
       ],
       "alwaysAllow": [
         "browser_navigate",
-        "browser_screen_capture"
+        "browser_screen_capture",
+        "browser_screen_type",
+        "browser_close"
       ]
     }
   }

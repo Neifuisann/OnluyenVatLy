@@ -451,6 +451,16 @@ function endQuiz() {
 
             localStorage.setItem('quizResults', JSON.stringify(quizResults));
 
+            // Get CSRF token before making the request
+            const csrfResponse = await fetch('/api/csrf-token');
+            if (!csrfResponse.ok) {
+                throw new Error('Failed to get CSRF token');
+            }
+            const csrfData = await csrfResponse.json();
+
+            // Add CSRF token to the payload
+            quizResults.csrfToken = csrfData.csrfToken;
+
             return fetch('/api/results', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

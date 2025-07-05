@@ -1207,19 +1207,43 @@
         }
 
         function toggleFlag(questionIndex) {
+            console.log('toggleFlag called with questionIndex:', questionIndex);
+
             if (flaggedQuestions.has(questionIndex)) {
                 flaggedQuestions.delete(questionIndex);
             } else {
                 flaggedQuestions.add(questionIndex);
             }
-            
-            // Update UI
-            const flagButton = document.querySelector(`[data-question-index="${questionIndex}"] .btn-flag`);
+
+            // Update UI - Find the current question card
+            const currentQuestionCard = document.querySelector('.question-card[style*="block"]');
+            console.log('Current question card found:', currentQuestionCard ? 'yes' : 'no');
+
+            if (currentQuestionCard) {
+                const flagButton = currentQuestionCard.querySelector('.btn-flag');
+                console.log('Flag button found:', flagButton ? 'yes' : 'no');
+
+                if (flagButton) {
+                    flagButton.classList.toggle('flagged');
+                    console.log('Flag button updated successfully');
+                } else {
+                    console.error('Flag button not found in current question card');
+                }
+            } else {
+                console.error('Current question card not found');
+            }
+
+            // Update navigation item
             const navItem = document.querySelectorAll('.question-nav-item')[questionIndex];
-            
-            flagButton.classList.toggle('flagged');
-            navItem.classList.toggle('flagged');
-            
+            console.log('Nav item found:', navItem ? 'yes' : 'no');
+
+            if (navItem) {
+                navItem.classList.toggle('flagged');
+                console.log('Nav item updated successfully');
+            } else {
+                console.error('Nav item not found for index:', questionIndex);
+            }
+
             updateStats();
         }
 
@@ -1661,6 +1685,16 @@
                     timeTaken: Number(quizResults.timeTaken) || 0,
                     studentInfo: studentInfo
                 };
+
+                // Get CSRF token before making the request
+                const csrfResponse = await fetch('/api/csrf-token');
+                if (!csrfResponse.ok) {
+                    throw new Error('Failed to get CSRF token');
+                }
+                const csrfData = await csrfResponse.json();
+
+                // Add CSRF token to the payload
+                resultPayload.csrfToken = csrfData.csrfToken;
 
                 const saveResponse = await fetch('/api/results', {
                     method: 'POST',

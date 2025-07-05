@@ -296,12 +296,22 @@ async function processDocument() {
     try {
         // Step 1: Upload file
         updateProcessingStep('upload', 'active');
-        
+
+        // Get CSRF token before making the request
+        const csrfResponse = await fetch('/api/csrf-token');
+        if (!csrfResponse.ok) {
+            throw new Error('Failed to get CSRF token');
+        }
+        const csrfData = await csrfResponse.json();
+
         const formData = new FormData();
         formData.append('document', selectedFile);
-        
+
         const response = await fetch('/api/admin/upload-document', {
             method: 'POST',
+            headers: {
+                'x-csrf-token': csrfData.csrfToken
+            },
             body: formData
         });
         

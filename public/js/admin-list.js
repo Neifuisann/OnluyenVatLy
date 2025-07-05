@@ -791,9 +791,19 @@ function confirmDeleteLesson(id, title) {
 
 async function deleteLesson(id) {
     try {
-        const response = await fetch(`/api/lessons/${id}`, { 
+        // Get CSRF token before making the request
+        const csrfResponse = await fetch('/api/csrf-token');
+        if (!csrfResponse.ok) {
+            throw new Error('Failed to get CSRF token');
+        }
+        const csrfData = await csrfResponse.json();
+
+        const response = await fetch(`/api/lessons/${id}`, {
             method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' }
+            headers: {
+                'Content-Type': 'application/json',
+                'x-csrf-token': csrfData.csrfToken
+            }
         });
 
         if (!response.ok) {
@@ -813,11 +823,23 @@ async function deleteLesson(id) {
 
 async function updateLessonColor(id, color) {
     try {
+        // Get CSRF token before making the request
+        const csrfResponse = await fetch('/api/csrf-token');
+        if (!csrfResponse.ok) {
+            throw new Error('Failed to get CSRF token');
+        }
+        const csrfData = await csrfResponse.json();
+
+        const payload = {
+            color: color,
+            csrfToken: csrfData.csrfToken
+        };
+
         const response = await fetch(`/api/lessons/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'same-origin',
-            body: JSON.stringify({ color: color })
+            body: JSON.stringify(payload)
         });
 
         if (!response.ok) {
@@ -1149,10 +1171,23 @@ async function handleReviewLessonSubmit(e) {
     }
     
     try {
+        // Get CSRF token before making the request
+        const csrfResponse = await fetch('/api/csrf-token');
+        if (!csrfResponse.ok) {
+            throw new Error('Failed to get CSRF token');
+        }
+        const csrfData = await csrfResponse.json();
+
+        const payload = {
+            name,
+            lessons,
+            csrfToken: csrfData.csrfToken
+        };
+
         const response = await fetch('/api/review-lessons', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, lessons })
+            body: JSON.stringify(payload)
         });
         
         if (!response.ok) throw new Error('Failed to create review lesson');

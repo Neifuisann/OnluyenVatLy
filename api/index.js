@@ -36,6 +36,8 @@ const achievementRoutes = require('./routes/achievements');
 const questRoutes = require('./routes/quests');
 const activityRoutes = require('./routes/activity');
 const leagueRoutes = require('./routes/leagues');
+const webhookRoutes = require('./routes/webhooks');
+const debugRoutes = require('./routes/debug');
 
 // Import utilities
 const logger = require('./utils/logger');
@@ -217,6 +219,8 @@ app.use('/api/achievements', achievementRoutes);
 app.use('/api/quests', questRoutes);
 app.use('/api/activity', activityRoutes);
 app.use('/api/leagues', leagueRoutes);
+app.use('/api/webhooks', webhookRoutes);
+app.use('/api/debug', debugRoutes);
 
 // Setup view routes (HTML pages) - Register early to avoid conflicts
 app.use('/', viewRoutes);

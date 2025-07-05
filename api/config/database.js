@@ -19,8 +19,11 @@ if (!connectionString) {
 }
 
 // Create Supabase clients
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// For server-side operations, use service key by default to bypass RLS
+const supabase = createClient(supabaseUrl, supabaseServiceKey || supabaseAnonKey);
 const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey || supabaseAnonKey);
+// Client for frontend operations (when needed)
+const supabaseAnon = createClient(supabaseUrl, supabaseAnonKey);
 
 // Optimized PostgreSQL connection pool configuration
 const pgPool = new Pool({
@@ -47,6 +50,7 @@ pgPool.on('error', (err, client) => {
 module.exports = {
   supabase,
   supabaseAdmin,
+  supabaseAnon,
   pgPool,
   supabaseUrl,
   supabaseAnonKey,

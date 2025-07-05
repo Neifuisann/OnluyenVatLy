@@ -517,10 +517,6 @@
         display: none;
     }
     
-    .mobile-tab-switcher {
-        display: flex !important;
-    }
-    
     .avatar-section {
         flex-direction: column;
         text-align: center;
@@ -671,7 +667,6 @@
 /* Print styles */
 @media print {
     .settings-sidebar,
-    .mobile-tab-switcher,
     .btn,
     .toggle-switch {
         display: none !important;

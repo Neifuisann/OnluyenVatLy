@@ -516,6 +516,29 @@ async function loadLessons(page = 1, search = '', sort = 'order', tags = []) {
 
         const data = await response.json();
         console.log('Lessons data:', data);
+        console.log('Data success:', data.success);
+        console.log('Data lessons array:', data.lessons);
+        console.log('Number of lessons:', data.lessons ? data.lessons.length : 'no lessons array');
+
+        // Debug lesson images
+        if (data.success && data.lessons && Array.isArray(data.lessons)) {
+            console.log('Debugging lesson images:');
+            data.lessons.forEach((lesson, index) => {
+                if (lesson.lessonImage) {
+                    console.log(`Lesson ${index + 1} (${lesson.title}):`, {
+                        id: lesson.id,
+                        lessonImage: lesson.lessonImage.substring(0, 100) + '...',
+                        lessonImageType: typeof lesson.lessonImage,
+                        lessonImageLength: lesson.lessonImage.length,
+                        startsWithData: lesson.lessonImage.startsWith('data:')
+                    });
+                } else {
+                    console.log(`Lesson ${index + 1} (${lesson.title}): NO IMAGE`);
+                }
+            });
+        } else {
+            console.log('No lessons data to debug');
+        }
 
         if (data.success && data.lessons) {
             renderLessons(data.lessons);
@@ -591,39 +614,83 @@ function createLessonCard(lesson) {
     imageDiv.className = 'lesson-card-image';
     
     if (lesson.lessonImage) {
-        // Create responsive image with WebP support and fallbacks
-        const picture = document.createElement('picture');
-        
-        // WebP source with responsive sizes
-        const webpSource = document.createElement('source');
-        const imageBase = lesson.lessonImage.replace('.jpg', '').replace('.jpeg', '').replace('.png', '');
-        webpSource.type = 'image/webp';
-        webpSource.srcset = `
-            ${imageBase}-sm.webp 400w,
-            ${imageBase}-md.webp 800w,
-            ${imageBase}-lg.webp 1200w
-        `;
-        webpSource.sizes = '(max-width: 768px) 400px, (max-width: 1024px) 800px, 1200px';
-        
-        // Fallback JPEG image
-        const img = document.createElement('img');
-        img.src = lesson.lessonImage;
-        img.alt = lesson.title || 'Lesson image';
-        img.loading = 'lazy';
-        img.decoding = 'async';
-        img.style.width = '100%';
-        img.style.height = 'auto';
-        
-        // Add error handling for missing optimized images
-        img.onerror = function() {
-            // Fallback to original image if optimized versions fail
-            this.src = lesson.lessonImage;
-            this.onerror = null; // Prevent infinite loop
-        };
-        
-        picture.appendChild(webpSource);
-        picture.appendChild(img);
-        imageDiv.appendChild(picture);
+        console.log(`Creating image for lesson ${lesson.title}:`, {
+            originalImage: lesson.lessonImage.substring(0, 50) + '...',
+            imageType: typeof lesson.lessonImage,
+            imageLength: lesson.lessonImage.length,
+            isDataURL: lesson.lessonImage.startsWith('data:'),
+            firstChars: lesson.lessonImage.substring(0, 10)
+        });
+
+        // Check if this is a base64 data URL or a regular file path
+        const isDataURL = lesson.lessonImage.startsWith('data:');
+        console.log(`Is data URL check for ${lesson.title}: ${isDataURL}`);
+
+        if (isDataURL) {
+            // Handle base64 data URLs - use them directly without trying to create responsive versions
+            const img = document.createElement('img');
+            img.src = lesson.lessonImage;
+            img.alt = lesson.title || 'Lesson image';
+            img.loading = 'lazy';
+            img.decoding = 'async';
+            img.style.width = '100%';
+            img.style.height = 'auto';
+
+            console.log('Using base64 data URL directly');
+
+            img.onerror = function() {
+                console.log('Base64 image failed to load');
+                // Show placeholder if base64 fails
+                this.style.display = 'none';
+                const placeholder = document.createElement('div');
+                placeholder.className = 'lesson-image-placeholder';
+                const placeholderIcon = document.createElement('i');
+                placeholderIcon.className = 'fas fa-book';
+                placeholder.appendChild(placeholderIcon);
+                this.parentNode.appendChild(placeholder);
+            };
+
+            imageDiv.appendChild(img);
+        } else {
+            // Handle regular file paths with responsive images
+            const picture = document.createElement('picture');
+
+            // WebP source with responsive sizes
+            const webpSource = document.createElement('source');
+            const imageBase = lesson.lessonImage.replace('.jpg', '').replace('.jpeg', '').replace('.png', '');
+            webpSource.type = 'image/webp';
+            webpSource.srcset = `
+                ${imageBase}-sm.webp 400w,
+                ${imageBase}-md.webp 800w,
+                ${imageBase}-lg.webp 1200w
+            `;
+            webpSource.sizes = '(max-width: 768px) 400px, (max-width: 1024px) 800px, 1200px';
+
+            console.log('WebP srcset:', webpSource.srcset);
+
+            // Fallback JPEG image
+            const img = document.createElement('img');
+            img.src = lesson.lessonImage;
+            img.alt = lesson.title || 'Lesson image';
+            img.loading = 'lazy';
+            img.decoding = 'async';
+            img.style.width = '100%';
+            img.style.height = 'auto';
+
+            console.log('Fallback image src:', img.src);
+
+            // Add error handling for missing optimized images
+            img.onerror = function() {
+                console.log('Image failed to load:', this.src);
+                // Fallback to original image if optimized versions fail
+                this.src = lesson.lessonImage;
+                this.onerror = null; // Prevent infinite loop
+            };
+
+            picture.appendChild(webpSource);
+            picture.appendChild(img);
+            imageDiv.appendChild(picture);
+        }
     } else {
         const placeholder = document.createElement('div');
         placeholder.className = 'lesson-image-placeholder';

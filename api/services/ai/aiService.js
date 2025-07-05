@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 const { API_ENDPOINTS, APP_CONFIG } = require('../../config/constants');
 const aiCacheService = require('../cache/aiCacheService');
-const { sanitizeInput } = require('../utils/sanitization');
+const { sanitizeInput } = require('../../utils/sanitization');
 
 class AIService {
   constructor() {
