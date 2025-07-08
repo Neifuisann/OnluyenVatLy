@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const path = require('path');
 const fs = require('fs').promises;
-const { supabase } = require('../config/database');
-const sessionService = require('../services/sessionService');
+const { supabase } = require('../api/config/database');
+const sessionService = require('../api/services/sessionService');
 
 // Import middleware
 const {
@@ -11,13 +11,13 @@ const {
   requireStudentAuth,
   optionalAuth,
   addSessionInfo
-} = require('../middleware/auth');
-const { longCacheMiddleware, noCacheMiddleware } = require('../middleware/cache');
+} = require('../api/middleware/auth');
+const { longCacheMiddleware, noCacheMiddleware } = require('../api/middleware/cache');
 
 // Helper function to serve HTML files
 const serveHTML = (filename) => {
   return (req, res) => {
-    res.sendFile(path.join(__dirname, '../../views', filename));
+    res.sendFile(path.join(__dirname, '../views', filename));
   };
 };
 

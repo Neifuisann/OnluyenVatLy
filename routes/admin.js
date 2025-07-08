@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const adminController = require('../controllers/adminController');
-const uploadController = require('../controllers/uploadController');
+const adminController = require('../api/controllers/adminController');
+const uploadController = require('../api/controllers/uploadController');
 const multer = require('multer');
-const { requireAdminAuth } = require('../middleware/auth');
-const { noCacheMiddleware } = require('../middleware/cache');
+const { requireAdminAuth } = require('../api/middleware/auth');
+const { noCacheMiddleware } = require('../api/middleware/cache');
 const {
   validateFileUpload
-} = require('../middleware/validation');
-const { uploadErrorHandler } = require('../middleware/errorHandler');
+} = require('../api/middleware/validation');
+const { uploadErrorHandler } = require('../api/middleware/errorHandler');
 
 // Configure multer for document uploads
 const documentStorage = multer.memoryStorage();

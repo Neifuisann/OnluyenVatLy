@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const activityService = require('../services/activityService');
-const { asyncHandler } = require('../middleware/errorHandler');
-const { requireStudentAuth, requireAdminAuth } = require('../middleware/auth');
+const activityService = require('../api/services/activityService');
+const { asyncHandler } = require('../api/middleware/errorHandler');
+const { requireStudentAuth, requireAdminAuth } = require('../api/middleware/auth');
 
 /**
  * @route GET /api/activity/feed

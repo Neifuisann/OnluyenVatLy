@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const quizController = require('../controllers/quizController');
-const { requireStudentAuth, requireAdminAuth } = require('../middleware/auth');
-const { shortCacheMiddleware, noCacheMiddleware } = require('../middleware/cache');
+const quizController = require('../api/controllers/quizController');
+const { requireStudentAuth, requireAdminAuth } = require('../api/middleware/auth');
+const { shortCacheMiddleware, noCacheMiddleware } = require('../api/middleware/cache');
 
 // Get quiz data (student route)
 router.get('/', 

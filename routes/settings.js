@@ -2,16 +2,16 @@ const express = require('express');
 const router = express.Router();
 
 // Import controllers
-const settingsController = require('../controllers/settingsController');
+const settingsController = require('../api/controllers/settingsController');
 
 // Import middleware
 const { 
   validateIdParam 
-} = require('../middleware/validation');
+} = require('../api/middleware/validation');
 const { 
   requireStudentAuth 
-} = require('../middleware/auth');
-const { shortCacheMiddleware, noCacheMiddleware } = require('../middleware/cache');
+} = require('../api/middleware/auth');
+const { shortCacheMiddleware, noCacheMiddleware } = require('../api/middleware/cache');
 
 // Student settings routes - all require authentication
 

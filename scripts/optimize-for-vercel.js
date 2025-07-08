@@ -26,13 +26,24 @@ function log(message, color = 'white') {
 }
 
 function countRouteFiles() {
-  const routesDir = path.join(process.cwd(), 'api', 'routes');
+  // Count files in api/ directory (these become Vercel functions)
+  const apiDir = path.join(process.cwd(), 'api');
   try {
-    const files = fs.readdirSync(routesDir).filter(file => file.endsWith('.js'));
-    return files;
+    const apiFiles = fs.readdirSync(apiDir).filter(file => file.endsWith('.js'));
+
+    // Count route files in root routes/ directory (these don't become functions)
+    const routesDir = path.join(process.cwd(), 'routes');
+    let routeFiles = [];
+    try {
+      routeFiles = fs.readdirSync(routesDir).filter(file => file.endsWith('.js'));
+    } catch (error) {
+      // routes directory might not exist
+    }
+
+    return { apiFiles, routeFiles };
   } catch (error) {
-    log('❌ Error reading routes directory', 'red');
-    return [];
+    log('❌ Error reading directories', 'red');
+    return { apiFiles: [], routeFiles: [] };
   }
 }
 
@@ -50,15 +61,16 @@ function checkVercelConfig() {
 function main() {
   log('🚀 Vercel Function Optimization Report', 'cyan');
   log('=' * 50, 'cyan');
-  
-  // Count current route files
-  const routeFiles = countRouteFiles();
-  log(`\n📊 Current Route Files: ${routeFiles.length}`, 'blue');
-  
-  if (routeFiles.length > 12) {
-    log(`⚠️  WARNING: You have ${routeFiles.length} route files, but Vercel Hobby plan only allows 12 functions!`, 'yellow');
+
+  // Count current files
+  const { apiFiles, routeFiles } = countRouteFiles();
+  log(`\n📊 Vercel Functions (api/*.js): ${apiFiles.length}`, 'blue');
+  log(`📊 Route Files (routes/*.js): ${routeFiles.length}`, 'blue');
+
+  if (apiFiles.length > 12) {
+    log(`⚠️  WARNING: You have ${apiFiles.length} files in api/, but Vercel Hobby plan only allows 12 functions!`, 'yellow');
   } else {
-    log(`✅ Good: You have ${routeFiles.length} route files (within Vercel's 12 function limit)`, 'green');
+    log(`✅ Excellent: You have ${apiFiles.length} Vercel functions (well within 12 function limit)`, 'green');
   }
   
   // Check Vercel configuration
@@ -72,36 +84,19 @@ function main() {
     }
   }
   
-  // Provide optimization recommendations
+  // Provide optimization status
   log('\n💡 Optimization Status:', 'blue');
-  
-  const consolidatedFiles = [
-    'api/routes/gamification.js',
-    'api/routes/content.js', 
-    'api/routes/learning.js',
-    'api/routes/system.js'
-  ];
-  
-  let consolidatedCount = 0;
-  consolidatedFiles.forEach(file => {
-    if (fs.existsSync(file)) {
-      consolidatedCount++;
-      log(`✅ ${path.basename(file)} - Consolidated route exists`, 'green');
-    } else {
-      log(`❌ ${path.basename(file)} - Missing consolidated route`, 'red');
-    }
-  });
-  
-  if (consolidatedCount === 4) {
-    log('\n🎉 All consolidated routes are in place!', 'green');
-    log('📝 Remaining individual routes:', 'blue');
-    log('   - auth.js (authentication)', 'white');
-    log('   - students.js (student management)', 'white');
-    log('   - views.js (HTML page serving)', 'white');
-    log('   - Plus 4 consolidated route files', 'white');
-    log(`\n📊 Total effective functions: ~7 (well within 12 limit)`, 'green');
+
+  if (apiFiles.length === 1 && apiFiles[0] === 'index.js') {
+    log('🎉 Perfect! Only api/index.js exists as a Vercel function!', 'green');
+    log(`📁 All ${routeFiles.length} route files are in routes/ directory (not counted as functions)`, 'green');
+    log('\n📊 Total Vercel Functions: 1 (well within 12 limit)', 'green');
   } else {
-    log('\n⚠️  Consolidation incomplete. Run the optimization again.', 'yellow');
+    log(`⚠️  Found ${apiFiles.length} files in api/ directory:`, 'yellow');
+    apiFiles.forEach(file => {
+      log(`   - ${file}`, 'white');
+    });
+    log('💡 Consider moving route files to routes/ directory to reduce function count', 'yellow');
   }
   
   log('\n🚀 Next Steps:', 'cyan');
@@ -109,11 +104,10 @@ function main() {
   log('2. Deploy to Vercel: vercel --prod', 'white');
   log('3. Monitor function usage in Vercel dashboard', 'white');
   
-  log('\n📚 Function Grouping Strategy:', 'blue');
-  log('• gamification.js: achievements, activity, leagues, quests, streaks, xp', 'white');
-  log('• content.js: lessons, gallery, tags, uploads, ratings', 'white');
-  log('• learning.js: quiz, results, progress, explain, ai', 'white');
-  log('• system.js: admin, history, settings, webhooks, debug', 'white');
+  log('\n📚 Current Architecture:', 'blue');
+  log('• api/index.js: Single Express.js application (1 Vercel function)', 'white');
+  log('• routes/*.js: Route modules imported by api/index.js (not functions)', 'white');
+  log('• This approach uses only 1 of 12 allowed Vercel functions!', 'green');
 }
 
 if (require.main === module) {

@@ -3,22 +3,22 @@ const router = express.Router();
 const multer = require('multer');
 
 // Import controllers
-const uploadController = require('../controllers/uploadController');
+const uploadController = require('../api/controllers/uploadController');
 
 // Import middleware
 const { 
   validateFileUpload,
   validateIdParam 
-} = require('../middleware/validation');
+} = require('../api/middleware/validation');
 const { 
   requireAdminAuth 
-} = require('../middleware/auth');
+} = require('../api/middleware/auth');
 const { 
   noCacheMiddleware,
   shortCacheMiddleware 
-} = require('../middleware/cache');
-const { uploadErrorHandler } = require('../middleware/errorHandler');
-const { uploadRateLimit } = require('../middleware/rateLimiting');
+} = require('../api/middleware/cache');
+const { uploadErrorHandler } = require('../api/middleware/errorHandler');
+const { uploadRateLimit } = require('../api/middleware/rateLimiting');
 
 // Configure multer for file uploads
 const storage = multer.memoryStorage();

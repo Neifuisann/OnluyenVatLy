@@ -2,16 +2,16 @@ const express = require('express');
 const router = express.Router();
 
 // Import controllers
-const progressController = require('../controllers/progressController');
+const progressController = require('../api/controllers/progressController');
 
 // Import middleware
 const { 
   requireStudentAuth 
-} = require('../middleware/auth');
+} = require('../api/middleware/auth');
 const { 
   shortCacheMiddleware, 
   noCacheMiddleware 
-} = require('../middleware/cache');
+} = require('../api/middleware/cache');
 
 // All progress routes require student authentication
 router.use(requireStudentAuth);

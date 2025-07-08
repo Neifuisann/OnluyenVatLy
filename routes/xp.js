@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const xpService = require('../services/xpService');
-const { requireStudentAuth, requireAdminAuth } = require('../middleware/auth');
+const xpService = require('../api/services/xpService');
+const { requireStudentAuth, requireAdminAuth } = require('../api/middleware/auth');
 
 /**
  * @route GET /api/xp/stats

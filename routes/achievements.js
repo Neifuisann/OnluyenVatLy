@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const achievementService = require('../services/achievementService');
-const { requireStudentAuth, requireAdminAuth } = require('../middleware/auth');
+const achievementService = require('../api/services/achievementService');
+const { requireStudentAuth, requireAdminAuth } = require('../api/middleware/auth');
 
 /**
  * @route GET /api/achievements
@@ -222,7 +222,7 @@ router.get('/leaderboard', async (req, res) => {
     const limitNum = Math.min(parseInt(limit) || 50, 100);
     
     // Get students with most achievements
-    const { data: leaderboard, error } = await require('../config/database').supabase
+    const { data: leaderboard, error } = await require('../api/config/database').supabase
       .from('student_achievements')
       .select(`
         student_id,

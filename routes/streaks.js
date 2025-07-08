@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const streakService = require('../services/streakService');
-const { requireStudentAuth } = require('../middleware/auth');
+const streakService = require('../api/services/streakService');
+const { requireStudentAuth } = require('../api/middleware/auth');
 
 /**
  * @route GET /api/streaks/stats

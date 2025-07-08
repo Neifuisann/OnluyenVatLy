@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const tagsController = require('../controllers/tagsController');
-const { optionalAuth } = require('../middleware/auth');
-const { longCacheMiddleware, shortCacheMiddleware } = require('../middleware/cache');
+const tagsController = require('../api/controllers/tagsController');
+const { optionalAuth } = require('../api/middleware/auth');
+const { longCacheMiddleware, shortCacheMiddleware } = require('../api/middleware/cache');
 
 router.get('/',
     optionalAuth,

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 // Import controllers
-const lessonController = require('../controllers/lessonController');
+const lessonController = require('../api/controllers/lessonController');
 
 // Import middleware
 const { 
@@ -10,18 +10,18 @@ const {
   validatePagination,
   validateSearch,
   validateLesson 
-} = require('../middleware/validation');
+} = require('../api/middleware/validation');
 const { 
   requireAdminAuth,
   requireStudentAuth,
   optionalAuth 
-} = require('../middleware/auth');
+} = require('../api/middleware/auth');
 const {
   lessonCacheMiddleware,
   statisticsCacheMiddleware,
   noCacheMiddleware,
   shortCacheMiddleware
-} = require('../middleware/cache');
+} = require('../api/middleware/cache');
 
 // Public lesson routes (with optional authentication)
 router.get('/',

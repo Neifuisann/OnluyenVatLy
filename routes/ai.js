@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { asyncHandler } = require('../middleware/errorHandler');
-const { requireAdminAuth } = require('../middleware/auth');
-const { noCacheMiddleware } = require('../middleware/cache');
-const aiCacheService = require('../services/cache/aiCacheService');
-const databaseService = require('../services/databaseService');
+const { asyncHandler } = require('../api/middleware/errorHandler');
+const { requireAdminAuth } = require('../api/middleware/auth');
+const { noCacheMiddleware } = require('../api/middleware/cache');
+const aiCacheService = require('../api/services/cache/aiCacheService');
+const databaseService = require('../api/services/databaseService');
 
 // Get AI cache statistics
 router.get('/cache/stats',

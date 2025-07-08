@@ -2,22 +2,22 @@ const express = require('express');
 const router = express.Router();
 
 // Import controllers
-const ratingController = require('../controllers/ratingController');
+const ratingController = require('../api/controllers/ratingController');
 
 // Import middleware
 const { 
   validateIdParam,
   validatePagination 
-} = require('../middleware/validation');
+} = require('../api/middleware/validation');
 const { 
   requireAdminAuth,
   requireAdminOrOwner,
   optionalAuth 
-} = require('../middleware/auth');
+} = require('../api/middleware/auth');
 const { 
   shortCacheMiddleware,
   noCacheMiddleware 
-} = require('../middleware/cache');
+} = require('../api/middleware/cache');
 
 // Public rating routes
 // General ratings endpoint with pagination and filtering
