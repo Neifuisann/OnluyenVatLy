@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const historyController = require('../api/controllers/historyController');
-const { requireAdminAuth } = require('../api/middleware/auth');
-const { noCacheMiddleware } = require('../api/middleware/cache');
+const historyController = require('../lib/controllers/historyController');
+const { requireAdminAuth } = require('../lib/middleware/auth');
+const { noCacheMiddleware } = require('../lib/middleware/cache');
 
 // All history routes require admin authentication and no caching
 router.use(requireAdminAuth);

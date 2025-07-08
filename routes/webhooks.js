@@ -3,7 +3,7 @@ const router = express.Router();
 const crypto = require('crypto');
 
 // Import middleware
-const { noCacheMiddleware } = require('../api/middleware/cache');
+const { noCacheMiddleware } = require('../lib/middleware/cache');
 
 // Apply no-cache middleware to all webhook routes
 router.use(noCacheMiddleware);

@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const explainController = require('../api/controllers/explainController');
-const { requireStudentAuth } = require('../api/middleware/auth');
-const { noCacheMiddleware } = require('../api/middleware/cache');
-const { aiRateLimit } = require('../api/middleware/rateLimiting');
+const explainController = require('../lib/controllers/explainController');
+const { requireStudentAuth } = require('../lib/middleware/auth');
+const { noCacheMiddleware } = require('../lib/middleware/cache');
+const { aiRateLimit } = require('../lib/middleware/rateLimiting');
 
 // Debug middleware to log incoming explain requests
 router.use((req, res, next) => {

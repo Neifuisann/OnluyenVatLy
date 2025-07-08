@@ -2,22 +2,22 @@ const express = require('express');
 const router = express.Router();
 
 // Import controllers
-const authController = require('../api/controllers/authController');
+const authController = require('../lib/controllers/authController');
 
 // Import middleware
 const { 
   validateAdminLogin, 
   validateStudentLogin, 
   validateStudentRegistration 
-} = require('../api/middleware/validation');
+} = require('../lib/middleware/validation');
 const { 
   requireAdminAuth, 
   requireStudentAuth, 
   requireNotAuthenticated,
   authRateLimit,
   logAuthEvent
-} = require('../api/middleware/auth');
-const { noCacheMiddleware } = require('../api/middleware/cache');
+} = require('../lib/middleware/auth');
+const { noCacheMiddleware } = require('../lib/middleware/cache');
 
 // Apply no-cache middleware to all auth routes
 router.use(noCacheMiddleware);

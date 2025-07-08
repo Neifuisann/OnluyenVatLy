@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const galleryController = require('../api/controllers/galleryController');
-const { optionalAuth } = require('../api/middleware/auth');
-const { shortCacheMiddleware } = require('../api/middleware/cache');
+const galleryController = require('../lib/controllers/galleryController');
+const { optionalAuth } = require('../lib/middleware/auth');
+const { shortCacheMiddleware } = require('../lib/middleware/cache');
 
 router.get('/', 
     optionalAuth,

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const questService = require('../api/services/questService');
-const { requireStudentAuth, requireAdminAuth } = require('../api/middleware/auth');
+const questService = require('../lib/services/questService');
+const { requireStudentAuth, requireAdminAuth } = require('../lib/middleware/auth');
 
 /**
  * @route GET /api/quests/daily
@@ -351,7 +351,7 @@ router.get('/leaderboard', async (req, res) => {
     }
     
     // Get quest completion data
-    const { data: leaderboardData, error } = await require('../api/config/database').supabase
+    const { data: leaderboardData, error } = await require('../lib/config/database').supabase
       .from('student_quest_progress')
       .select(`
         student_id,

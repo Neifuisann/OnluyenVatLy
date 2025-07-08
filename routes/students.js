@@ -2,22 +2,22 @@ const express = require('express');
 const router = express.Router();
 
 // Import controllers
-const studentController = require('../api/controllers/studentController');
+const studentController = require('../lib/controllers/studentController');
 
 // Import services
-const sessionService = require('../api/services/sessionService');
+const sessionService = require('../lib/services/sessionService');
 
 // Import middleware
 const { 
   validateIdParam,
   validatePagination 
-} = require('../api/middleware/validation');
+} = require('../lib/middleware/validation');
 const { 
   requireAdminAuth, 
   requireStudentAuth,
   requireAdminOrOwner 
-} = require('../api/middleware/auth');
-const { shortCacheMiddleware, noCacheMiddleware } = require('../api/middleware/cache');
+} = require('../lib/middleware/auth');
+const { shortCacheMiddleware, noCacheMiddleware } = require('../lib/middleware/cache');
 
 // Admin-only routes for student management
 router.get('/',

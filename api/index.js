@@ -8,11 +8,11 @@ const compression = require('compression');
 // const { inject } = require('@vercel/analytics');
 
 // Import configuration modules
-const { sessionConfig, sessionStore } = require('./config/session');
-const { UPLOAD_CONFIG } = require('./config/constants');
+const { sessionConfig, sessionStore } = require('../lib/config/session');
+const { UPLOAD_CONFIG } = require('../lib/config/constants');
 
 // Import middleware
-const { errorHandler } = require('./middleware/errorHandler');
+const { errorHandler } = require('../lib/middleware/errorHandler');
 
 // Import route modules from root routes directory (outside api/ to avoid Vercel function limits)
 const authRoutes = require('../routes/auth');
@@ -40,10 +40,10 @@ const webhookRoutes = require('../routes/webhooks');
 const debugRoutes = require('../routes/debug');
 
 // Import utilities
-const logger = require('./utils/logger');
+const logger = require('../lib/utils/logger');
 
 // Import services that need initialization
-const sessionService = require('./services/sessionService');
+const sessionService = require('../lib/services/sessionService');
 
 const app = express();
 const PORT = process.env.PORT || 3003;
@@ -181,7 +181,7 @@ app.use((req, res, next) => {
 });
 
 // Add CSRF protection
-const { addCSRFToken, validateCSRFToken, getCSRFTokenEndpoint } = require('./middleware/csrf');
+const { addCSRFToken, validateCSRFToken, getCSRFTokenEndpoint } = require('../lib/middleware/csrf');
 app.use(addCSRFToken);
 
 // CSRF token endpoint
@@ -191,11 +191,11 @@ app.get('/api/csrf-token', getCSRFTokenEndpoint);
 app.use('/api', validateCSRFToken);
 
 // Add rate limiting to API routes
-const { generalAPIRateLimit } = require('./middleware/rateLimiting');
+const { generalAPIRateLimit } = require('../lib/middleware/rateLimiting');
 app.use('/api', generalAPIRateLimit);
 
 // Add session extension middleware for API routes
-const { extendSessionOnActivity } = require('./middleware/auth');
+const { extendSessionOnActivity } = require('../lib/middleware/auth');
 app.use('/api', extendSessionOnActivity);
 
 // Setup API routes

@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const leagueService = require('../api/services/leagueService');
-const { asyncHandler } = require('../api/middleware/errorHandler');
-const { requireStudentAuth, requireAdminAuth } = require('../api/middleware/auth');
+const leagueService = require('../lib/services/leagueService');
+const { asyncHandler } = require('../lib/middleware/errorHandler');
+const { requireStudentAuth, requireAdminAuth } = require('../lib/middleware/auth');
 
 /**
  * @route GET /api/leagues/current-season
@@ -245,7 +245,7 @@ router.get('/leaderboard', asyncHandler(async (req, res) => {
   const currentSeason = await leagueService.getCurrentSeason();
   
   // Get top performers across all divisions
-  const { data: topPerformers, error } = await require('../api/config/database').supabase
+  const { data: topPerformers, error } = await require('../lib/config/database').supabase
     .from('student_league_participation')
     .select(`
       *,

@@ -2,24 +2,24 @@ const express = require('express');
 const router = express.Router();
 
 // Import controller
-const resultController = require('../api/controllers/resultController');
+const resultController = require('../lib/controllers/resultController');
 
 // Import middleware
 const { 
   validateIdParam,
   validateResult,
   validatePagination 
-} = require('../api/middleware/validation');
+} = require('../lib/middleware/validation');
 const { 
   requireStudentAuth,
   requireAdminAuth,
   requireAdminOrOwner
-} = require('../api/middleware/auth');
+} = require('../lib/middleware/auth');
 const { 
   resultsCacheMiddleware,
   noCacheMiddleware,
   shortCacheMiddleware 
-} = require('../api/middleware/cache');
+} = require('../lib/middleware/cache');
 
 // Submit lesson result
 router.post('/',
