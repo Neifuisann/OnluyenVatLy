@@ -4,6 +4,9 @@ const router = express.Router();
 // Import controllers
 const studentController = require('../controllers/studentController');
 
+// Import services
+const sessionService = require('../services/sessionService');
+
 // Import middleware
 const { 
   validateIdParam,
@@ -62,6 +65,26 @@ router.post('/:studentId/reset-password',
   validateIdParam('studentId'),
   noCacheMiddleware,
   studentController.resetStudentPassword
+);
+
+// Test endpoint for debugging
+router.get('/profile-test',
+  requireStudentAuth,
+  (req, res) => {
+    const sessionData = sessionService.getSessionData(req);
+    const isAdmin = sessionService.isAdminAuthenticated(req);
+
+    res.json({
+      success: true,
+      debug: {
+        sessionId: req.sessionID,
+        studentId: sessionData.studentId,
+        isAdmin,
+        hasStudentId: !!sessionData.studentId,
+        sessionData
+      }
+    });
+  }
 );
 
 // Student profile routes (any authenticated student can view any profile)

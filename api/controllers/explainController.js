@@ -15,7 +15,7 @@ class ExplainController {
         
         try {
             const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
             
             const prompt = `
 Bạn là một giáo viên Vật lý giỏi. Hãy giải thích chi tiết câu trả lời sau:

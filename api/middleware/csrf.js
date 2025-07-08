@@ -14,7 +14,12 @@ const generateCSRFToken = () => {
 // Get or create CSRF token for session
 const getCSRFToken = (req) => {
   if (!req.session.csrfToken) {
-    req.session.csrfToken = generateCSRFToken();
+    const newToken = generateCSRFToken();
+    req.session.csrfToken = newToken;
+    console.log('[CSRF Debug] Generated new CSRF token for session:', {
+      sessionId: req.session?.id,
+      tokenLength: newToken.length
+    });
   }
   return req.session.csrfToken;
 };
@@ -62,14 +67,36 @@ const validateCSRFToken = (req, res, next) => {
     return next();
   }
   
+  // Debug logging for CSRF validation
+  console.log('[CSRF Debug] Validating request:', {
+    path: req.path,
+    method: req.method,
+    hasSession: !!req.session,
+    sessionId: req.session?.id,
+    hasSessionToken: !!req.session?.csrfToken,
+    requestTokenInBody: !!req.body?.csrfToken,
+    requestTokenInHeader: !!req.headers['x-csrf-token'],
+    headers: Object.keys(req.headers),
+    bodyKeys: req.body ? Object.keys(req.body) : []
+  });
+  
   const sessionToken = req.session.csrfToken;
   const requestToken = req.body.csrfToken || req.headers['x-csrf-token'];
   
   if (!sessionToken) {
+    console.error('[CSRF Debug] No CSRF token in session:', {
+      sessionId: req.session?.id,
+      sessionKeys: req.session ? Object.keys(req.session) : []
+    });
     throw new ValidationError('CSRF token not found in session');
   }
   
   if (!requestToken) {
+    console.error('[CSRF Debug] No CSRF token in request:', {
+      bodyToken: req.body?.csrfToken,
+      headerToken: req.headers['x-csrf-token'],
+      allHeaders: req.headers
+    });
     throw new ValidationError('CSRF token not provided');
   }
   

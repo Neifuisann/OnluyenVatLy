@@ -161,23 +161,36 @@
         }
         
         async function loadProfile() {
+            console.log('[Profile Debug] loadProfile called');
             const profileContainer = document.getElementById('profile-data');
             const pathParts = window.location.pathname.split('/');
             const studentId = pathParts[pathParts.length - 1];
             const loadingIndicator = document.getElementById('loading-indicator');
 
+            console.log('[Profile Debug] URL analysis:', {
+                pathname: window.location.pathname,
+                pathParts,
+                studentId
+            });
+
             // Check if we have a specific student ID in the URL or if we're accessing current student profile
             const isCurrentStudent = !studentId || studentId === 'profile';
-            
+
+            console.log('[Profile Debug] isCurrentStudent:', isCurrentStudent);
+
             try {
                 let response;
                 if (isCurrentStudent) {
+                    console.log('[Profile Debug] Fetching current student profile');
                     // Get current student's profile
                     response = await fetch('/api/students/profile');
                 } else {
+                    console.log('[Profile Debug] Fetching specific student profile:', studentId);
                     // Get specific student's profile
                     response = await fetch(`/api/students/${studentId}/profile`);
                 }
+
+                console.log('[Profile Debug] Response received:', response.status, response.ok);
                 
                 if (!response.ok) {
                     const errorData = await response.json();

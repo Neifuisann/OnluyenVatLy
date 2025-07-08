@@ -85,10 +85,8 @@ class AIToolsManager {
 
     async makeRequest(url, options = {}) {
         try {
-            const response = await fetch(url, {
-                ...options,
-                credentials: 'include'
-            });
+            // Use secure API request from CSRF utils
+            const response = await window.CSRFUtils.secureApiRequest(url, options);
 
             if (!response.ok) {
                 const error = await response.json().catch(() => ({}));

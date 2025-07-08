@@ -8,7 +8,10 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
 
 // Validate required environment variables
 if (!supabaseServiceKey) {
-  console.warn('WARNING: SUPABASE_SERVICE_KEY environment variable not set. Storage uploads might fail if RLS requires authenticated users or service role.');
+  console.error('FATAL ERROR: SUPABASE_SERVICE_KEY is required for backend operations with RLS enabled.');
+  console.error('Please set SUPABASE_SERVICE_KEY in your environment variables.');
+  console.error('Without it, the application cannot write to the database due to Row Level Security policies.');
+  process.exit(1);
 }
 
 // Database connection string validation

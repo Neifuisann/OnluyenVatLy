@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS ai_interactions (
   request TEXT NOT NULL,
   response TEXT,
   tokens_used INTEGER,
-  model_used VARCHAR(50) DEFAULT 'gemini-1.5-flash',
+  model_used VARCHAR(50) DEFAULT 'gemini-2.5-flash',
   created_at TIMESTAMP DEFAULT NOW(),
   metadata JSONB -- Additional data like lesson_id, error info, etc.
 );

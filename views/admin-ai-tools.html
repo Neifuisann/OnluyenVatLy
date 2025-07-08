@@ -215,6 +215,83 @@
                     </div>
                 </div>
 
+                <!-- Question Generation -->
+                <div class="tool-card">
+                    <div class="tool-header">
+                        <div class="tool-icon">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <div class="tool-info">
+                            <h3>Tạo câu hỏi tự động</h3>
+                            <p>Tạo câu hỏi mới dựa trên nội dung bài học</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tool-content">
+                        <div class="tool-stats" id="question-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Bài học cần thêm câu hỏi:</span>
+                                <span class="stat-value" id="lessons-need-questions">-</span>
+                            </div>
+                        </div>
+                        
+                        <div class="tool-controls">
+                            <div class="control-group">
+                                <label for="questions-per-lesson">Số câu hỏi mỗi bài:</label>
+                                <input type="number" id="questions-per-lesson" min="1" max="10" value="3" class="form-control">
+                            </div>
+                            
+                            <div class="tool-actions">
+                                <button class="btn btn-secondary" onclick="checkQuestionStats()">
+                                    <i class="fas fa-search"></i>
+                                    Kiểm tra
+                                </button>
+                                <button class="btn btn-primary" onclick="generateQuestions()">
+                                    <i class="fas fa-magic"></i>
+                                    Tạo câu hỏi
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Model Settings -->
+                <div class="tool-card">
+                    <div class="tool-header">
+                        <div class="tool-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <div class="tool-info">
+                            <h3>Cài đặt AI Model</h3>
+                            <p>Cấu hình mô hình AI và tham số</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tool-content">
+                        <div class="tool-stats" id="model-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Model hiện tại:</span>
+                                <span class="stat-value" id="current-model">GPT-3.5</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Temperature:</span>
+                                <span class="stat-value" id="current-temp">0.7</span>
+                            </div>
+                        </div>
+                        
+                        <div class="tool-actions">
+                            <button class="btn btn-secondary" onclick="viewModelSettings()">
+                                <i class="fas fa-eye"></i>
+                                Xem cài đặt
+                            </button>
+                            <button class="btn btn-primary" onclick="openModelSettings()">
+                                <i class="fas fa-edit"></i>
+                                Chỉnh sửa
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </main>
     </div>
@@ -223,6 +300,7 @@
     <div id="notification-container" class="notification-container"></div>
 
     <!-- Custom Scripts -->
+    <script src="/js/csrf-utils.js"></script>
     <script src="/js/admin-ai-tools.js"></script>
 </body>
 </html>

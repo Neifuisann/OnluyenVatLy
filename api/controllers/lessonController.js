@@ -72,13 +72,13 @@ class LessonController {
       try {
         const completedLessons = await databaseService.getStudentCompletedLessons(sessionData.studentId);
         if (completedLessons && Array.isArray(completedLessons)) {
-          const completedIds = completedLessons.map(lesson => lesson.lessonId);
+          const completedIds = completedLessons.map(lesson => lesson.lesson_id);
 
           // Add completion status to each lesson
           result.lessons = result.lessons.map(lesson => ({
             ...lesson,
             completed: completedIds.includes(lesson.id),
-            completedAt: completedLessons.find(cl => cl.lessonId === lesson.id)?.timestamp || null
+            completedAt: completedLessons.find(cl => cl.lesson_id === lesson.id)?.timestamp || null
           }));
         }
       } catch (error) {
@@ -120,12 +120,12 @@ class LessonController {
       try {
         const completedLessons = await databaseService.getStudentCompletedLessons(sessionData.studentId);
         if (completedLessons && Array.isArray(completedLessons)) {
-          const completedLesson = completedLessons.find(cl => cl.lessonId === id);
+          const completedLesson = completedLessons.find(cl => cl.lesson_id === id);
 
           lessonWithProgress.completed = !!completedLesson;
           lessonWithProgress.completedAt = completedLesson?.timestamp || null;
           lessonWithProgress.lastScore = completedLesson?.score || null;
-          lessonWithProgress.lastTotalPoints = completedLesson?.totalPoints || null;
+          lessonWithProgress.lastTotalPoints = completedLesson?.total_points || null;
         }
       } catch (error) {
         console.error('Error adding progress info to lesson:', error);
@@ -145,14 +145,17 @@ class LessonController {
 
   // Create new lesson (admin only)
   createLesson = asyncHandler(async (req, res) => {
-    const lessonData = req.body;
+    const lessonData = { ...req.body };
+
+    // Remove CSRF token from lesson data before database insertion
+    delete lessonData.csrfToken;
     
     // Generate AI summary if description is blank
     if (!lessonData.description || lessonData.description.trim() === '') {
       try {
         const aiSummary = await aiService.generateLessonSummary({
           title: lessonData.title,
-          questions: lessonData.quiz?.questions || [],
+          questions: lessonData.questions || lessonData.quiz?.questions || [],
           grade: lessonData.grade,
           subject: lessonData.subject || 'Vật lý',
           tags: lessonData.tags || []
@@ -180,7 +183,10 @@ class LessonController {
   // Update lesson (admin only)
   updateLesson = asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const updateData = req.body;
+    const updateData = { ...req.body };
+
+    // Remove CSRF token from update data before database update
+    delete updateData.csrfToken;
     
     // Check if we need to regenerate AI summary
     if (updateData.regenerateAiSummary || 
@@ -398,7 +404,7 @@ class LessonController {
       title: `${originalLesson.title} (Copy)`,
       id: undefined, // Let database generate new ID
       created: undefined, // Will be set by createLesson
-      lastUpdated: undefined, // Will be set by createLesson
+      last_updated: undefined, // Will be set by createLesson
       views: 0 // Reset views for duplicate
     };
     
@@ -467,7 +473,7 @@ class LessonController {
         totalStudents: stats.totalStudents,
         completionRate: stats.totalStudents > 0 ? Math.round((stats.recentActivity / stats.totalStudents) * 100) : 0,
         avgScore: stats.averageScore / 10, // Convert to 0-10 scale for display
-        lastUpdated: stats.lastUpdated
+        lastUpdated: stats.last_updated || stats.lastUpdated
       };
 
       res.json({

@@ -6,7 +6,7 @@ const aiService = require('./aiService');
 
 class ImageGenerationService {
   constructor() {
-    this.pollinationsUrl = 'https://pollinations.ai/p';
+    this.pollinationsUrl = 'https://image.pollinations.ai/prompt';
     this.imageStoragePath = path.join(process.cwd(), 'public', 'lesson_images');
   }
 
@@ -47,36 +47,32 @@ class ImageGenerationService {
    * @returns {string} - Pollinations image URL
    */
   async generateWithPollinations(prompt, options = {}) {
-    const {
-      width = 800,
-      height = 600,
-      seed = Math.floor(Math.random() * 1000000),
-      model = 'flux', // Pollinations supports multiple models
-      nologo = true
-    } = options;
+    // Clean and simplify the prompt to avoid encoding issues
+    const cleanPrompt = prompt
+      .replace(/[^\w\s,.-]/g, ' ') // Remove special characters except basic punctuation
+      .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+      .trim()
+      .substring(0, 200); // Limit prompt length
 
-    // Build query parameters
-    const params = new URLSearchParams({
-      prompt: prompt,
-      width: width.toString(),
-      height: height.toString(),
-      seed: seed.toString(),
-      model: model,
-      nologo: nologo.toString()
-    });
+    // Encode the prompt for URL
+    const encodedPrompt = encodeURIComponent(cleanPrompt);
 
-    // Construct the full URL
-    const imageUrl = `${this.pollinationsUrl}?${params.toString()}`;
-    
-    // Verify the URL is accessible
+    // Construct the full URL using the correct format: /prompt/{prompt}?params
+    const imageUrl = `${this.pollinationsUrl}/${encodedPrompt}}`;
+
+    console.log('Generated Pollinations URL:', imageUrl);
+
+    // Verify the URL is accessible with a simple test
     try {
-      const response = await fetch(imageUrl, { method: 'HEAD' });
+      const response = await fetch(imageUrl, {
+        method: 'HEAD',
+        timeout: 20000 // 20 second timeout for verification
+      });
       if (!response.ok) {
-        throw new Error(`Pollinations API error: ${response.status}`);
+        console.warn(`Pollinations API returned ${response.status}, but continuing anyway`);
       }
     } catch (error) {
-      console.error('Error verifying Pollinations URL:', error);
-      throw new Error('Failed to generate image with Pollinations');
+      console.warn('Error verifying Pollinations URL (continuing anyway):', error.message);
     }
 
     return imageUrl;
@@ -90,6 +86,8 @@ class ImageGenerationService {
    */
   async downloadAndSaveImage(imageUrl, lessonId) {
     try {
+      console.log('Downloading image from:', imageUrl);
+
       // Ensure the storage directory exists
       await fs.mkdir(this.imageStoragePath, { recursive: true });
 
@@ -99,22 +97,66 @@ class ImageGenerationService {
       const filename = `lesson-${lessonId}-${hash}.png`;
       const filepath = path.join(this.imageStoragePath, filename);
 
-      // Download the image
-      const response = await fetch(imageUrl);
-      if (!response.ok) {
-        throw new Error(`Failed to download image: ${response.status}`);
+      // Download the image with retry logic and wait time for generation
+      let response;
+      let retries = 3;
+
+      while (retries > 0) {
+        try {
+          // Wait a bit for image generation (Pollinations might need time to generate)
+          if (retries < 3) {
+            console.log(`Waiting 10 seconds before retry...`);
+            await new Promise(resolve => setTimeout(resolve, 10000));
+          }
+
+          response = await fetch(imageUrl, {
+            timeout: 45000, // Increased timeout to 45 seconds
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            }
+          });
+
+          if (response.ok) {
+            // Check if we actually got content
+            const contentLength = response.headers.get('content-length');
+            console.log('Content-Length header:', contentLength);
+
+            const buffer = await response.buffer();
+            console.log('Downloaded image size:', buffer.length, 'bytes');
+
+            if (buffer.length > 1000) { // Valid image should be at least 1KB
+              // Check content type
+              const contentType = response.headers.get('content-type');
+              console.log('Response content-type:', contentType);
+
+              if (!contentType || !contentType.startsWith('image/')) {
+                throw new Error(`Invalid content type: ${contentType}`);
+              }
+
+              // Success - we have a valid image
+              // Save to file
+              await fs.writeFile(filepath, buffer);
+              console.log('Image saved to:', filepath);
+
+              // Return relative path for web access
+              return `/lesson_images/${filename}`;
+            } else {
+              console.warn(`Image too small (${buffer.length} bytes), retrying...`);
+            }
+          } else {
+            console.warn(`HTTP ${response.status}: ${response.statusText}, retries left: ${retries - 1}`);
+          }
+        } catch (fetchError) {
+          console.warn(`Fetch attempt failed: ${fetchError.message}, retries left: ${retries - 1}`);
+        }
+
+        retries--;
       }
 
-      const buffer = await response.buffer();
-      
-      // Save to file
-      await fs.writeFile(filepath, buffer);
-
-      // Return relative path for web access
-      return `/lesson_images/${filename}`;
+      throw new Error('Failed to download valid image after all retries');
     } catch (error) {
       console.error('Error downloading and saving image:', error);
-      throw new Error('Failed to save generated image');
+      throw new Error(`Failed to save generated image: ${error.message}`);
     }
   }
 

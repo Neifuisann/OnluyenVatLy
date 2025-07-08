@@ -327,14 +327,14 @@ class QuizParser {
 
         // Check if question has content
         if (!question.question || question.question.trim() === '') {
-            validation.errors.push('Question text is empty');
+            validation.errors.push('Nội dung câu hỏi trống');
             validation.isValid = false;
         }
 
         // Check if type is determined
         if (!question.type || question.type === null) {
             if (question.options.length === 0 && question.correct === null) {
-                validation.errors.push('Question type could not be determined');
+                validation.errors.push('Không thể xác định loại câu hỏi');
                 validation.isValid = false;
                 question.type = 'invalid';
             }
@@ -346,17 +346,17 @@ class QuizParser {
                 validation.warnings.push(`ABCD question should have 4 options, found ${question.options.length}`);
             }
             if (!question.correct) {
-                validation.errors.push('No correct answer marked with *');
+                validation.errors.push('Không có đáp án đúng được đánh dấu bằng *');
                 validation.isValid = false;
             }
         } else if (question.type === 'truefalse') {
             if (!Array.isArray(question.correct) || question.correct.length !== question.options.length) {
-                validation.errors.push('True/False options and correct answers mismatch');
+                validation.errors.push('Các lựa chọn Đúng/Sai và đáp án đúng không khớp');
                 validation.isValid = false;
             }
         } else if (question.type === 'number') {
             if (!question.correct || question.correct.trim() === '') {
-                validation.errors.push('Number question is missing its answer');
+                validation.errors.push('Câu hỏi số thiếu đáp án');
                 validation.isValid = false;
             }
         }
@@ -1945,9 +1945,16 @@ D. Cả nước được giải phóng và tiến lên xây dựng chủ nghĩa 
             // Show processing overlay in modal
             this.showProcessingOverlay(file.name);
 
+            // Get CSRF token before making the request
+            const csrfToken = await getCSRFToken();
+
             const response = await fetch('/api/admin/upload-document', {
                 method: 'POST',
-                body: formData
+                headers: {
+                    'x-csrf-token': csrfToken
+                },
+                body: formData,
+                credentials: 'include' // Include session cookies
             });
 
             const result = await response.json();
@@ -2127,9 +2134,25 @@ D. Cả nước được giải phóng và tiến lên xây dựng chủ nghĩa 
         }
 
         try {
+            // Check if getCSRFToken function is available
+            if (typeof getCSRFToken !== 'function') {
+                console.error('getCSRFToken function not available! CSRF utils may not be loaded.');
+                this.notifications?.show('error', 'Error', 'CSRF utilities not loaded. Please refresh the page.');
+                return;
+            }
+
+            // Get CSRF token before making the request
+            console.log('Getting CSRF token for image upload...');
+            const csrfToken = await getCSRFToken();
+            console.log('CSRF token obtained:', csrfToken ? 'Yes' : 'No', csrfToken?.substring(0, 8) + '...');
+
             const response = await fetch('/api/admin/upload-image', {
                 method: 'POST',
-                body: formData
+                headers: {
+                    'x-csrf-token': csrfToken
+                },
+                body: formData,
+                credentials: 'include' // Include session cookies
             });
 
             const result = await response.json();

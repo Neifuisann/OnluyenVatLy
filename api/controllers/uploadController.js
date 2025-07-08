@@ -1,5 +1,5 @@
 const { supabaseAdmin } = require('../config/database');
-const aiService = require('../services/aiService');
+const aiService = require('../services/ai/aiService');
 const { asyncHandler, ValidationError } = require('../middleware/errorHandler');
 const { UPLOAD_CONFIG } = require('../config/constants');
 const sharp = require('sharp');
@@ -103,7 +103,7 @@ class UploadController {
         success: true,
         message: 'Image uploaded successfully',
         imageUrl: urlData.publicUrl,
-        filename: filename
+        filename: data.path
       });
 
     } catch (error) {

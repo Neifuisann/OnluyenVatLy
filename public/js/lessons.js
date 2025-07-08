@@ -520,22 +520,36 @@ async function loadLessons(page = 1, search = '', sort = 'order', tags = []) {
         console.log('Data lessons array:', data.lessons);
         console.log('Number of lessons:', data.lessons ? data.lessons.length : 'no lessons array');
 
-        // Debug lesson images
+        // Debug lesson images - ENHANCED DEBUGGING
         if (data.success && data.lessons && Array.isArray(data.lessons)) {
-            console.log('Debugging lesson images:');
+            console.log('=== ENHANCED LESSON IMAGE DEBUGGING ===');
             data.lessons.forEach((lesson, index) => {
                 if (lesson.lessonImage) {
-                    console.log(`Lesson ${index + 1} (${lesson.title}):`, {
+                    const imageLength = lesson.lessonImage.length;
+                    const isDataURL = lesson.lessonImage.startsWith('data:');
+                    const expectedSizeKB = Math.round(imageLength / 1024 * 100) / 100;
+                    const isTruncated = isDataURL && imageLength < 1000; // Base64 images should be much larger
+
+                    console.log(`🖼️ Lesson ${index + 1} (${lesson.title}):`, {
                         id: lesson.id,
-                        lessonImage: lesson.lessonImage.substring(0, 100) + '...',
                         lessonImageType: typeof lesson.lessonImage,
-                        lessonImageLength: lesson.lessonImage.length,
-                        startsWithData: lesson.lessonImage.startsWith('data:')
+                        lessonImageLength: imageLength,
+                        expectedSizeKB: expectedSizeKB,
+                        startsWithData: isDataURL,
+                        isTruncated: isTruncated,
+                        firstChars: lesson.lessonImage.substring(0, 50) + '...',
+                        lastChars: '...' + lesson.lessonImage.substring(lesson.lessonImage.length - 50),
+                        endsCorrectly: lesson.lessonImage.endsWith('=') || lesson.lessonImage.endsWith('==')
                     });
+
+                    if (isTruncated) {
+                        console.warn(`⚠️ TRUNCATED IMAGE DETECTED for lesson ${lesson.title}! Only ${imageLength} chars (${expectedSizeKB}KB)`);
+                    }
                 } else {
-                    console.log(`Lesson ${index + 1} (${lesson.title}): NO IMAGE`);
+                    console.log(`❌ Lesson ${index + 1} (${lesson.title}): NO IMAGE`);
                 }
             });
+            console.log('=== END LESSON IMAGE DEBUGGING ===');
         } else {
             console.log('No lessons data to debug');
         }
@@ -604,8 +618,20 @@ function createLessonCard(lesson) {
         const safeSubject = String(lesson.subject || '').slice(0, 50);
         const safeGrade = String(lesson.grade || '').slice(0, 20);
         const safeViews = parseInt(lesson.views) || 0;
-        const safeImage = String(lesson.lessonImage || '').slice(0, 200);
-        
+        // Don't truncate image data - base64 images can be very long
+        const safeImage = String(lesson.lessonImage || '');
+
+        console.log(`🔄 Passing image to confirmation modal for ${safeTitle}:`, {
+            originalLength: lesson.lessonImage ? lesson.lessonImage.length : 0,
+            safeImageLength: safeImage.length,
+            isDataURL: safeImage.startsWith('data:'),
+            lengthMatch: lesson.lessonImage ? (lesson.lessonImage.length === safeImage.length) : false,
+            originalSizeKB: lesson.lessonImage ? Math.round(lesson.lessonImage.length / 1024 * 100) / 100 : 0,
+            safeSizeKB: Math.round(safeImage.length / 1024 * 100) / 100,
+            firstChars: safeImage.substring(0, 50) + '...',
+            lastChars: '...' + safeImage.substring(safeImage.length - 50)
+        });
+
         showLessonConfirmation(safeId, safeTitle, safeSubject, safeGrade, safeViews, safeImage);
     });
     
@@ -916,8 +942,6 @@ function showLessonConfirmation(lessonId, lessonTitle, subject, grade, views, le
     const subjectEl = document.getElementById('confirmation-lesson-subject');
     const gradeEl = document.getElementById('confirmation-lesson-grade');
     const viewsEl = document.getElementById('confirmation-lesson-views');
-    const imageEl = document.getElementById('confirmation-lesson-image');
-    const imagePlaceholderEl = document.getElementById('confirmation-lesson-image-placeholder');
     const startBtn = document.getElementById('confirm-start-lesson');
     
     // Update modal content
@@ -926,33 +950,106 @@ function showLessonConfirmation(lessonId, lessonTitle, subject, grade, views, le
     gradeEl.textContent = grade || '12';
     viewsEl.textContent = views.toLocaleString();
     
-    // Set lesson image using the actual image URL from the API response
+    // Set lesson image using EXACTLY the same logic as lesson cards
+    const imageContainer = modal.querySelector('.lesson-image-container');
+
+    // Clear the container first (remove existing img and placeholder elements)
+    console.log('Clearing image container for confirmation modal');
+    imageContainer.innerHTML = '';
+
     if (lessonImageUrl && lessonImageUrl !== '') {
-        // We have an image URL from the API
-        const tempImg = new Image();
-        tempImg.onload = function() {
-            // Image loaded successfully, show it and hide placeholder
-            imageEl.src = lessonImageUrl;
-            imageEl.alt = lessonTitle;
-            imageEl.style.display = 'block';
-            if (imagePlaceholderEl) {
-                imagePlaceholderEl.style.display = 'none';
-            }
-        };
-        tempImg.onerror = function() {
-            // Image failed to load, show placeholder and hide image
-            imageEl.style.display = 'none';
-            if (imagePlaceholderEl) {
-                imagePlaceholderEl.style.display = 'flex';
-            }
-        };
-        tempImg.src = lessonImageUrl;
+        console.log(`Creating confirmation modal image for ${lessonTitle}:`, {
+            originalImage: lessonImageUrl.substring(0, 50) + '...',
+            imageType: typeof lessonImageUrl,
+            imageLength: lessonImageUrl.length,
+            isDataURL: lessonImageUrl.startsWith('data:'),
+            firstChars: lessonImageUrl.substring(0, 10),
+            expectedSizeKB: Math.round(lessonImageUrl.length / 1024 * 100) / 100
+        });
+
+        // Check if this is a base64 data URL or a regular file path
+        const isDataURL = lessonImageUrl.startsWith('data:');
+        console.log(`Is data URL check for confirmation modal: ${isDataURL}`);
+
+        if (isDataURL) {
+            // Handle base64 data URLs - use them directly without trying to create responsive versions
+            const img = document.createElement('img');
+            img.src = lessonImageUrl;
+            img.alt = lessonTitle || 'Lesson image';
+            img.className = 'lesson-image';
+            img.loading = 'lazy';
+            img.decoding = 'async';
+            img.style.width = '100%';
+            img.style.height = 'auto';
+
+            console.log('Using base64 data URL directly for confirmation modal');
+
+            img.onerror = function() {
+                console.log('Base64 image failed to load in confirmation modal');
+                // Show placeholder if base64 fails
+                this.style.display = 'none';
+                const placeholder = document.createElement('div');
+                placeholder.className = 'lesson-image-placeholder';
+                const placeholderIcon = document.createElement('i');
+                placeholderIcon.className = 'fas fa-book';
+                placeholder.appendChild(placeholderIcon);
+                this.parentNode.appendChild(placeholder);
+            };
+
+            imageContainer.appendChild(img);
+            console.log('Base64 image appended to confirmation modal container');
+        } else {
+            // Handle regular file paths with responsive images
+            const picture = document.createElement('picture');
+
+            // WebP source with responsive sizes
+            const webpSource = document.createElement('source');
+            const imageBase = lessonImageUrl.replace('.jpg', '').replace('.jpeg', '').replace('.png', '');
+            webpSource.type = 'image/webp';
+            webpSource.srcset = `
+                ${imageBase}-sm.webp 400w,
+                ${imageBase}-md.webp 800w,
+                ${imageBase}-lg.webp 1200w
+            `;
+            webpSource.sizes = '(max-width: 768px) 400px, (max-width: 1024px) 800px, 1200px';
+
+            console.log('WebP srcset for confirmation modal:', webpSource.srcset);
+
+            // Fallback JPEG image
+            const img = document.createElement('img');
+            img.src = lessonImageUrl;
+            img.alt = lessonTitle || 'Lesson image';
+            img.className = 'lesson-image';
+            img.loading = 'lazy';
+            img.decoding = 'async';
+            img.style.width = '100%';
+            img.style.height = 'auto';
+
+            console.log('Fallback image src for confirmation modal:', img.src);
+
+            // Add error handling for missing optimized images
+            img.onerror = function() {
+                console.log('Image failed to load in confirmation modal:', this.src);
+                // Fallback to original image if optimized versions fail
+                this.src = lessonImageUrl;
+                this.onerror = null; // Prevent infinite loop
+            };
+
+            picture.appendChild(webpSource);
+            picture.appendChild(img);
+            imageContainer.appendChild(picture);
+            console.log('Picture element with responsive images appended to confirmation modal container');
+        }
     } else {
         // No image URL provided, show placeholder
-        imageEl.style.display = 'none';
-        if (imagePlaceholderEl) {
-            imagePlaceholderEl.style.display = 'flex';
-        }
+        console.log('No image URL provided for confirmation modal, showing placeholder');
+        const placeholder = document.createElement('div');
+        placeholder.className = 'lesson-image-placeholder';
+        const placeholderIcon = document.createElement('i');
+        placeholderIcon.className = 'fas fa-book';
+        placeholder.appendChild(placeholderIcon);
+        imageContainer.appendChild(placeholder);
+        console.log('Placeholder appended to confirmation modal container');
     }
     
     // Set up start button

@@ -189,4 +189,28 @@ router.post('/bulk-generate-summaries',
   lessonController.bulkGenerateAiSummaries
 );
 
+router.get('/without-images',
+  requireAdminAuth,
+  noCacheMiddleware,
+  async (req, res) => {
+    try {
+      const dryRun = req.query['dry-run'] === 'true';
+      
+      if (dryRun) {
+        // Just return the count
+        const lessons = await databaseService.getLessonsWithoutImages(100);
+        res.json({ count: lessons.length });
+      } else {
+        // Return the actual lessons
+        const limit = parseInt(req.query.limit) || 10;
+        const lessons = await databaseService.getLessonsWithoutImages(limit);
+        res.json({ lessons });
+      }
+    } catch (error) {
+      console.error('Error getting lessons without images:', error);
+      res.status(500).json({ error: 'Failed to get lessons without images' });
+    }
+  }
+);
+
 module.exports = router;

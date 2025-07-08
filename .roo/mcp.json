@@ -29,6 +29,9 @@
         "",
         "--schema",
         "public"
+      ],
+      "alwaysAllow": [
+        "postgrestRequest"
       ]
     },
     "playwright": {

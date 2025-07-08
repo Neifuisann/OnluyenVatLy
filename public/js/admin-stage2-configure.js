@@ -34,13 +34,35 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             const response = await fetch(`/api/lessons/${editingId}`);
             if (!response.ok) throw new Error('Failed to load existing lesson configuration');
-            const existingLesson = await response.json();
-            // We already have questions, merge the rest of the config
-            currentConfigData = { ...existingLesson }; 
-             // Ensure questions aren't overwritten if they exist in fetched data (use Stage 1's)
-             currentConfigData.questions = currentQuestions; 
+            const responseData = await response.json();
+            const existingLesson = responseData.lesson;
+            
+            // Map snake_case database fields to camelCase for the form
+            currentConfigData = {
+                ...existingLesson,
+                // Map all the snake_case fields to camelCase
+                timeLimitEnabled: existingLesson.time_limit_enabled,
+                timeLimitHours: existingLesson.time_limit_hours,
+                timeLimitMinutes: existingLesson.time_limit_minutes,
+                timeLimitSeconds: existingLesson.time_limit_seconds,
+                showCountdown: existingLesson.show_countdown,
+                autoSubmit: existingLesson.auto_submit,
+                warningAlerts: existingLesson.warning_alerts,
+                shuffleQuestions: existingLesson.shuffle_questions,
+                shuffleAnswers: existingLesson.shuffle_answers,
+                enableQuestionPool: existingLesson.enable_question_pool,
+                questionPoolSize: existingLesson.question_pool_size,
+                difficultyRatios: existingLesson.difficulty_ratios,
+                randomizationSeed: existingLesson.randomization_seed,
+                lessonImage: existingLesson.lesson_image,
+                randomQuestions: existingLesson.random_questions
+            };
+            
+            // Ensure questions aren't overwritten if they exist in fetched data (use Stage 1's)
+            currentConfigData.questions = currentQuestions; 
             currentTags = new Set(currentConfigData.tags || []);
             console.log("Loaded existing config:", currentConfigData);
+            console.log("Response data structure:", responseData);
         } catch (error) {
             console.error("Error loading existing lesson config:", error);
             alert(`Failed to load existing lesson configuration: ${error.message}`);
@@ -555,9 +577,9 @@ async function saveLessonConfiguration() {
             // Core metadata from form
             title: currentConfigData.title,
             color: document.getElementById('lesson-color')?.value || '#a4aeff',
-            randomQuestions: parseInt(document.getElementById('random-questions')?.value) || 0,
+            random_questions: parseInt(document.getElementById('random-questions')?.value) || 0,
             description: currentConfigData.description,
-            lessonImage: currentConfigData.lessonImage || null,
+            lesson_image: currentConfigData.lessonImage || null,
             tags: Array.from(currentTags),
 
             // New configuration fields
@@ -566,27 +588,28 @@ async function saveLessonConfiguration() {
             purpose: document.getElementById('lesson-purpose')?.value || null,
             mode: currentConfigData.mode || 'test',
             
-            // Time limit configuration
-            timeLimitEnabled: currentConfigData.timeLimitEnabled || false,
-            timeLimitHours: currentConfigData.timeLimitHours || 0,
-            timeLimitMinutes: currentConfigData.timeLimitMinutes || 30,
-            timeLimitSeconds: currentConfigData.timeLimitSeconds || 0,
-            showCountdown: currentConfigData.showCountdown !== false,
-            autoSubmit: currentConfigData.autoSubmit !== false,
-            warningAlerts: currentConfigData.warningAlerts || false,
-            
-            // Randomization configuration
-            shuffleQuestions: currentConfigData.shuffleQuestions || false,
-            shuffleAnswers: currentConfigData.shuffleAnswers || false,
-            enableQuestionPool: currentConfigData.enableQuestionPool || false,
-            questionPoolSize: currentConfigData.questionPoolSize || 5,
-            difficultyRatios: currentConfigData.difficultyRatios || { easy: 30, medium: 50, hard: 20 },
-            randomizationSeed: currentConfigData.randomizationSeed || '',
+            // Time limit configuration (using snake_case field names to match database schema)
+            time_limit_enabled: currentConfigData.timeLimitEnabled || false,
+            time_limit_hours: currentConfigData.timeLimitHours || 0,
+            time_limit_minutes: currentConfigData.timeLimitMinutes || 30,
+            time_limit_seconds: currentConfigData.timeLimitSeconds || 0,
+            show_countdown: currentConfigData.showCountdown !== false,
+            auto_submit: currentConfigData.autoSubmit !== false,
+            warning_alerts: currentConfigData.warningAlerts || false,
+
+            // Randomization configuration (using snake_case field names to match database schema)
+            shuffle_questions: currentConfigData.shuffleQuestions || false,
+            shuffle_answers: currentConfigData.shuffleAnswers || false,
+            enable_question_pool: currentConfigData.enableQuestionPool || false,
+            question_pool_size: currentConfigData.questionPoolSize || 5,
+            difficulty_ratios: currentConfigData.difficultyRatios || { easy: 30, medium: 50, hard: 20 },
+            randomization_seed: currentConfigData.randomizationSeed || '',
 
             // Questions from Stage 1 (transformed to API format)
+            // Database expects questions to be stored directly in questions column
             questions: transformedQuestions,
 
-            lastUpdated: now
+            last_updated: now // Use snake_case field name to match database schema
         };
 
         // Determine API endpoint and method

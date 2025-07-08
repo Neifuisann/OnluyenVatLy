@@ -55,9 +55,16 @@
             animation: pulse 2s infinite;
         }
         
-        /* Hide the katex-html elements while keeping katex-mathml visible */
-        .katex-html {
-            display: none !important;
+        /* KaTeX accessibility: Keep HTML for visual rendering and MathML for screen readers */
+        .katex .katex-mathml {
+            /* Hide MathML from visual display but keep for screen readers */
+            position: absolute;
+            clip: rect(1px, 1px, 1px, 1px);
+            padding: 0;
+            border: 0;
+            height: 1px;
+            width: 1px;
+            overflow: hidden;
         }
         
         /* Home Button for Quiz */

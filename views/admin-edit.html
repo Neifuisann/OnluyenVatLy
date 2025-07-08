@@ -12,8 +12,16 @@
     <!-- Custom styles for KaTeX -->
     <style>
         /* Hide the katex-html elements while keeping katex-mathml visible */
-        .katex-html {
-            display: none !important;
+        /* KaTeX accessibility: Keep HTML for visual rendering and MathML for screen readers */
+        .katex .katex-mathml {
+            /* Hide MathML from visual display but keep for screen readers */
+            position: absolute;
+            clip: rect(1px, 1px, 1px, 1px);
+            padding: 0;
+            border: 0;
+            height: 1px;
+            width: 1px;
+            overflow: hidden;
         }
     </style>
     <!-- Keep theme CSS for now, JS change will apply default -->
@@ -193,11 +201,13 @@
     <!-- Optional: KaTeX auto-render extension -->
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
     
-    <script src="/js/admin-stage1-editor.js"></script>
+    <!-- CSRF utilities for secure API requests -->
+    <script src="/js/csrf-utils.js?v=2"></script>
+    <script src="/js/admin-stage1-editor.js?v=2"></script>
     <!-- Document upload functionality -->
-    <script src="/js/document-upload.js"></script>
+    <script src="/js/document-upload.js?v=2"></script>
     <!-- Storage recovery script to help with session storage issues -->
-    <script src="/js/storage-recovery.js"></script>
+    <script src="/js/storage-recovery.js?v=2"></script>
     <!-- Keep drag utils if needed for other parts, otherwise remove -->
     <!-- <script src="/js/drag-utils.js"></script> --> 
      <!-- Font Awesome for icons -->

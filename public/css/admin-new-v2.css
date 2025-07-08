@@ -9,6 +9,7 @@
   --primary-color: #6366f1;
   --primary-hover: #5145e0;
   --primary-light: #e0e7ff;
+  --accent-primary: #6366f1;
   --secondary-color: #64748b;
   --secondary-hover: #475569;
   
@@ -29,6 +30,8 @@
   --bg-primary: #ffffff;
   --bg-secondary: #f8fafc;
   --bg-tertiary: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f8fafc;
   --bg-dark: #1e293b;
   --bg-darker: #0f172a;
   
@@ -124,7 +127,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(30, 41, 59, 0.95); /* Dark theme background */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -957,6 +960,7 @@ body {
   flex-direction: column;
   transform: scale(0.95);
   transition: transform var(--transition-base);
+  position: relative; /* For absolute children */
 }
 
 .modal.active .modal-content {
@@ -1000,6 +1004,7 @@ body {
   flex: 1;
   padding: var(--space-lg);
   overflow-y: auto;
+  position: relative; /* Ensure positioned for absolute children */
 }
 
 .modal-footer {
@@ -1013,6 +1018,11 @@ body {
 }
 
 /* === Upload Components === */
+.upload-area {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
 .upload-options {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1062,11 +1072,28 @@ body {
   text-align: center;
   transition: all var(--transition-fast);
   cursor: pointer;
+  background: var(--bg-secondary); /* Ensure dark theme background */
+  color: var(--text-primary); /* Ensure text is visible */
 }
 
 .upload-dropzone:hover, .image-dropzone:hover {
   border-color: var(--primary-color);
   background: var(--primary-light);
+}
+
+.dropzone-content {
+  color: var(--text-primary);
+}
+
+.dropzone-content i {
+  font-size: 3rem;
+  color: var(--primary-color);
+  margin-bottom: var(--space-md);
+}
+
+.dropzone-content p {
+  color: var(--text-secondary);
+  font-size: var(--font-size-base);
 }
 
 .upload-dropzone.dragover, .image-dropzone.dragover {
@@ -1370,11 +1397,14 @@ body {
     --bg-primary: #1e293b;
     --bg-secondary: #334155;
     --bg-tertiary: #475569;
+    --bg-card: #334155;
+    --bg-card-hover: #475569;
     --text-primary: #f1f5f9;
     --text-secondary: #cbd5e1;
     --text-tertiary: #94a3b8;
     --border-color: #475569;
     --border-hover: #64748b;
+    --accent-primary: #818cf8;
   }
   
   .CodeMirror {
@@ -1388,27 +1418,68 @@ body {
 }
 
 /* === Processing Overlay === */
-.processing-overlay {
-  position: absolute;
+/* When processing overlay is inside modal-body */
+.modal-body .processing-overlay {
+  position: fixed !important; /* Force fixed positioning */
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: min(90vw, 600px) !important; /* Match modal max width */
+  height: auto !important; /* Auto height based on content */
+  max-height: 80vh !important;
+  background: var(--bg-secondary) !important; /* Darker background for contrast */
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--radius-xl) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: calc(var(--z-modal) + 20) !important; /* Above modal */
+  padding: var(--space-2xl) !important;
+}
+
+/* Dark overlay behind processing */
+.modal-body .processing-overlay::before {
+  content: "";
+  position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.95);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: var(--z-modal);
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: -1;
 }
 
 .processing-content {
   text-align: center;
-  padding: var(--space-2xl);
+  color: var(--text-primary);
+  position: relative;
+  z-index: 1;
 }
 
 .processing-content h3 {
-  margin: var(--space-lg) 0 var(--space-md);
   color: var(--text-primary);
+  margin: var(--space-lg) 0 var(--space-md);
+  font-size: var(--font-size-xl);
+}
+
+.processing-content p {
+  color: var(--text-secondary);
+  margin-bottom: var(--space-lg);
+}
+
+.processing-spinner {
+  margin-bottom: var(--space-lg);
+}
+
+.processing-spinner .spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 3px solid var(--border-color);
+  border-top: 3px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
 }
 
 .processing-steps {
@@ -1416,6 +1487,7 @@ body {
   justify-content: center;
   gap: var(--space-lg);
   margin: var(--space-xl) 0;
+  flex-wrap: wrap; /* Allow wrapping on small screens */
 }
 
 .processing-steps .step {
@@ -1425,9 +1497,11 @@ body {
   gap: var(--space-sm);
   padding: var(--space-md);
   border-radius: var(--radius-lg);
-  background: var(--bg-secondary);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
   min-width: 80px;
   transition: all var(--transition-base);
+  text-align: center;
 }
 
 .processing-steps .step.active {
@@ -1445,6 +1519,17 @@ body {
   font-size: var(--font-size-sm);
   font-style: italic;
   margin-top: var(--space-lg);
+}
+
+/* Ensure proper styling for processing overlay elements */
+.modal-body .processing-overlay .processing-steps .step i {
+  font-size: 1.5rem;
+  margin-bottom: var(--space-xs);
+}
+
+.modal-body .processing-overlay .processing-steps .step span {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
 }
 
 /* === Gallery Items === */
@@ -1558,7 +1643,7 @@ body {
 /* === Processing Status === */
 .processing-status {
   padding: var(--space-xl);
-  background: var(--bg-secondary);
+  background: var(--bg-tertiary); /* Darker background for better contrast */
   border-radius: var(--radius-lg);
   margin-top: var(--space-lg);
 }
@@ -1574,7 +1659,7 @@ body {
   padding: var(--space-md);
   margin-bottom: var(--space-md);
   border-radius: var(--radius-md);
-  background: var(--bg-primary);
+  background: var(--bg-secondary); /* Use secondary background for better contrast */
   border: 1px solid var(--border-color);
   transition: all var(--transition-fast);
 }
@@ -1954,8 +2039,8 @@ body {
 }
 
 .form-label i {
-  color: var(--primary-color);
-  width: 16px;
+  color: #ffffff;
+  width: 20px;
   text-align: center;
 }
 

@@ -140,8 +140,10 @@ const validateAdminLogin = (req, res, next) => {
 const validateLesson = (req, res, next) => {
   console.log('validateLesson - Request body keys:', Object.keys(req.body));
   console.log('validateLesson - Questions structure:');
-  if (req.body.questions && Array.isArray(req.body.questions)) {
-    req.body.questions.forEach((q, idx) => {
+  const questionsToLog = req.body.questions || (req.body.quiz && req.body.quiz.questions) || [];
+  if (questionsToLog && Array.isArray(questionsToLog)) {
+    console.log(`  Questions found at: ${req.body.questions ? 'root.questions' : req.body.quiz ? 'root.quiz.questions' : 'not found'}`);
+    questionsToLog.forEach((q, idx) => {
       console.log(`  Question ${idx + 1}:`, {
         type: q.type,
         hasCorrect: 'correct' in q,
@@ -152,8 +154,11 @@ const validateLesson = (req, res, next) => {
       });
     });
   }
-  const { title, content, questions, subject, grade, color, description, tags } = req.body;
+  const { title, content, questions, quiz, subject, grade, color, description, tags } = req.body;
   const errors = [];
+  
+  // Extract questions from either root level or quiz object
+  const actualQuestions = questions || (quiz && quiz.questions) || [];
   
   // Check if this is a partial update (only color field for example)
   const isPartialUpdate = req.method === 'PUT' && Object.keys(req.body).length === 1;
@@ -165,14 +170,14 @@ const validateLesson = (req, res, next) => {
     }
 
     // Modern lessons use questions array instead of content
-    // Accept either content (legacy) or questions (modern)
-    if ((!content || content.trim().length === 0) && (!questions || !Array.isArray(questions) || questions.length === 0)) {
+    // Accept either content (legacy) or questions (modern) or quiz.questions (new format)
+    if ((!content || content.trim().length === 0) && (!actualQuestions || !Array.isArray(actualQuestions) || actualQuestions.length === 0)) {
       errors.push('Bài học phải có nội dung hoặc ít nhất một câu hỏi');
     }
 
     // Validate questions structure if provided
-    if (questions && Array.isArray(questions)) {
-      questions.forEach((q, index) => {
+    if (actualQuestions && Array.isArray(actualQuestions)) {
+      actualQuestions.forEach((q, index) => {
         if (!q.question || typeof q.question !== 'string') {
           errors.push(`Câu hỏi ${index + 1}: Nội dung câu hỏi không hợp lệ`);
         }

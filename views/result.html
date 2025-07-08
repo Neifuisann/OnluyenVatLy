@@ -1157,9 +1157,16 @@
             }
         }
 
-        /* Hide KaTeX HTML */
-        .katex-html {
-            display: none !important;
+        /* KaTeX accessibility: Keep HTML for visual rendering and MathML for screen readers */
+        .katex .katex-mathml {
+            /* Hide MathML from visual display but keep for screen readers */
+            position: absolute;
+            clip: rect(1px, 1px, 1px, 1px);
+            padding: 0;
+            border: 0;
+            height: 1px;
+            width: 1px;
+            overflow: hidden;
         }
 
         /* Additional enhancements */
@@ -1325,6 +1332,7 @@
     </div>
 
     <!-- Scripts -->
+    <script src="/js/csrf-utils.js"></script>
     <script src="/js/result.js"></script>
     
     <!-- KaTeX JS -->
@@ -1333,6 +1341,35 @@
     
     <!-- Additional animations -->
     <script>
+        // Initialize KaTeX when auto-render is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait for KaTeX auto-render to load
+            function waitForKaTeX() {
+                if (typeof renderMathInElement !== 'undefined') {
+                    // KaTeX is loaded, now we can use it
+                    console.log('KaTeX auto-render loaded successfully');
+                    
+                    // If results are already loaded, render math
+                    const resultElement = document.getElementById('result');
+                    if (resultElement && resultElement.innerHTML.trim() !== '') {
+                        renderMathInElement(resultElement, {
+                            delimiters: [
+                                {left: "$$", right: "$$", display: true},
+                                {left: "$", right: "$", display: false},
+                                {left: "\\(", right: "\\)", display: false},
+                                {left: "\\[", right: "\\]", display: true}
+                            ],
+                            throwOnError: false
+                        });
+                    }
+                } else {
+                    // KaTeX not loaded yet, try again
+                    setTimeout(waitForKaTeX, 100);
+                }
+            }
+            waitForKaTeX();
+        });
+
         // Add intersection observer for scroll animations
         const observerOptions = {
             threshold: 0.1,

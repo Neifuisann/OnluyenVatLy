@@ -91,13 +91,55 @@ class StudentController {
   // Get current student's profile
   getCurrentStudentProfile = asyncHandler(async (req, res) => {
     const sessionData = sessionService.getSessionData(req);
-    
-    if (!sessionData.studentId) {
+    const isAdmin = sessionService.isAdminAuthenticated(req);
+
+    // Debug logging
+    console.log('[Profile Debug] getCurrentStudentProfile called:', {
+      sessionId: req.sessionID,
+      studentId: sessionData.studentId,
+      isAdmin,
+      hasStudentId: !!sessionData.studentId,
+      sessionData
+    });
+
+    if (!sessionData.studentId && !isAdmin) {
+      console.log('[Profile Debug] Access denied - no student ID and not admin');
       throw new AuthenticationError('Student authentication required');
     }
-    
-    const profile = await databaseService.getStudentProfile(sessionData.studentId);
-    
+
+    let profile;
+
+    if (sessionData.studentId) {
+      // Regular student access
+      profile = await databaseService.getStudentProfile(sessionData.studentId);
+    } else if (isAdmin) {
+      // Admin access - provide a default admin profile
+      profile = {
+        id: 'admin',
+        full_name: 'Administrator',
+        phone_number: 'admin',
+        grade_level: 'Admin',
+        school_name: 'System Administrator',
+        bio: 'System Administrator Account',
+        avatar_url: null,
+        profile_visible: true,
+        leaderboard_visible: false,
+        created_at: new Date().toISOString(),
+        is_approved: true,
+        statistics: {
+          total_lessons_completed: 0,
+          total_score: 0,
+          average_score: 0,
+          total_time_spent: 0,
+          lessons_this_week: 0,
+          current_streak: 0,
+          best_streak: 0,
+          rank: null,
+          total_students: 0
+        }
+      };
+    }
+
     res.json({
       success: true,
       profile

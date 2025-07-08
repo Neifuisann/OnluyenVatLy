@@ -863,10 +863,25 @@ async function uploadImage(file, url) {
     showImageUploadIndicator(true);
 
     try {
+        // Check if getCSRFToken function is available
+        if (typeof getCSRFToken !== 'function') {
+            console.error('getCSRFToken function not available! CSRF utils may not be loaded.');
+            alert('Error: CSRF utilities not loaded. Please refresh the page.');
+            return;
+        }
+
+        // Get CSRF token before making the request
+        console.log('Getting CSRF token...');
+        const csrfToken = await getCSRFToken();
+        console.log('CSRF token obtained:', csrfToken ? 'Yes' : 'No', csrfToken?.substring(0, 8) + '...');
+
         const response = await fetch('/api/admin/upload-image', {
             method: 'POST',
+            headers: {
+                'x-csrf-token': csrfToken
+            },
             body: formData,
-            // No 'Content-Type' header needed, browser sets it correctly for FormData
+            credentials: 'include' // Include session cookies
         });
 
         const result = await response.json();

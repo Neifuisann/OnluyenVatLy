@@ -2,6 +2,49 @@ let currentResult = null;
 let resultData = null;
 let sortedQuestions = [];
 
+// Global function to render LaTeX content
+window.renderAllLatex = function() {
+    if (typeof renderMathInElement === 'function') {
+        console.log('Rendering all LaTeX content...');
+        // Render in the main result container
+        const resultElement = document.getElementById('result');
+        if (resultElement) {
+            console.log('Found result element, checking for LaTeX content...');
+            const latexContent = resultElement.innerHTML.match(/\$\$[\s\S]*?\$\$|\$[^$]*\$|\\[\(\[][\s\S]*?\\[\)\]]/g);
+            if (latexContent) {
+                console.log('Found LaTeX expressions:', latexContent.length);
+            }
+            renderMathInElement(resultElement, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false},
+                    {left: "\\(", right: "\\)", display: false},
+                    {left: "\\[", right: "\\]", display: true}
+                ],
+                throwOnError: false
+            });
+            console.log('LaTeX rendering completed for result element');
+        }
+
+        // Also render in statistics cards if they contain LaTeX
+        const statsContainer = document.querySelector('.stats-container');
+        if (statsContainer) {
+            renderMathInElement(statsContainer, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false},
+                    {left: "\\(", right: "\\)", display: false},
+                    {left: "\\[", right: "\\]", display: true}
+                ],
+                throwOnError: false
+            });
+        }
+    } else {
+        console.log('KaTeX not loaded yet, waiting...');
+        setTimeout(window.renderAllLatex, 100);
+    }
+};
+
 // --- Student Authentication Functions (optional) ---
 async function checkStudentAuthentication() {
     try {
@@ -181,7 +224,9 @@ function updateStatisticsCards(result) {
     const incorrectAnswers = totalQuestions - correctAnswers;
     const accuracy = totalQuestions > 0 ? ((correctAnswers / totalQuestions) * 100).toFixed(1) : '0.0';
     const score = result.score !== undefined ? result.score : 0;
-    const totalPoints = result.totalPoints !== undefined ? result.totalPoints : totalQuestions;
+    // Handle both camelCase and snake_case field names for compatibility
+    const totalPoints = result.total_points !== undefined ? result.total_points :
+                       result.totalPoints !== undefined ? result.totalPoints : totalQuestions;
     const scorePercentage = totalPoints > 0 ? ((score / totalPoints) * 100).toFixed(1) : '0.0';
 
     console.log('🔍 Statistics calculated:', { score, totalPoints, totalQuestions, correctAnswers });
@@ -192,19 +237,20 @@ function updateStatisticsCards(result) {
         scoreElement.textContent = `${score}/${totalPoints}`;
     }
     
-    // Get lesson name
-    if (result.lessonId) {
-        fetchLessonName(result.lessonId);
+    // Get lesson name - handle both field name formats
+    const lessonId = result.lesson_id || result.lessonId;
+    if (lessonId) {
+        fetchLessonName(lessonId);
     } else {
         const lessonElement = document.getElementById('lesson-name');
         if (lessonElement) {
             lessonElement.textContent = 'Unknown Lesson';
         }
     }
-    
+
     // Get user ranking
-    if (result.lessonId && totalPoints > 0) {
-        fetchUserRanking(result.lessonId, score, totalPoints);
+    if (lessonId && totalPoints > 0) {
+        fetchUserRanking(lessonId, score, totalPoints);
     } else {
         const rankElement = document.getElementById('user-rank');
         if (rankElement) {
@@ -944,17 +990,7 @@ function displaySortedResults(sortType) {
     initializeImageZoom(); // Initialize image zoom functionality
     
     // Render LaTeX in the results
-    if (typeof renderMathInElement === 'function') {
-        renderMathInElement(document.getElementById('result'), {
-            delimiters: [
-                {left: "$$", right: "$$", display: true},
-                {left: "$", right: "$", display: false},
-                {left: "\\(", right: "\\)", display: false},
-                {left: "\\[", right: "\\]", display: true}
-            ],
-            throwOnError: false
-        });
-    }
+    window.renderAllLatex();
 }
 
 // Initialize image zoom functionality
@@ -1187,6 +1223,10 @@ async function getExplanation(button, question, userAnswer, correctAnswer) {
     button.disabled = true;
     
     try {
+        // Debug: Check if CSRFUtils is available
+        console.log('[Explain Debug] CSRFUtils available:', !!window.CSRFUtils);
+        console.log('[Explain Debug] Available methods:', window.CSRFUtils ? Object.keys(window.CSRFUtils) : 'None');
+        
         // Decode the URL-encoded parameters
         const decodedQuestion = decodeURIComponent(button.dataset.question);
         const decodedUserAnswer = decodeURIComponent(button.dataset.userAnswer);
@@ -1213,17 +1253,11 @@ async function getExplanation(button, question, userAnswer, correctAnswer) {
         }
         // ---
         
-        // Secure API call to backend explanation endpoint
-        const response = await fetch('/api/explain', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                question: decodedQuestion,
-                answer: `Đáp án của bạn: ${userAnswerText}`,
-                explanation: `Đáp án đúng: ${correctAnswerText}${optionsText ? '\n\nLựa chọn:\n' + JSON.parse(optionsText).map((opt, i) => `${String.fromCharCode(65 + i)}) ${opt}`).join('\n') : ''}`
-            })
+        // Secure API call to backend explanation endpoint using CSRF utility
+        const response = await window.CSRFUtils.securePost('/api/explain', {
+            question: decodedQuestion,
+            answer: `Đáp án của bạn: ${userAnswerText}`,
+            explanation: `Đáp án đúng: ${correctAnswerText}${optionsText ? '\n\nLựa chọn:\n' + JSON.parse(optionsText).map((opt, i) => `${String.fromCharCode(65 + i)}) ${opt}`).join('\n') : ''}`
         });
         
         if (!response.ok) {
@@ -1255,6 +1289,11 @@ async function getExplanation(button, question, userAnswer, correctAnswer) {
         
         // Render LaTeX in the explanation
         if (typeof renderMathInElement === 'function') {
+            console.log('Rendering LaTeX in explanation content...');
+            const latexContent = explanationContent.innerHTML.match(/\$\$[\s\S]*?\$\$|\$[^$]*\$|\\[\(\[][\s\S]*?\\[\)\]]/g);
+            if (latexContent) {
+                console.log('Found LaTeX expressions in explanation:', latexContent.length);
+            }
             renderMathInElement(explanationContent, {
                 delimiters: [
                     {left: "$$", right: "$$", display: true},
@@ -1264,6 +1303,7 @@ async function getExplanation(button, question, userAnswer, correctAnswer) {
                 ],
                 throwOnError: false
             });
+            console.log('LaTeX rendering completed for explanation');
         }
     } catch (error) {
         console.error('Error getting explanation:', error);

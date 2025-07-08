@@ -410,7 +410,7 @@ router.get('/share/lesson/:lessonId', async (req, res) => {
         // 1. Fetch lesson details including randomQuestions
         const { data: lessonData, error: lessonError } = await supabase
             .from('lessons')
-            .select('id, title, lessonImage, questions, randomQuestions')
+            .select('id, title, lesson_image, questions, random_questions')
             .eq('id', lessonId)
             .single();
 
@@ -422,7 +422,7 @@ router.get('/share/lesson/:lessonId', async (req, res) => {
         const { count: submissionCount, error: countError } = await supabase
             .from('results')
             .select('*', { count: 'exact', head: true })
-            .eq('lessonId', lessonId);
+            .eq('lesson_id', lessonId);
 
         if (countError) {
             console.error(`Error fetching total submission count for lesson ${lessonId}:`, countError.message);
@@ -443,9 +443,9 @@ router.get('/share/lesson/:lessonId', async (req, res) => {
             console.log(`Fetching history for student ${loggedInStudentId} and lesson ${lessonId}`);
             const { data: historyData, error: historyError } = await supabase
                 .from('results')
-                .select('id, score, totalPoints, timestamp, questions')
+                .select('id, score, total_points, timestamp, questions')
                 .eq('student_id', loggedInStudentId)
-                .eq('lessonId', lessonId)
+                .eq('lesson_id', lessonId)
                 .order('timestamp', { ascending: false })
                 .limit(3); // Limit to latest 3 attempts
 
@@ -457,7 +457,7 @@ router.get('/share/lesson/:lessonId', async (req, res) => {
                 userHistoryHtml = '<h2 style="text-align: left; margin-top: 30px; margin-bottom: 15px; font-size: 1.4em; color: #333;">Lịch sử làm bài của bạn</h2>';
                 historyData.forEach(result => {
                     const score = result.score ?? 0;
-                    const totalPoints = result.totalPoints ?? 0;
+                    const totalPoints = result.total_points ?? 0;
                     const scorePercent = totalPoints > 0 ? ((score / totalPoints) * 100).toFixed(2) : 'N/A';
                     const correctAnswers = Array.isArray(result.questions)
                         ? result.questions.filter(q => q.isCorrect).length
@@ -487,8 +487,8 @@ router.get('/share/lesson/:lessonId', async (req, res) => {
         // 6. Replace placeholders
         htmlContent = htmlContent.replace(/{{LESSON_NAME}}/g, lessonData.title || 'Không có tiêu đề');
 
-        // Use the URL directly from the database
-        let imageUrl = lessonData.lessonImage || '';
+        // Use the URL directly from the database (handle both field name formats)
+        let imageUrl = lessonData.lesson_image || lessonData.lessonImage || '';
         htmlContent = htmlContent.replace(/{{LESSON_IMAGE_URL}}/g, imageUrl);
         htmlContent = htmlContent.replace(/{{QUESTION_COUNT}}/g, questionsPerAttempt);
         htmlContent = htmlContent.replace(/{{SUBMISSION_COUNT}}/g, totalSubmissions);

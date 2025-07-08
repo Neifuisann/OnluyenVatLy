@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaTeX Rendering Test</title>
+    
+    <!-- KaTeX CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+    
+    <style>
+        body {
+            background: #0a0a0f;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        
+        .test-section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .test-title {
+            color: #a4aeff;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        /* KaTeX accessibility: Keep HTML for visual rendering and MathML for screen readers */
+        .katex .katex-mathml {
+            /* Hide MathML from visual display but keep for screen readers */
+            position: absolute;
+            clip: rect(1px, 1px, 1px, 1px);
+            padding: 0;
+            border: 0;
+            height: 1px;
+            width: 1px;
+            overflow: hidden;
+        }
+        
+        .math-expression {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+        }
+        
+        .status {
+            margin-top: 1rem;
+            padding: 0.5rem;
+            border-radius: 5px;
+        }
+        
+        .status.success {
+            background: rgba(67, 233, 123, 0.2);
+            color: #43e97b;
+        }
+        
+        .status.error {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+        }
+    </style>
+</head>
+<body>
+    <h1>LaTeX Rendering Test - Result Page Fix</h1>
+    <p>This test verifies that the LaTeX rendering issue on the /result page has been fixed.</p>
+    
+    <div class="test-section">
+        <div class="test-title">Test 1: Display Math ($$...$$)</div>
+        <div class="math-expression">
+            The quadratic formula is: $$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
+        </div>
+        <div class="math-expression">
+            Einstein's mass-energy equivalence: $$E = mc^2$$
+        </div>
+        <div class="math-expression">
+            Newton's second law: $$\vec{F} = m\vec{a}$$
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <div class="test-title">Test 2: Inline Math ($...$)</div>
+        <p>The velocity formula is $v = \frac{d}{t}$ where $d$ is distance and $t$ is time.</p>
+        <p>The acceleration is $a = \frac{\Delta v}{\Delta t}$ in physics.</p>
+    </div>
+    
+    <div class="test-section">
+        <div class="test-title">Test 3: LaTeX Brackets (\[...\] and \(...\))</div>
+        <div class="math-expression">
+            Display mode with brackets: \[F = G\frac{m_1 m_2}{r^2}\]
+        </div>
+        <p>Inline with parentheses: The kinetic energy is \(KE = \frac{1}{2}mv^2\) joules.</p>
+    </div>
+    
+    <div class="test-section">
+        <div class="test-title">Test 4: Complex Physics Expressions</div>
+        <div class="math-expression">
+            Wave equation: $$\frac{\partial^2 u}{\partial t^2} = c^2 \frac{\partial^2 u}{\partial x^2}$$
+        </div>
+        <div class="math-expression">
+            Schrödinger equation: $$i\hbar\frac{\partial}{\partial t}\Psi = \hat{H}\Psi$$
+        </div>
+        <div class="math-expression">
+            Maxwell's equations: $$\nabla \cdot \vec{E} = \frac{\rho}{\epsilon_0}$$
+        </div>
+    </div>
+    
+    <div id="status-container"></div>
+    
+    <!-- KaTeX JS -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, waiting for KaTeX...');
+            
+            function testLatexRendering() {
+                if (typeof renderMathInElement !== 'undefined') {
+                    console.log('KaTeX auto-render loaded successfully');
+                    
+                    // Count LaTeX expressions before rendering
+                    const bodyContent = document.body.innerHTML;
+                    const latexExpressions = bodyContent.match(/\$\$[\s\S]*?\$\$|\$[^$]*\$|\\[\(\[][\s\S]*?\\[\)\]]/g);
+                    console.log('Found LaTeX expressions:', latexExpressions ? latexExpressions.length : 0);
+                    
+                    // Render math
+                    renderMathInElement(document.body, {
+                        delimiters: [
+                            {left: "$$", right: "$$", display: true},
+                            {left: "$", right: "$", display: false},
+                            {left: "\\(", right: "\\)", display: false},
+                            {left: "\\[", right: "\\]", display: true}
+                        ],
+                        throwOnError: false
+                    });
+                    
+                    console.log('LaTeX rendering completed');
+                    
+                    // Check if rendering was successful
+                    setTimeout(() => {
+                        const katexElements = document.querySelectorAll('.katex');
+                        const statusContainer = document.getElementById('status-container');
+                        
+                        if (katexElements.length > 0) {
+                            statusContainer.innerHTML = `
+                                <div class="status success">
+                                    ✅ SUCCESS: Found ${katexElements.length} rendered LaTeX expressions!
+                                    <br>The fix is working correctly - mathematical expressions are now visible.
+                                </div>
+                            `;
+                        } else {
+                            statusContainer.innerHTML = `
+                                <div class="status error">
+                                    ❌ ERROR: No LaTeX expressions were rendered.
+                                    <br>The issue may still exist or KaTeX failed to load.
+                                </div>
+                            `;
+                        }
+                    }, 1000);
+                    
+                } else {
+                    console.log('KaTeX not loaded yet, waiting...');
+                    setTimeout(testLatexRendering, 100);
+                }
+            }
+            
+            testLatexRendering();
+        });
+    </script>
+</body>
+</html>

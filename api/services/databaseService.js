@@ -73,7 +73,7 @@ class DatabaseService {
       // Regular query without search
       let query = supabase
         .from('lessons')
-        .select('id, title, color, created, lastUpdated, views, order, subject, grade, tags, description, purpose, pricing, lessonImage, randomQuestions', { count: 'exact' })
+        .select('id, title, color, created, last_updated, views, order, subject, grade, tags, description, purpose, pricing, lesson_image, random_questions', { count: 'exact' })
         .order(orderColumn, { ascending: orderAscending });
 
       // Apply tag filtering at database level for better performance
@@ -97,7 +97,14 @@ class DatabaseService {
       total = count || 0;
     }
 
-    return { lessons, total, page, limit, search, sort, tags: tagFilters };
+    // Map database field names to frontend expected names
+    const mappedLessons = lessons.map(lesson => ({
+      ...lesson,
+      lessonImage: lesson.lesson_image, // Map lesson_image to lessonImage for frontend compatibility
+      randomQuestions: lesson.random_questions // Map random_questions to randomQuestions for frontend compatibility
+    }));
+
+    return { lessons: mappedLessons, total, page, limit, search, sort, tags: tagFilters };
   }
 
   async getLessonById(id) {
@@ -114,7 +121,14 @@ class DatabaseService {
       throw error;
     }
 
-    return lesson;
+    // Map database field names to frontend expected names
+    const mappedLesson = {
+      ...lesson,
+      lessonImage: lesson.lesson_image, // Map lesson_image to lessonImage for frontend compatibility
+      randomQuestions: lesson.random_questions // Map random_questions to randomQuestions for frontend compatibility
+    };
+
+    return mappedLesson;
   }
 
   async createLesson(lessonData) {
@@ -135,14 +149,26 @@ class DatabaseService {
     }
 
     const now = new Date().toISOString();
+
+    // Convert camelCase fields to snake_case for database compatibility
     const newLessonData = {
       ...lessonData,
       id: lessonData.id || Date.now().toString(),
       views: 0,
-      lastUpdated: now,
+      last_updated: now, // Use snake_case field name
       created: now,
       order: nextOrder
     };
+
+    // Convert camelCase field names to snake_case for database
+    if (lessonData.lessonImage !== undefined) {
+      newLessonData.lesson_image = lessonData.lessonImage;
+      delete newLessonData.lessonImage;
+    }
+    if (lessonData.randomQuestions !== undefined) {
+      newLessonData.random_questions = lessonData.randomQuestions;
+      delete newLessonData.randomQuestions;
+    }
 
     const { data, error } = await supabase
       .from('lessons')
@@ -157,8 +183,18 @@ class DatabaseService {
   async updateLesson(id, updateData) {
     const updatedData = {
       ...updateData,
-      lastUpdated: new Date().toISOString()
+      last_updated: new Date().toISOString()
     };
+
+    // Convert camelCase field names to snake_case for database
+    if (updateData.lessonImage !== undefined) {
+      updatedData.lesson_image = updateData.lessonImage;
+      delete updatedData.lessonImage;
+    }
+    if (updateData.randomQuestions !== undefined) {
+      updatedData.random_questions = updateData.randomQuestions;
+      delete updatedData.randomQuestions;
+    }
     
     // Remove fields that shouldn't be updated
     delete updatedData.id;
@@ -224,6 +260,17 @@ class DatabaseService {
       .from('lessons')
       .select('id, title, quiz, grade, subject, tags, description')
       .or('description.is.null,description.eq.')
+      .limit(limit);
+
+    if (error) throw error;
+    return data || [];
+  }
+
+  async getLessonsWithoutImages(limit = 10) {
+    const { data, error } = await supabase
+      .from('lessons')
+      .select('id, title, ai_image_url, auto_generated_image')
+      .or('ai_image_url.is.null,ai_image_url.eq.')
       .limit(limit);
 
     if (error) throw error;
@@ -380,7 +427,7 @@ class DatabaseService {
         *,
         students ( full_name )
       `)
-      .eq('lessonId', lessonId);
+      .eq('lesson_id', lessonId);
 
     if (error) throw error;
     return results || [];
@@ -396,7 +443,7 @@ class DatabaseService {
         *,
         students ( full_name )
       `)
-      .in('lessonId', lessonIds);
+      .in('lesson_id', lessonIds);
 
     if (error) throw error;
     
@@ -407,8 +454,8 @@ class DatabaseService {
     });
     
     (results || []).forEach(result => {
-      if (groupedResults[result.lessonId]) {
-        groupedResults[result.lessonId].push(result);
+      if (groupedResults[result.lesson_id]) {
+        groupedResults[result.lesson_id].push(result);
       }
     });
     
@@ -735,7 +782,7 @@ class DatabaseService {
       lessons?.forEach(lesson => {
         if (Array.isArray(lesson.tags)) {
           const lessonViews = lesson.views || 0;
-          const isRecent = new Date(lesson.lastUpdated || lesson.created) > thirtyDaysAgo;
+          const isRecent = new Date(lesson.last_updated || lesson.lastUpdated || lesson.created) > thirtyDaysAgo;
 
           lesson.tags.forEach(tag => {
             if (tag && typeof tag === 'string') {
@@ -804,7 +851,7 @@ class DatabaseService {
 
       const { data, error } = await supabase
         .from('results')
-        .select('lessonId, score, totalPoints, timestamp')
+        .select('lesson_id, score, total_points, timestamp')
         .eq('student_id', studentId)
         .gte('score', 1); // Only count lessons with at least 1 point as completed
 
@@ -884,7 +931,7 @@ class DatabaseService {
 
       // Get completed lesson IDs with proper error handling
       const completedLessons = await this.getStudentCompletedLessons(studentId);
-      const completedIds = (completedLessons || []).map(lesson => lesson.lessonId);
+      const completedIds = (completedLessons || []).map(lesson => lesson.lesson_id);
 
       // Find first incomplete lesson
       const incompleteLesson = allLessons.find(lesson => !completedIds.includes(lesson.id));
@@ -978,7 +1025,7 @@ class DatabaseService {
         
         const { data, error } = await supabase
           .from('results')
-          .select('lessonId, questions, lessons(title, subject)')
+          .select('lesson_id, questions, lessons(title, subject)')
           .eq('id', resultId)
           .eq('student_id', studentId)
           .single();
@@ -987,7 +1034,7 @@ class DatabaseService {
           const question = data.questions[parseInt(questionIndex)];
           practiceQuestions.push({
             id: mistakeId,
-            lessonId: data.lessonId,
+            lessonId: data.lesson_id,
             lessonTitle: data.lessons?.title || 'Unknown Lesson',
             subject: data.lessons?.subject || 'Unknown',
             question: question.question,
@@ -1006,7 +1053,7 @@ class DatabaseService {
       const mistakes = await this.getStudentMistakes(studentId, count);
       return mistakes.map(mistake => ({
         id: mistake.id,
-        lessonId: mistake.lessonId,
+        lessonId: mistake.lesson_id,
         lessonTitle: mistake.lessonTitle,
         subject: mistake.subject,
         question: mistake.question,
@@ -1031,7 +1078,7 @@ class DatabaseService {
       score: practiceData.score,
       totalQuestions: practiceData.totalQuestions,
       percentage: Math.round((practiceData.score / practiceData.totalQuestions) * 100),
-      timeSpent: practiceData.timeTaken,
+      timeSpent: practiceData.time_taken,
       questions: practiceData.questions,
       timestamp: practiceData.timestamp,
       type: 'practice',
@@ -1058,7 +1105,7 @@ class DatabaseService {
 
     // Get completed lessons
     const completedLessons = await this.getStudentCompletedLessons(studentId);
-    const completedIds = completedLessons.map(lesson => lesson.lessonId);
+    const completedIds = completedLessons.map(lesson => lesson.lesson_id);
 
     // Group by subject
     const progressByTopic = {};
@@ -1122,7 +1169,7 @@ class DatabaseService {
 
     const { data, error } = await supabase
       .from('results')
-      .select('score, totalPoints, timestamp, lessonId')
+      .select('score, total_points, timestamp, lesson_id')
       .eq('student_id', studentId)
       .gte('timestamp', dateFilter.toISOString());
 
@@ -1159,7 +1206,7 @@ class DatabaseService {
   async getRecommendedLessons(studentId, limit = 5) {
     // Get completed lessons
     const completedLessons = await this.getStudentCompletedLessons(studentId);
-    const completedIds = completedLessons.map(lesson => lesson.lessonId);
+    const completedIds = completedLessons.map(lesson => lesson.lesson_id);
 
     // Get student's preferred subjects/tags from completed lessons
     const { data: completedLessonDetails, error: completedError } = await supabase
@@ -1203,7 +1250,7 @@ class DatabaseService {
     // Find recommended lessons
     let query = supabase
       .from('lessons')
-      .select('id, title, subject, grade, tags, description, lessonImage')
+      .select('id, title, subject, grade, tags, description, lesson_image')
       .not('id', 'in', `(${completedIds.join(',')})`)
       .limit(limit * 2); // Get more to filter
 
@@ -1235,17 +1282,23 @@ class DatabaseService {
       return { ...lesson, recommendationScore: score };
     });
 
-    // Sort by score and return top recommendations
-    return scoredLessons
+    // Sort by score and return top recommendations with field mapping
+    const mappedRecommendations = scoredLessons
       .sort((a, b) => b.recommendationScore - a.recommendationScore)
-      .slice(0, limit);
+      .slice(0, limit)
+      .map(lesson => ({
+        ...lesson,
+        lessonImage: lesson.lesson_image // Map lesson_image to lessonImage for frontend compatibility
+      }));
+
+    return mappedRecommendations;
   }
 
   // Get student's mistakes for review
   async getStudentMistakes(studentId, limit = 20, offset = 0, filters = {}) {
     let query = supabase
       .from('results')
-      .select('id, lessonId, questions, timestamp, lessons(title, subject)')
+      .select('id, lesson_id, questions, timestamp, lessons(title, subject)')
       .eq('student_id', studentId)
       .order('timestamp', { ascending: false });
 
@@ -1281,7 +1334,7 @@ class DatabaseService {
               if (mistakeIndex >= offset && mistakes.length < limit) {
                 mistakes.push({
                   id: mistakeId,
-                  lessonId: result.lessonId,
+                  lessonId: result.lesson_id,
                   lessonTitle: result.lessons?.title || 'Unknown Lesson',
                   subject: result.lessons?.subject || 'Unknown',
                   question: question.question,
@@ -1303,7 +1356,7 @@ class DatabaseService {
   }
 
   // Mark lesson as completed
-  async markLessonCompleted(studentId, lessonId, score, timeTaken) {
+  async markLessonCompleted(studentId, lessonId, score, time_taken) {
     // This is typically handled by the results submission
     // But we can add additional completion tracking here if needed
 
@@ -1524,7 +1577,7 @@ class DatabaseService {
         *,
         students ( full_name )
       `)
-      .eq('lessonId', lessonId);
+      .eq('lesson_id', lessonId);
 
     if (error) throw error;
     return results || [];
@@ -1558,8 +1611,8 @@ class DatabaseService {
         student_id,
         timestamp,
         score,
-        totalPoints,
-        lessonId,
+        total_points,
+        lesson_id,
         students!inner ( full_name ),
         lessons ( title )
       `, { count: 'exact' });
@@ -1582,11 +1635,11 @@ class DatabaseService {
     const history = historyData.map(result => ({
       resultId: result.id,
       studentName: result.students?.full_name || 'Unknown Student',
-      lessonTitle: result.lessons?.title || (result.lessonId === 'quiz_game' ? 'Trò chơi chinh phục' : 'Unknown Lesson'),
+      lessonTitle: result.lessons?.title || (result.lesson_id === 'quiz_game' ? 'Trò chơi chinh phục' : 'Unknown Lesson'),
       submittedAt: result.timestamp,
       score: result.score,
-      totalPoints: result.totalPoints,
-      scorePercentage: result.totalPoints ? ((result.score / result.totalPoints) * 100).toFixed(1) + '%' : 'N/A'
+      totalPoints: result.total_points,
+      scorePercentage: result.total_points ? ((result.score / result.total_points) * 100).toFixed(1) + '%' : 'N/A'
     }));
 
     return {
@@ -1618,16 +1671,16 @@ class DatabaseService {
       // Get active lessons (lessons with recent activity in last 7 days)
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-      
+
       const { data: activeLessonsData, error: activeError } = await supabase
         .from('results')
-        .select('lessonId', { count: 'exact' })
+        .select('lesson_id', { count: 'exact' })
         .gte('timestamp', sevenDaysAgo.toISOString())
-        .not('lessonId', 'eq', 'quiz_game');
+        .not('lesson_id', 'eq', 'quiz_game');
 
       if (activeError) throw activeError;
 
-      const activeLessons = new Set(activeLessonsData?.map(r => r.lessonId) || []).size;
+      const activeLessons = new Set(activeLessonsData?.map(r => r.lesson_id) || []).size;
 
       // Get recent activity (submissions in last 24 hours)
       const oneDayAgo = new Date();
@@ -1643,17 +1696,17 @@ class DatabaseService {
       // Calculate average score from all results
       const { data: scoreData, error: scoreError } = await supabase
         .from('results')
-        .select('score, totalPoints')
-        .not('lessonId', 'eq', 'quiz_game')
-        .not('totalPoints', 'is', null)
-        .gt('totalPoints', 0);
+        .select('score, total_points')
+        .not('lesson_id', 'eq', 'quiz_game')
+        .not('total_points', 'is', null)
+        .gt('total_points', 0);
 
       if (scoreError) throw scoreError;
 
       let averageScore = 0;
       if (scoreData && scoreData.length > 0) {
         const totalScore = scoreData.reduce((sum, result) => {
-          const percentage = (result.score / result.totalPoints) * 100;
+          const percentage = (result.score / result.total_points) * 100;
           return sum + percentage;
         }, 0);
         averageScore = Math.round(totalScore / scoreData.length);
@@ -1665,7 +1718,7 @@ class DatabaseService {
         activeLessons: activeLessons || 0,
         recentActivity: recentActivity || 0,
         averageScore: averageScore,
-        lastUpdated: new Date().toISOString()
+        last_updated: new Date().toISOString()
       };
     } catch (error) {
       console.error('Error calculating platform stats:', error);
@@ -1688,9 +1741,9 @@ class DatabaseService {
       // Get student's completed lessons
       const { data: results, error: resultsError } = await supabase
         .from('results')
-        .select('score, totalPoints, timestamp, timeTaken, lessonId')
+        .select('score, total_points, timestamp, time_taken, lesson_id')
         .eq('student_id', studentId)
-        .not('lessonId', 'eq', 'quiz_game'); // Exclude quiz game results
+        .not('lesson_id', 'eq', 'quiz_game'); // Exclude quiz game results
 
       if (resultsError) throw resultsError;
 
@@ -1710,7 +1763,7 @@ class DatabaseService {
 
       // Calculate total time spent (in minutes)
       const totalTimeSpent = results?.reduce((sum, result) => {
-        return sum + (result.timeTaken || 0);
+        return sum + (result.time_taken || 0);
       }, 0) || 0;
 
       // Get current and best streak
@@ -1774,9 +1827,9 @@ class DatabaseService {
           id,
           timestamp,
           score,
-          totalPoints,
-          timeTaken,
-          lessonId,
+          total_points,
+          time_taken,
+          lesson_id,
           lessons ( title, subject )
         `)
         .eq('student_id', studentId)
@@ -1789,15 +1842,15 @@ class DatabaseService {
         id: activity.id,
         type: 'lesson_completion',
         timestamp: activity.timestamp,
-        lessonId: activity.lessonId,
-        lessonTitle: activity.lessons?.title || 
-          (activity.lessonId === 'quiz_game' ? 'Trò chơi chinh phục' : 'Unknown Lesson'),
+        lessonId: activity.lesson_id,
+        lessonTitle: activity.lessons?.title ||
+          (activity.lesson_id === 'quiz_game' ? 'Trò chơi chinh phục' : 'Unknown Lesson'),
         subject: activity.lessons?.subject || 'Unknown',
         score: activity.score,
-        totalPoints: activity.totalPoints,
-        scorePercentage: activity.totalPoints > 0 ? 
-          Math.round((activity.score / activity.totalPoints) * 100) : 0,
-        timeSpent: activity.timeTaken || 0,
+        totalPoints: activity.total_points,
+        scorePercentage: activity.total_points > 0 ?
+          Math.round((activity.score / activity.total_points) * 100) : 0,
+        timeSpent: activity.time_taken || 0,
         description: `Completed ${activity.lessons?.title || 'lesson'} with ${
           activity.totalPoints > 0 ? 
           Math.round((activity.score / activity.totalPoints) * 100) : 0
@@ -1848,9 +1901,9 @@ class DatabaseService {
           student_id,
           timestamp,
           score,
-          totalPoints,
-          timeTaken,
-          lessonId,
+          total_points,
+          time_taken,
+          lesson_id,
           students!inner ( full_name, phone_number ),
           lessons ( title, subject )
         `, { count: 'exact' });
@@ -1860,7 +1913,7 @@ class DatabaseService {
         query = query.eq('student_id', filters.studentId);
       }
       if (filters.lessonId) {
-        query = query.eq('lessonId', filters.lessonId);
+        query = query.eq('lesson_id', filters.lessonId);
       }
       if (filters.dateFrom) {
         query = query.gte('timestamp', filters.dateFrom);
@@ -1880,16 +1933,16 @@ class DatabaseService {
         studentId: result.student_id,
         studentName: result.students?.full_name || 'Unknown Student',
         studentPhone: result.students?.phone_number || 'N/A',
-        lessonId: result.lessonId,
-        lessonTitle: result.lessons?.title || 
-          (result.lessonId === 'quiz_game' ? 'Trò chơi chinh phục' : 'Unknown Lesson'),
+        lessonId: result.lesson_id,
+        lessonTitle: result.lessons?.title ||
+          (result.lesson_id === 'quiz_game' ? 'Trò chơi chinh phục' : 'Unknown Lesson'),
         subject: result.lessons?.subject || 'Unknown',
         timestamp: result.timestamp,
         score: result.score,
-        totalPoints: result.totalPoints,
-        scorePercentage: result.totalPoints > 0 ? 
-          Math.round((result.score / result.totalPoints) * 100) : 0,
-        timeSpent: result.timeTaken || 0
+        totalPoints: result.total_points,
+        scorePercentage: result.total_points > 0 ?
+          Math.round((result.score / result.total_points) * 100) : 0,
+        timeSpent: result.time_taken || 0
       })) || [];
 
       return {
@@ -1920,9 +1973,9 @@ class DatabaseService {
           id,
           timestamp,
           score,
-          totalPoints,
-          timeTaken,
-          lessonId,
+          total_points,
+          time_taken,
+          lesson_id,
           lessons ( title, subject )
         `, { count: 'exact' })
         .eq('student_id', studentId)
@@ -1933,16 +1986,16 @@ class DatabaseService {
 
       const formattedResults = results?.map(result => ({
         id: result.id,
-        lessonId: result.lessonId,
-        lessonTitle: result.lessons?.title || 
-          (result.lessonId === 'quiz_game' ? 'Trò chơi chinh phục' : 'Unknown Lesson'),
+        lessonId: result.lesson_id,
+        lessonTitle: result.lessons?.title ||
+          (result.lesson_id === 'quiz_game' ? 'Trò chơi chinh phục' : 'Unknown Lesson'),
         subject: result.lessons?.subject || 'Unknown',
         timestamp: result.timestamp,
         score: result.score,
-        totalPoints: result.totalPoints,
-        scorePercentage: result.totalPoints > 0 ? 
-          Math.round((result.score / result.totalPoints) * 100) : 0,
-        timeSpent: result.timeTaken || 0
+        totalPoints: result.total_points,
+        scorePercentage: result.total_points > 0 ?
+          Math.round((result.score / result.total_points) * 100) : 0,
+        timeSpent: result.time_taken || 0
       })) || [];
 
       return {
@@ -1971,9 +2024,9 @@ class DatabaseService {
         .from('results')
         .select(`
           score,
-          totalPoints,
-          timeTaken,
-          lessonId,
+          total_points,
+          time_taken,
+          lesson_id,
           timestamp,
           lessons ( title, subject )
         `);
@@ -2000,19 +2053,19 @@ class DatabaseService {
       let totalTime = 0;
       
       if (results && results.length > 0) {
-        const validResults = results.filter(r => r.totalPoints > 0);
+        const validResults = results.filter(r => r.total_points > 0);
         totalValidResults = validResults.length;
-        
+
         if (totalValidResults > 0) {
           const totalPercentage = validResults.reduce((sum, result) => {
-            return sum + (result.score / result.totalPoints) * 100;
+            return sum + (result.score / result.total_points) * 100;
           }, 0);
           averageScore = Math.round(totalPercentage / totalValidResults);
         }
 
         // Calculate total time spent
         totalTime = results.reduce((sum, result) => {
-          return sum + (result.timeTaken || 0);
+          return sum + (result.time_taken || 0);
         }, 0);
       }
 
@@ -2025,7 +2078,7 @@ class DatabaseService {
       const { data: studentsWithResults } = await supabase
         .from('results')
         .select('student_id')
-        .not('lessonId', 'eq', 'quiz_game');
+        .not('lesson_id', 'eq', 'quiz_game');
 
       const uniqueStudents = new Set(studentsWithResults?.map(r => r.student_id) || []).size;
       const completionRate = totalStudents > 0 ? Math.round((uniqueStudents / totalStudents) * 100) : 0;
@@ -2033,10 +2086,10 @@ class DatabaseService {
       // Get top performing lessons
       const lessonStats = {};
       results?.forEach(result => {
-        if (result.lessonId !== 'quiz_game' && result.totalPoints > 0) {
-          if (!lessonStats[result.lessonId]) {
-            lessonStats[result.lessonId] = {
-              lessonId: result.lessonId,
+        if (result.lesson_id !== 'quiz_game' && result.total_points > 0) {
+          if (!lessonStats[result.lesson_id]) {
+            lessonStats[result.lesson_id] = {
+              lessonId: result.lesson_id,
               title: result.lessons?.title || 'Unknown Lesson',
               subject: result.lessons?.subject || 'Unknown',
               totalAttempts: 0,
@@ -2044,8 +2097,8 @@ class DatabaseService {
               averageScore: 0
             };
           }
-          lessonStats[result.lessonId].totalAttempts++;
-          lessonStats[result.lessonId].totalScore += (result.score / result.totalPoints) * 100;
+          lessonStats[result.lesson_id].totalAttempts++;
+          lessonStats[result.lesson_id].totalScore += (result.score / result.total_points) * 100;
         }
       });
 
@@ -2063,7 +2116,7 @@ class DatabaseService {
         .select(`
           timestamp,
           score,
-          totalPoints,
+          total_points,
           students ( full_name ),
           lessons ( title )
         `)
@@ -2074,8 +2127,8 @@ class DatabaseService {
         timestamp: result.timestamp,
         studentName: result.students?.full_name || 'Unknown Student',
         lessonTitle: result.lessons?.title || 'Unknown Lesson',
-        scorePercentage: result.totalPoints > 0 ? 
-          Math.round((result.score / result.totalPoints) * 100) : 0
+        scorePercentage: result.total_points > 0 ?
+          Math.round((result.score / result.total_points) * 100) : 0
       })) || [];
 
       return {
@@ -2115,13 +2168,13 @@ class DatabaseService {
         .from('results')
         .select(`
           score,
-          totalPoints,
-          timeTaken,
+          total_points,
+          time_taken,
           timestamp,
           questions,
           students ( full_name )
         `)
-        .eq('lessonId', lessonId);
+        .eq('lesson_id', lessonId);
 
       if (error) throw error;
 
@@ -2214,9 +2267,9 @@ class DatabaseService {
         averageScore: Math.round(averageScore * 100) / 100,
         completionRate: totalAttempts > 0 ? Math.round((totalAttempts / uniqueStudents) * 100) : 0,
         averageTime: totalAttempts > 0 ? 
-          Math.round(results.reduce((sum, r) => sum + (r.timeTaken || 0), 0) / totalAttempts) : 0,
+          Math.round(results.reduce((sum, r) => sum + (r.time_taken || 0), 0) / totalAttempts) : 0,
         views: lesson.views || 0,
-        lastUpdated: lesson.lastUpdated,
+        lastUpdated: lesson.last_updated || lesson.lastUpdated,
         uniqueStudents,
         lowScores,
         highScores,

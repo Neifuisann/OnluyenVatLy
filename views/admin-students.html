@@ -520,12 +520,19 @@
 
         showLoader(true);
         try {
+            // Get CSRF token before making the request
+            const csrfResponse = await fetch('/api/csrf-token');
+            if (!csrfResponse.ok) {
+                throw new Error('Failed to get CSRF token');
+            }
+            const csrfData = await csrfResponse.json();
+
             const response = await fetch(`/api/admin/unbind-device/${studentId}`, {
                 method: 'POST',
                 credentials: 'include', // Important for sending admin session cookie
                 headers: {
-                    'Content-Type': 'application/json' 
-                    // Add CSRF token header if your app uses them
+                    'Content-Type': 'application/json',
+                    'x-csrf-token': csrfData.csrfToken
                 }
             });
 
@@ -564,12 +571,19 @@
 
         showLoader(true);
         try {
+            // Get CSRF token before making the request
+            const csrfResponse = await fetch('/api/csrf-token');
+            if (!csrfResponse.ok) {
+                throw new Error('Failed to get CSRF token');
+            }
+            const csrfData = await csrfResponse.json();
+
             const response = await fetch(`/api/admin/delete-student/${studentId}`, {
                 method: 'DELETE',
                 credentials: 'include', // Important for sending admin session cookie
                 headers: {
-                    'Content-Type': 'application/json'
-                    // Add CSRF token header if your app uses them
+                    'Content-Type': 'application/json',
+                    'x-csrf-token': csrfData.csrfToken
                 }
             });
 

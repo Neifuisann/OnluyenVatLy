@@ -9,7 +9,9 @@
  */
 async function getCSRFToken() {
     try {
-        const response = await fetch('/api/csrf-token');
+        const response = await fetch('/api/csrf-token', {
+            credentials: 'include' // Include cookies for session
+        });
         if (!response.ok) {
             throw new Error('Failed to get CSRF token');
         }
@@ -64,6 +66,9 @@ async function secureApiRequest(url, options = {}) {
                 };
             }
         }
+        
+        // Always include credentials for session cookies
+        options.credentials = 'include';
         
         return await fetch(url, options);
     } catch (error) {

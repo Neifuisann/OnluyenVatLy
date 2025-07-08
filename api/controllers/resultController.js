@@ -34,18 +34,23 @@ class ResultController {
       });
     }
 
-    // Prepare result data matching the database schema
+    // Ensure score and totalPoints are integers (round decimal values)
+    score = Math.round(score);
+    totalPoints = Math.round(totalPoints);
+
+    // Prepare result data matching the database schema with snake_case columns
     const resultData = {
       id: Date.now().toString(),
-      lessonId,
-      student_id: sessionData.studentId, // Use student_id to match schema
+      lesson_id: lessonId, // Changed to snake_case
+      student_id: sessionData.studentId,
       questions: answers, // Use 'questions' column name, not 'answers'
       score,
-      totalPoints,
-      studentInfo,
+      total_points: totalPoints, // Changed to snake_case
+      student_info: studentInfo, // Changed to snake_case
       timestamp: new Date().toISOString(),
-      ipAddress: req.ip || req.connection.remoteAddress || 'unknown',
-      mode: mode // Add mode field
+      ip_address: req.ip || req.connection.remoteAddress || 'unknown', // Changed to snake_case
+      time_taken: timeTaken ? Math.round(timeTaken) : null, // Round decimal time values to integers
+      mode: mode
     };
 
     // Debug: Log the exact data being sent to database

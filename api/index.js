@@ -209,6 +209,7 @@ app.use('/api/gallery', galleryRoutes);
 app.use('/api/quiz', quizRoutes);
 app.use('/api/tags', tagsRoutes);
 app.use('/api/explain', explainRoutes);
+app.use('/api/ai', require('./routes/ai'));
 app.use('/api/admin', adminRoutes);
 app.use('/api/history', historyRoutes);
 app.use('/api/progress', progressRoutes);

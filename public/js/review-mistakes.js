@@ -179,7 +179,7 @@ function renderMistakes(mistakes) {
                             onclick="markSingleMistakeReviewed('${mistake.id}')"
                             ${mistake.reviewed ? 'disabled' : ''}>
                         <i class="fas fa-${mistake.reviewed ? 'check' : 'eye'}"></i>
-                        ${mistake.reviewed ? 'Đã ôn tập' : 'Đánh dấu'}
+                        ${mistake.reviewed ? 'Đã xong' : 'Xong'}
                     </button>
                 </div>
             </div>

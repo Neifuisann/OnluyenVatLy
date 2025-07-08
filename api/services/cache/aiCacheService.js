@@ -342,6 +342,48 @@ class AICacheService {
       currency: 'USD'
     };
   }
+
+  /**
+   * Clear cache for a specific type
+   * @param {string} type - Cache type to clear
+   */
+  async clearCache(type) {
+    // Clear from memory cache
+    const keysToDelete = [];
+    for (const key of this.memoryCache.keys()) {
+      if (key.includes(`:${type}:`)) {
+        keysToDelete.push(key);
+      }
+    }
+    keysToDelete.forEach(key => this.memoryCache.delete(key));
+
+    // Clear from persistent cache (if implemented)
+    // For now, just reset stats for the type
+    this.stats.hits = Math.max(0, this.stats.hits - keysToDelete.length);
+    
+    console.log(`Cleared ${keysToDelete.length} ${type} cache entries`);
+  }
+
+  /**
+   * Clear all cache
+   */
+  async clearAllCache() {
+    // Clear memory cache
+    const previousSize = this.memoryCache.size;
+    this.memoryCache.clear();
+    
+    // Reset stats
+    this.stats = {
+      hits: 0,
+      misses: 0,
+      memoryHits: 0,
+      persistentHits: 0
+    };
+    
+    this.lastCleanup = new Date();
+    
+    console.log(`Cleared all cache (${previousSize} entries)`);
+  }
 }
 
 module.exports = new AICacheService();

@@ -30,24 +30,22 @@ YÊU CẦU ĐỊNH DẠNG:
 6. Giữa các câu hỏi cách nhau một dòng trống
 
 QUY TẮC CHUYỂN ĐỔI:
-- Nếu văn bản có sẵn câu hỏi, giữ nguyên và định dạng lại cho đúng chuẩn
-- Nếu văn bản là bài giảng/lý thuyết, tạo 5-10 câu hỏi trắc nghiệm dựa trên nội dung
-- Ưu tiên câu hỏi ABCD (70%), Đúng/Sai nhiều ý (20%), điền số (10%)
-- Câu hỏi phải rõ ràng, súc tích, phù hợp với nội dung
-- Các lựa chọn phải hợp lý, tránh quá dễ hoặc quá khó
+- Nếu văn bản có sẵn câu hỏi, giữ nguyên và định dạng lại cho đúng chuẩn. Đảm bảo chuyển đổi TẤT CẢ các câu.
+- Nếu văn bản là bài giảng/lý thuyết, tạo 5-10 câu hỏi trắc nghiệm dựa trên nội dung. Ưu tiên câu hỏi ABCD (70%), Đúng/Sai nhiều ý (20%), điền số (10%). Câu hỏi phải rõ ràng, súc tích, phù hợp với nội dung. Các lựa chọn phải hợp lý, tránh quá dễ hoặc quá khó
+- Sử dụng latex đối với các phương trình trong cặp dấu $$
 
 VÍ DỤ OUTPUT:
-Câu 1: Phương trình bậc hai ax² + bx + c = 0 có nghiệm khi nào?
-A. Δ > 0
-*B. Δ ≥ 0
-C. Δ < 0
-D. Δ ≤ 0
+Câu 1: Phương trình bậc hai $ax² + bx + c = 0$ có nghiệm khi nào?
+A. $Δ > 0$
+*B. $Δ ≥ 0$
+C. $Δ < 0$
+D. $Δ ≤ 0$
 
 Câu 2: Các phát biểu sau về tam giác vuông, phát biểu nào đúng?
 [2 pts]
 *a) Tổng hai góc nhọn bằng 90°
 b) Cạnh huyền là cạnh nhỏ nhất
-*c) Định lý Pytago: a² + b² = c²
+*c) Định lý Pytago: $a² + b² = c²$
 d) Có thể có hai góc vuông
 
 Câu 3: Tính diện tích hình tròn có bán kính 5cm (lấy π = 3.14)
@@ -74,7 +72,7 @@ OUTPUT (chỉ trả về nội dung đã định dạng, không giải thích th
             temperature: 0.7,
             topK: 40,
             topP: 0.95,
-            maxOutputTokens: 8192
+            maxOutputTokens: 30000
           }
         })
       });
@@ -168,13 +166,11 @@ OUTPUT (chỉ trả về nội dung đã định dạng, không giải thích th
 ${lessonContext}
 
 YÊU CẦU:
-- Mô tả phải dài 2-3 câu, súc tích nhưng đầy đủ thông tin
+- Mô tả phải dài 3-4 câu, súc tích nhưng đầy đủ thông tin
 - Nêu rõ kiến thức chính học sinh sẽ học được
-- Phù hợp với độ tuổi và trình độ của học sinh
-- Sử dụng ngôn ngữ thu hút, khơi gợi sự tò mò
 - Có thể đề cập đến ứng dụng thực tế nếu phù hợp
-- TUYỆT ĐỐI KHÔNG dùng các cụm từ như "Bài học này", "Trong bài này"
 - Viết theo phong cách mô tả trực tiếp
+- Phải liên quan trực tiếp đến nội dung bài học này.
 
 VÍ DỤ MẪU:
 - "Khám phá nguyên lý hoạt động của đòn bẩy và ròng rọc trong cuộc sống hàng ngày. Học cách tính toán lực và khoảng cách để nâng vật nặng dễ dàng hơn."
@@ -198,7 +194,7 @@ MÔ TẢ (chỉ trả về mô tả, không giải thích thêm):`;
             temperature: 0.7, // Higher for more creative summaries
             topK: 40,
             topP: 0.9,
-            maxOutputTokens: 300
+            maxOutputTokens: 8000
           }
         })
       });
@@ -235,44 +231,10 @@ MÔ TẢ (chỉ trả về mô tả, không giải thích thêm):`;
   }
 
   // Generate image prompt for lesson visualization
-  async generateImagePrompt(lessonData) {
-    // Check cache first
-    const cachedResult = await aiCacheService.get('image_prompt', lessonData);
-    if (cachedResult) {
-      console.log('Using cached image prompt');
-      return cachedResult.prompt || cachedResult;
-    }
-
-    const { title, subject, grade, tags, questions } = lessonData;
-    
-    // Extract key physics concepts from questions
-    let concepts = [];
-    if (questions && Array.isArray(questions)) {
-      const questionTexts = questions.map(q => q.question || '').join(' ');
-      // Simple keyword extraction for physics concepts
-      const physicsKeywords = ['lực', 'vận tốc', 'gia tốc', 'điện', 'từ trường', 'sóng', 'quang học', 'nhiệt độ', 'áp suất', 'động lượng', 'năng lượng', 'công', 'điện trở', 'dòng điện'];
-      concepts = physicsKeywords.filter(keyword => questionTexts.toLowerCase().includes(keyword));
-    }
-
-    const prompt = `Tạo một mô tả hình ảnh (prompt) để minh họa cho bài học vật lý sau:
-
-Tiêu đề: ${title}
-Môn học: ${subject || 'Vật lý'}
-Lớp: ${grade || 'Trung học'}
-Chủ đề: ${tags ? tags.join(', ') : 'Không xác định'}
-Khái niệm chính: ${concepts.length > 0 ? concepts.join(', ') : 'Kiến thức vật lý cơ bản'}
-
-YÊU CẦU PROMPT:
-- Phải là tiếng Anh, ngắn gọn (tối đa 100 từ)
-- Mô tả một hình ảnh giáo dục về vật lý
-- Phong cách: educational illustration, clean, modern, bright colors
-- Phù hợp với lứa tuổi học sinh
-- Tránh hình ảnh phức tạp, ưu tiên sơ đồ hoặc minh họa đơn giản
-- Có thể bao gồm: diagrams, formulas, simple experiments, scientific equipment
-
-VÍ DỤ OUTPUT:
-"Educational physics illustration showing Newton's laws of motion with colorful diagrams, arrows indicating forces, simple formulas F=ma, clean modern style, bright colors, suitable for students"
-
+  async generateImagePrompt() {
+    const prompt = `Tạo một mô tả hình ảnh (prompt) 
+- Phải là tiếng Anh, ngắn gọn (tối đa 10 từ)
+- Mô tả một hình ảnh ngẫu nhiên nhưng tuyệt đối không có con người.
 PROMPT TIẾNG ANH (chỉ trả về prompt, không giải thích):`;
 
     try {
@@ -288,10 +250,10 @@ PROMPT TIẾNG ANH (chỉ trả về prompt, không giải thích):`;
             }]
           }],
           generationConfig: {
-            temperature: 0.8,
-            topK: 40,
+            temperature: 2,
+            topK: 300,
             topP: 0.9,
-            maxOutputTokens: 200
+            maxOutputTokens: 8000
           }
         })
       });
@@ -309,17 +271,12 @@ PROMPT TIẾNG ANH (chỉ trả về prompt, không giải thích):`;
       const imagePrompt = this.cleanupAIResponse(data.candidates[0].content.parts[0].text);
       
       // Add standard suffix for consistency
-      const enhancedPrompt = `${imagePrompt}, educational physics diagram, clean vector style, white background`;
-      
-      // Cache the result
-      await aiCacheService.set('image_prompt', lessonData, enhancedPrompt, 7200); // Cache for 2 hours
+      const enhancedPrompt = `${imagePrompt}`;
       
       return enhancedPrompt;
 
     } catch (error) {
       console.error('Error generating image prompt:', error);
-      // Return a generic prompt if AI fails
-      return `Physics education illustration, ${subject || 'physics'} concept diagram, clean modern style, educational, bright colors`;
     }
   }
 
@@ -361,7 +318,7 @@ Yêu cầu:
             temperature: 0.3,
             topK: 20,
             topP: 0.8,
-            maxOutputTokens: 300
+            maxOutputTokens: 8000
           }
         })
       });
@@ -425,7 +382,7 @@ Yêu cầu:
           }],
           generationConfig: {
             temperature: 0.1,
-            maxOutputTokens: 10
+            maxOutputTokens: 8000
           }
         })
       });
