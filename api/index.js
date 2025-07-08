@@ -17,27 +17,13 @@ const { errorHandler } = require('./middleware/errorHandler');
 // Import route modules
 const authRoutes = require('./routes/auth');
 const studentRoutes = require('./routes/students');
-const lessonRoutes = require('./routes/lessons');
-const ratingRoutes = require('./routes/ratings');
-const uploadRoutes = require('./routes/uploads');
-const resultRoutes = require('./routes/results');
 const viewRoutes = require('./routes/views');
-const galleryRoutes = require('./routes/gallery');
-const quizRoutes = require('./routes/quiz');
-const tagsRoutes = require('./routes/tags');
-const explainRoutes = require('./routes/explain');
-const adminRoutes = require('./routes/admin');
-const historyRoutes = require('./routes/history');
-const progressRoutes = require('./routes/progress');
-const settingsRoutes = require('./routes/settings');
-const streakRoutes = require('./routes/streaks');
-const xpRoutes = require('./routes/xp');
-const achievementRoutes = require('./routes/achievements');
-const questRoutes = require('./routes/quests');
-const activityRoutes = require('./routes/activity');
-const leagueRoutes = require('./routes/leagues');
-const webhookRoutes = require('./routes/webhooks');
-const debugRoutes = require('./routes/debug');
+
+// Import consolidated route modules
+const gamificationRoutes = require('./routes/gamification');
+const contentRoutes = require('./routes/content');
+const learningRoutes = require('./routes/learning');
+const systemRoutes = require('./routes/system');
 
 // Import utilities
 const logger = require('./utils/logger');
@@ -201,27 +187,12 @@ app.use('/api', extendSessionOnActivity);
 // Setup API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/students', studentRoutes);
-app.use('/api/lessons', lessonRoutes);
-app.use('/api/ratings', ratingRoutes);
-app.use('/api/uploads', uploadRoutes);
-app.use('/api/results', resultRoutes);
-app.use('/api/gallery', galleryRoutes);
-app.use('/api/quiz', quizRoutes);
-app.use('/api/tags', tagsRoutes);
-app.use('/api/explain', explainRoutes);
-app.use('/api/ai', require('./routes/ai'));
-app.use('/api/admin', adminRoutes);
-app.use('/api/history', historyRoutes);
-app.use('/api/progress', progressRoutes);
-app.use('/api/settings', settingsRoutes);
-app.use('/api/streaks', streakRoutes);
-app.use('/api/xp', xpRoutes);
-app.use('/api/achievements', achievementRoutes);
-app.use('/api/quests', questRoutes);
-app.use('/api/activity', activityRoutes);
-app.use('/api/leagues', leagueRoutes);
-app.use('/api/webhooks', webhookRoutes);
-app.use('/api/debug', debugRoutes);
+
+// Use consolidated route modules
+app.use('/api', gamificationRoutes);
+app.use('/api', contentRoutes);
+app.use('/api', learningRoutes);
+app.use('/api', systemRoutes);
 
 // Setup view routes (HTML pages) - Register early to avoid conflicts
 app.use('/', viewRoutes);
