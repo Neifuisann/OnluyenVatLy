@@ -4385,12 +4385,55 @@ textarea::placeholder {
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: var(--space-xl);
     margin-top: var(--space-xl);
+    position: relative;
+    min-height: 200px;
+}
+
+/* Lesson Grid Loading State */
+.lesson-grid.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+}
+
+.lesson-grid-loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-lg);
+    padding: var(--space-2xl);
+}
+
+.lesson-grid-loader .spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid var(--bg-tertiary);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+.lesson-grid-loader .loading-text {
+    color: var(--text-secondary);
+    font-size: var(--text-base);
+    font-weight: 500;
 }
 
 @media (max-width: 768px) {
     .lesson-grid {
         grid-template-columns: 1fr;
         gap: var(--space-lg);
+    }
+
+    .lesson-grid.loading {
+        min-height: 250px;
+    }
+
+    .lesson-grid-loader .spinner {
+        width: 40px;
+        height: 40px;
     }
 }
 

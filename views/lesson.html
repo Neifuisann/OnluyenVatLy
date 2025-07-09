@@ -778,10 +778,61 @@
             cursor: pointer;
             transition: all 0.2s;
             font-weight: 600;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-xs);
         }
 
-        .btn-confirm:hover {
+        .btn-confirm:hover:not(:disabled) {
             background: var(--accent-secondary);
+        }
+
+        .btn-confirm:disabled {
+            background: var(--text-tertiary);
+            cursor: not-allowed;
+        }
+
+        .btn-confirm.loading {
+            background: var(--text-tertiary);
+            cursor: not-allowed;
+        }
+
+        .btn-confirm .loading-dots {
+            display: inline-flex;
+            gap: 2px;
+        }
+
+        .btn-confirm .loading-dots span {
+            width: 4px;
+            height: 4px;
+            background: currentColor;
+            border-radius: 50%;
+            animation: loadingDots 1.4s infinite ease-in-out;
+        }
+
+        .btn-confirm .loading-dots span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .btn-confirm .loading-dots span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        .btn-confirm .loading-dots span:nth-child(3) {
+            animation-delay: 0s;
+        }
+
+        @keyframes loadingDots {
+            0%, 80%, 100% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+            40% {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         /* Mobile Responsive */
@@ -1512,15 +1563,49 @@
 
         function closeConfirmationModal() {
             document.getElementById('confirmation-modal').classList.remove('show');
+
+            // Reset confirmation button state when modal is closed
+            const confirmButton = document.querySelector('.btn-confirm');
+            if (confirmButton) {
+                confirmButton.disabled = false;
+                confirmButton.classList.remove('loading');
+                confirmButton.innerHTML = 'Nộp bài';
+            }
         }
 
         async function confirmSubmit() {
             const submitButton = document.getElementById('submit-quiz-btn');
+            const confirmButton = document.querySelector('.btn-confirm');
+
+            // Disable and show loading state for confirmation button
+            confirmButton.disabled = true;
+            confirmButton.classList.add('loading');
+            confirmButton.innerHTML = `
+                Đang nộp<span class="loading-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+            `;
+
+            // Also disable the main submit button
             submitButton.disabled = true;
             submitButton.textContent = 'Đang nộp bài...';
-            
-            // Continue with existing submit logic...
-            await submitQuiz();
+
+            try {
+                // Continue with existing submit logic...
+                await submitQuiz();
+            } catch (error) {
+                // Reset button state on error
+                confirmButton.disabled = false;
+                confirmButton.classList.remove('loading');
+                confirmButton.innerHTML = 'Nộp bài';
+
+                submitButton.disabled = false;
+                submitButton.textContent = 'Nộp bài';
+
+                throw error; // Re-throw to maintain error handling
+            }
         }
 
         // Modified submit function
@@ -1721,10 +1806,19 @@
             } catch (error) {
                 console.error('Error submitting quiz:', error);
                 alert('Đã xảy ra lỗi khi nộp bài. Vui lòng thử lại.');
-                
+
+                // Reset main submit button
                 const submitButton = document.getElementById('submit-quiz-btn');
                 submitButton.disabled = false;
                 submitButton.textContent = 'Nộp bài';
+
+                // Reset confirmation button
+                const confirmButton = document.querySelector('.btn-confirm');
+                if (confirmButton) {
+                    confirmButton.disabled = false;
+                    confirmButton.classList.remove('loading');
+                    confirmButton.innerHTML = 'Nộp bài';
+                }
             }
         }
 

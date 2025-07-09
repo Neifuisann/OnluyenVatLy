@@ -427,16 +427,50 @@ function showContinueLearningBanner(lesson) {
     lessonsContainer.insertBefore(banner, lessonsContainer.firstChild);
 }
 
+// --- Global Loading State Management ---
+let globalLoadingTasks = {
+    lessons: false,
+    progress: false,
+    stats: false
+};
+
+function updateGlobalLoader() {
+    const allTasksComplete = Object.values(globalLoadingTasks).every(task => task === true);
+    console.log('Global loading state:', globalLoadingTasks, 'All complete:', allTasksComplete);
+    showLoader(!allTasksComplete);
+
+    if (allTasksComplete) {
+        console.log('🎉 All loading tasks completed - hiding global loader');
+    }
+}
+
+function markTaskComplete(taskName) {
+    globalLoadingTasks[taskName] = true;
+    console.log(`Task '${taskName}' completed`);
+    updateGlobalLoader();
+}
+
+// Expose function globally for HTML script access
+window.markTaskComplete = markTaskComplete;
+
 // --- Initialize Lessons Listing ---
 async function initializeLessons() {
     // Check authentication (for potential future use)
     const isAuthenticated = await checkStudentAuthentication();
 
+    // Reset global loading state
+    globalLoadingTasks = {
+        lessons: false,
+        progress: !isAuthenticated, // Skip progress loading if not authenticated
+        stats: false
+    };
+
+    console.log('🔄 Initializing lessons page with loading state:', globalLoadingTasks);
     showLoader(true);
 
     try {
         console.log('Loading lessons listing...');
-        
+
         // Check for last incomplete lesson if authenticated
         if (isAuthenticated) {
             try {
@@ -452,9 +486,9 @@ async function initializeLessons() {
                 console.error('Error fetching progress:', error);
             }
         }
-        
+
         await loadLessons();
-        showLoader(false);
+        markTaskComplete('lessons');
 
     } catch (error) {
         console.error('Error loading lessons:', error);
@@ -497,6 +531,9 @@ async function initializeLessons() {
 // --- Load Lessons Function ---
 async function loadLessons(page = 1, search = '', sort = 'order', tags = []) {
     try {
+        // Show lesson grid loader
+        showLessonGridLoader(true);
+
         const params = new URLSearchParams({
             page: page.toString(),
             limit: '12',
@@ -563,7 +600,32 @@ async function loadLessons(page = 1, search = '', sort = 'order', tags = []) {
 
     } catch (error) {
         console.error('Error loading lessons:', error);
+        // Hide loader on error
+        showLessonGridLoader(false);
         throw error;
+    }
+}
+
+// --- Lesson Grid Loading Functions ---
+function showLessonGridLoader(show = true) {
+    const lessonsContainer = document.getElementById('lessons');
+    if (!lessonsContainer) {
+        console.error('Lessons container not found');
+        return;
+    }
+
+    if (show) {
+        // Add loading class and show loader
+        lessonsContainer.classList.add('loading');
+        lessonsContainer.innerHTML = `
+            <div class="lesson-grid-loader">
+                <div class="spinner"></div>
+                <p class="loading-text">Đang tải bài học...</p>
+            </div>
+        `;
+    } else {
+        // Remove loading class
+        lessonsContainer.classList.remove('loading');
     }
 }
 
@@ -575,22 +637,23 @@ function renderLessons(lessons) {
         return;
     }
 
-    // Clear container
+    // Hide loader and clear container
+    showLessonGridLoader(false);
     lessonsContainer.innerHTML = '';
 
     if (!lessons || lessons.length === 0) {
         const noLessonsDiv = document.createElement('div');
         noLessonsDiv.className = 'no-lessons';
-        
+
         const icon = document.createElement('i');
         icon.className = 'fas fa-book-open';
-        
+
         const title = document.createElement('h3');
         title.textContent = 'Không có bài học nào';
-        
+
         const description = document.createElement('p');
         description.textContent = 'Hiện tại chưa có bài học nào được tạo.';
-        
+
         noLessonsDiv.appendChild(icon);
         noLessonsDiv.appendChild(title);
         noLessonsDiv.appendChild(description);

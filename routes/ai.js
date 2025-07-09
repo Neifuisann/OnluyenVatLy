@@ -87,7 +87,6 @@ router.get('/usage/stats',
       const cacheHitRate = 0.5; // 50% default hit rate
       
       // Estimate cost (using Gemini pricing estimates)
-      // Gemini 1.5 Flash: ~$0.075 per 1M tokens
       const estimatedCost = (totalTokens / 1000000) * 0.075;
       
       res.json({

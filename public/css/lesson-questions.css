@@ -688,12 +688,65 @@ body {
     cursor: pointer;
     transition: all 0.2s;
     font-weight: 600;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
 }
 
-.btn-confirm:hover {
+.btn-confirm:hover:not(:disabled) {
     background: var(--accent-secondary);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.btn-confirm:disabled {
+    background: var(--text-tertiary);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-confirm.loading {
+    background: var(--text-tertiary);
+    cursor: not-allowed;
+}
+
+.btn-confirm .loading-dots {
+    display: inline-flex;
+    gap: 2px;
+}
+
+.btn-confirm .loading-dots span {
+    width: 4px;
+    height: 4px;
+    background: currentColor;
+    border-radius: 50%;
+    animation: loadingDots 1.4s infinite ease-in-out;
+}
+
+.btn-confirm .loading-dots span:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.btn-confirm .loading-dots span:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+.btn-confirm .loading-dots span:nth-child(3) {
+    animation-delay: 0s;
+}
+
+@keyframes loadingDots {
+    0%, 80%, 100% {
+        opacity: 0.3;
+        transform: scale(0.8);
+    }
+    40% {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 /* Remove old lesson container styles */

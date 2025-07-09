@@ -280,17 +280,21 @@ class QuizParser {
 
     handleContinuationLine(question, line, typeDetermined) {
         const trimmedLine = line.trim();
-        if (typeDetermined && trimmedLine && 
-            !line.match(this.questionRegex) && 
-            !trimmedLine.match(this.pointsRegex) &&
-            !line.match(this.abcdOptionRegex) && 
-            !line.match(this.trueFalseOptionRegex) && 
-            !trimmedLine.match(this.numberAnswerRegex)) {
-            
-            if (question.options.length > 0) {
+
+        // Check if this line should be ignored (it's a special format line)
+        const isSpecialLine = line.match(this.questionRegex) ||
+                             trimmedLine.match(this.pointsRegex) ||
+                             line.match(this.abcdOptionRegex) ||
+                             line.match(this.trueFalseOptionRegex) ||
+                             trimmedLine.match(this.numberAnswerRegex);
+
+        if (trimmedLine && !isSpecialLine) {
+            if (typeDetermined && question.options.length > 0) {
+                // Type is determined and we have options - append to last option
                 const lastOption = question.options[question.options.length - 1];
                 lastOption.text += '\n' + line;
             } else if (question.question) {
+                // Type not determined yet OR no options yet - append to question text
                 question.question += '\n' + line;
             }
         }
@@ -396,7 +400,7 @@ class CodeMirrorManager {
         this.options = {
             lineNumbers: true,
             mode: null,
-            theme: 'material-darker',
+            theme: 'material-white',
             lineWrapping: true,
             autofocus: true,
             indentUnit: 2,
@@ -1297,7 +1301,7 @@ class AdminEditorV2 {
 
     initializeEditor() {
         this.editor = new CodeMirrorManager('lesson-editor', {
-            theme: 'material-darker',
+            theme: 'material-white',
             lineNumbers: true,
             lineWrapping: true,
             autofocus: true
@@ -1984,8 +1988,11 @@ D. Cả nước được giải phóng và tiến lên xây dựng chủ nghĩa 
     showProcessingOverlay(fileName) {
         const modal = document.getElementById('document-upload-modal');
         const modalBody = modal?.querySelector('.modal-body');
-        
+
         if (modalBody) {
+            // Add processing-active class to ensure visibility
+            modalBody.classList.add('processing-active');
+
             modalBody.innerHTML = `
                 <div class="processing-overlay">
                     <div class="processing-content">
@@ -2016,6 +2023,14 @@ D. Cả nước được giải phóng và tiến lên xây dựng chủ nghĩa 
     }
 
     hideProcessingOverlay() {
+        // Remove processing-active class and close modal
+        const modal = document.getElementById('document-upload-modal');
+        const modalBody = modal?.querySelector('.modal-body');
+
+        if (modalBody) {
+            modalBody.classList.remove('processing-active');
+        }
+
         // The modal will be closed by closeAllModals(), so no need to restore content
     }
 

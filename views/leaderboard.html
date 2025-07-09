@@ -82,6 +82,7 @@
             }
         }
     </style>
+    <script src="/js/nav-mobile.js"></script>
 </head>
 <body>
     <!-- Loading Indicator -->
@@ -337,15 +338,7 @@
             setTimeout(observeRows, 100);
         };
         
-        // Mobile menu toggle functionality
-        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-        const navLinks = document.getElementById('nav-links');
-        
-        if (mobileMenuToggle && navLinks) {
-            mobileMenuToggle.addEventListener('click', () => {
-                navLinks.classList.toggle('active');
-            });
-        }
+        // Mobile menu functionality is now handled by nav-mobile.js
     </script>
 </body>
 </html>

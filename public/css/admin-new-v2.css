@@ -83,6 +83,7 @@
   --z-fixed: 1030;
   --z-modal-backdrop: 1040;
   --z-modal: 1050;
+  --z-processing: 1080;
   --z-tooltip: 1070;
   
   /* Animation */
@@ -530,6 +531,154 @@ body {
   font-style: italic;
 }
 
+/* === Material White Theme for CodeMirror === */
+.cm-s-material-white.CodeMirror {
+  background-color: #ffffff !important;
+  color: #263238 !important;
+  font-family: var(--font-mono) !important;
+  font-size: var(--font-size-sm) !important;
+  line-height: 1.6 !important;
+  border: none !important;
+  height: 100% !important;
+}
+
+.cm-s-material-white .CodeMirror-gutters {
+  background: #f8fafc !important;
+  color: #90a4ae !important;
+  border-right: 1px solid #e2e8f0 !important;
+  width: 2rem !important;
+}
+
+.cm-s-material-white .CodeMirror-guttermarker,
+.cm-s-material-white .CodeMirror-guttermarker-subtle,
+.cm-s-material-white .CodeMirror-linenumber {
+  color: #90a4ae !important;
+  padding-right: 0.5rem !important;
+  padding-left: 0rem !important;
+  text-align: right !important;
+  width: 1px !important;
+  min-width: 0px !important;
+  left: -10px !important;
+}
+
+.cm-s-material-white .CodeMirror-cursor {
+  border-left: 2px solid #6366f1 !important;
+}
+
+.cm-s-material-white.cm-fat-cursor .CodeMirror-cursor {
+  background-color: rgba(99, 102, 241, 0.3) !important;
+}
+
+.cm-s-material-white .cm-animate-fat-cursor {
+  background-color: rgba(99, 102, 241, 0.3) !important;
+}
+
+.cm-s-material-white div.CodeMirror-selected {
+  background: rgba(99, 102, 241, 0.1) !important;
+}
+
+.cm-s-material-white.CodeMirror-focused div.CodeMirror-selected {
+  background: rgba(99, 102, 241, 0.15) !important;
+}
+
+.cm-s-material-white .CodeMirror-line::selection,
+.cm-s-material-white .CodeMirror-line>span::selection,
+.cm-s-material-white .CodeMirror-line>span>span::selection {
+  background: rgba(99, 102, 241, 0.1) !important;
+}
+
+.cm-s-material-white .CodeMirror-line::-moz-selection,
+.cm-s-material-white .CodeMirror-line>span::-moz-selection,
+.cm-s-material-white .CodeMirror-line>span>span::-moz-selection {
+  background: rgba(99, 102, 241, 0.1) !important;
+}
+
+.cm-s-material-white .CodeMirror-activeline-background {
+  background: rgba(99, 102, 241, 0.05) !important;
+}
+
+/* Material White Theme Syntax Highlighting */
+.cm-s-material-white .cm-keyword {
+  color: #7c3aed !important; /* Purple for keywords */
+}
+
+.cm-s-material-white .cm-operator {
+  color: #0891b2 !important; /* Cyan for operators */
+}
+
+.cm-s-material-white .cm-variable-2 {
+  color: #263238 !important; /* Dark gray for variables */
+}
+
+.cm-s-material-white .cm-variable-3,
+.cm-s-material-white .cm-type {
+  color: #dc2626 !important; /* Red for types */
+}
+
+.cm-s-material-white .cm-builtin {
+  color: #ea580c !important; /* Orange for builtins */
+}
+
+.cm-s-material-white .cm-atom {
+  color: #7c2d12 !important; /* Brown for atoms */
+}
+
+.cm-s-material-white .cm-number {
+  color: #dc2626 !important; /* Red for numbers */
+}
+
+.cm-s-material-white .cm-def {
+  color: #1d4ed8 !important; /* Blue for definitions */
+}
+
+.cm-s-material-white .cm-string {
+  color: #16a34a !important; /* Green for strings */
+}
+
+.cm-s-material-white .cm-string-2 {
+  color: #dc2626 !important; /* Red for string-2 */
+}
+
+.cm-s-material-white .cm-comment {
+  color: #6b7280 !important; /* Gray for comments */
+  font-style: italic;
+}
+
+.cm-s-material-white .cm-variable {
+  color: #dc2626 !important; /* Red for variables */
+}
+
+.cm-s-material-white .cm-tag {
+  color: #dc2626 !important; /* Red for tags */
+}
+
+.cm-s-material-white .cm-meta {
+  color: #ea580c !important; /* Orange for meta */
+}
+
+.cm-s-material-white .cm-attribute {
+  color: #7c3aed !important; /* Purple for attributes */
+}
+
+.cm-s-material-white .cm-property {
+  color: #7c3aed !important; /* Purple for properties */
+}
+
+.cm-s-material-white .cm-qualifier {
+  color: #ea580c !important; /* Orange for qualifiers */
+}
+
+.cm-s-material-white .cm-error {
+  color: #ffffff !important;
+  background-color: #dc2626 !important;
+}
+
+.cm-s-material-white .CodeMirror-matchingbracket {
+  text-decoration: underline;
+  color: #6366f1 !important;
+  background-color: rgba(99, 102, 241, 0.1) !important;
+}
+
 /* === CodeMirror Overrides === */
 .CodeMirror {
   height: 100% !important;
@@ -537,27 +686,29 @@ body {
   font-size: var(--font-size-sm) !important;
   line-height: 1.6 !important;
   border: none !important;
-  background: var(--bg-primary) !important;
+  background: #ffffff !important;
+  color: #263238 !important;
 }
 
 .CodeMirror-lines {
   padding: var(--space-md) !important;
 }
 
+/* Legacy overrides - these will be overridden by material-white theme */
 .CodeMirror-gutters {
-  background: var(--bg-secondary) !important;
-  border-right: 1px solid var(--border-color) !important;
-  width: 2rem !important;  /* Reduced from 4rem - 50% reduction */
+  background: #f8fafc !important;
+  border-right: 1px solid #e2e8f0 !important;
+  width: 2rem !important;
 }
 
 .CodeMirror-linenumber {
-  color: var(--text-tertiary) !important;
-  padding-right: 0.5rem !important;  /* Space from border */
-  padding-left: 0rem !important;  /* Minimal left padding */
+  color: #94a3b8 !important;
+  padding-right: 0.5rem !important;
+  padding-left: 0rem !important;
   text-align: right !important;
-  width: 1px !important;  /* Force width to 0px as requested */
-  min-width: 0px !important;  /* Override any min-width */
-  left: -10px !important;;
+  width: 1px !important;
+  min-width: 0px !important;
+  left: -10px !important;
 }
 
 .CodeMirror-cursor {
@@ -1381,6 +1532,40 @@ body {
     max-width: 95vw;
     max-height: 95vh;
   }
+
+  /* Enhanced mobile support for processing overlay */
+  .modal-body .processing-overlay {
+    width: 90vw !important;
+    max-height: 80vh !important;
+    padding: var(--space-lg) !important;
+    margin: var(--space-sm) !important;
+  }
+
+  .processing-content h3 {
+    font-size: var(--font-size-lg) !important;
+  }
+
+  .processing-content p {
+    font-size: var(--font-size-sm) !important;
+  }
+}
+
+/* === Processing Overlay Visibility Safeguards === */
+/* Ensure processing overlay is never clipped by parent containers */
+.modal.active .modal-body .processing-overlay {
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* Prevent any parent container from hiding the processing overlay */
+.modal-body:has(.processing-overlay) {
+  overflow: visible !important;
+}
+
+/* Alternative selector for browsers that don't support :has() */
+.modal-body.processing-active {
+  overflow: visible !important;
 }
 
 /* === Accessibility === */
@@ -1406,14 +1591,16 @@ body {
     --border-hover: #64748b;
     --accent-primary: #818cf8;
   }
-  
-  .CodeMirror {
-    background: var(--bg-primary) !important;
-    color: var(--text-primary) !important;
+
+  /* Force material white theme to stay white even in dark mode */
+  .cm-s-material-white.CodeMirror {
+    background: #ffffff !important;
+    color: #263238 !important;
   }
-  
-  .CodeMirror-gutters {
-    background: var(--bg-secondary) !important;
+
+  .cm-s-material-white .CodeMirror-gutters {
+    background: #f8fafc !important;
+    color: #90a4ae !important;
   }
 }
 
@@ -1424,9 +1611,9 @@ body {
   top: 50% !important;
   left: 50% !important;
   transform: translate(-50%, -50%) !important;
-  width: min(90vw, 600px) !important; /* Match modal max width */
+  width: min(95vw, 600px) !important; /* Increased viewport width for better mobile support */
   height: auto !important; /* Auto height based on content */
-  max-height: 80vh !important;
+  max-height: 85vh !important; /* Increased max height to prevent cropping */
   background: var(--bg-secondary) !important; /* Darker background for contrast */
   border: 1px solid var(--border-color) !important;
   border-radius: var(--radius-xl) !important;
@@ -1434,8 +1621,10 @@ body {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  z-index: calc(var(--z-modal) + 20) !important; /* Above modal */
+  z-index: var(--z-processing) !important; /* Use dedicated processing z-index */
   padding: var(--space-2xl) !important;
+  margin: var(--space-md) !important; /* Add margin to prevent edge cropping */
+  box-sizing: border-box !important; /* Ensure padding is included in width calculation */
 }
 
 /* Dark overlay behind processing */
@@ -1447,7 +1636,7 @@ body {
   width: 100vw;
   height: 100vh;
   background: rgba(0, 0, 0, 0.8);
-  z-index: -1;
+  z-index: calc(var(--z-processing) - 1); /* Ensure it's behind the processing overlay but above modal */
 }
 
 .processing-content {
@@ -1455,6 +1644,9 @@ body {
   color: var(--text-primary);
   position: relative;
   z-index: 1;
+  width: 100%;
+  max-width: 500px; /* Prevent content from being too wide */
+  overflow: visible; /* Ensure content is not clipped */
 }
 
 .processing-content h3 {
