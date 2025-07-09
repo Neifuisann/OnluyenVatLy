@@ -73,6 +73,13 @@ function shuffleArray(array) {
 }
 
 async function renderQuestions(lesson) {
+    console.log('Rendering questions for lesson:', {
+        enableQuestionPool: lesson.enableQuestionPool,
+        questionPoolSize: lesson.questionPoolSize,
+        questionTypeDistribution: lesson.questionTypeDistribution,
+        totalQuestions: lesson.questions ? lesson.questions.length : 0
+    });
+    
     // Check if lesson has questions property
     if (!lesson || !lesson.questions || !Array.isArray(lesson.questions)) {
         console.warn('Lesson has no questions or questions is not an array:', lesson);
@@ -112,47 +119,16 @@ async function renderQuestions(lesson) {
         }
     });
     
-    // If randomQuestions is set, select random questions while maintaining proportions
-    if (lesson.randomQuestions > 0 && lesson.randomQuestions < lesson.questions.length) {
-        // Calculate the proportion of each question type
-        const totalQuestions = lesson.questions.length;
-        const proportions = {};
-        Object.keys(sections).forEach(type => {
-            proportions[type] = sections[type].questions.length / totalQuestions;
-        });
+    // Question pool filtering is now handled on the server side
+    // The lesson.questions already contains the filtered questions based on pool settings
+    console.log('Question pool filtering handled on server side. Total questions:', lesson.questions.length);
 
-        // Calculate how many questions of each type to include
-        const randomCounts = {};
-        let remainingCount = lesson.randomQuestions;
-        Object.keys(proportions).forEach(type => {
-            randomCounts[type] = Math.round(lesson.randomQuestions * proportions[type]);
-            remainingCount -= randomCounts[type];
-        });
-
-        // Adjust for rounding errors
-        if (remainingCount > 0) {
-            // Add remaining to the type with the most questions
-            const maxType = Object.keys(sections).reduce((a, b) => 
-                sections[a].questions.length > sections[b].questions.length ? a : b
-            );
-            randomCounts[maxType] += remainingCount;
+    // Just shuffle all questions within their types since filtering is done server-side
+    Object.values(sections).forEach(section => {
+        if (section.element) {
+            section.questions = shuffleArray([...section.questions]);
         }
-
-        // Shuffle and select questions for each type
-        Object.keys(sections).forEach(type => {
-            if (sections[type].questions.length > 0) {
-                sections[type].questions = shuffleArray([...sections[type].questions])
-                    .slice(0, randomCounts[type]);
-            }
-        });
-    } else {
-        // If no random selection, just shuffle all questions within their types
-        Object.values(sections).forEach(section => {
-            if (section.element) {
-                section.questions = shuffleArray([...section.questions]);
-            }
-        });
-    }
+    });
     
     // Clear existing questions
     Object.values(sections).forEach(section => {
@@ -578,6 +554,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     totalPossiblePoints += questionPoints;
 
                     let userAnswer, correctAnswer, isCorrect, optionsText = null;
+                    let earnedPoints = undefined; // For True/False partial scoring
                     
                     // --- NEW: Extract image URL if present ---
                     let imageUrl = null;
@@ -607,7 +584,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const correctAnswerValue = q.correct !== undefined ? q.correct : q.correctAnswer;
 
                     if (normalizedType === 'truefalse' && Array.isArray(q.options)) {
-                        // --- NEW: Handle multi-option true/false ---
+                        // --- NEW: Handle multi-option true/false with partial scoring ---
                         const userAnswersArray = q.options.map((_, idx) => {
                             const selectedInput = document.querySelector(`input[name="q${originalIndex}_${idx}"]:checked`);
                             return selectedInput ? selectedInput.value === 'true' : null; // Store boolean or null
@@ -616,11 +593,83 @@ document.addEventListener('DOMContentLoaded', () => {
                         const correctAnswersArray = correctAnswerValue; // Should be an array of booleans
                         optionsText = q.options.map(opt => opt.text || opt); // Store option texts
 
-                        // Determine overall correctness (all must be correct)
-                        isCorrect = Array.isArray(correctAnswersArray) &&
-                                    correctAnswersArray.every((correctAns, idx) =>
-                                        userAnswersArray[idx] !== null && userAnswersArray[idx] === correctAns
-                                    );
+                        // Debug logging for true/false questions
+                        console.log(`🔍 True/False Question ${originalIndex}:`, {
+                            userAnswers: userAnswersArray,
+                            correctAnswers: correctAnswersArray,
+                            optionsText: optionsText
+                        });
+
+                        // Count correct answers for partial scoring
+                        let correctCount = 0;
+                        if (Array.isArray(correctAnswersArray)) {
+                            correctAnswersArray.forEach((correctAns, idx) => {
+                                if (userAnswersArray[idx] !== null) {
+                                    // Normalize both values to boolean for comparison
+                                    const userBool = userAnswersArray[idx];
+                                    let correctBool;
+
+                                    // Handle different formats of correct answers
+                                    if (typeof correctAns === 'boolean') {
+                                        correctBool = correctAns;
+                                    } else if (typeof correctAns === 'string') {
+                                        correctBool = correctAns.toLowerCase() === 'true';
+                                    } else {
+                                        correctBool = Boolean(correctAns);
+                                    }
+
+                                    if (userBool === correctBool) {
+                                        correctCount++;
+                                    }
+                                }
+                            });
+                        }
+                        
+                        // Calculate partial score based on correct count
+                        let partialMultiplier = 0;
+                        const totalOptions = correctAnswersArray.length;
+                        
+                        // For 4-option True/False questions
+                        if (totalOptions === 4) {
+                            if (correctCount === 4) {
+                                partialMultiplier = 1.0; // 100%
+                                isCorrect = true;
+                            } else if (correctCount === 3) {
+                                partialMultiplier = 0.5; // 50%
+                                isCorrect = false; // Not fully correct
+                            } else if (correctCount === 2) {
+                                partialMultiplier = 0.25; // 25%
+                                isCorrect = false;
+                            } else if (correctCount === 1) {
+                                partialMultiplier = 0.1; // 10%
+                                isCorrect = false;
+                            } else {
+                                partialMultiplier = 0; // 0%
+                                isCorrect = false;
+                            }
+                        } else {
+                            // For True/False questions with different number of options
+                            // Use proportional scoring
+                            if (correctCount === totalOptions) {
+                                partialMultiplier = 1.0; // 100% if all correct
+                                isCorrect = true;
+                            } else {
+                                partialMultiplier = correctCount / totalOptions;
+                                isCorrect = false;
+                            }
+                        }
+                        
+                        // Apply partial scoring to points
+                        earnedPoints = questionPoints * partialMultiplier;
+
+                        // Debug logging for points calculation
+                        console.log(`🔍 True/False Points Calculation:`, {
+                            questionPoints,
+                            partialMultiplier,
+                            earnedPoints,
+                            correctCount,
+                            totalOptions: correctAnswersArray.length
+                        });
 
                         userAnswer = userAnswersArray; // Save array
                         correctAnswer = correctAnswersArray; // Save array
@@ -693,6 +742,28 @@ document.addEventListener('DOMContentLoaded', () => {
                          // --- End single true/false ---
                     }
 
+                    // Handle earned points for True/False partial scoring
+                    let finalEarnedPoints = isCorrect ? questionPoints : 0;
+
+                    // Override earned points for True/False questions with partial scoring
+                    if (normalizedType === 'truefalse' && Array.isArray(q.options) && typeof earnedPoints !== 'undefined') {
+                        finalEarnedPoints = earnedPoints;
+                        console.log(`🔍 True/False Final Points Override:`, {
+                            originalFinalEarnedPoints: isCorrect ? questionPoints : 0,
+                            overriddenFinalEarnedPoints: finalEarnedPoints,
+                            earnedPoints,
+                            isCorrect
+                        });
+                    } else if (normalizedType === 'truefalse') {
+                        console.log(`🔍 True/False Standard Points:`, {
+                            finalEarnedPoints,
+                            isCorrect,
+                            questionPoints,
+                            hasOptions: Array.isArray(q.options),
+                            earnedPointsDefined: typeof earnedPoints !== 'undefined'
+                        });
+                    }
+
                     quizResults.questions.push({
                         type: q.type,
                         question: questionTextForSaving, // Use the cleaned text for saving
@@ -701,13 +772,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         correctAnswer: correctAnswer,
                         isCorrect: isCorrect,
                         points: questionPoints,
-                        earnedPoints: isCorrect ? questionPoints : 0,
+                        earnedPoints: finalEarnedPoints,
                         optionsText: optionsText
                     });
 
-                    if (isCorrect) {
-                        score += questionPoints;
-                    }
+                    score += finalEarnedPoints;
                 });
                 
                 // Update final scores, time, and streak in the payload
@@ -1253,81 +1322,17 @@ function shuffleArray(array, randomFunc = Math.random) {
     return shuffled;
 }
 
-function selectQuestionPool(questions, poolSize, difficultyRatios, randomFunc = Math.random) {
-    if (poolSize >= questions.length) {
-        return [...questions];
-    }
-    
-    // Categorize questions by difficulty (if available)
-    const categorized = {
-        easy: [],
-        medium: [],
-        hard: [],
-        unknown: []
-    };
-    
-    questions.forEach(question => {
-        const difficulty = question.difficulty || 'unknown';
-        if (categorized[difficulty]) {
-            categorized[difficulty].push(question);
-        } else {
-            categorized.unknown.push(question);
-        }
-    });
-    
-    // Calculate target counts for each difficulty
-    const targets = {
-        easy: Math.floor(poolSize * (difficultyRatios.easy / 100)),
-        medium: Math.floor(poolSize * (difficultyRatios.medium / 100)),
-        hard: Math.floor(poolSize * (difficultyRatios.hard / 100))
-    };
-    
-    // Adjust for rounding errors
-    const totalTargeted = targets.easy + targets.medium + targets.hard;
-    if (totalTargeted < poolSize) {
-        targets.medium += poolSize - totalTargeted;
-    }
-    
-    const selected = [];
-    
-    // Select from each difficulty category
-    ['easy', 'medium', 'hard'].forEach(difficulty => {
-        const available = categorized[difficulty];
-        const target = targets[difficulty];
-        
-        if (available.length > 0 && target > 0) {
-            const shuffledAvailable = shuffleArray(available, randomFunc);
-            const count = Math.min(target, available.length);
-            selected.push(...shuffledAvailable.slice(0, count));
-        }
-    });
-    
-    // Fill remaining slots with unknown difficulty or any remaining questions
-    if (selected.length < poolSize) {
-        const remaining = questions.filter(q => !selected.includes(q));
-        const shuffledRemaining = shuffleArray(remaining, randomFunc);
-        const needed = poolSize - selected.length;
-        selected.push(...shuffledRemaining.slice(0, needed));
-    }
-    
-    return selected;
-}
+// selectQuestionPool function removed - question pool filtering is now handled on the server side
 
 function applyRandomization(lesson) {
     const seed = lesson.randomizationSeed || `${lesson.id}-${Date.now()}`;
     const randomFunc = createSeededRandom(seed);
-    
+
     console.log('Applying randomization with seed:', seed);
-    
+
+    // Question pool selection is now handled on the server side
     let questions = [...lesson.questions];
-    
-    // Apply question pool selection first
-    if (lesson.enableQuestionPool && lesson.questionPoolSize > 0) {
-        const difficultyRatios = lesson.difficultyRatios || { easy: 30, medium: 50, hard: 20 };
-        questions = selectQuestionPool(questions, lesson.questionPoolSize, difficultyRatios, randomFunc);
-        console.log(`Selected ${questions.length} questions from pool of ${lesson.questions.length}`);
-    }
-    
+
     // Shuffle question order if enabled
     if (lesson.shuffleQuestions) {
         questions = shuffleArray(questions, randomFunc);

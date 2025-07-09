@@ -1640,6 +1640,7 @@
                     totalPossiblePoints += questionPoints;
 
                     let userAnswer, correctAnswer, isCorrect, optionsText = null;
+                    let earnedPoints = undefined; // For True/False partial scoring
                     
                     // Extract image URL if present
                     let imageUrl = null;
@@ -1673,10 +1674,78 @@
                         const correctAnswersArray = correctAnswerValue;
                         optionsText = q.options.map(opt => opt.text || opt);
 
-                        isCorrect = Array.isArray(correctAnswersArray) &&
-                                    correctAnswersArray.every((correctAns, idx) =>
-                                        userAnswersArray[idx] !== null && userAnswersArray[idx] === correctAns
-                                    );
+                        // Count correct answers for partial scoring
+                        let correctCount = 0;
+                        if (Array.isArray(correctAnswersArray)) {
+                            correctAnswersArray.forEach((correctAns, idx) => {
+                                if (userAnswersArray[idx] !== null) {
+                                    // Normalize both values to boolean for comparison
+                                    const userBool = userAnswersArray[idx];
+                                    let correctBool;
+
+                                    // Handle different formats of correct answers
+                                    if (typeof correctAns === 'boolean') {
+                                        correctBool = correctAns;
+                                    } else if (typeof correctAns === 'string') {
+                                        correctBool = correctAns.toLowerCase() === 'true';
+                                    } else {
+                                        correctBool = Boolean(correctAns);
+                                    }
+
+                                    if (userBool === correctBool) {
+                                        correctCount++;
+                                    }
+                                }
+                            });
+                        }
+
+                        // Calculate partial score based on correct count
+                        let partialMultiplier = 0;
+                        const totalOptions = correctAnswersArray.length;
+
+                        // For 4-option True/False questions
+                        if (totalOptions === 4) {
+                            if (correctCount === 4) {
+                                partialMultiplier = 1.0; // 100%
+                                isCorrect = true;
+                            } else if (correctCount === 3) {
+                                partialMultiplier = 0.5; // 50%
+                                isCorrect = false; // Not fully correct
+                            } else if (correctCount === 2) {
+                                partialMultiplier = 0.25; // 25%
+                                isCorrect = false;
+                            } else if (correctCount === 1) {
+                                partialMultiplier = 0.1; // 10%
+                                isCorrect = false;
+                            } else {
+                                partialMultiplier = 0; // 0%
+                                isCorrect = false;
+                            }
+                        } else {
+                            // For True/False questions with different number of options
+                            // Use proportional scoring
+                            if (correctCount === totalOptions) {
+                                partialMultiplier = 1.0; // 100% if all correct
+                                isCorrect = true;
+                            } else {
+                                partialMultiplier = correctCount / totalOptions;
+                                isCorrect = false;
+                            }
+                        }
+
+                        // Apply partial scoring to points
+                        earnedPoints = questionPoints * partialMultiplier;
+
+                        // Debug logging for true/false questions
+                        console.log(`🔍 True/False Question ${originalIndex} (lesson.html):`, {
+                            userAnswers: userAnswersArray,
+                            correctAnswers: correctAnswersArray,
+                            correctCount,
+                            totalOptions,
+                            partialMultiplier,
+                            questionPoints,
+                            earnedPoints
+                        });
 
                         userAnswer = userAnswersArray;
                         correctAnswer = correctAnswersArray;
@@ -1726,6 +1795,20 @@
                         isCorrect = userAnswer !== '' && userAnswer === correctAnswer;
                     }
 
+                    // Handle earned points for True/False partial scoring
+                    let finalEarnedPoints = isCorrect ? questionPoints : 0;
+
+                    // Override earned points for True/False questions with partial scoring
+                    if (normalizedType === 'truefalse' && Array.isArray(q.options) && typeof earnedPoints !== 'undefined') {
+                        finalEarnedPoints = earnedPoints;
+                        console.log(`🔍 True/False Final Points Override (lesson.html):`, {
+                            originalFinalEarnedPoints: isCorrect ? questionPoints : 0,
+                            overriddenFinalEarnedPoints: finalEarnedPoints,
+                            earnedPoints,
+                            isCorrect
+                        });
+                    }
+
                     quizResults.questions.push({
                         type: q.type,
                         question: questionTextForSaving,
@@ -1734,13 +1817,11 @@
                         correctAnswer: correctAnswer,
                         isCorrect: isCorrect,
                         points: questionPoints,
-                        earnedPoints: isCorrect ? questionPoints : 0,
+                        earnedPoints: finalEarnedPoints,
                         optionsText: optionsText
                     });
 
-                    if (isCorrect) {
-                        score += questionPoints;
-                    }
+                    score += finalEarnedPoints;
                 });
                 
                 quizResults.totalPoints = totalPossiblePoints;

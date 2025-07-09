@@ -234,7 +234,10 @@ function updateStatisticsCards(result) {
     // Update statistics cards
     const scoreElement = document.getElementById('score-value');
     if (scoreElement) {
-        scoreElement.textContent = `${score}/${totalPoints}`;
+        // Format score and totalPoints to show 2 decimal places
+        const formattedScore = typeof score === 'number' ? score.toFixed(2) : score;
+        const formattedTotalPoints = typeof totalPoints === 'number' ? totalPoints.toFixed(2) : totalPoints;
+        scoreElement.textContent = `${formattedScore}/${formattedTotalPoints}`;
     }
     
     // Get lesson name - handle both field name formats
@@ -1467,8 +1470,8 @@ function showResultModal(quizResults) {
             
             <div class="score-section">
                 <div class="score-display">
-                    <span class="score">${quizResults.score}/${quizResults.totalPoints}</span>
-                    <span class="percentage">${Math.round((quizResults.score / quizResults.totalPoints) * 100)}%</span>
+                    <span class="score">${typeof quizResults.score === 'number' ? quizResults.score.toFixed(2) : quizResults.score}/${typeof quizResults.totalPoints === 'number' ? quizResults.totalPoints.toFixed(2) : quizResults.totalPoints}</span>
+                    <span class="percentage">${((quizResults.score / quizResults.totalPoints) * 100).toFixed(1)}%</span>
                 </div>
                 
                 ${quizResults.ratingChange !== undefined ? `

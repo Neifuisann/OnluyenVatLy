@@ -52,10 +52,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 shuffleAnswers: existingLesson.shuffle_answers,
                 enableQuestionPool: existingLesson.enable_question_pool,
                 questionPoolSize: existingLesson.question_pool_size,
-                difficultyRatios: existingLesson.difficulty_ratios,
+                questionTypeDistribution: existingLesson.question_type_distribution || existingLesson.difficulty_ratios || { abcd: 10, truefalse: 5, number: 3 },
+                pointsDistribution: existingLesson.points_distribution || { abcd: 6, truefalse: 3, number: 1 },
                 randomizationSeed: existingLesson.randomization_seed,
-                lessonImage: existingLesson.lesson_image,
-                randomQuestions: existingLesson.random_questions
+                lessonImage: existingLesson.lesson_image
             };
             
             // Ensure questions aren't overwritten if they exist in fetched data (use Stage 1's)
@@ -77,7 +77,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 grade: '',
                 subject: '',
                 purpose: '',
-                randomQuestions: 0,
                 mode: 'test',
                 timeLimitEnabled: false,
                 timeLimitHours: 0,
@@ -91,17 +90,52 @@ document.addEventListener('DOMContentLoaded', async () => {
                 shuffleAnswers: false,
                 enableQuestionPool: false,
                 questionPoolSize: 5,
-                difficultyRatios: {
-                    easy: 30,
-                    medium: 50,
-                    hard: 20
+                questionTypeDistribution: {
+                    abcd: 10,
+                    truefalse: 5,
+                    number: 3
+                },
+                pointsDistribution: {
+                    abcd: 6,
+                    truefalse: 3,
+                    number: 1
                 },
                 randomizationSeed: ''
             };
             currentTags = new Set();
         }
     } else {
-        // New lesson: Initialize empty config data but keep questions
+        // New lesson: Initialize config based on actual questions
+        const questionCounts = { abcd: 0, truefalse: 0, number: 0 };
+        
+        // Count actual question types
+        if (currentQuestions) {
+            currentQuestions.forEach(q => {
+                const normalizedType = q.type === 'multiple_choice' ? 'abcd' :
+                                     q.type === 'true_false' ? 'truefalse' :
+                                     q.type === 'fill_blank' ? 'number' : q.type;
+                
+                if (questionCounts.hasOwnProperty(normalizedType)) {
+                    questionCounts[normalizedType]++;
+                }
+            });
+        }
+        
+        // Set initial distribution based on what exists, default to all questions
+        const questionTypeDistribution = {
+            abcd: questionCounts.abcd,
+            truefalse: questionCounts.truefalse,
+            number: questionCounts.number
+        };
+        
+        // Calculate default points distribution (aim for 10 total points)
+        const totalQuestions = questionCounts.abcd + questionCounts.truefalse + questionCounts.number;
+        const pointsDistribution = {
+            abcd: questionCounts.abcd > 0 ? parseFloat((10 * questionCounts.abcd / totalQuestions).toFixed(1)) : 0,
+            truefalse: questionCounts.truefalse > 0 ? parseFloat((10 * questionCounts.truefalse / totalQuestions).toFixed(1)) : 0,
+            number: questionCounts.number > 0 ? parseFloat((10 * questionCounts.number / totalQuestions).toFixed(1)) : 0
+        };
+        
         currentConfigData = {
             questions: currentQuestions,
             tags: [],
@@ -111,7 +145,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             grade: '',
             subject: '',
             purpose: '',
-            randomQuestions: 0,
             mode: 'test',
             timeLimitEnabled: false,
             timeLimitHours: 0,
@@ -124,17 +157,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             shuffleQuestions: false,
             shuffleAnswers: false,
             enableQuestionPool: false,
-            questionPoolSize: 5,
-            difficultyRatios: {
-                easy: 30,
-                medium: 50,
-                hard: 20
-            },
+            questionPoolSize: totalQuestions,
+            questionTypeDistribution: questionTypeDistribution,
+            pointsDistribution: pointsDistribution,
             randomizationSeed: ''
             // Initialize other fields as needed
         };
         currentTags = new Set();
-        console.log("Initializing config for new lesson");
+        console.log("Initializing config for new lesson with question counts:", questionCounts);
     }
 
     // 3. Populate the form
@@ -145,16 +175,25 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function populateForm() {
-    // Populate standard fields
-    document.getElementById('lesson-title').value = currentConfigData.title || '';
-    document.getElementById('lesson-color').value = currentConfigData.color || '#a4aeff';
-    document.getElementById('random-questions').value = currentConfigData.randomQuestions || 0;
-    document.getElementById('lesson-description').value = currentConfigData.description || '';
+    // Populate standard fields with null checks
+    const titleElement = document.getElementById('lesson-title');
+    if (titleElement) titleElement.value = currentConfigData.title || '';
+    
+    const colorElement = document.getElementById('lesson-color');
+    if (colorElement) colorElement.value = currentConfigData.color || '#a4aeff';
+    
+    const descriptionElement = document.getElementById('lesson-description');
+    if (descriptionElement) descriptionElement.value = currentConfigData.description || '';
 
     // Populate new fields (Grade, Subject, Purpose)
-    document.getElementById('lesson-grade').value = currentConfigData.grade || '';
-    document.getElementById('lesson-subject').value = currentConfigData.subject || '';
-    document.getElementById('lesson-purpose').value = currentConfigData.purpose || '';
+    const gradeElement = document.getElementById('lesson-grade');
+    if (gradeElement) gradeElement.value = currentConfigData.grade || '';
+    
+    const subjectElement = document.getElementById('lesson-subject');
+    if (subjectElement) subjectElement.value = currentConfigData.subject || '';
+    
+    const purposeElement = document.getElementById('lesson-purpose');
+    if (purposeElement) purposeElement.value = currentConfigData.purpose || '';
     
     // Populate mode selection
     const mode = currentConfigData.mode || 'test';
@@ -163,14 +202,27 @@ function populateForm() {
         modeRadio.checked = true;
     }
     
-    // Populate time limit settings
-    document.getElementById('enable-time-limit').checked = currentConfigData.timeLimitEnabled || false;
-    document.getElementById('time-hours').value = currentConfigData.timeLimitHours || 0;
-    document.getElementById('time-minutes').value = currentConfigData.timeLimitMinutes || 30;
-    document.getElementById('time-seconds').value = currentConfigData.timeLimitSeconds || 0;
-    document.getElementById('show-countdown').checked = currentConfigData.showCountdown !== false;
-    document.getElementById('auto-submit').checked = currentConfigData.autoSubmit !== false;
-    document.getElementById('warning-alerts').checked = currentConfigData.warningAlerts || false;
+    // Populate time limit settings with null checks
+    const enableTimeLimitElement = document.getElementById('enable-time-limit');
+    if (enableTimeLimitElement) enableTimeLimitElement.checked = currentConfigData.timeLimitEnabled || false;
+    
+    const timeHoursElement = document.getElementById('time-hours');
+    if (timeHoursElement) timeHoursElement.value = currentConfigData.timeLimitHours || 0;
+    
+    const timeMinutesElement = document.getElementById('time-minutes');
+    if (timeMinutesElement) timeMinutesElement.value = currentConfigData.timeLimitMinutes || 30;
+    
+    const timeSecondsElement = document.getElementById('time-seconds');
+    if (timeSecondsElement) timeSecondsElement.value = currentConfigData.timeLimitSeconds || 0;
+    
+    const showCountdownElement = document.getElementById('show-countdown');
+    if (showCountdownElement) showCountdownElement.checked = currentConfigData.showCountdown !== false;
+    
+    const autoSubmitElement = document.getElementById('auto-submit');
+    if (autoSubmitElement) autoSubmitElement.checked = currentConfigData.autoSubmit !== false;
+    
+    const warningAlertsElement = document.getElementById('warning-alerts');
+    if (warningAlertsElement) warningAlertsElement.checked = currentConfigData.warningAlerts || false;
     
     // Show/hide time limit controls based on checkbox
     const timeLimitControls = document.getElementById('time-limit-controls');
@@ -181,18 +233,67 @@ function populateForm() {
     // Update time preview
     updateTimePreview();
     
-    // Populate randomization settings
-    document.getElementById('shuffle-questions').checked = currentConfigData.shuffleQuestions || false;
-    document.getElementById('shuffle-answers').checked = currentConfigData.shuffleAnswers || false;
-    document.getElementById('enable-question-pool').checked = currentConfigData.enableQuestionPool || false;
-    document.getElementById('pool-size').value = currentConfigData.questionPoolSize || 5;
-    document.getElementById('randomization-seed').value = currentConfigData.randomizationSeed || '';
+    // Populate randomization settings with null checks
+    const shuffleQuestionsElement = document.getElementById('shuffle-questions');
+    if (shuffleQuestionsElement) shuffleQuestionsElement.checked = currentConfigData.shuffleQuestions || false;
     
-    // Populate difficulty ratios
-    if (currentConfigData.difficultyRatios) {
-        document.getElementById('easy-ratio').value = currentConfigData.difficultyRatios.easy || 30;
-        document.getElementById('medium-ratio').value = currentConfigData.difficultyRatios.medium || 50;
-        document.getElementById('hard-ratio').value = currentConfigData.difficultyRatios.hard || 20;
+    const shuffleAnswersElement = document.getElementById('shuffle-answers');
+    if (shuffleAnswersElement) shuffleAnswersElement.checked = currentConfigData.shuffleAnswers || false;
+    
+    const enableQuestionPoolElement = document.getElementById('enable-question-pool');
+    if (enableQuestionPoolElement) enableQuestionPoolElement.checked = currentConfigData.enableQuestionPool || false;
+    
+    const poolSizeElement = document.getElementById('pool-size');
+    if (poolSizeElement) poolSizeElement.value = currentConfigData.questionPoolSize || 5;
+    
+    const randomizationSeedElement = document.getElementById('randomization-seed');
+    if (randomizationSeedElement) randomizationSeedElement.value = currentConfigData.randomizationSeed || '';
+    
+    // Count actual question types first
+    const actualQuestionCounts = { abcd: 0, truefalse: 0, number: 0 };
+    if (currentQuestions) {
+        currentQuestions.forEach(q => {
+            const normalizedType = q.type === 'multiple_choice' ? 'abcd' :
+                                 q.type === 'true_false' ? 'truefalse' :
+                                 q.type === 'fill_blank' ? 'number' : q.type;
+            
+            if (actualQuestionCounts.hasOwnProperty(normalizedType)) {
+                actualQuestionCounts[normalizedType]++;
+            }
+        });
+    }
+    
+    // Populate question type distribution
+    if (currentConfigData.questionTypeDistribution) {
+        const abcdCount = document.getElementById('abcd-count');
+        const truefalseCount = document.getElementById('truefalse-count');
+        const numberCount = document.getElementById('number-count');
+        
+        // Use actual counts as maximum, don't exceed available questions
+        if (abcdCount) {
+            const value = currentConfigData.questionTypeDistribution.abcd || 0;
+            abcdCount.value = actualQuestionCounts.abcd > 0 ? Math.min(value, actualQuestionCounts.abcd) : 0;
+        }
+        if (truefalseCount) {
+            const value = currentConfigData.questionTypeDistribution.truefalse || 0;
+            truefalseCount.value = actualQuestionCounts.truefalse > 0 ? Math.min(value, actualQuestionCounts.truefalse) : 0;
+        }
+        if (numberCount) {
+            const value = currentConfigData.questionTypeDistribution.number || 0;
+            numberCount.value = actualQuestionCounts.number > 0 ? Math.min(value, actualQuestionCounts.number) : 0;
+        }
+    }
+    
+    // Populate points distribution
+    if (currentConfigData.pointsDistribution) {
+        const abcdPoints = document.getElementById('abcd-points');
+        const truefalsePoints = document.getElementById('truefalse-points');
+        const numberPoints = document.getElementById('number-points');
+        
+        // Only set points for question types that exist
+        if (abcdPoints) abcdPoints.value = actualQuestionCounts.abcd > 0 ? (currentConfigData.pointsDistribution.abcd || 0) : 0;
+        if (truefalsePoints) truefalsePoints.value = actualQuestionCounts.truefalse > 0 ? (currentConfigData.pointsDistribution.truefalse || 0) : 0;
+        if (numberPoints) numberPoints.value = actualQuestionCounts.number > 0 ? (currentConfigData.pointsDistribution.number || 0) : 0;
     }
     
     // Show/hide question pool controls
@@ -201,9 +302,10 @@ function populateForm() {
         questionPoolControls.style.display = currentConfigData.enableQuestionPool ? 'block' : 'none';
     }
     
-    // Update pool max display and difficulty total
+    // Update pool max display, question type totals, and points calculations
     updatePoolMaxDisplay();
-    updateDifficultyTotal();
+    updateQuestionTypeDisplay();
+    updatePointsCalculations();
 
     // Populate Image
     if (currentConfigData.lessonImage) {
@@ -226,7 +328,6 @@ function setupEventListeners() {
         currentConfigData.title = e.target.value;
     });
     document.getElementById('lesson-color')?.addEventListener('input', (e) => { currentConfigData.color = e.target.value; });
-    document.getElementById('random-questions')?.addEventListener('input', (e) => { currentConfigData.randomQuestions = parseInt(e.target.value) || 0; });
     document.getElementById('lesson-description')?.addEventListener('input', (e) => { currentConfigData.description = e.target.value; });
     document.getElementById('lesson-grade')?.addEventListener('change', (e) => { currentConfigData.grade = e.target.value; });
     document.getElementById('lesson-subject')?.addEventListener('change', (e) => { currentConfigData.subject = e.target.value; });
@@ -302,15 +403,28 @@ function setupEventListeners() {
         currentConfigData.randomizationSeed = e.target.value;
     });
     
-    // Add difficulty ratio listeners
-    ['easy-ratio', 'medium-ratio', 'hard-ratio'].forEach(id => {
+    // Add question type distribution listeners
+    ['abcd-count', 'truefalse-count', 'number-count'].forEach(id => {
         document.getElementById(id)?.addEventListener('input', (e) => {
-            const difficulty = id.split('-')[0];
-            if (!currentConfigData.difficultyRatios) {
-                currentConfigData.difficultyRatios = { easy: 30, medium: 50, hard: 20 };
+            const type = id.split('-')[0];
+            if (!currentConfigData.questionTypeDistribution) {
+                currentConfigData.questionTypeDistribution = { abcd: 10, truefalse: 5, number: 3 };
             }
-            currentConfigData.difficultyRatios[difficulty] = parseInt(e.target.value) || 0;
-            updateDifficultyTotal();
+            currentConfigData.questionTypeDistribution[type] = parseInt(e.target.value) || 0;
+            updateQuestionTypeDisplay();
+            updatePointsCalculations();
+        });
+    });
+    
+    // Add points distribution listeners
+    ['abcd-points', 'truefalse-points', 'number-points'].forEach(id => {
+        document.getElementById(id)?.addEventListener('input', (e) => {
+            const type = id.split('-')[0];
+            if (!currentConfigData.pointsDistribution) {
+                currentConfigData.pointsDistribution = { abcd: 6, truefalse: 3, number: 1 };
+            }
+            currentConfigData.pointsDistribution[type] = parseFloat(e.target.value) || 0;
+            updatePointsCalculations();
         });
     });
     
@@ -468,6 +582,17 @@ async function compressImage(file, maxSize = 800, quality = 0.7) {
 // --- Question Transformation Function ---
 function transformQuestionsForAPI(questions) {
     console.log('Transforming questions for API. Original questions:', questions);
+    
+    // Get current distribution settings
+    const questionDist = currentConfigData.questionTypeDistribution || { abcd: 10, truefalse: 5, number: 3 };
+    const pointsDist = currentConfigData.pointsDistribution || { abcd: 6, truefalse: 3, number: 1 };
+    
+    // Calculate points per question for each type
+    const pointsPerQuestion = {
+        abcd: questionDist.abcd > 0 ? pointsDist.abcd / questionDist.abcd : 1,
+        truefalse: questionDist.truefalse > 0 ? pointsDist.truefalse / questionDist.truefalse : 1,
+        number: questionDist.number > 0 ? pointsDist.number / questionDist.number : 1
+    };
 
     const transformedQuestions = questions.map((q, index) => {
         // Keep the original question type format that lesson display expects
@@ -521,12 +646,19 @@ function transformQuestionsForAPI(questions) {
             });
         }
 
+        // Assign points based on question type
+        const normalizedTypeForPoints = questionType === 'multiple_choice' ? 'abcd' :
+                                      questionType === 'true_false' ? 'truefalse' :
+                                      questionType === 'fill_blank' ? 'number' : questionType;
+        
+        const assignedPoints = pointsPerQuestion[normalizedTypeForPoints] || 1;
+
         const transformedQuestion = {
             question: q.question || '',
             type: questionType, // Keep original type format
             options: options, // Array of objects with text property
             correct: correctAnswer, // Use 'correct' property name
-            points: q.points || 1,
+            points: assignedPoints, // Use calculated points based on type
             id: q.id || `q_${Math.random().toString(36).substr(2, 9)}`
         };
 
@@ -577,7 +709,6 @@ async function saveLessonConfiguration() {
             // Core metadata from form
             title: currentConfigData.title,
             color: document.getElementById('lesson-color')?.value || '#a4aeff',
-            random_questions: parseInt(document.getElementById('random-questions')?.value) || 0,
             description: currentConfigData.description,
             lesson_image: currentConfigData.lessonImage || null,
             tags: Array.from(currentTags),
@@ -602,7 +733,8 @@ async function saveLessonConfiguration() {
             shuffle_answers: currentConfigData.shuffleAnswers || false,
             enable_question_pool: currentConfigData.enableQuestionPool || false,
             question_pool_size: currentConfigData.questionPoolSize || 5,
-            difficulty_ratios: currentConfigData.difficultyRatios || { easy: 30, medium: 50, hard: 20 },
+            question_type_distribution: currentConfigData.questionTypeDistribution || { abcd: 10, truefalse: 5, number: 3 },
+            points_distribution: currentConfigData.pointsDistribution || { abcd: 6, truefalse: 3, number: 1 },
             randomization_seed: currentConfigData.randomizationSeed || '',
 
             // Questions from Stage 1 (transformed to API format)
@@ -703,24 +835,132 @@ function updatePoolMaxDisplay() {
     }
 }
 
-// Function to update difficulty total display
-function updateDifficultyTotal() {
-    const easyRatio = parseInt(document.getElementById('easy-ratio')?.value) || 0;
-    const mediumRatio = parseInt(document.getElementById('medium-ratio')?.value) || 0;
-    const hardRatio = parseInt(document.getElementById('hard-ratio')?.value) || 0;
+// Function to update question type display
+function updateQuestionTypeDisplay() {
+    // Count questions by type
+    const questionCounts = { abcd: 0, truefalse: 0, number: 0 };
     
-    const total = easyRatio + mediumRatio + hardRatio;
-    const totalElement = document.getElementById('difficulty-total');
+    if (currentQuestions) {
+        currentQuestions.forEach(q => {
+            const normalizedType = q.type === 'multiple_choice' ? 'abcd' :
+                                 q.type === 'true_false' ? 'truefalse' :
+                                 q.type === 'fill_blank' ? 'number' : q.type;
+            
+            if (questionCounts.hasOwnProperty(normalizedType)) {
+                questionCounts[normalizedType]++;
+            }
+        });
+    }
     
-    if (totalElement) {
-        totalElement.textContent = `Tổng: ${total}%`;
-        
-        // Update visual feedback
-        if (total === 100) {
-            totalElement.classList.remove('invalid');
-        } else {
-            totalElement.classList.add('invalid');
+    // Update available displays and set default values based on what exists
+    const abcdAvailable = document.getElementById('abcd-available');
+    const truefalseAvailable = document.getElementById('truefalse-available');
+    const numberAvailable = document.getElementById('number-available');
+    
+    const abcdCountInput = document.getElementById('abcd-count');
+    const truefalseCountInput = document.getElementById('truefalse-count');
+    const numberCountInput = document.getElementById('number-count');
+    
+    // Only set values for question types that exist
+    if (abcdAvailable) {
+        abcdAvailable.textContent = `/ ${questionCounts.abcd} câu`;
+        // If no ABCD questions exist, set count to 0
+        if (questionCounts.abcd === 0 && abcdCountInput && abcdCountInput.value > 0) {
+            abcdCountInput.value = 0;
+            if (currentConfigData.questionTypeDistribution) {
+                currentConfigData.questionTypeDistribution.abcd = 0;
+            }
         }
+    }
+    
+    if (truefalseAvailable) {
+        truefalseAvailable.textContent = `/ ${questionCounts.truefalse} câu`;
+        // If no True/False questions exist, set count to 0
+        if (questionCounts.truefalse === 0 && truefalseCountInput && truefalseCountInput.value > 0) {
+            truefalseCountInput.value = 0;
+            if (currentConfigData.questionTypeDistribution) {
+                currentConfigData.questionTypeDistribution.truefalse = 0;
+            }
+        }
+    }
+    
+    if (numberAvailable) {
+        numberAvailable.textContent = `/ ${questionCounts.number} câu`;
+        // If no Number questions exist, set count to 0
+        if (questionCounts.number === 0 && numberCountInput && numberCountInput.value > 0) {
+            numberCountInput.value = 0;
+            if (currentConfigData.questionTypeDistribution) {
+                currentConfigData.questionTypeDistribution.number = 0;
+            }
+        }
+    }
+    
+    // Update total
+    const abcdCount = parseInt(abcdCountInput?.value) || 0;
+    const truefalseCount = parseInt(truefalseCountInput?.value) || 0;
+    const numberCount = parseInt(numberCountInput?.value) || 0;
+    const total = abcdCount + truefalseCount + numberCount;
+    
+    const totalElement = document.getElementById('question-type-total');
+    if (totalElement) {
+        totalElement.textContent = `Tổng: ${total} câu`;
+    }
+    
+    // Update pool size to match total
+    const poolSizeInput = document.getElementById('pool-size');
+    if (poolSizeInput) {
+        poolSizeInput.value = total;
+        currentConfigData.questionPoolSize = total;
+    }
+    
+    // Update points calculations after adjusting counts
+    updatePointsCalculations();
+}
+
+// Function to update points calculations
+function updatePointsCalculations() {
+    const questionDist = currentConfigData.questionTypeDistribution || { abcd: 0, truefalse: 0, number: 0 };
+    const pointsDist = currentConfigData.pointsDistribution || { abcd: 0, truefalse: 0, number: 0 };
+    
+    // Calculate points per question for each type, handling division by zero
+    const abcdPerQuestion = questionDist.abcd > 0 ? (pointsDist.abcd / questionDist.abcd).toFixed(2) : '0';
+    const truefalsePerQuestion = questionDist.truefalse > 0 ? (pointsDist.truefalse / questionDist.truefalse).toFixed(2) : '0';
+    const numberPerQuestion = questionDist.number > 0 ? (pointsDist.number / questionDist.number).toFixed(2) : '0';
+    
+    // Update displays
+    const abcdPointsPer = document.getElementById('abcd-points-per');
+    const truefalsePointsPer = document.getElementById('truefalse-points-per');
+    const numberPointsPer = document.getElementById('number-points-per');
+    
+    if (abcdPointsPer) {
+        if (questionDist.abcd > 0) {
+            abcdPointsPer.textContent = `= ${abcdPerQuestion} điểm/câu`;
+        } else {
+            abcdPointsPer.textContent = `= N/A`;
+        }
+    }
+    
+    if (truefalsePointsPer) {
+        if (questionDist.truefalse > 0) {
+            truefalsePointsPer.textContent = `= ${truefalsePerQuestion} điểm/câu`;
+        } else {
+            truefalsePointsPer.textContent = `= N/A`;
+        }
+    }
+    
+    if (numberPointsPer) {
+        if (questionDist.number > 0) {
+            numberPointsPer.textContent = `= ${numberPerQuestion} điểm/câu`;
+        } else {
+            numberPointsPer.textContent = `= N/A`;
+        }
+    }
+    
+    // Update total points (ensure numeric addition)
+    const totalPoints = parseFloat(pointsDist.abcd || 0) + parseFloat(pointsDist.truefalse || 0) + parseFloat(pointsDist.number || 0);
+    const totalElement = document.getElementById('points-total');
+    if (totalElement) {
+        totalElement.textContent = `Tổng điểm: ${totalPoints}`;
     }
 }
 

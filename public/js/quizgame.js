@@ -333,7 +333,7 @@ function handleAnswer(answer) {
     const isCorrect = answer === question.correct;
     if (isCorrect) {
         correctStreak++;
-        let earnedPoints = timeLeft >= 20 ? MAX_POINTS : Math.round(MAX_POINTS * (timeLeft / 20));
+        let earnedPoints = timeLeft >= 20 ? MAX_POINTS : Math.round((MAX_POINTS * (timeLeft / 20)) * 100) / 100;
         score += earnedPoints;
         question.earnedPoints = earnedPoints;
         updateScoreDisplay(score);

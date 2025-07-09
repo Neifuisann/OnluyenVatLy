@@ -196,25 +196,51 @@
                                     </div>
                                     
                                     <div class="pool-setting">
-                                        <label class="pool-label">Phân bố theo độ khó:</label>
-                                        <div class="difficulty-distribution">
-                                            <div class="difficulty-item">
-                                                <label for="easy-ratio" class="difficulty-label">Dễ</label>
-                                                <input type="number" id="easy-ratio" class="difficulty-input" min="0" max="100" value="30">
-                                                <span class="difficulty-percent">%</span>
+                                        <label class="pool-label">Phân bố theo loại câu hỏi:</label>
+                                        <div class="question-type-distribution">
+                                            <div class="question-type-item">
+                                                <label for="abcd-count" class="question-type-label">Trắc nghiệm ABCD</label>
+                                                <input type="number" id="abcd-count" class="question-type-input" min="0" value="10">
+                                                <span class="question-type-available" id="abcd-available">/ 0 câu</span>
                                             </div>
-                                            <div class="difficulty-item">
-                                                <label for="medium-ratio" class="difficulty-label">Trung bình</label>
-                                                <input type="number" id="medium-ratio" class="difficulty-input" min="0" max="100" value="50">
-                                                <span class="difficulty-percent">%</span>
+                                            <div class="question-type-item">
+                                                <label for="truefalse-count" class="question-type-label">Đúng/Sai</label>
+                                                <input type="number" id="truefalse-count" class="question-type-input" min="0" value="5">
+                                                <span class="question-type-available" id="truefalse-available">/ 0 câu</span>
                                             </div>
-                                            <div class="difficulty-item">
-                                                <label for="hard-ratio" class="difficulty-label">Khó</label>
-                                                <input type="number" id="hard-ratio" class="difficulty-input" min="0" max="100" value="20">
-                                                <span class="difficulty-percent">%</span>
+                                            <div class="question-type-item">
+                                                <label for="number-count" class="question-type-label">Điền số</label>
+                                                <input type="number" id="number-count" class="question-type-input" min="0" value="3">
+                                                <span class="question-type-available" id="number-available">/ 0 câu</span>
                                             </div>
                                         </div>
-                                        <div class="difficulty-total" id="difficulty-total">Tổng: 100%</div>
+                                        <div class="question-type-total" id="question-type-total">Tổng: 18 câu</div>
+                                    </div>
+                                    
+                                    <div class="pool-setting">
+                                        <label class="pool-label">Phân bố điểm theo loại câu hỏi:</label>
+                                        <div class="points-distribution">
+                                            <div class="points-item">
+                                                <label for="abcd-points" class="points-label">Tổng điểm ABCD</label>
+                                                <input type="number" id="abcd-points" class="points-input" min="0" step="0.1" value="6">
+                                                <span class="points-per-question" id="abcd-points-per">= 0.6 điểm/câu</span>
+                                            </div>
+                                            <div class="points-item">
+                                                <label for="truefalse-points" class="points-label">Tổng điểm Đúng/Sai</label>
+                                                <input type="number" id="truefalse-points" class="points-input" min="0" step="0.1" value="3">
+                                                <span class="points-per-question" id="truefalse-points-per">= 0.6 điểm/câu</span>
+                                            </div>
+                                            <div class="points-item">
+                                                <label for="number-points" class="points-label">Tổng điểm Điền số</label>
+                                                <input type="number" id="number-points" class="points-input" min="0" step="0.1" value="1">
+                                                <span class="points-per-question" id="number-points-per">= 0.33 điểm/câu</span>
+                                            </div>
+                                        </div>
+                                        <div class="points-total" id="points-total">Tổng điểm: 10</div>
+                                        <div class="points-note">
+                                            <i class="fas fa-info-circle"></i>
+                                            <span>Lưu ý: Câu Đúng/Sai được tính điểm theo thang: 4 đúng = 100%, 3 đúng = 50%, 2 đúng = 25%, 1 đúng = 10%</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -496,14 +522,6 @@
                         </div>
 
                         <div class="form-row">
-                            <div class="form-group">
-                                <label for="random-questions" class="form-label">
-                                    <i class="fas fa-random"></i>
-                                    Số câu hỏi ngẫu nhiên
-                                </label>
-                                <input type="number" id="random-questions" class="form-control" min="0" placeholder="0 = Sử dụng tất cả câu hỏi">
-                                <div class="help-text">0 = sử dụng tất cả câu hỏi</div>
-                            </div>
                             <div class="form-group">
                                 <label for="tag-input" class="form-label">
                                     <i class="fas fa-tags"></i>

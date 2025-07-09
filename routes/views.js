@@ -407,10 +407,10 @@ router.get('/share/lesson/:lessonId', async (req, res) => {
     console.log(`Attempting to serve share page for lesson ID: ${lessonId}. Logged in student: ${loggedInStudentId || 'None'}`);
 
     try {
-        // 1. Fetch lesson details including randomQuestions
+        // 1. Fetch lesson details including question pool settings
         const { data: lessonData, error: lessonError } = await supabase
             .from('lessons')
-            .select('id, title, lesson_image, questions, random_questions')
+            .select('id, title, lesson_image, questions, enable_question_pool, question_pool_size, question_type_distribution')
             .eq('id', lessonId)
             .single();
 
@@ -432,9 +432,12 @@ router.get('/share/lesson/:lessonId', async (req, res) => {
 
         // 3. Determine the question count to display
         const totalQuestionsAvailable = Array.isArray(lessonData.questions) ? lessonData.questions.length : 0;
-        const questionsPerAttempt = (typeof lessonData.randomQuestions === 'number' && lessonData.randomQuestions > 0)
-            ? lessonData.randomQuestions
-            : totalQuestionsAvailable;
+        let questionsPerAttempt = totalQuestionsAvailable;
+        
+        // Use question pool settings if enabled
+        if (lessonData.enable_question_pool && lessonData.question_pool_size > 0) {
+            questionsPerAttempt = lessonData.question_pool_size;
+        }
         console.log(`Questions per attempt: ${questionsPerAttempt}`);
 
         // 4. Fetch USER'S past results (if logged in)
