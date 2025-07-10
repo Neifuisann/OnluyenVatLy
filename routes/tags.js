@@ -16,4 +16,16 @@ router.get('/popular',
     tagsController.getPopularTags
 );
 
+router.get('/related/:tag',
+    optionalAuth,
+    shortCacheMiddleware(300), // 5 minutes cache for related tags
+    tagsController.getRelatedTags
+);
+
+router.get('/intersection',
+    optionalAuth,
+    shortCacheMiddleware(300), // 5 minutes cache for intersection tags
+    tagsController.getIntersectionTags
+);
+
 module.exports = router;

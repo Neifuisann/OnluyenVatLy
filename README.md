@@ -253,7 +253,7 @@ public/
 ├── js/            # 20 JavaScript modules (all present)
 ├── images/        # 26 lesson and UI images (all present)
 ├── audio/         # 17 quiz game sound effects (all present)
-└── lesson_images/ # Numbered lesson content images
+└── lesson_handout/ # Numbered lesson content images
 ```
 
 ### Asset Optimization

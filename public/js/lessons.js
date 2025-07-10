@@ -4,6 +4,7 @@ let currentSearch = '';
 let currentSort = 'order';
 let currentTags = [];
 let allTags = [];
+let availableTags = []; // Tags available for current selection
 let isLoadingTags = false;
 
 // --- Authentication Functions (supports both students and admins) ---
@@ -93,6 +94,7 @@ async function loadTags() {
         if (result.success && result.tags) {
             allTags = result.tags; // Now contains tag objects with statistics
             console.log('Loaded popular tags for lessons:', allTags);
+            await loadAvailableTags();
             renderCategoryPills();
         } else {
             throw new Error('Invalid popular tags response format');
@@ -115,6 +117,7 @@ async function loadTags() {
                     popularityScore: 0
                 }));
                 console.log('Loaded fallback tags:', allTags);
+                await loadAvailableTags();
                 renderCategoryPills();
             } else {
                 throw new Error('Fallback tags also failed');
@@ -131,6 +134,7 @@ async function loadTags() {
                     popularityScore: 0
                 }));
             console.log('Using hardcoded fallback tags');
+            await loadAvailableTags();
             renderCategoryPills();
         }
     } finally {
@@ -138,11 +142,51 @@ async function loadTags() {
     }
 }
 
+async function loadAvailableTags() {
+    if (currentTags.length === 0) {
+        // No tags selected, show all popular tags
+        availableTags = allTags.slice();
+        return;
+    }
+
+    try {
+        // Use the intersection endpoint for better performance
+        const tagsParam = currentTags.join(',');
+        const response = await fetch(`/api/tags/intersection?tags=${encodeURIComponent(tagsParam)}`);
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data.success) {
+                // Combine selected tags with intersection tags
+                const intersectionTagNames = data.intersectionTags.map(it => it.tag);
+                const availableTagNames = new Set([...currentTags, ...intersectionTagNames]);
+
+                // Filter allTags to show only available ones
+                availableTags = allTags.filter(tagData => {
+                    const tagName = typeof tagData === 'string' ? tagData : tagData.tag;
+                    return availableTagNames.has(tagName);
+                });
+
+                console.log('Loaded available tags for selection:', availableTags.map(t => typeof t === 'string' ? t : t.tag));
+                return;
+            }
+        }
+
+        // Fallback to showing all tags if intersection API fails
+        console.warn('Intersection tags API failed, showing all tags');
+        availableTags = allTags.slice();
+    } catch (error) {
+        console.error('Error loading available tags:', error);
+        // Fallback to all tags
+        availableTags = allTags.slice();
+    }
+}
+
 function renderCategoryPills() {
     const categoryPillsContainer = document.querySelector('.category-pills');
     if (!categoryPillsContainer) return;
 
-    console.log('Rendering category pills with data:', allTags);
+    console.log('Rendering category pills with available tags:', availableTags);
     categoryPillsContainer.innerHTML = '';
 
     // Add "All" pill first
@@ -154,9 +198,9 @@ function renderCategoryPills() {
     `;
     categoryPillsContainer.appendChild(allPill);
 
-    // Show top 8 popular tags
-    const topTags = allTags.slice(0, 8);
-    topTags.forEach(tagData => {
+    // Show available tags (all tags when no selection, or related tags when something is selected)
+    const tagsToShow = availableTags.slice(0, 12); // Show more tags to accommodate related ones
+    tagsToShow.forEach(tagData => {
         const pill = document.createElement('button');
 
         // Handle both old format (string) and new format (object)
@@ -201,16 +245,11 @@ function formatTagName(tag) {
 function setupCategoryPillListeners() {
     const categoryPills = document.querySelectorAll('.category-pill');
     categoryPills.forEach(pill => {
-        pill.addEventListener('click', (e) => {
+        pill.addEventListener('click', async (e) => {
             // Prevent context menu from interfering with normal clicks
             if (e.button !== 0) return;
 
-            // Remove active class from all pills
-            categoryPills.forEach(p => p.classList.remove('active'));
-            pill.classList.add('active');
-
             const category = pill.dataset.category;
-
             console.log('Category pill clicked:', category);
 
             // Update current tags
@@ -218,9 +257,24 @@ function setupCategoryPillListeners() {
                 currentTags = [];
                 console.log('Showing all lessons');
             } else {
-                currentTags = [category];
-                console.log('Filtering by category:', category);
+                // Toggle tag selection
+                const tagIndex = currentTags.indexOf(category);
+                if (tagIndex > -1) {
+                    // Tag is already selected, remove it
+                    currentTags.splice(tagIndex, 1);
+                    console.log('Removed tag:', category);
+                } else {
+                    // Tag is not selected, add it
+                    currentTags.push(category);
+                    console.log('Added tag:', category);
+                }
             }
+
+            // Load available tags based on current selection
+            await loadAvailableTags();
+
+            // Re-render pills to show updated selection and available tags
+            renderCategoryPills();
 
             // Reset page and filter lessons
             currentPage = 1;
@@ -995,7 +1049,7 @@ function debounce(func, wait) {
 
 // --- Get lesson image URL function ---
 function getLessonImageUrl(lessonId) {
-    return `/lesson_images/${lessonId}.jpg`;
+    return `/lesson_handout/${lessonId}.jpg`;
 }
 
 // --- Lesson Confirmation Functions ---

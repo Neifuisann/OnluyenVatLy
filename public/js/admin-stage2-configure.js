@@ -1061,6 +1061,10 @@ async function generateAIImage() {
             tags: Array.from(currentTags)
         };
 
+        // Get custom prompt if provided
+        const customPromptInput = document.getElementById('custom-image-prompt');
+        const customPrompt = customPromptInput ? customPromptInput.value.trim() : '';
+
         // Get CSRF token before making the request
         const csrfResponse = await fetch('/api/csrf-token');
         if (!csrfResponse.ok) {
@@ -1070,6 +1074,7 @@ async function generateAIImage() {
 
         const payload = {
             lessonData,
+            customPrompt: customPrompt || null,
             csrfToken: csrfData.csrfToken
         };
 
@@ -1091,14 +1096,16 @@ async function generateAIImage() {
         imagePreviewImg.src = result.imageUrl;
         imagePreviewImg.style.display = 'block';
         imagePreview.style.display = 'block';
-        
-        // Store the AI generated image URL
-        currentConfigData.ai_image_url = result.imageUrl;
+
+        // Store the AI generated image as base64 in lessonImage field (same as manual upload)
+        currentConfigData.lessonImage = result.imageUrl;
         currentConfigData.ai_image_prompt = result.prompt;
-        
-        // Show success status
+
+        // Show success status with model and prompt type info
+        const promptType = result.isCustomPrompt ? 'tùy chỉnh' : 'tự động';
+        const modelUsed = result.model || 'AI';
         aiStatus.className = 'ai-status success';
-        aiStatus.innerHTML = '<i class="fas fa-check-circle"></i><span>Ảnh đã được tạo thành công!</span>';
+        aiStatus.innerHTML = `<i class="fas fa-check-circle"></i><span>Ảnh đã được tạo thành công! (${modelUsed}, ${promptType})</span>`;
         
         // Hide status after 3 seconds
         setTimeout(() => {

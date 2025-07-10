@@ -157,7 +157,7 @@ app.use((req, res, next) => {
         req.url.startsWith('/js/') ||
         req.url.startsWith('/images/') ||
         req.url.startsWith('/audio/') ||
-        req.url.startsWith('/lesson_images/') ||
+        req.url.startsWith('/lesson_handout/') ||
         req.url.startsWith('/favicon.ico') ||
         req.url.endsWith('.ico') ||
         req.url.endsWith('.png') ||

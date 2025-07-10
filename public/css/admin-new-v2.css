@@ -2261,6 +2261,23 @@ body {
   color: var(--text-tertiary);
 }
 
+/* Custom prompt container styling */
+.custom-prompt-container {
+  border-top: 1px solid var(--border-color);
+  padding-top: var(--space-sm);
+}
+
+.custom-prompt-container .form-label {
+  margin-bottom: var(--space-xs);
+  font-weight: 500;
+}
+
+.custom-prompt-container .form-text {
+  margin-top: var(--space-xs);
+  font-size: 0.85em;
+  color: var(--text-secondary);
+}
+
 .form-select {
   width: 100%;
   padding: var(--space-md);
