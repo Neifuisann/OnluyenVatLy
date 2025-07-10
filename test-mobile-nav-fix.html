@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Navigation Test</title>
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+    
+    <style>
+        body {
+            padding-top: 100px;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .test-info {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-lg);
+        }
+        
+        .test-info h2 {
+            margin-bottom: var(--space-md);
+        }
+        
+        .device-info {
+            display: grid;
+            gap: var(--space-sm);
+            margin-top: var(--space-md);
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--space-xs) 0;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        
+        .info-label {
+            color: var(--text-secondary);
+        }
+        
+        .info-value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        
+        .test-actions {
+            display: flex;
+            gap: var(--space-md);
+            margin-top: var(--space-lg);
+        }
+        
+        .console-output {
+            background: #000;
+            color: #0f0;
+            font-family: monospace;
+            padding: var(--space-md);
+            border-radius: var(--radius-sm);
+            height: 300px;
+            overflow-y: auto;
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
+        
+        .console-line {
+            margin: 2px 0;
+        }
+        
+        .console-error {
+            color: #f00;
+        }
+        
+        .console-info {
+            color: #00f;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation will be included by server -->
+    ${typeof isAuthenticated !== 'undefined' ? '' : '<script>var isAuthenticated = false;</script>'}
+    <div id="nav-placeholder"></div>
+    
+    <div class="test-container">
+        <div class="test-info">
+            <h2>Mobile Navigation Test Page</h2>
+            <p>This page helps debug the mobile navigation menu issue.</p>
+            
+            <div class="device-info">
+                <div class="info-row">
+                    <span class="info-label">Screen Width:</span>
+                    <span class="info-value" id="screen-width">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Screen Height:</span>
+                    <span class="info-value" id="screen-height">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Viewport Width:</span>
+                    <span class="info-value" id="viewport-width">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Viewport Height:</span>
+                    <span class="info-value" id="viewport-height">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Orientation:</span>
+                    <span class="info-value" id="orientation">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">User Agent:</span>
+                    <span class="info-value" id="user-agent" style="font-size: 0.8rem;">-</span>
+                </div>
+            </div>
+            
+            <div class="test-actions">
+                <button class="button primary" onclick="testMobileMenu()">Test Mobile Menu</button>
+                <button class="button secondary" onclick="clearConsole()">Clear Console</button>
+                <button class="button secondary" onclick="location.reload()">Reload Page</button>
+            </div>
+        </div>
+        
+        <div class="test-info">
+            <h3>Console Output</h3>
+            <div class="console-output" id="console-output"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Load navigation HTML
+        fetch('/views/nav.html')
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('nav-placeholder').innerHTML = html;
+                // Scripts in nav.html will auto-execute
+            })
+            .catch(err => console.error('Failed to load nav:', err));
+        
+        // Override console methods to display in page
+        const consoleOutput = document.getElementById('console-output');
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalInfo = console.info;
+        
+        function addToConsole(message, type = 'log') {
+            const line = document.createElement('div');
+            line.className = 'console-line';
+            if (type === 'error') line.className += ' console-error';
+            if (type === 'info') line.className += ' console-info';
+            
+            const timestamp = new Date().toLocaleTimeString();
+            line.textContent = `[${timestamp}] ${message}`;
+            consoleOutput.appendChild(line);
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+            
+            // Also log to real console
+            if (type === 'log') originalLog(message);
+            else if (type === 'error') originalError(message);
+            else if (type === 'info') originalInfo(message);
+        }
+        
+        console.log = function(...args) {
+            addToConsole(args.join(' '), 'log');
+        };
+        
+        console.error = function(...args) {
+            addToConsole(args.join(' '), 'error');
+        };
+        
+        console.info = function(...args) {
+            addToConsole(args.join(' '), 'info');
+        };
+        
+        // Update device info
+        function updateDeviceInfo() {
+            document.getElementById('screen-width').textContent = screen.width + 'px';
+            document.getElementById('screen-height').textContent = screen.height + 'px';
+            document.getElementById('viewport-width').textContent = window.innerWidth + 'px';
+            document.getElementById('viewport-height').textContent = window.innerHeight + 'px';
+            document.getElementById('orientation').textContent = 
+                window.orientation !== undefined ? window.orientation + '°' : 
+                (window.innerWidth > window.innerHeight ? 'landscape' : 'portrait');
+            document.getElementById('user-agent').textContent = navigator.userAgent;
+        }
+        
+        // Test mobile menu
+        function testMobileMenu() {
+            console.log('=== Testing Mobile Menu ===');
+            
+            const toggle = document.getElementById('mobile-menu-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            
+            if (!toggle) {
+                console.error('Mobile toggle button not found!');
+                return;
+            }
+            
+            if (!navLinks) {
+                console.error('Nav links container not found!');
+                return;
+            }
+            
+            console.log('Found toggle button and nav links');
+            console.log('Current nav links classes:', navLinks.className);
+            console.log('Current visibility:', window.getComputedStyle(navLinks).visibility);
+            console.log('Current opacity:', window.getComputedStyle(navLinks).opacity);
+            console.log('Current transform:', window.getComputedStyle(navLinks).transform);
+            
+            console.log('Simulating click on mobile menu toggle...');
+            toggle.click();
+            
+            setTimeout(() => {
+                console.log('After click:');
+                console.log('Nav links classes:', navLinks.className);
+                console.log('Visibility:', window.getComputedStyle(navLinks).visibility);
+                console.log('Opacity:', window.getComputedStyle(navLinks).opacity);
+                console.log('Transform:', window.getComputedStyle(navLinks).transform);
+            }, 350);
+        }
+        
+        function clearConsole() {
+            consoleOutput.innerHTML = '';
+            console.log('Console cleared');
+        }
+        
+        // Initialize
+        updateDeviceInfo();
+        window.addEventListener('resize', updateDeviceInfo);
+        window.addEventListener('orientationchange', updateDeviceInfo);
+        
+        console.log('Test page loaded and ready');
+    </script>
+</body>
+</html>

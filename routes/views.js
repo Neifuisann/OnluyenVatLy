@@ -533,4 +533,12 @@ router.get('/health',
   }
 );
 
+// Test route for mobile navigation
+router.get('/test-mobile-nav',
+  optionalAuth,
+  addSessionInfo,
+  noCacheMiddleware,
+  serveHTML('test-mobile-nav-fix.html')
+);
+
 module.exports = router;

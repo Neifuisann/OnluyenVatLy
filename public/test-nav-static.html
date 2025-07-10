@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Static Mobile Nav Test</title>
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+    
+    <style>
+        body {
+            padding-top: 100px;
+        }
+        
+        .test-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .info-box {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-lg);
+        }
+        
+        /* Include nav styles directly */
+        .main-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem 2rem;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            z-index: var(--z-sticky);
+            transition: var(--transition-normal);
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-decoration: none;
+            transition: var(--transition-fast);
+        }
+        
+        .logo-gradient {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-logo:hover {
+            transform: scale(1.05);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-full);
+            transition: var(--transition-fast);
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            background: var(--glass-bg);
+            color: var(--neon-purple);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(168, 85, 247, 0.3);
+        }
+        
+        .nav-link i {
+            font-size: 1.1rem;
+        }
+        
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            padding: 0.5rem;
+        }
+        
+        .mobile-menu-toggle:hover {
+            color: var(--neon-purple);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-nav {
+                height: 70px;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                left: 0;
+                right: 0;
+                background: var(--bg-secondary, #1a1a2e);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border-bottom: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
+                flex-direction: column;
+                padding: 1rem;
+                gap: 0.5rem;
+                transform: translateY(-100%) translateY(-1px);
+                opacity: 0;
+                visibility: hidden;
+                transition: transform var(--transition-normal, 0.3s cubic-bezier(0.4, 0.0, 0.2, 1)), 
+                            opacity var(--transition-normal, 0.3s cubic-bezier(0.4, 0.0, 0.2, 1)),
+                            visibility 0s var(--transition-normal, 0.3s);
+                z-index: 998;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+                max-height: calc(100vh - 70px);
+                overflow-y: auto;
+            }
+            
+            .nav-links.active {
+                display: flex !important;
+                transform: translateY(0);
+                opacity: 1;
+                visibility: visible;
+                z-index: 999;
+                transition: transform var(--transition-normal, 0.3s cubic-bezier(0.4, 0.0, 0.2, 1)), 
+                            opacity var(--transition-normal, 0.3s cubic-bezier(0.4, 0.0, 0.2, 1)),
+                            visibility 0s 0s;
+            }
+            
+            .nav-link {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .mobile-menu-toggle {
+                display: block;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .main-nav {
+                padding: 1rem;
+            }
+            
+            .nav-logo {
+                font-size: 1.2rem;
+            }
+            
+            /* Keep text visible in mobile menu */
+            .nav-link span {
+                display: inline;
+            }
+            
+            .nav-link {
+                padding: 0.75rem 1.5rem;
+                justify-content: flex-start;
+                width: 100%;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+        
+        /* Additional mobile fixes for portrait mode */
+        @media (orientation: portrait) and (max-width: 768px) {
+            .nav-links {
+                max-height: calc(100vh - 70px);
+                overflow-y: auto;
+            }
+            
+            .mobile-menu-toggle {
+                -webkit-tap-highlight-color: transparent;
+                touch-action: manipulation;
+            }
+        }
+        
+        /* Fix for iOS Safari */
+        @supports (-webkit-touch-callout: none) {
+            .nav-links {
+                -webkit-transform: translateY(-100%);
+            }
+            
+            .nav-links.active {
+                -webkit-transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Static Navigation -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <span class="logo-gradient">Ôn luyện Vật lí</span>
+            </a>
+            <div class="nav-links">
+                <a href="/lythuyet" class="nav-link">
+                    <i class="fas fa-book"></i>
+                    <span>Lý thuyết</span>
+                </a>
+                <a href="/multiplechoice" class="nav-link">
+                    <i class="fas fa-tasks"></i>
+                    <span>Luyện tập</span>
+                </a>
+                <a href="/quizgame" class="nav-link">
+                    <i class="fas fa-trophy"></i>
+                    <span>Chinh phục</span>
+                </a>
+                <a href="/leaderboard" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Xếp hạng</span>
+                </a>
+                <a href="/student/login" class="nav-link">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Đăng nhập</span>
+                </a>
+                <a href="/student/register" class="nav-link">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Đăng ký</span>
+                </a>
+            </div>
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+    
+    <div class="test-content">
+        <div class="info-box">
+            <h1>Static Mobile Navigation Test</h1>
+            <p>This is a static test page for the mobile navigation menu.</p>
+            <p>Open this page on a mobile device or resize your browser window to test the mobile menu.</p>
+            
+            <div style="margin-top: 2rem;">
+                <h3>Test Instructions:</h3>
+                <ol style="line-height: 2;">
+                    <li>Resize browser window to &lt; 768px width</li>
+                    <li>Click the hamburger menu icon in the top right</li>
+                    <li>The menu should slide down from the top</li>
+                    <li>The hamburger icon should change to an X</li>
+                    <li>Clicking outside or on a link should close the menu</li>
+                </ol>
+            </div>
+            
+            <div style="margin-top: 2rem;">
+                <button class="button primary" onclick="checkMobileMenu()">Check Mobile Menu Status</button>
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <h3>Debug Information:</h3>
+            <div id="debug-info" style="font-family: monospace; white-space: pre-line;"></div>
+        </div>
+    </div>
+    
+    <!-- Include the nav mobile script -->
+    <script src="/js/nav-mobile.js"></script>
+    
+    <script>
+        function checkMobileMenu() {
+            const debugInfo = document.getElementById('debug-info');
+            const toggle = document.getElementById('mobile-menu-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            
+            let info = `Window Width: ${window.innerWidth}px\n`;
+            info += `Window Height: ${window.innerHeight}px\n`;
+            info += `Is Mobile View: ${window.innerWidth <= 768 ? 'Yes' : 'No'}\n`;
+            info += `Toggle Button Found: ${toggle ? 'Yes' : 'No'}\n`;
+            info += `Nav Links Found: ${navLinks ? 'Yes' : 'No'}\n`;
+            
+            if (navLinks) {
+                const styles = window.getComputedStyle(navLinks);
+                info += `\nNav Links Styles:\n`;
+                info += `- Has 'active' class: ${navLinks.classList.contains('active') ? 'Yes' : 'No'}\n`;
+                info += `- Display: ${styles.display}\n`;
+                info += `- Visibility: ${styles.visibility}\n`;
+                info += `- Opacity: ${styles.opacity}\n`;
+                info += `- Transform: ${styles.transform}\n`;
+                info += `- Z-index: ${styles.zIndex}\n`;
+            }
+            
+            debugInfo.textContent = info;
+        }
+        
+        // Auto-check on load
+        window.addEventListener('load', checkMobileMenu);
+        window.addEventListener('resize', checkMobileMenu);
+    </script>
+</body>
+</html>
