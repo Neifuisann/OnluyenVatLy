@@ -1,7 +1,7 @@
 // Global variables for lessons listing
 let currentPage = 1;
 let currentSearch = '';
-let currentSort = 'order';
+let currentSort = 'newest';
 let currentTags = [];
 let allTags = [];
 let availableTags = []; // Tags available for current selection
@@ -524,6 +524,7 @@ async function initializeLessons() {
 
     try {
         console.log('Loading lessons listing...');
+        console.log('Initial sort value:', currentSort);
 
         // Check for last incomplete lesson if authenticated
         if (isAuthenticated) {
@@ -541,7 +542,7 @@ async function initializeLessons() {
             }
         }
 
-        await loadLessons();
+        await loadLessons(currentPage, currentSearch, currentSort, currentTags);
         markTaskComplete('lessons');
 
     } catch (error) {
@@ -583,10 +584,12 @@ async function initializeLessons() {
 }
 
 // --- Load Lessons Function ---
-async function loadLessons(page = 1, search = '', sort = 'order', tags = []) {
+async function loadLessons(page = 1, search = '', sort = 'newest', tags = []) {
     try {
         // Show lesson grid loader
         showLessonGridLoader(true);
+
+        console.log('🔍 Loading lessons with parameters:', { page, search, sort, tags });
 
         const params = new URLSearchParams({
             page: page.toString(),
@@ -989,7 +992,7 @@ async function filterAndRenderLessons() {
 
     // Update global state
     currentSearch = searchInput ? searchInput.value : '';
-    currentSort = sortSelect ? sortSelect.value : 'order';
+    currentSort = sortSelect ? sortSelect.value : 'newest';
     currentPage = 1; // Reset to first page when filtering
 
     try {

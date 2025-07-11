@@ -176,8 +176,10 @@ class QuizParser {
                 if (currentQuestion) {
                     questions.push(this.finalizeQuestion(currentQuestion, questions.length));
                 }
+                // Clean any existing point markings from the question text
+                const cleanedQuestionText = questionMatch[2].trim().replace(/\s*\[\s*[\d.]+\s*pts?\s*\]/gi, '').replace(/\s+/g, ' ').trim();
                 currentQuestion = {
-                    question: questionMatch[2].trim(),
+                    question: cleanedQuestionText,
                     options: [],
                     correct: null,
                     points: 1,
@@ -1487,6 +1489,14 @@ class AdminEditorV2 {
         }
     }
 
+    // Helper function to clean existing point markings from question text
+    cleanQuestionText(questionText) {
+        if (!questionText) return '';
+        // Remove existing point markings like [0.6 pts], [1 pts], etc.
+        // Use a more precise regex that preserves spacing
+        return questionText.replace(/\s*\[\s*[\d.]+\s*pts?\s*\]/gi, '').replace(/\s+/g, ' ').trim();
+    }
+
     generateTextFromQuestions(questions) {
         console.log('🔧 generateTextFromQuestions called with:', questions);
         console.log('🔧 Questions is array:', Array.isArray(questions));
@@ -1507,7 +1517,9 @@ class AdminEditorV2 {
             console.log(`🔧 Processing question ${index + 1}:`, q);
             console.log(`🔧 Question type: ${q.type}, Question text: "${q.question}"`);
 
-            text += `Câu ${index + 1}: ${q.question || ''}\n`;
+            // Clean existing point markings from question text before adding new ones
+            const cleanedQuestionText = this.cleanQuestionText(q.question || '');
+            text += `Câu ${index + 1}: ${cleanedQuestionText}\n`;
 
             if (q.points && q.points !== 1) {
                 text += `[${q.points} pts]\n`;
