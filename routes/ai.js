@@ -185,4 +185,99 @@ router.post('/suggest-tags',
   })
 );
 
+// AI Chat Assistant for lesson creation with streaming
+router.post('/chat-assist',
+  requireAdminAuth,
+  noCacheMiddleware,
+  asyncHandler(async (req, res) => {
+    try {
+      const { message, lessonContent, stream = false, useGoogleSearch = false, toolMode = 'url' } = req.body;
+
+      if (!message) {
+        return res.status(400).json({
+          success: false,
+          error: 'Message is required'
+        });
+      }
+
+      if (stream) {
+        // Set up Server-Sent Events
+        res.writeHead(200, {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Headers': 'Cache-Control'
+        });
+
+        try {
+          // Generate AI response with true streaming
+          const options = { stream: true, useGoogleSearch, toolMode };
+          await aiService.generateChatAssistance(message, lessonContent, options, (chunk) => {
+            res.write(`data: ${JSON.stringify({ type: 'chunk', content: chunk })}\n\n`);
+          });
+
+          res.write(`data: ${JSON.stringify({ type: 'done' })}\n\n`);
+          res.end();
+        } catch (streamError) {
+          res.write(`data: ${JSON.stringify({ type: 'error', error: streamError.message })}\n\n`);
+          res.end();
+        }
+      } else {
+        // Regular non-streaming response
+        const options = { stream: false, useGoogleSearch, toolMode };
+        const response = await aiService.generateChatAssistance(message, lessonContent, options);
+
+        res.json({
+          success: true,
+          message: response.message,
+          actions: response.actions || []
+        });
+      }
+
+    } catch (error) {
+      console.error('Error in AI chat assistance:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to generate AI assistance',
+        message: error.message
+      });
+    }
+  })
+);
+
+// AI Lesson Analysis
+router.post('/analyze-lesson',
+  requireAdminAuth,
+  noCacheMiddleware,
+  asyncHandler(async (req, res) => {
+    try {
+      const { lessonContent } = req.body;
+
+      if (!lessonContent) {
+        return res.status(400).json({
+          success: false,
+          error: 'Lesson content is required'
+        });
+      }
+
+      // Generate lesson analysis
+      const analysis = await aiService.analyzeLessonContent(lessonContent);
+
+      res.json({
+        success: true,
+        analysis: analysis
+      });
+
+    } catch (error) {
+      console.error('Error in lesson analysis:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to analyze lesson',
+        message: error.message
+      });
+    }
+  })
+);
+
 module.exports = router;

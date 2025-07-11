@@ -511,16 +511,148 @@ Ví dụ:
     <!-- Notification Container -->
     <div id="notification-container" class="notification-container"></div>
 
+    <!-- AI Chatzone -->
+    <div id="ai-chatzone" class="ai-chatzone" role="region" aria-label="AI Trợ lý tạo bài học">
+        <!-- Chat Bubble Toggle -->
+        <button id="ai-chat-bubble" class="ai-chat-bubble"
+                title="AI Trợ lý tạo bài học - Nhấn Ctrl+Alt+A để mở/đóng"
+                aria-label="Mở AI Trợ lý tạo bài học"
+                aria-expanded="false">
+            <i class="fas fa-robot" aria-hidden="true"></i>
+            <div class="bubble-indicator" aria-hidden="true"></div>
+        </button>
+
+        <!-- Chat Window -->
+        <div id="ai-chat-window" class="ai-chat-window hidden"
+             role="dialog"
+             aria-labelledby="chat-title"
+             aria-hidden="true">
+            <div class="chat-header">
+                <div class="chat-title" id="chat-title">
+                    <i class="fas fa-robot" aria-hidden="true"></i>
+                    <span>AI Trợ lý tạo bài học</span>
+                </div>
+                <div class="chat-controls">
+                    <button id="ai-chat-close" class="chat-control-btn"
+                            title="Đóng cửa sổ chat"
+                            aria-label="Đóng">
+                        <i class="fas fa-times" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="chat-body">
+                <div id="ai-chat-messages" class="chat-messages"
+                     role="log"
+                     aria-label="Lịch sử trò chuyện với AI"
+                     aria-live="polite">
+                    <div class="chat-message ai-message">
+                        <div class="message-avatar">
+                            <i class="fas fa-robot" aria-hidden="true"></i>
+                        </div>
+                        <div class="message-content">
+                            <div class="message-text">
+                                Xin chào! Tôi là AI trợ lý giúp bạn tạo bài học. Tôi có thể:
+                                <ul>
+                                    <li>🔍 <strong>Tìm kiếm</strong> và phân tích nội dung bài học</li>
+                                    <li>✏️ <strong>Chỉnh sửa</strong> và cải thiện câu hỏi</li>
+                                    <li>➕ <strong>Thêm mới</strong> câu hỏi và nội dung</li>
+                                    <li>💡 <strong>Gợi ý</strong> cải thiện bài học</li>
+                                </ul>
+                                Hãy cho tôi biết bạn cần hỗ trợ gì!
+                            </div>
+                            <div class="message-time">Vừa xong</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-tools" role="toolbar" aria-label="Công cụ AI">
+                    <div class="tool-buttons">
+                        <button id="ai-tool-search" class="tool-btn"
+                                title="Tìm kiếm nội dung - Phím tắt: Ctrl+1"
+                                aria-label="Tìm kiếm nội dung">
+                            <i class="fas fa-search" aria-hidden="true"></i>
+                        </button>
+                        <button id="ai-tool-edit" class="tool-btn"
+                                title="Chỉnh sửa nội dung - Phím tắt: Ctrl+2"
+                                aria-label="Chỉnh sửa nội dung">
+                            <i class="fas fa-edit" aria-hidden="true"></i>
+                        </button>
+                        <button id="ai-tool-add" class="tool-btn"
+                                title="Thêm nội dung mới - Phím tắt: Ctrl+3"
+                                aria-label="Thêm nội dung mới">
+                            <i class="fas fa-plus" aria-hidden="true"></i>
+                        </button>
+                        <button id="ai-tool-analyze" class="tool-btn"
+                                title="Phân tích bài học - Phím tắt: Ctrl+4"
+                                aria-label="Phân tích bài học">
+                            <i class="fas fa-chart-line" aria-hidden="true"></i>
+                        </button>
+                        <button id="ai-tool-google" class="tool-btn"
+                                title="Tìm kiếm Google - Phím tắt: Ctrl+5"
+                                aria-label="Tìm kiếm Google">
+                            <i class="fab fa-google" aria-hidden="true"></i>
+                        </button>
+                        <button id="ai-tool-toggle" class="tool-btn tool-toggle"
+                                title="Chuyển đổi: URL Context / Code Execution - Phím tắt: Ctrl+6"
+                                aria-label="Chuyển đổi công cụ"
+                                data-mode="url">
+                            <i class="fas fa-link" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-input-area">
+                <div class="chat-input-container">
+                    <label for="ai-chat-input" class="sr-only">Nhập tin nhắn cho AI</label>
+                    <textarea id="ai-chat-input" class="chat-input"
+                              placeholder="Nhập tin nhắn hoặc yêu cầu của bạn..."
+                              rows="2"
+                              aria-label="Nhập tin nhắn cho AI"
+                              aria-describedby="ai-chat-status"></textarea>
+                    <button id="ai-chat-send" class="chat-send-btn"
+                            title="Gửi tin nhắn - Enter để gửi"
+                            aria-label="Gửi tin nhắn">
+                        <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="chat-status" id="ai-chat-status" role="status" aria-live="polite">
+                    <span class="status-text">Sẵn sàng</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- External Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.14/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.14/mode/javascript/javascript.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-    
+
+    <!-- KaTeX Configuration -->
+    <script>
+        // Configure KaTeX auto-render
+        document.addEventListener("DOMContentLoaded", function() {
+            if (window.renderMathInElement) {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        {left: "$$", right: "$$", display: true},
+                        {left: "$", right: "$", display: false},
+                        {left: "\\[", right: "\\]", display: true},
+                        {left: "\\(", right: "\\)", display: false}
+                    ],
+                    throwOnError: false
+                });
+            }
+        });
+    </script>
+
     <!-- Custom Scripts -->
     <script src="/js/csrf-utils.js?v=2"></script>
     <script src="/js/admin-new-v2.js?v=2"></script>
     <script src="/js/document-upload.js?v=2"></script>
     <script src="/js/storage-recovery.js?v=2"></script>
+    <script src="/js/ai-chatzone.js?v=2"></script>
 </body>
 </html>
