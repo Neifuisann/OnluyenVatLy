@@ -10,6 +10,7 @@ let allTags = [];
 let currentSearch = '';
 let currentSort = 'newest'; // Default to newest
 let currentTags = [];
+let completeTagsData = null; // Cache for complete tags data
 
 // Statistics tracking
 let statsData = {
@@ -251,42 +252,46 @@ function initializeEventListeners() {
 // ===== DATA LOADING =====
 async function loadTags() {
     try {
-        console.log('Loading popular tags for admin dashboard...');
-        const response = await fetch('/api/tags/popular?limit=8');
-        if (!response.ok) throw new Error('Failed to fetch popular tags');
+        console.log('Loading complete tags data for admin dashboard...');
+        const response = await fetch('/api/tags/complete?limit=8');
+        if (!response.ok) throw new Error('Failed to fetch complete tags');
 
         const result = await response.json();
-        if (result.success && result.tags) {
-            allTags = result.tags; // Now contains tag objects with statistics
-            console.log('Loaded popular tags for admin:', allTags);
+        if (result.success && result.tags && result.tagToLessons) {
+            // Store complete tags data for client-side filtering
+            completeTagsData = {
+                tags: result.tags,
+                tagToLessons: result.tagToLessons
+            };
+            allTags = result.tags;
+            console.log('Loaded complete tags data for admin:', allTags.length, 'tags');
             renderTagsList();
         } else {
-            throw new Error('Invalid popular tags response format');
+            throw new Error('Invalid complete tags response format');
         }
     } catch (error) {
-        console.error('Error loading popular tags:', error);
-        console.log('Falling back to basic tags...');
+        console.error('Error loading complete tags:', error);
+        console.log('Falling back to popular tags...');
 
-        // Fallback to basic tags endpoint
+        // Fallback to popular tags endpoint
         try {
-            const fallbackResponse = await fetch('/api/tags');
+            const fallbackResponse = await fetch('/api/tags/popular?limit=8');
             if (fallbackResponse.ok) {
-                const basicTags = await fallbackResponse.json();
-                // Convert basic tags to tag objects format
-                allTags = basicTags.slice(0, 8).map(tag => ({
-                    tag,
-                    lessonCount: 0,
-                    totalViews: 0,
-                    recentActivity: 0,
-                    popularityScore: 0
-                }));
-                console.log('Loaded fallback tags:', allTags);
-                renderTagsList();
+                const popularResult = await fallbackResponse.json();
+                if (popularResult.success && popularResult.tags) {
+                    allTags = popularResult.tags;
+                    // Without complete data, admin will use simpler filtering
+                    completeTagsData = null;
+                    console.log('Loaded fallback popular tags for admin:', allTags);
+                    renderTagsList();
+                } else {
+                    throw new Error('Popular tags fallback failed');
+                }
             } else {
-                throw new Error('Fallback tags also failed');
+                throw new Error('Popular tags fallback also failed');
             }
         } catch (fallbackError) {
-            console.error('Fallback tags failed:', fallbackError);
+            console.error('Popular tags fallback failed:', fallbackError);
             // Final hardcoded fallback
             allTags = ['dao-dong', 'song-co', 'dien-xoay-chieu', 'dao-dong-dien-tu', 'song-anh-sang', 'luong-tu', 'hat-nhan']
                 .map(tag => ({
@@ -296,7 +301,8 @@ async function loadTags() {
                     recentActivity: 0,
                     popularityScore: 0
                 }));
-            console.log('Using hardcoded fallback tags');
+            completeTagsData = null;
+            console.log('Using hardcoded fallback tags for admin');
             renderTagsList();
         }
     }

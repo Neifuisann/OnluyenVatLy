@@ -28,4 +28,10 @@ router.get('/intersection',
     tagsController.getIntersectionTags
 );
 
+router.get('/complete',
+    optionalAuth,
+    longCacheMiddleware(1800), // 30 minutes cache for complete tags data
+    tagsController.getCompleteTags
+);
+
 module.exports = router;

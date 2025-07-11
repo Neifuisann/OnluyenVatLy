@@ -1,7 +1,9 @@
 .vercel
 node_modules
+package-lock.json
 logs
 .augment-guidelines
+.augment-guidelines.old
 .roo
 .claude
 .env

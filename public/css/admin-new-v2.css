@@ -3386,3 +3386,29 @@ body {
     background: #fef2f2;
     color: #ef4444;
 }
+
+/* === Button Loading State === */
+.btn.loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.btn.loading:hover {
+    background: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    transform: none !important;
+}
+
+.btn #save-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}

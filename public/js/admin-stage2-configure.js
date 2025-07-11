@@ -5,6 +5,33 @@ let currentQuestions = []; // To store questions from Stage 1
 let currentConfigData = {}; // To store config data being edited
 let currentTags = new Set();
 
+// Function to manage button loading state
+function setButtonLoadingState(isLoading) {
+    const saveButton = document.getElementById('save-config-btn');
+    const saveIcon = document.getElementById('save-icon');
+    const saveSpinner = document.getElementById('save-spinner');
+    const saveText = document.getElementById('save-text');
+
+    if (!saveButton || !saveIcon || !saveSpinner || !saveText) {
+        console.warn('Save button elements not found');
+        return;
+    }
+
+    if (isLoading) {
+        saveButton.disabled = true;
+        saveIcon.style.display = 'none';
+        saveSpinner.style.display = 'inline-block';
+        saveText.textContent = 'Đang lưu...';
+        saveButton.classList.add('loading');
+    } else {
+        saveButton.disabled = false;
+        saveIcon.style.display = 'inline-block';
+        saveSpinner.style.display = 'none';
+        saveText.textContent = 'Lưu cấu hình';
+        saveButton.classList.remove('loading');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. Retrieve data from sessionStorage
     const stage1DataString = sessionStorage.getItem('lessonStage1Data');
@@ -676,10 +703,19 @@ function transformQuestionsForAPI(questions) {
 
 // --- Final Save Function ---
 async function saveLessonConfiguration() {
+    // Prevent double-clicking
+    const saveButton = document.getElementById('save-config-btn');
+    if (saveButton && saveButton.disabled) {
+        return;
+    }
+
     if (!currentConfigData || !currentQuestions) {
         alert('Error: Lesson data is missing. Please start from Stage 1.');
         return;
     }
+
+    // Set loading state
+    setButtonLoadingState(true);
 
     try {
         // --- Validation ---
@@ -754,9 +790,6 @@ async function saveLessonConfiguration() {
 
         console.log(`Saving lesson config. URL: ${url}, Method: ${method}`);
 
-        const saveButton = document.querySelector('.save-btn');
-        if (saveButton) saveButton.disabled = true;
-
         // Get CSRF token before making the request
         const csrfResponse = await fetch('/api/csrf-token');
         if (!csrfResponse.ok) {
@@ -773,8 +806,6 @@ async function saveLessonConfiguration() {
             body: JSON.stringify(lessonPayload)
         });
 
-        if (saveButton) saveButton.disabled = false;
-
         if (!response.ok) {
             let errorData = { error: `Request failed with status ${response.status}` };
             try {
@@ -786,13 +817,14 @@ async function saveLessonConfiguration() {
 
         // Success - clear sessionStorage and redirect
         sessionStorage.removeItem('lessonStage1Data');
+        // Note: No need to reset button state here since we're redirecting
         window.location.href = '/admin';
 
     } catch (error) {
         console.error('Error saving lesson configuration:', error);
         alert('Error saving lesson: ' + error.message);
-        const saveButton = document.querySelector('.save-btn');
-        if (saveButton) saveButton.disabled = false;
+        // Reset button state on error
+        setButtonLoadingState(false);
     }
 }
 

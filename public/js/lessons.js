@@ -6,6 +6,7 @@ let currentTags = [];
 let allTags = [];
 let availableTags = []; // Tags available for current selection
 let isLoadingTags = false;
+let completeTagsData = null; // Cache for complete tags data
 
 // --- Authentication Functions (supports both students and admins) ---
 async function checkStudentAuthentication() {
@@ -86,44 +87,48 @@ async function loadTags() {
 
     isLoadingTags = true;
     try {
-        console.log('Loading popular tags for lessons page...');
-        const response = await fetch('/api/tags/popular?limit=8');
-        if (!response.ok) throw new Error('Failed to fetch popular tags');
+        console.log('Loading complete tags data for lessons page...');
+        const response = await fetch('/api/tags/complete?limit=8');
+        if (!response.ok) throw new Error('Failed to fetch complete tags');
 
         const result = await response.json();
-        if (result.success && result.tags) {
-            allTags = result.tags; // Now contains tag objects with statistics
-            console.log('Loaded popular tags for lessons:', allTags);
-            await loadAvailableTags();
+        if (result.success && result.tags && result.tagToLessons) {
+            // Store complete tags data for client-side filtering
+            completeTagsData = {
+                tags: result.tags,
+                tagToLessons: result.tagToLessons
+            };
+            allTags = result.tags;
+            console.log('Loaded complete tags data for lessons:', allTags.length, 'tags');
+            loadAvailableTags(); // Now uses client-side logic
             renderCategoryPills();
         } else {
-            throw new Error('Invalid popular tags response format');
+            throw new Error('Invalid complete tags response format');
         }
     } catch (error) {
-        console.error('Error loading popular tags:', error);
-        console.log('Falling back to basic tags...');
+        console.error('Error loading complete tags:', error);
+        console.log('Falling back to popular tags...');
 
-        // Fallback to basic tags endpoint
+        // Fallback to popular tags endpoint
         try {
-            const fallbackResponse = await fetch('/api/tags');
+            const fallbackResponse = await fetch('/api/tags/popular?limit=8');
             if (fallbackResponse.ok) {
-                const basicTags = await fallbackResponse.json();
-                // Convert basic tags to tag objects format
-                allTags = basicTags.slice(0, 8).map(tag => ({
-                    tag,
-                    lessonCount: 0,
-                    totalViews: 0,
-                    recentActivity: 0,
-                    popularityScore: 0
-                }));
-                console.log('Loaded fallback tags:', allTags);
-                await loadAvailableTags();
-                renderCategoryPills();
+                const popularResult = await fallbackResponse.json();
+                if (popularResult.success && popularResult.tags) {
+                    allTags = popularResult.tags;
+                    // Without complete data, fall back to server-side intersection
+                    completeTagsData = null;
+                    console.log('Loaded fallback popular tags:', allTags);
+                    await loadAvailableTagsServerSide();
+                    renderCategoryPills();
+                } else {
+                    throw new Error('Popular tags fallback failed');
+                }
             } else {
-                throw new Error('Fallback tags also failed');
+                throw new Error('Popular tags fallback also failed');
             }
         } catch (fallbackError) {
-            console.error('Fallback tags failed:', fallbackError);
+            console.error('Popular tags fallback failed:', fallbackError);
             // Final hardcoded fallback
             allTags = ['dao-dong', 'song-co', 'dien-xoay-chieu', 'dao-dong-dien-tu', 'song-anh-sang', 'luong-tu', 'hat-nhan']
                 .map(tag => ({
@@ -133,8 +138,9 @@ async function loadTags() {
                     recentActivity: 0,
                     popularityScore: 0
                 }));
+            completeTagsData = null;
             console.log('Using hardcoded fallback tags');
-            await loadAvailableTags();
+            loadAvailableTags();
             renderCategoryPills();
         }
     } finally {
@@ -142,7 +148,39 @@ async function loadTags() {
     }
 }
 
-async function loadAvailableTags() {
+// Client-side tag filtering using cached complete tags data
+function loadAvailableTags() {
+    if (!completeTagsData) {
+        // Fallback to showing all tags if no complete data
+        availableTags = allTags.slice();
+        return;
+    }
+
+    if (currentTags.length === 0) {
+        // No tags selected, show all popular tags
+        availableTags = allTags.slice();
+        return;
+    }
+
+    try {
+        // Calculate intersection tags client-side
+        const availableTagNames = calculateIntersectionTags(currentTags, completeTagsData);
+
+        // Filter allTags to show only available ones
+        availableTags = allTags.filter(tagData => {
+            const tagName = typeof tagData === 'string' ? tagData : tagData.tag;
+            return availableTagNames.has(tagName);
+        });
+
+        console.log('Calculated available tags client-side:', availableTags.map(t => typeof t === 'string' ? t : t.tag));
+    } catch (error) {
+        console.error('Error calculating available tags client-side:', error);
+        availableTags = allTags.slice();
+    }
+}
+
+// Server-side fallback for when complete tags data is not available
+async function loadAvailableTagsServerSide() {
     if (currentTags.length === 0) {
         // No tags selected, show all popular tags
         availableTags = allTags.slice();
@@ -167,7 +205,7 @@ async function loadAvailableTags() {
                     return availableTagNames.has(tagName);
                 });
 
-                console.log('Loaded available tags for selection:', availableTags.map(t => typeof t === 'string' ? t : t.tag));
+                console.log('Loaded available tags server-side:', availableTags.map(t => typeof t === 'string' ? t : t.tag));
                 return;
             }
         }
@@ -176,10 +214,43 @@ async function loadAvailableTags() {
         console.warn('Intersection tags API failed, showing all tags');
         availableTags = allTags.slice();
     } catch (error) {
-        console.error('Error loading available tags:', error);
+        console.error('Error loading available tags server-side:', error);
         // Fallback to all tags
         availableTags = allTags.slice();
     }
+}
+
+// Client-side intersection calculation
+function calculateIntersectionTags(selectedTags, tagData) {
+    if (!selectedTags || selectedTags.length === 0) {
+        return new Set(tagData.tags.map(t => typeof t === 'string' ? t : t.tag));
+    }
+
+    // Find lessons that contain ALL selected tags
+    let commonLessons = null;
+    selectedTags.forEach(tag => {
+        const tagLessons = new Set(tagData.tagToLessons[tag] || []);
+        if (commonLessons === null) {
+            commonLessons = tagLessons;
+        } else {
+            // Intersection: keep only lessons that are in both sets
+            commonLessons = new Set([...commonLessons].filter(x => tagLessons.has(x)));
+        }
+    });
+
+    // Find all tags that appear in these common lessons
+    const availableTagNames = new Set([...selectedTags]); // Always include selected tags
+
+    if (commonLessons && commonLessons.size > 0) {
+        Object.entries(tagData.tagToLessons).forEach(([tag, lessons]) => {
+            // Check if this tag appears in any of the common lessons
+            if (lessons.some(lessonId => commonLessons.has(lessonId))) {
+                availableTagNames.add(tag);
+            }
+        });
+    }
+
+    return availableTagNames;
 }
 
 function renderCategoryPills() {
@@ -271,7 +342,11 @@ function setupCategoryPillListeners() {
             }
 
             // Load available tags based on current selection
-            await loadAvailableTags();
+            if (completeTagsData) {
+                loadAvailableTags(); // Client-side, no await needed
+            } else {
+                await loadAvailableTagsServerSide(); // Fallback to server-side
+            }
 
             // Re-render pills to show updated selection and available tags
             renderCategoryPills();
