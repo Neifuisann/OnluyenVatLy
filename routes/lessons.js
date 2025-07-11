@@ -4,17 +4,20 @@ const router = express.Router();
 // Import controllers
 const lessonController = require('../lib/controllers/lessonController');
 
+// Import services
+const databaseService = require('../lib/services/databaseService');
+
 // Import middleware
-const { 
+const {
   validateIdParam,
   validatePagination,
   validateSearch,
-  validateLesson 
+  validateLesson
 } = require('../lib/middleware/validation');
-const { 
+const {
   requireAdminAuth,
   requireStudentAuth,
-  optionalAuth 
+  optionalAuth
 } = require('../lib/middleware/auth');
 const {
   lessonCacheMiddleware,
@@ -88,6 +91,42 @@ router.get('/platform-stats',
   optionalAuth,
   shortCacheMiddleware(600), // 10 minutes cache
   lessonController.getPlatformStats
+);
+
+// Admin route for lessons without images (must be before /:id route)
+router.get('/without-images',
+  requireAdminAuth,
+  noCacheMiddleware,
+  async (req, res) => {
+    try {
+      const dryRun = req.query['dry-run'] === 'true';
+
+      if (dryRun) {
+        // Just return the count
+        const lessons = await databaseService.getLessonsWithoutImages(100);
+        res.json({
+          success: true,
+          count: lessons ? lessons.length : 0
+        });
+      } else {
+        // Return the actual lessons
+        const limit = parseInt(req.query.limit) || 10;
+        const lessons = await databaseService.getLessonsWithoutImages(limit);
+        res.json({
+          success: true,
+          lessons: lessons || []
+        });
+      }
+    } catch (error) {
+      console.error('Error getting lessons without images:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get lessons without images',
+        count: 0,
+        lessons: []
+      });
+    }
+  }
 );
 
 router.get('/:id',
@@ -187,30 +226,6 @@ router.post('/bulk-generate-summaries',
   requireAdminAuth,
   noCacheMiddleware,
   lessonController.bulkGenerateAiSummaries
-);
-
-router.get('/without-images',
-  requireAdminAuth,
-  noCacheMiddleware,
-  async (req, res) => {
-    try {
-      const dryRun = req.query['dry-run'] === 'true';
-      
-      if (dryRun) {
-        // Just return the count
-        const lessons = await databaseService.getLessonsWithoutImages(100);
-        res.json({ count: lessons.length });
-      } else {
-        // Return the actual lessons
-        const limit = parseInt(req.query.limit) || 10;
-        const lessons = await databaseService.getLessonsWithoutImages(limit);
-        res.json({ lessons });
-      }
-    } catch (error) {
-      console.error('Error getting lessons without images:', error);
-      res.status(500).json({ error: 'Failed to get lessons without images' });
-    }
-  }
 );
 
 module.exports = router;

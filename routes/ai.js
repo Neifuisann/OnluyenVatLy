@@ -12,26 +12,33 @@ router.get('/cache/stats',
   noCacheMiddleware,
   asyncHandler(async (req, res) => {
     try {
+      // Check if aiCacheService is properly initialized
+      if (!aiCacheService || typeof aiCacheService.getStats !== 'function') {
+        throw new Error('AI Cache Service not properly initialized');
+      }
+
       const cacheStats = aiCacheService.getStats();
-      
-      // Calculate cache size and usage percentage
-      const memoryCacheSize = Object.keys(cacheStats.memoryCache).reduce((total, key) => {
-        return total + cacheStats.memoryCache[key];
-      }, 0);
-      
-      const totalSize = memoryCacheSize + cacheStats.persistentCache.size;
-      const maxCacheItems = 1000; // Configure based on your needs
-      const usagePercentage = (totalSize / maxCacheItems) * 100;
-      
+
+      // The aiCacheService.getStats() returns { memory: { size, maxSize, usage }, types: {...}, lastCleanup }
+      // Use the actual structure returned by the service
+      const memoryStats = cacheStats.memory || { size: 0, usage: 0 };
+
       res.json({
         memory: {
-          size: totalSize,
-          usage: Math.round(usagePercentage)
-        }
+          size: memoryStats.size || 0,
+          usage: Math.round(memoryStats.usage || 0)
+        },
+        types: cacheStats.types || {},
+        lastCleanup: cacheStats.lastCleanup || 'Never'
       });
     } catch (error) {
       console.error('Error getting cache stats:', error);
-      res.status(500).json({ error: 'Failed to get cache statistics' });
+      res.status(500).json({
+        error: 'Failed to get cache statistics',
+        memory: { size: 0, usage: 0 },
+        types: {},
+        lastCleanup: 'Error'
+      });
     }
   })
 );
@@ -42,20 +49,43 @@ router.post('/cache/clear',
   noCacheMiddleware,
   asyncHandler(async (req, res) => {
     try {
+      // Check if aiCacheService is properly initialized
+      if (!aiCacheService) {
+        throw new Error('AI Cache Service not available');
+      }
+
       const { type } = req.body;
-      
+
       if (type) {
         // Clear specific cache type
-        await aiCacheService.clearCache(type);
-        res.json({ message: `${type} cache cleared successfully` });
+        if (typeof aiCacheService.clearCache === 'function') {
+          await aiCacheService.clearCache(type);
+          res.json({
+            success: true,
+            message: `${type} cache cleared successfully`
+          });
+        } else {
+          throw new Error('clearCache method not available');
+        }
       } else {
         // Clear all cache
-        await aiCacheService.clearAllCache();
-        res.json({ message: 'All cache cleared successfully' });
+        if (typeof aiCacheService.clearAllCache === 'function') {
+          await aiCacheService.clearAllCache();
+          res.json({
+            success: true,
+            message: 'All cache cleared successfully'
+          });
+        } else {
+          throw new Error('clearAllCache method not available');
+        }
       }
     } catch (error) {
       console.error('Error clearing cache:', error);
-      res.status(500).json({ error: 'Failed to clear cache' });
+      res.status(500).json({
+        success: false,
+        error: 'Failed to clear cache',
+        message: error.message
+      });
     }
   })
 );
@@ -66,29 +96,40 @@ router.get('/usage/stats',
   noCacheMiddleware,
   asyncHandler(async (req, res) => {
     try {
-      // Get today's AI interactions from database
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      
-      const { data: interactions, error } = await databaseService.supabase
-        .from('ai_interactions')
-        .select('tokens_used, interaction_type')
-        .gte('created_at', today.toISOString());
-      
-      if (error) throw error;
-      
-      // Calculate statistics
-      const dailyRequests = interactions ? interactions.length : 0;
-      const totalTokens = interactions ? interactions.reduce((sum, i) => sum + (i.tokens_used || 0), 0) : 0;
-      
+      let dailyRequests = 0;
+      let totalTokens = 0;
+
+      try {
+        // Get today's AI interactions from database
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const { data: interactions, error } = await databaseService.supabase
+          .from('ai_interactions')
+          .select('tokens_used, interaction_type')
+          .gte('created_at', today.toISOString());
+
+        if (error) {
+          // If table doesn't exist or other DB error, log it but continue with defaults
+          console.warn('ai_interactions table not accessible:', error.message);
+        } else {
+          // Calculate statistics from actual data
+          dailyRequests = interactions ? interactions.length : 0;
+          totalTokens = interactions ? interactions.reduce((sum, i) => sum + (i.tokens_used || 0), 0) : 0;
+        }
+      } catch (dbError) {
+        console.warn('Database error when fetching AI interactions:', dbError.message);
+        // Continue with default values
+      }
+
       // Get cache stats for hit rate
       const cacheStats = aiCacheService.getStats();
       // For now, use a default cache hit rate since we don't track hits/misses yet
       const cacheHitRate = 0.5; // 50% default hit rate
-      
+
       // Estimate cost (using Gemini pricing estimates)
       const estimatedCost = (totalTokens / 1000000) * 0.075;
-      
+
       res.json({
         dailyRequests,
         cacheHitRate: Math.round(cacheHitRate * 100) / 100,
@@ -96,7 +137,12 @@ router.get('/usage/stats',
       });
     } catch (error) {
       console.error('Error getting usage stats:', error);
-      res.status(500).json({ error: 'Failed to get usage statistics' });
+      res.status(500).json({
+        error: 'Failed to get usage statistics',
+        dailyRequests: 0,
+        cacheHitRate: 0.5,
+        estimatedCost: 0
+      });
     }
   })
 );
