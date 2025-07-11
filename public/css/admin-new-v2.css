@@ -3365,6 +3365,152 @@ body {
     transform: none;
 }
 
+/* AI Tag Suggestions Styles */
+.ai-tag-suggestions {
+    margin-top: var(--space-md);
+}
+
+.ai-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    background: rgba(102, 126, 234, 0.1);
+    border-radius: 8px;
+    color: #667eea;
+    font-weight: 500;
+}
+
+.ai-status i {
+    font-size: 1.1em;
+}
+
+.tag-suggestions-content {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.existing-tags-section,
+.suggested-tags-section {
+    margin-bottom: var(--space-lg);
+}
+
+.suggested-tags-section:last-child {
+    margin-bottom: 0;
+}
+
+.suggestions-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-sm);
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.suggestions-title i {
+    color: var(--accent-primary);
+}
+
+.existing-tags-list,
+.suggested-tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.suggestion-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.suggestion-tag:hover {
+    background: var(--accent-primary);
+    color: white;
+    border-color: var(--accent-primary);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(var(--accent-primary-rgb), 0.3);
+}
+
+.suggestion-tag.existing-tag {
+    border-color: var(--success-color);
+    color: var(--success-color);
+}
+
+.suggestion-tag.existing-tag:hover {
+    background: var(--success-color);
+    border-color: var(--success-color);
+    color: white;
+}
+
+.suggestion-tag.suggested-tag {
+    border-color: var(--warning-color);
+    color: var(--warning-color);
+}
+
+.suggestion-tag.suggested-tag:hover {
+    background: var(--warning-color);
+    border-color: var(--warning-color);
+    color: white;
+}
+
+.suggestion-tag.added {
+    background: var(--success-color);
+    color: white;
+    border-color: var(--success-color);
+    opacity: 0.7;
+}
+
+.suggestion-tag.added:hover {
+    background: var(--error-color);
+    border-color: var(--error-color);
+    color: white;
+    opacity: 1;
+}
+
+.suggestion-tag i {
+    font-size: 0.8em;
+}
+
+.suggestions-actions {
+    margin-top: var(--space-lg);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+}
+
+.suggestions-actions .btn {
+    padding: var(--space-xs) var(--space-md);
+    font-size: 0.9rem;
+}
+
 .ai-status {
     margin-top: 8px;
     padding: 8px 12px;

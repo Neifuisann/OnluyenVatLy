@@ -538,10 +538,47 @@
                                 <label for="tag-input" class="form-label">
                                     <i class="fas fa-tags"></i>
                                     Tags
+                                    <button type="button" class="ai-generate-btn" id="suggest-tags-btn" title="Gợi ý tag bằng AI">
+                                        <i class="fas fa-magic"></i>
+                                        AI
+                                    </button>
                                 </label>
                                 <div class="tags-input-container">
                                     <input type="text" id="tag-input" class="form-control" placeholder="Nhập tag và nhấn Enter...">
                                     <div id="tags-list" class="tags-list"></div>
+
+                                    <!-- AI Tag Suggestions Container -->
+                                    <div class="ai-tag-suggestions" id="ai-tag-suggestions" style="display: none;">
+                                        <div class="ai-status" id="tag-ai-status" style="display: none;">
+                                            <i class="fas fa-spinner fa-spin"></i>
+                                            <span>Đang phân tích và gợi ý tag...</span>
+                                        </div>
+
+                                        <div class="tag-suggestions-content" id="tag-suggestions-content" style="display: none;">
+                                            <div class="existing-tags-section">
+                                                <h4 class="suggestions-title">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    Tag phù hợp từ hệ thống
+                                                </h4>
+                                                <div class="existing-tags-list" id="existing-tags-list"></div>
+                                            </div>
+
+                                            <div class="suggested-tags-section">
+                                                <h4 class="suggestions-title">
+                                                    <i class="fas fa-lightbulb"></i>
+                                                    Tag mới được đề xuất
+                                                </h4>
+                                                <div class="suggested-tags-list" id="suggested-tags-list"></div>
+                                            </div>
+
+                                            <div class="suggestions-actions">
+                                                <button type="button" class="btn btn-secondary btn-sm" id="close-suggestions-btn">
+                                                    <i class="fas fa-times"></i>
+                                                    Đóng
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

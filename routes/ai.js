@@ -5,6 +5,7 @@ const { requireAdminAuth } = require('../lib/middleware/auth');
 const { noCacheMiddleware } = require('../lib/middleware/cache');
 const aiCacheService = require('../lib/services/cache/aiCacheService');
 const databaseService = require('../lib/services/databaseService');
+const aiService = require('../lib/services/ai/aiService');
 
 // Get AI cache statistics
 router.get('/cache/stats',
@@ -142,6 +143,43 @@ router.get('/usage/stats',
         dailyRequests: 0,
         cacheHitRate: 0.5,
         estimatedCost: 0
+      });
+    }
+  })
+);
+
+// Generate AI tag suggestions for a lesson
+router.post('/suggest-tags',
+  requireAdminAuth,
+  noCacheMiddleware,
+  asyncHandler(async (req, res) => {
+    try {
+      const { lessonData } = req.body;
+
+      if (!lessonData) {
+        return res.status(400).json({
+          success: false,
+          error: 'Lesson data is required'
+        });
+      }
+
+      // Get all existing tags from the system
+      const existingTags = await databaseService.getAllUniqueTags();
+
+      // Generate AI tag suggestions
+      const suggestions = await aiService.generateTagSuggestions(lessonData, existingTags);
+
+      res.json({
+        success: true,
+        suggestions: suggestions
+      });
+
+    } catch (error) {
+      console.error('Error generating tag suggestions:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to generate tag suggestions',
+        message: error.message
       });
     }
   })

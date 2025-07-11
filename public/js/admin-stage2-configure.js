@@ -459,6 +459,10 @@ function setupEventListeners() {
     document.querySelector('.remove-image-btn')?.addEventListener('click', removeLessonImage);
     document.getElementById('tag-input')?.addEventListener('keydown', handleTagInputKeydown);
 
+    // AI Tag Suggestions
+    document.getElementById('suggest-tags-btn')?.addEventListener('click', handleAITagSuggestions);
+    document.getElementById('close-suggestions-btn')?.addEventListener('click', closeTagSuggestions);
+
      // Add save shortcut
      document.addEventListener('keydown', (e) => {
         if ((e.ctrlKey || e.metaKey) && e.key === 's') {
@@ -478,6 +482,7 @@ function addTag(tagName) {
     if (tagName && !currentTags.has(tagName)) {
         currentTags.add(tagName);
         renderTags(); // Update UI
+        refreshTagSuggestionStates(); // Update suggestion UI
         // Update the config data object
         if (currentConfigData) {
             currentConfigData.tags = Array.from(currentTags);
@@ -489,6 +494,7 @@ function addTag(tagName) {
 function removeTag(tagName) {
     currentTags.delete(tagName);
     renderTags(); // Update UI
+    refreshTagSuggestionStates(); // Update suggestion UI
     // Update the config data object
     if (currentConfigData) {
         currentConfigData.tags = Array.from(currentTags);
@@ -1182,10 +1188,199 @@ setupEventListeners = function() {
     setupAIEventListeners();
 };
 
+// --- AI Tag Suggestions Functions ---
+async function handleAITagSuggestions() {
+    const suggestButton = document.getElementById('suggest-tags-btn');
+    const aiSuggestionsContainer = document.getElementById('ai-tag-suggestions');
+    const aiStatus = document.getElementById('tag-ai-status');
+    const suggestionsContent = document.getElementById('tag-suggestions-content');
+
+    if (!suggestButton || !aiSuggestionsContainer || !aiStatus || !suggestionsContent) {
+        console.error('AI tag suggestions elements not found');
+        return;
+    }
+
+    try {
+        // Disable button and show loading
+        suggestButton.disabled = true;
+        aiSuggestionsContainer.style.display = 'block';
+        aiStatus.style.display = 'flex';
+        suggestionsContent.style.display = 'none';
+
+        // Prepare lesson data for AI analysis
+        const lessonData = {
+            title: currentConfigData.title || document.getElementById('lesson-title')?.value || '',
+            description: currentConfigData.description || document.getElementById('lesson-description')?.value || '',
+            grade: currentConfigData.grade || document.getElementById('lesson-grade')?.value || '',
+            subject: currentConfigData.subject || document.getElementById('lesson-subject')?.value || '',
+            purpose: currentConfigData.purpose || document.getElementById('lesson-purpose')?.value || '',
+            questions: currentQuestions || [],
+            tags: Array.from(currentTags)
+        };
+
+        // Get CSRF token
+        const csrfResponse = await fetch('/api/csrf-token');
+        if (!csrfResponse.ok) {
+            throw new Error('Failed to get CSRF token');
+        }
+        const { csrfToken } = await csrfResponse.json();
+
+        // Call AI tag suggestions API
+        const response = await fetch('/api/ai/suggest-tags', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
+            body: JSON.stringify({
+                lessonData: lessonData
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to get AI tag suggestions');
+        }
+
+        const data = await response.json();
+
+        if (!data.success) {
+            throw new Error(data.error || 'AI tag suggestions failed');
+        }
+
+        // Hide loading and show suggestions
+        aiStatus.style.display = 'none';
+        suggestionsContent.style.display = 'block';
+
+        // Render the suggestions
+        renderTagSuggestions(data.suggestions);
+
+    } catch (error) {
+        console.error('Error getting AI tag suggestions:', error);
+
+        // Hide loading and show error
+        aiStatus.style.display = 'none';
+        suggestionsContent.innerHTML = `
+            <div class="error-message" style="padding: 15px; background: #fee; border: 1px solid #fcc; border-radius: 8px; color: #c53030;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>Không thể tạo gợi ý tag: ${error.message}</span>
+            </div>
+        `;
+        suggestionsContent.style.display = 'block';
+    } finally {
+        // Re-enable button
+        suggestButton.disabled = false;
+    }
+}
+
+function renderTagSuggestions(suggestions) {
+    const existingTagsList = document.getElementById('existing-tags-list');
+    const suggestedTagsList = document.getElementById('suggested-tags-list');
+
+    if (!existingTagsList || !suggestedTagsList) {
+        console.error('Tag suggestion lists not found');
+        return;
+    }
+
+    // Clear previous suggestions
+    existingTagsList.innerHTML = '';
+    suggestedTagsList.innerHTML = '';
+
+    // Render existing tags that AI suggests
+    if (suggestions.existingTags && suggestions.existingTags.length > 0) {
+        suggestions.existingTags.forEach(tag => {
+            const tagElement = createSuggestionTagElement(tag, 'existing');
+            existingTagsList.appendChild(tagElement);
+        });
+    } else {
+        existingTagsList.innerHTML = '<p style="color: #666; font-style: italic;">Không có tag phù hợp từ hệ thống</p>';
+    }
+
+    // Render new suggested tags
+    if (suggestions.suggestedTags && suggestions.suggestedTags.length > 0) {
+        suggestions.suggestedTags.forEach(tag => {
+            const tagElement = createSuggestionTagElement(tag, 'suggested');
+            suggestedTagsList.appendChild(tagElement);
+        });
+    } else {
+        suggestedTagsList.innerHTML = '<p style="color: #666; font-style: italic;">Không có tag mới được đề xuất</p>';
+    }
+}
+
+function createSuggestionTagElement(tagName, type) {
+    const tagElement = document.createElement('div');
+    tagElement.className = `suggestion-tag ${type}-tag`;
+
+    // Check if tag is already added
+    const isAdded = currentTags.has(tagName);
+    if (isAdded) {
+        tagElement.classList.add('added');
+    }
+
+    const icon = isAdded ? 'fas fa-times' : (type === 'existing' ? 'fas fa-check' : 'fas fa-plus');
+    const title = isAdded ? 'Click để xóa tag' : (type === 'existing' ? 'Click để thêm tag có sẵn' : 'Click để thêm tag mới');
+
+    tagElement.innerHTML = `
+        <i class="${icon}"></i>
+        <span>${tagName}</span>
+    `;
+
+    tagElement.title = title;
+
+    // Add click handler to add/remove the tag
+    tagElement.addEventListener('click', () => {
+        const currentlyAdded = currentTags.has(tagName);
+
+        if (currentlyAdded) {
+            // Remove the tag
+            removeTag(tagName);
+            tagElement.classList.remove('added');
+            tagElement.querySelector('i').className = type === 'existing' ? 'fas fa-check' : 'fas fa-plus';
+            tagElement.title = type === 'existing' ? 'Click để thêm tag có sẵn' : 'Click để thêm tag mới';
+        } else {
+            // Add the tag
+            addTag(tagName);
+            tagElement.classList.add('added');
+            tagElement.querySelector('i').className = 'fas fa-times';
+            tagElement.title = 'Click để xóa tag';
+        }
+    });
+
+    return tagElement;
+}
+
+function refreshTagSuggestionStates() {
+    // Update the visual state of suggestion tags when main tags change
+    const suggestionTags = document.querySelectorAll('.suggestion-tag');
+
+    suggestionTags.forEach(tagElement => {
+        const tagName = tagElement.querySelector('span').textContent;
+        const isAdded = currentTags.has(tagName);
+        const type = tagElement.classList.contains('existing-tag') ? 'existing' : 'suggested';
+
+        if (isAdded && !tagElement.classList.contains('added')) {
+            tagElement.classList.add('added');
+            tagElement.querySelector('i').className = 'fas fa-times';
+            tagElement.title = 'Click để xóa tag';
+        } else if (!isAdded && tagElement.classList.contains('added')) {
+            tagElement.classList.remove('added');
+            tagElement.querySelector('i').className = type === 'existing' ? 'fas fa-check' : 'fas fa-plus';
+            tagElement.title = type === 'existing' ? 'Click để thêm tag có sẵn' : 'Click để thêm tag mới';
+        }
+    });
+}
+
+function closeTagSuggestions() {
+    const aiSuggestionsContainer = document.getElementById('ai-tag-suggestions');
+    if (aiSuggestionsContainer) {
+        aiSuggestionsContainer.style.display = 'none';
+    }
+}
+
 // Optional: Clear sessionStorage if the user navigates away without saving
 window.addEventListener('beforeunload', () => {
     // You might want to add a confirmation here if data is unsaved
     // For simplicity, just clear it. Be cautious if user might want to go back.
     // Consider clearing only if not navigating to stage 1?
-    // sessionStorage.removeItem('lessonStage1Data'); 
-}); 
+    // sessionStorage.removeItem('lessonStage1Data');
+});
