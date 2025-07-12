@@ -25,6 +25,7 @@ const {
   noCacheMiddleware,
   shortCacheMiddleware
 } = require('../lib/middleware/cache');
+const { lessonEncryptionMiddleware } = require('../lib/middleware/encryption');
 
 // Public lesson routes (with optional authentication)
 router.get('/',
@@ -129,10 +130,12 @@ router.get('/without-images',
   }
 );
 
+// Get lesson by ID - ENCRYPTED (contains quiz questions)
 router.get('/:id',
   optionalAuth,
   validateIdParam('id'),
   lessonCacheMiddleware,
+  lessonEncryptionMiddleware,
   lessonController.getLessonById
 );
 

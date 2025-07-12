@@ -218,6 +218,7 @@ app.use('/api/streaks', streakRoutes);
 app.use('/api/xp', xpRoutes);
 app.use('/api/achievements', achievementRoutes);
 app.use('/api/quests', questRoutes);
+app.use('/api/encryption', require('../routes/encryption'));
 app.use('/api/activity', activityRoutes);
 app.use('/api/leagues', leagueRoutes);
 app.use('/api/webhooks', webhookRoutes);

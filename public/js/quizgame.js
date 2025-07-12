@@ -151,7 +151,7 @@ async function initQuiz() {
     // Check if student info is already provided in a session or storage
     // If no student info modal, initialize the questions directly
     try {
-        const response = await fetch('/api/quiz');
+        const response = await window.encryptionClient.secureFetch('/api/quiz');
         const data = await response.json();
         
         // Shuffle all questions using Fisher-Yates algorithm
@@ -461,7 +461,7 @@ function endQuiz() {
             // Add CSRF token to the payload
             quizResults.csrfToken = csrfData.csrfToken;
 
-            return fetch('/api/results', {
+            return window.encryptionClient.secureFetch('/api/results', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(quizResults)

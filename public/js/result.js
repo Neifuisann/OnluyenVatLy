@@ -1256,11 +1256,20 @@ async function getExplanation(button, question, userAnswer, correctAnswer) {
         }
         // ---
         
-        // Secure API call to backend explanation endpoint using CSRF utility
-        const response = await window.CSRFUtils.securePost('/api/explain', {
-            question: decodedQuestion,
-            answer: `Đáp án của bạn: ${userAnswerText}`,
-            explanation: `Đáp án đúng: ${correctAnswerText}${optionsText ? '\n\nLựa chọn:\n' + JSON.parse(optionsText).map((opt, i) => `${String.fromCharCode(65 + i)}) ${opt}`).join('\n') : ''}`
+        // Secure API call to backend explanation endpoint using encryption and CSRF
+        const csrfToken = await window.CSRFUtils.getCSRFToken();
+        const response = await window.encryptionClient.secureFetch('/api/explain', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
+            body: JSON.stringify({
+                question: decodedQuestion,
+                answer: `Đáp án của bạn: ${userAnswerText}`,
+                explanation: `Đáp án đúng: ${correctAnswerText}${optionsText ? '\n\nLựa chọn:\n' + JSON.parse(optionsText).map((opt, i) => `${String.fromCharCode(65 + i)}) ${opt}`).join('\n') : ''}`,
+                csrfToken: csrfToken
+            })
         });
         
         if (!response.ok) {

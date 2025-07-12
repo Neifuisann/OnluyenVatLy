@@ -5,28 +5,30 @@ const router = express.Router();
 const resultController = require('../lib/controllers/resultController');
 
 // Import middleware
-const { 
+const {
   validateIdParam,
   validateResult,
-  validatePagination 
+  validatePagination
 } = require('../lib/middleware/validation');
-const { 
+const {
   requireStudentAuth,
   requireAdminAuth,
   requireAdminOrOwner
 } = require('../lib/middleware/auth');
-const { 
+const {
   resultsCacheMiddleware,
   noCacheMiddleware,
-  shortCacheMiddleware 
+  shortCacheMiddleware
 } = require('../lib/middleware/cache');
+const { resultEncryptionMiddleware } = require('../lib/middleware/encryption');
 
-// Submit lesson result
+// Submit lesson result - ENCRYPTED
 router.post('/',
   requireStudentAuth,
   // Removed requireStudentInfo - we get studentInfo from request body instead
   validateResult,
   noCacheMiddleware,
+  resultEncryptionMiddleware,
   resultController.submitResult
 );
 

@@ -1213,6 +1213,7 @@
     </div>
 
     <!-- Scripts -->
+    <script src="/js/encryption.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
     
@@ -1823,16 +1824,18 @@
                         // Apply partial scoring to points
                         earnedPoints = questionPoints * partialMultiplier;
 
-                        // Debug logging for true/false questions
-                        console.log(`🔍 True/False Question ${originalIndex} (lesson.html):`, {
-                            userAnswers: userAnswersArray,
-                            correctAnswers: correctAnswersArray,
-                            correctCount,
-                            totalOptions,
-                            partialMultiplier,
-                            questionPoints,
-                            earnedPoints
-                        });
+                        // Debug logging for true/false questions (development only)
+                        if (window.location.hostname === 'localhost' || window.location.hostname.includes('dev')) {
+                            console.log(`🔍 True/False Question ${originalIndex} (lesson.html):`, {
+                                userAnswers: userAnswersArray,
+                                correctAnswers: correctAnswersArray,
+                                correctCount,
+                                totalOptions,
+                                partialMultiplier,
+                                questionPoints,
+                                earnedPoints
+                            });
+                        }
 
                         userAnswer = userAnswersArray;
                         correctAnswer = correctAnswersArray;
@@ -1888,12 +1891,15 @@
                     // Override earned points for True/False questions with partial scoring
                     if (normalizedType === 'truefalse' && Array.isArray(q.options) && typeof earnedPoints !== 'undefined') {
                         finalEarnedPoints = earnedPoints;
-                        console.log(`🔍 True/False Final Points Override (lesson.html):`, {
-                            originalFinalEarnedPoints: isCorrect ? questionPoints : 0,
-                            overriddenFinalEarnedPoints: finalEarnedPoints,
-                            earnedPoints,
-                            isCorrect
-                        });
+                        // Debug logging (development only)
+                        if (window.location.hostname === 'localhost' || window.location.hostname.includes('dev')) {
+                            console.log(`🔍 True/False Final Points Override (lesson.html):`, {
+                                originalFinalEarnedPoints: isCorrect ? questionPoints : 0,
+                                overriddenFinalEarnedPoints: finalEarnedPoints,
+                                earnedPoints,
+                                isCorrect
+                            });
+                        }
                     }
 
                     quizResults.questions.push({
@@ -1949,7 +1955,7 @@
                 // Add CSRF token to the payload
                 resultPayload.csrfToken = csrfData.csrfToken;
 
-                const saveResponse = await fetch('/api/results', {
+                const saveResponse = await window.encryptionClient.secureFetch('/api/results', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(resultPayload)
@@ -2020,10 +2026,10 @@
                     lessonId = result.lesson.id;
                     window.history.replaceState({}, '', `/lesson/${lessonId}`);
                     
-                    // Now fetch the full lesson data
-                    response = await fetch(`/api/lessons/${lessonId}`);
+                    // Now fetch the full lesson data with encryption
+                    response = await window.encryptionClient.secureFetch(`/api/lessons/${lessonId}`);
                 } else {
-                    response = await fetch(`/api/lessons/${lessonId}`);
+                    response = await window.encryptionClient.secureFetch(`/api/lessons/${lessonId}`);
                 }
                 
                 if (!response.ok) {
