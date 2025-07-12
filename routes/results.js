@@ -25,10 +25,10 @@ const { resultEncryptionMiddleware } = require('../lib/middleware/encryption');
 // Submit lesson result - ENCRYPTED
 router.post('/',
   requireStudentAuth,
-  // Removed requireStudentInfo - we get studentInfo from request body instead
+  // Decrypt first, then validate the decrypted data
+  resultEncryptionMiddleware,
   validateResult,
   noCacheMiddleware,
-  resultEncryptionMiddleware,
   resultController.submitResult
 );
 

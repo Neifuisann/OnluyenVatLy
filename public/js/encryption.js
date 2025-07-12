@@ -173,6 +173,8 @@ class EncryptionClient {
     try {
       const { encrypted, iv, tag, algorithm } = encryptedData;
 
+
+
       // Validate algorithm
       if (algorithm !== 'aes-256-cbc') {
         throw new Error('Invalid encryption algorithm');
