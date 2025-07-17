@@ -1,7 +1,3 @@
----
-type: "always_apply"
----
-
 # Enhanced LLM Agent Project Guide: OnluyenVatLy
 
 ## Objective
