@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/admin-enhanced.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <title>Cài đặt Hệ thống - Admin</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* Enhanced Admin Styles */
+        .admin-dashboard {
+            min-height: 100vh;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Header Section */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem 2rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            backdrop-filter: blur(20px);
+        }
+        
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .header-title h1 {
+            font-size: 2rem;
+            margin: 0;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        /* Main Content */
+        .settings-container {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            backdrop-filter: blur(20px);
+        }
+        
+        .settings-section {
+            margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        
+        .settings-section:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .section-title i {
+            color: var(--neon-purple);
+        }
+        
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            margin-bottom: 1rem;
+            transition: var(--transition-normal);
+        }
+        
+        .setting-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--neon-purple);
+        }
+        
+        .setting-info {
+            flex: 1;
+        }
+        
+        .setting-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .setting-description {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+        }
+        
+        .setting-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        
+        .status-indicator.enabled {
+            background: #43e97b;
+            box-shadow: 0 0 8px rgba(67, 233, 123, 0.4);
+        }
+        
+        .status-indicator.disabled {
+            background: #ff6b6b;
+            box-shadow: 0 0 8px rgba(255, 107, 107, 0.4);
+        }
+        
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: .4s;
+            border-radius: 34px;
+            border: 1px solid var(--glass-border);
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background: var(--primary-gradient);
+            border-color: transparent;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+        
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transform: translateY(150%);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            max-width: 400px;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .toast-icon.success {
+            background: rgba(67, 233, 123, 0.2);
+            color: #43e97b;
+        }
+        
+        .toast-icon.error {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+        }
+        
+        .toast-icon.info {
+            background: rgba(79, 172, 254, 0.2);
+            color: #4facfe;
+        }
+        
+        .toast-content {
+            flex: 1;
+        }
+        
+        .toast-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+        
+        .toast-message {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        
+        .toast-close {
+            color: var(--text-tertiary);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+        
+        .toast-close:hover {
+            color: var(--text-primary);
+        }
+        
+        /* Loading Indicator */
+        .loading-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--neon-purple);
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Indicator -->
+    <div id="loading-indicator" class="loading-indicator hidden">
+        <div class="spinner"></div>
+        <p>Đang xử lý...</p>
+    </div>
+
+    <!-- Home Button -->
+    <a href="/" class="home-button">
+        <img src="https://styles.redditmedia.com/t5_851o4i/styles/profileIcon_0elfudeu2s5b1.jpg?width=256&height=256&frame=1&auto=webp&crop=256:256,smart&s=86be605407a08efe2894a6bacd089074aca51879" alt="Home">
+    </a>
+    
+    <div class="admin-dashboard">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <div class="header-title">
+                <i class="fas fa-cogs" style="font-size: 2rem; color: var(--neon-purple);"></i>
+                <h1>Cài đặt Hệ thống</h1>
+            </div>
+            <div class="header-actions">
+                <a href="/admin" class="button secondary">
+                    <i class="fas fa-arrow-left"></i>
+                    Quay lại Dashboard
+                </a>
+            </div>
+        </div>
+        
+        <!-- Settings Container -->
+        <div class="settings-container">
+            <!-- Security Settings -->
+            <div class="settings-section">
+                <h2 class="section-title">
+                    <i class="fas fa-shield-alt"></i>
+                    Cài đặt Bảo mật
+                </h2>
+                
+                <!-- Encryption Toggle -->
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-name">Mã hóa Dữ liệu</div>
+                        <div class="setting-description">
+                            Bật/tắt hệ thống mã hóa dữ liệu cho các câu hỏi và bài kiểm tra. Khi tắt, hệ thống sẽ không mã hóa dữ liệu, giúp khắc phục sự cố liên quan đến mã hóa.
+                        </div>
+                    </div>
+                    <div class="setting-control">
+                        <div class="setting-status">
+                            <div id="encryption-status-indicator" class="status-indicator enabled"></div>
+                            <span id="encryption-status-text">Đang bật</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="encryption-toggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <div id="toast-icon" class="toast-icon success">
+            <i class="fas fa-check"></i>
+        </div>
+        <div class="toast-content">
+            <div id="toast-title" class="toast-title">Thành công</div>
+            <div id="toast-message" class="toast-message">Cài đặt đã được cập nhật.</div>
+        </div>
+        <div class="toast-close" onclick="hideToast()">
+            <i class="fas fa-times"></i>
+        </div>
+    </div>
+    
+    <script>
+        // DOM Elements
+        const encryptionToggle = document.getElementById('encryption-toggle');
+        const encryptionStatusIndicator = document.getElementById('encryption-status-indicator');
+        const encryptionStatusText = document.getElementById('encryption-status-text');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const toast = document.getElementById('toast');
+        const toastIcon = document.getElementById('toast-icon');
+        const toastTitle = document.getElementById('toast-title');
+        const toastMessage = document.getElementById('toast-message');
+        
+        // Initialize settings
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                await fetchEncryptionStatus();
+            } catch (error) {
+                console.error('Error initializing settings:', error);
+                showToast('error', 'Lỗi', 'Không thể tải cài đặt. Vui lòng thử lại sau.');
+            }
+        });
+        
+        // Fetch encryption status
+        async function fetchEncryptionStatus() {
+            showLoading(true);
+            
+            try {
+                const response = await fetch('/api/admin/encryption/status');
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateEncryptionUI(data.encryptionEnabled);
+                } else {
+                    throw new Error(data.message || 'Failed to fetch encryption status');
+                }
+            } catch (error) {
+                console.error('Error fetching encryption status:', error);
+                showToast('error', 'Lỗi', 'Không thể tải trạng thái mã hóa.');
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // Get CSRF token
+        async function getCsrfToken() {
+            try {
+                const response = await fetch('/api/csrf-token');
+                const data = await response.json();
+                return data.csrfToken;
+            } catch (error) {
+                console.error('Error getting CSRF token:', error);
+                return null;
+            }
+        }
+        
+        // Toggle encryption
+        encryptionToggle.addEventListener('change', async () => {
+            showLoading(true);
+            
+            try {
+                // Get CSRF token first
+                const csrfToken = await getCsrfToken();
+                
+                if (!csrfToken) {
+                    throw new Error('Could not get CSRF token');
+                }
+                
+                const response = await fetch('/api/admin/encryption/toggle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': csrfToken
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateEncryptionUI(data.encryptionEnabled);
+                    showToast(
+                        'success', 
+                        'Thành công', 
+                        `Hệ thống mã hóa đã được ${data.encryptionEnabled ? 'bật' : 'tắt'}.`
+                    );
+                } else {
+                    throw new Error(data.message || 'Failed to toggle encryption');
+                }
+            } catch (error) {
+                console.error('Error toggling encryption:', error);
+                showToast('error', 'Lỗi', 'Không thể thay đổi trạng thái mã hóa.');
+                // Revert toggle state
+                encryptionToggle.checked = !encryptionToggle.checked;
+            } finally {
+                showLoading(false);
+            }
+        });
+        
+        // Update encryption UI
+        function updateEncryptionUI(enabled) {
+            encryptionToggle.checked = enabled;
+            
+            if (enabled) {
+                encryptionStatusIndicator.classList.remove('disabled');
+                encryptionStatusIndicator.classList.add('enabled');
+                encryptionStatusText.textContent = 'Đang bật';
+            } else {
+                encryptionStatusIndicator.classList.remove('enabled');
+                encryptionStatusIndicator.classList.add('disabled');
+                encryptionStatusText.textContent = 'Đang tắt';
+            }
+        }
+        
+        // Show loading indicator
+        function showLoading(show) {
+            if (show) {
+                loadingIndicator.classList.remove('hidden');
+            } else {
+                loadingIndicator.classList.add('hidden');
+            }
+        }
+        
+        // Show toast notification
+        function showToast(type, title, message) {
+            toastIcon.className = `toast-icon ${type}`;
+            
+            if (type === 'success') {
+                toastIcon.innerHTML = '<i class="fas fa-check"></i>';
+            } else if (type === 'error') {
+                toastIcon.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+            } else if (type === 'info') {
+                toastIcon.innerHTML = '<i class="fas fa-info"></i>';
+            }
+            
+            toastTitle.textContent = title;
+            toastMessage.textContent = message;
+            
+            toast.classList.add('show');
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                hideToast();
+            }, 5000);
+        }
+        
+        // Hide toast notification
+        function hideToast() {
+            toast.classList.remove('show');
+        }
+    </script>
+</body>
+</html>

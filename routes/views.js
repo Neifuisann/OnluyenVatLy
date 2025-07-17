@@ -362,6 +362,14 @@ router.get('/admin/ai-tools',
   serveHTML('admin-ai-tools.html')
 );
 
+// Admin settings page
+router.get('/admin/settings',
+  requireAdminAuthForHTML,
+  addSessionInfo,
+  noCacheMiddleware,
+  serveHTML('admin-settings.html')
+);
+
 // Result viewing pages
 router.get('/result',
   requireStudentAuthForHTML,
