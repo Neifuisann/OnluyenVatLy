@@ -1561,12 +1561,15 @@ function showResultModal(quizResults) {
 
         .modal-content {
             background: white;
-            padding: 30px;
+            padding: 20px;
             border-radius: 12px;
-            max-width: 800px;
-            width: 90%;
-            max-height: 90vh;
+            max-width: 90vw;
+            width: auto;
+            max-height: 85vh;
             overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
         }
 
         .score-section {
@@ -1694,7 +1697,11 @@ function showResultModal(quizResults) {
             display: flex;
             justify-content: flex-end;
             gap: 10px;
-            margin-top: 20px;
+            margin-top: auto;
+            padding: 15px 0 10px;
+            position: sticky;
+            bottom: 0;
+            background: white;
         }
 
         .close-btn, .leaderboard-btn {
