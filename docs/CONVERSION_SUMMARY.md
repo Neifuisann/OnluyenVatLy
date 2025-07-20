@@ -1,9 +1,5 @@
 # Next.js Conversion Summary
 
-## What Has Been Copied
-
-I have successfully copied all the necessary files for converting your Express.js frontend to Next.js while keeping the Express.js backend. Here's what's included in the `to_nextjs` folder:
-
 ### 📁 Complete Folders Copied
 
 1. **`/views`** - All 28 HTML templates

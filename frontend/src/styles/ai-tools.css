@@ -1,0 +1,361 @@
+/* AI Tools Page Styles */
+.ai-tools-content {
+    padding: 30px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.tools-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.tool-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #f1f5f9;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.tool-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+.tool-header {
+    padding: 20px;
+    background: #161f2c;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 1px solid #2a3441;
+}
+
+.tool-icon {
+    width: 48px;
+    height: 48px;
+    background: rgba(124, 58, 237, 0.15);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: #7c3aed;
+}
+
+.tool-info h3 {
+    margin: 0 0 4px 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.tool-info p {
+    margin: 0;
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.tool-content {
+    padding: 24px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.tool-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding: 16px;
+    background: #f8fafb;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.stat-value {
+    font-size: 16px;
+    color: #1e293b;
+    font-weight: 600;
+}
+
+.tool-controls {
+    margin-bottom: 20px;
+}
+
+.control-group {
+    margin-bottom: 16px;
+}
+
+.control-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #1f2937;
+    background: #ffffff;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #a78bfa;
+    box-shadow: 0 0 0 3px rgba(168, 139, 250, 0.1);
+}
+
+.tool-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: auto;
+}
+
+.tool-actions .btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    justify-content: center;
+    min-width: 120px;
+}
+
+.tool-actions .btn-primary {
+    background: #7c3aed;
+    color: white;
+}
+
+.tool-actions .btn-primary:hover {
+    background: #6d28d9;
+    transform: translateY(-1px);
+}
+
+.tool-actions .btn-secondary {
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+}
+
+.tool-actions .btn-secondary:hover {
+    background: #e5e7eb;
+}
+
+.tool-actions .btn-warning {
+    background: #fbbf24;
+    color: #78350f;
+}
+
+.tool-actions .btn-warning:hover {
+    background: #f59e0b;
+}
+
+.tool-actions .btn-danger {
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+.tool-actions .btn-danger:hover {
+    background: #fecaca;
+}
+
+.tool-results {
+    border-top: 1px solid #e5e7eb;
+    padding-top: 20px;
+    margin-top: 20px;
+}
+
+.tool-results h4 {
+    margin: 0 0 16px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.results-list {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+}
+
+.result-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.result-item:last-child {
+    border-bottom: none;
+}
+
+.result-item.success {
+    background: #f0fdf4;
+    border-left: 4px solid #22c55e;
+}
+
+.result-item.error {
+    background: #fef2f2;
+    border-left: 4px solid #ef4444;
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.result-title {
+    font-weight: 500;
+    color: #1f2937;
+    font-size: 14px;
+}
+
+.result-status {
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.result-status i {
+    font-size: 12px;
+}
+
+.result-item.success .result-status {
+    color: #22c55e;
+}
+
+.result-item.error .result-status {
+    color: #ef4444;
+}
+
+.result-content {
+    font-size: 13px;
+    color: #4b5563;
+    line-height: 1.5;
+    margin-top: 8px;
+}
+
+.result-content img {
+    margin: 8px 0;
+    border: 1px solid #e5e7eb;
+}
+
+.result-error {
+    font-size: 13px;
+    color: #dc2626;
+    font-style: italic;
+    margin-top: 8px;
+}
+
+/* Loading overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.loading-overlay.hidden {
+    display: none;
+}
+
+.loading-spinner {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 300px;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f4f6;
+    border-top: 4px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 16px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive design for AI tools */
+@media (max-width: 1400px) {
+    .tools-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .tools-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .ai-tools-content {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .tool-header {
+        padding: 16px;
+    }
+    
+    .tool-content {
+        padding: 16px;
+    }
+    
+    .tool-actions {
+        flex-direction: column;
+    }
+    
+    .tool-actions .btn {
+        width: 100%;
+        min-width: unset;
+    }
+}

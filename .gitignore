@@ -12,3 +12,5 @@ logs
 .env*.local
 tests
 scripts
+cookies.txt
+forge.yaml

@@ -1,0 +1,895 @@
+// ===== ENHANCED ADMIN DASHBOARD JAVASCRIPT =====
+// Professional educational management system with improved UX
+
+let displayedLessons = [];
+let currentPage = 1;
+const lessonsPerPage = 10; // Reduced for better overview
+let totalLessons = 0;
+let isLoading = false;
+let allTags = [];
+let currentSearch = '';
+let currentSort = 'newest'; // Default to newest
+let selectedTags = new Set();
+
+// Statistics tracking
+let statsData = {
+    total: 0,
+    active: 0,
+    students: 0,
+    recentActivity: 0
+};
+
+// ===== INITIALIZATION =====
+document.addEventListener('DOMContentLoaded', () => {
+    initializeAdminDashboard();
+});
+
+function initializeAdminDashboard() {
+    // Create search and sort elements if they don't exist
+    createEnhancedUIElements();
+    
+    // Initialize event listeners
+    initializeEventListeners();
+    
+    // Load initial data
+    showLoader(true);
+    
+    // Load tags and lessons
+    Promise.all([
+        loadTags(),
+        loadDashboardStats()
+    ]).then(() => {
+        loadLessonsForAdmin();
+    });
+}
+
+// ===== UI CREATION =====
+function createEnhancedUIElements() {
+    // Ensure stats overview exists
+    if (!document.querySelector('.stats-overview')) {
+        createStatsOverview();
+    }
+    
+    // Ensure proper content structure
+    if (!document.querySelector('.content-wrapper')) {
+        restructureContent();
+    }
+}
+
+function createStatsOverview() {
+    const adminContainer = document.querySelector('.admin-container') || document.querySelector('.admin-dashboard');
+    if (!adminContainer) return;
+    
+    const statsHTML = `
+        <div class="stats-overview">
+            <div class="stat-widget total">
+                <div class="stat-widget-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="stat-widget-value">0</div>
+                <div class="stat-widget-label">Tổng bài học</div>
+            </div>
+            <div class="stat-widget active">
+                <div class="stat-widget-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-widget-value">0</div>
+                <div class="stat-widget-label">Hoạt động</div>
+            </div>
+            <div class="stat-widget students">
+                <div class="stat-widget-icon">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="stat-widget-value">0</div>
+                <div class="stat-widget-label">Học sinh</div>
+            </div>
+            <div class="stat-widget recent">
+                <div class="stat-widget-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-widget-value">0</div>
+                <div class="stat-widget-label">Hoạt động gần đây</div>
+            </div>
+        </div>
+    `;
+    
+    // Insert after header
+    const header = adminContainer.querySelector('h1')?.parentElement || adminContainer.firstElementChild;
+    header.insertAdjacentHTML('afterend', statsHTML);
+}
+
+function restructureContent() {
+    const lessonList = document.getElementById('lesson-list');
+    if (!lessonList) return;
+    
+    const adminContainer = lessonList.closest('.admin-container') || lessonList.parentElement;
+    
+    // Create new structure
+    const contentWrapper = document.createElement('div');
+    contentWrapper.className = 'content-wrapper';
+    
+    // Create sidebar
+    const sidebar = createSidebar();
+    
+    // Create main content
+    const mainContent = document.createElement('main');
+    mainContent.className = 'main-content';
+    
+    // Move lesson list to main content
+    mainContent.innerHTML = `
+        <div class="content-header">
+            <h2 class="content-title">Danh sách bài học</h2>
+            <div class="view-options">
+                <button class="view-btn active" data-view="list">
+                    <i class="fas fa-list"></i>
+                </button>
+                <button class="view-btn" data-view="grid">
+                    <i class="fas fa-th"></i>
+                </button>
+            </div>
+        </div>
+        <div id="sortable-lessons" class="lessons-container"></div>
+        <div id="admin-pagination-controls" class="pagination-controls"></div>
+    `;
+    
+    // Append to wrapper
+    contentWrapper.appendChild(sidebar);
+    contentWrapper.appendChild(mainContent);
+    
+    // Replace old content
+    lessonList.replaceWith(contentWrapper);
+}
+
+function createSidebar() {
+    const sidebar = document.createElement('aside');
+    sidebar.className = 'sidebar';
+    
+    sidebar.innerHTML = `
+        <!-- Search -->
+        <div class="sidebar-section">
+            <div class="sidebar-title">
+                <i class="fas fa-search"></i>
+                Tìm kiếm
+            </div>
+            <div class="search-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-input" placeholder="Tìm bài học hoặc tag...">
+            </div>
+        </div>
+        
+        <!-- Filters -->
+        <div class="sidebar-section">
+            <div class="sidebar-title">
+                <i class="fas fa-filter"></i>
+                Lọc & Sắp xếp
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Sắp xếp theo</label>
+                <select id="sort-select" class="filter-select">
+                    <option value="newest">Mới nhất</option>
+                    <option value="oldest">Cũ nhất</option>
+                    <option value="az">Tên A-Z</option>
+                    <option value="za">Tên Z-A</option>
+                    <option value="popular">Phổ biến</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Tags -->
+        <div class="sidebar-section">
+            <div class="sidebar-title">
+                <i class="fas fa-tags"></i>
+                Tags phổ biến
+            </div>
+            <div class="tag-cloud tags-container">
+                <!-- Tags will be loaded here -->
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="sidebar-section">
+            <button onclick="openReviewLessonModal()" class="button primary" style="width: 100%;">
+                <i class="fas fa-book-reader"></i>
+                Tạo bài ôn tập
+            </button>
+        </div>
+    `;
+    
+    return sidebar;
+}
+
+// ===== EVENT LISTENERS =====
+function initializeEventListeners() {
+    // Search functionality with debounce
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
+        let debounceTimeout;
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => {
+                currentSearch = e.target.value.toLowerCase();
+                currentPage = 1;
+                loadLessonsForAdmin();
+            }, 300); // Faster response
+        });
+    }
+    
+    // Sort functionality
+    const sortSelect = document.getElementById('sort-select');
+    if (sortSelect) {
+        sortSelect.value = currentSort;
+        sortSelect.addEventListener('change', (e) => {
+            currentSort = e.target.value;
+            currentPage = 1;
+            loadLessonsForAdmin();
+        });
+    }
+    
+    // View toggle
+    document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            const view = this.dataset.view;
+            const container = document.getElementById('sortable-lessons');
+            
+            if (view === 'grid') {
+                container.style.gridTemplateColumns = 'repeat(auto-fill, minmax(350px, 1fr))';
+            } else {
+                container.style.gridTemplateColumns = '1fr';
+            }
+        });
+    });
+    
+    // Stats widget clicks
+    document.querySelectorAll('.stat-widget').forEach(widget => {
+        widget.addEventListener('click', handleStatWidgetClick);
+    });
+}
+
+// ===== DATA LOADING =====
+async function loadTags() {
+    try {
+        const response = await fetch('/api/tags');
+        if (!response.ok) throw new Error('Failed to fetch tags');
+        allTags = await response.json();
+        renderTagsList();
+    } catch (error) {
+        console.error('Error loading tags:', error);
+    }
+}
+
+async function loadDashboardStats() {
+    try {
+        // In a real app, this would be an API call
+        const response = await fetch('/api/dashboard/stats');
+        if (response.ok) {
+            statsData = await response.json();
+            updateStatsDisplay();
+        }
+    } catch (error) {
+        console.error('Error loading stats:', error);
+        // Use mock data for now
+        updateStatsDisplay();
+    }
+}
+
+async function loadLessonsForAdmin() {
+    if (isLoading) return;
+    isLoading = true;
+    showLoader(true);
+    
+    try {
+        const params = new URLSearchParams({
+            page: currentPage,
+            limit: lessonsPerPage,
+            sort: currentSort
+        });
+        
+        if (currentSearch) {
+            params.append('search', currentSearch);
+        }
+        
+        if (selectedTags.size > 0) {
+            params.append('tags', Array.from(selectedTags).join(','));
+        }
+        
+        const response = await fetch(`/api/lessons?${params.toString()}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch lessons');
+        }
+        
+        const data = await response.json();
+        displayedLessons = data.lessons || [];
+        totalLessons = data.total || 0;
+        
+        // Update stats
+        updateStatsFromLessons();
+        
+        // Render lessons
+        renderLessons();
+        
+        // Update pagination
+        updateAdminPaginationControls();
+        
+    } catch (error) {
+        console.error('Error loading lessons:', error);
+        showErrorMessage();
+    } finally {
+        showLoader(false);
+        isLoading = false;
+    }
+}
+
+// ===== RENDERING =====
+function renderLessons() {
+    const container = document.getElementById('sortable-lessons');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    if (displayedLessons.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-folder-open" style="font-size: 4rem; color: var(--text-tertiary); margin-bottom: 1rem;"></i>
+                <p style="color: var(--text-secondary);">Không tìm thấy bài học nào phù hợp.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    displayedLessons.forEach((lesson, index) => {
+        const lessonCard = createLessonCard(lesson, index);
+        container.appendChild(lessonCard);
+    });
+}
+
+function createLessonCard(lesson, index) {
+    const div = document.createElement('div');
+    div.className = 'lesson-card';
+    div.dataset.id = lesson.id;
+    div.style.animationDelay = `${index * 0.05}s`;
+    
+    // Mock data for demonstration
+    const studentCount = lesson.studentCount || Math.floor(Math.random() * 50) + 10;
+    const completionRate = lesson.completionRate || Math.floor(Math.random() * 40) + 60;
+    const lastActivity = lesson.lastActivity || `${Math.floor(Math.random() * 24) + 1}`;
+    
+    div.innerHTML = `
+        <div class="lesson-color" style="background: ${lesson.color || '#a4aeff'};"></div>
+        <div class="lesson-details">
+            <div class="lesson-header">
+                <h3 class="lesson-title" title="${lesson.title}">${lesson.title}</h3>
+                <span class="lesson-status">Hoạt động</span>
+            </div>
+            <div class="lesson-meta">
+                <div class="meta-item">
+                    <i class="fas fa-users"></i>
+                    <span>${studentCount} học sinh</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>${completionRate}% hoàn thành</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-clock"></i>
+                    <span>${lastActivity}</span>
+                </div>
+            </div>
+            ${lesson.tags && lesson.tags.length > 0 ? 
+                `<div class="lesson-tags">
+                    ${lesson.tags.map(tag => `<span class="lesson-tag">${tag}</span>`).join('')}
+                </div>` : ''}
+        </div>
+        <div class="lesson-actions">
+            <div class="color-picker-wrapper">
+                <input type="color" 
+                       class="color-picker"
+                       value="${lesson.color || '#a4aeff'}" 
+                       onchange="updateLessonColor(${lesson.id}, this.value)"
+                       title="Đổi màu">
+            </div>
+            <a href="/admin/edit/${lesson.id}" class="action-btn">
+                <i class="fas fa-edit"></i>
+                <span>Sửa</span>
+            </a>
+            <a href="/admin/lessons/${lesson.id}/statistics" class="action-btn">
+                <i class="fas fa-chart-bar"></i>
+                <span>Thống kê</span>
+            </a>
+            <button onclick="copyShareLink(${lesson.id})" class="action-btn">
+                <i class="fas fa-share"></i>
+                <span>Chia sẻ</span>
+            </button>
+            <button onclick="confirmDeleteLesson(${lesson.id}, '${lesson.title.replace(/'/g, "\\'")}')" class="action-btn danger">
+                <i class="fas fa-trash"></i>
+                <span>Xóa</span>
+            </button>
+        </div>
+    `;
+    
+    return div;
+}
+
+function renderTagsList() {
+    const tagsContainer = document.querySelector('.tags-container');
+    if (!tagsContainer) return;
+    
+    tagsContainer.innerHTML = '';
+    
+    // Show top 10 tags
+    const topTags = allTags.slice(0, 10);
+    
+    topTags.forEach(tag => {
+        const tagButton = document.createElement('button');
+        tagButton.className = 'tag-filter';
+        tagButton.textContent = tag;
+        
+        if (selectedTags.has(tag)) {
+            tagButton.classList.add('active');
+        }
+        
+        tagButton.onclick = () => {
+            toggleTag(tag);
+            tagButton.classList.toggle('active');
+        };
+        
+        tagsContainer.appendChild(tagButton);
+    });
+    
+    // Add "show more" if there are more tags
+    if (allTags.length > 10) {
+        const showMoreBtn = document.createElement('button');
+        showMoreBtn.className = 'tag-filter show-more';
+        showMoreBtn.innerHTML = '<i class="fas fa-plus"></i> Xem thêm';
+        showMoreBtn.onclick = () => showAllTags();
+        tagsContainer.appendChild(showMoreBtn);
+    }
+}
+
+// ===== STATS MANAGEMENT =====
+function updateStatsDisplay() {
+    const statWidgets = {
+        total: document.querySelector('.stat-widget.total .stat-widget-value'),
+        active: document.querySelector('.stat-widget.active .stat-widget-value'),
+        students: document.querySelector('.stat-widget.students .stat-widget-value'),
+        recent: document.querySelector('.stat-widget.recent .stat-widget-value')
+    };
+    
+    if (statWidgets.total) {
+        animateValue(statWidgets.total, 0, statsData.total || totalLessons, 1000);
+    }
+    if (statWidgets.active) {
+        animateValue(statWidgets.active, 0, statsData.active || Math.floor(totalLessons * 0.8), 1000);
+    }
+    if (statWidgets.students) {
+        animateValue(statWidgets.students, 0, statsData.students || Math.floor(totalLessons * 15), 1000);
+    }
+    if (statWidgets.recent) {
+        animateValue(statWidgets.recent, 0, statsData.recent || Math.floor(Math.random() * 20) + 5, 1000);
+    }
+}
+
+function updateStatsFromLessons() {
+    statsData.total = totalLessons;
+    updateStatsDisplay();
+}
+
+function animateValue(element, start, end, duration) {
+    const startTimestamp = Date.now();
+    const step = () => {
+        const timestamp = Date.now();
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        const value = Math.floor(progress * (end - start) + start);
+        element.textContent = value;
+        if (progress < 1) {
+            window.requestAnimationFrame(step);
+        }
+    };
+    window.requestAnimationFrame(step);
+}
+
+// ===== ACTIONS =====
+function toggleTag(tag) {
+    if (selectedTags.has(tag)) {
+        selectedTags.delete(tag);
+    } else {
+        selectedTags.add(tag);
+    }
+    currentPage = 1;
+    loadLessonsForAdmin();
+}
+
+function copyShareLink(lessonId) {
+    const shareUrl = `${window.location.origin}/share/lesson/${lessonId}`;
+    
+    navigator.clipboard.writeText(shareUrl).then(() => {
+        showToast('Đã sao chép link chia sẻ!', 'success');
+    }).catch(err => {
+        console.error('Failed to copy:', err);
+        showToast('Không thể sao chép link', 'error');
+    });
+}
+
+function confirmDeleteLesson(id, title) {
+    const confirmMessage = `Bạn có chắc chắn muốn xóa bài học "${title}"?\n\nHành động này không thể hoàn tác.`;
+    
+    if (confirm(confirmMessage)) {
+        deleteLesson(id);
+    }
+}
+
+async function deleteLesson(id) {
+    try {
+        const response = await fetch(`/api/lessons/${id}`, { 
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to delete lesson');
+        }
+        
+        showToast('Đã xóa bài học thành công', 'success');
+        
+        // Reload the current page after deletion
+        loadLessonsForAdmin();
+        
+    } catch (error) {
+        console.error('Error deleting lesson:', error);
+        showToast('Không thể xóa bài học', 'error');
+    }
+}
+
+async function updateLessonColor(id, color) {
+    try {
+        const response = await fetch(`/api/lessons/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ color: color })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to update lesson color');
+        }
+        
+        // Update local data
+        const lesson = displayedLessons.find(l => l.id == id);
+        if (lesson) {
+            lesson.color = color;
+        }
+        
+        // Update UI
+        const lessonCard = document.querySelector(`.lesson-card[data-id="${id}"]`);
+        if (lessonCard) {
+            const colorBar = lessonCard.querySelector('.lesson-color');
+            if (colorBar) {
+                colorBar.style.background = color;
+            }
+        }
+        
+        showToast('Đã cập nhật màu sắc', 'success');
+        
+    } catch (error) {
+        console.error('Error updating lesson color:', error);
+        showToast('Không thể cập nhật màu sắc', 'error');
+    }
+}
+
+// ===== PAGINATION =====
+function updateAdminPaginationControls() {
+    const container = document.getElementById('admin-pagination-controls');
+    if (!container) return;
+
+    container.innerHTML = '';
+    const totalPages = Math.ceil(totalLessons / lessonsPerPage);
+
+    if (totalPages <= 1) return;
+
+    // Previous button
+    const prevButton = document.createElement('button');
+    prevButton.innerHTML = '<i class="fas fa-chevron-left"></i> Trước';
+    prevButton.disabled = currentPage === 1;
+    prevButton.onclick = () => {
+        if (currentPage > 1) {
+            currentPage--;
+            loadLessonsForAdmin();
+            scrollToTop();
+        }
+    };
+    container.appendChild(prevButton);
+
+    // Page numbers
+    const pageNumbers = getPageNumbers(currentPage, totalPages);
+    
+    pageNumbers.forEach(pageNum => {
+        if (pageNum === '...') {
+            const dots = document.createElement('span');
+            dots.textContent = '...';
+            dots.style.padding = '0 0.5rem';
+            container.appendChild(dots);
+        } else {
+            const pageButton = document.createElement('button');
+            pageButton.textContent = pageNum;
+            pageButton.className = pageNum === currentPage ? 'active-page' : '';
+            pageButton.onclick = () => {
+                if (pageNum !== currentPage) {
+                    currentPage = pageNum;
+                    loadLessonsForAdmin();
+                    scrollToTop();
+                }
+            };
+            container.appendChild(pageButton);
+        }
+    });
+
+    // Next button
+    const nextButton = document.createElement('button');
+    nextButton.innerHTML = 'Tiếp <i class="fas fa-chevron-right"></i>';
+    nextButton.disabled = currentPage === totalPages;
+    nextButton.onclick = () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            loadLessonsForAdmin();
+            scrollToTop();
+        }
+    };
+    container.appendChild(nextButton);
+}
+
+function getPageNumbers(current, total) {
+    const delta = 2;
+    const range = [];
+    const rangeWithDots = [];
+    let l;
+
+    for (let i = 1; i <= total; i++) {
+        if (i === 1 || i === total || (i >= current - delta && i <= current + delta)) {
+            range.push(i);
+        }
+    }
+
+    range.forEach((i) => {
+        if (l) {
+            if (i - l === 2) {
+                rangeWithDots.push(l + 1);
+            } else if (i - l !== 1) {
+                rangeWithDots.push('...');
+            }
+        }
+        rangeWithDots.push(i);
+        l = i;
+    });
+
+    return rangeWithDots;
+}
+
+// ===== UTILITY FUNCTIONS =====
+function showLoader(show) {
+    const loader = document.getElementById('loading-indicator');
+    if (loader) {
+        loader.classList.toggle('hidden', !show);
+    }
+}
+
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showToast(message, type = 'info') {
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+        <span>${message}</span>
+    `;
+    
+    // Add styles if not exists
+    if (!document.getElementById('toast-styles')) {
+        const style = document.createElement('style');
+        style.id = 'toast-styles';
+        style.textContent = `
+            .toast {
+                position: fixed;
+                bottom: 2rem;
+                left: 50%;
+                transform: translateX(-50%) translateY(100px);
+                background: var(--glass-bg);
+                border: 1px solid var(--glass-border);
+                border-radius: var(--radius-full);
+                padding: 1rem 2rem;
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                backdrop-filter: blur(10px);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                animation: toastSlideIn 0.3s ease forwards;
+                z-index: 9999;
+            }
+            
+            .toast-success {
+                border-color: rgba(67, 233, 123, 0.3);
+                background: linear-gradient(135deg, rgba(67, 233, 123, 0.1) 0%, rgba(56, 249, 215, 0.1) 100%);
+            }
+            
+            .toast-error {
+                border-color: rgba(244, 59, 71, 0.3);
+                background: linear-gradient(135deg, rgba(244, 59, 71, 0.1) 0%, rgba(245, 87, 108, 0.1) 100%);
+            }
+            
+            @keyframes toastSlideIn {
+                to { transform: translateX(-50%) translateY(0); }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    document.body.appendChild(toast);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        toast.style.animation = 'toastSlideIn 0.3s ease reverse';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+function showErrorMessage() {
+    const container = document.getElementById('sortable-lessons');
+    if (container) {
+        container.innerHTML = `
+            <div class="error-message">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>Lỗi khi tải dữ liệu. Vui lòng thử lại sau.</span>
+            </div>
+        `;
+    }
+}
+
+function handleStatWidgetClick(e) {
+    const widget = e.currentTarget;
+    
+    if (widget.classList.contains('total')) {
+        // Show all lessons
+        currentSearch = '';
+        selectedTags.clear();
+        document.getElementById('search-input').value = '';
+        loadLessonsForAdmin();
+    } else if (widget.classList.contains('active')) {
+        // Filter active lessons
+        currentSort = 'popular';
+        document.getElementById('sort-select').value = 'popular';
+        loadLessonsForAdmin();
+    } else if (widget.classList.contains('students')) {
+        // Navigate to students page
+        window.location.href = '/admin/students';
+    } else if (widget.classList.contains('recent')) {
+        // Show recent activity
+        window.location.href = '/history';
+    }
+}
+
+function showAllTags() {
+    // Implementation for showing all tags in a modal
+    // This would open a modal with all available tags
+    console.log('Show all tags modal');
+}
+
+// ===== REVIEW LESSON MODAL =====
+// Keep existing review lesson functions
+function openReviewLessonModal() {
+    const container = document.getElementById('review-lesson-rows');
+    if (container) {
+        container.innerHTML = '';
+        addReviewRow();
+    }
+    const modal = document.getElementById('review-lesson-modal');
+    if (modal) {
+        modal.style.display = 'flex';
+    }
+}
+
+function closeReviewLessonModal() {
+    const modal = document.getElementById('review-lesson-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+function addReviewRow() {
+    const container = document.getElementById('review-lesson-rows');
+    if (!container) return;
+    
+    const row = document.createElement('div');
+    row.className = 'review-lesson-row';
+    row.style.display = 'flex';
+    row.style.alignItems = 'center';
+    row.style.gap = '10px';
+    row.style.marginBottom = '10px';
+    
+    row.innerHTML = `
+        <select class="review-lesson-select modern-input" required style="flex: 1;">
+            <option value="">Chọn bài học...</option>
+        </select>
+        <input type="number" class="review-question-count modern-input" min="1" max="50" required style="width: 100px;" placeholder="Số câu" />
+        <button type="button" class="action-btn danger" onclick="removeReviewRow(this)" style="padding: 0.75rem;">
+            <i class="fas fa-trash"></i>
+        </button>
+    `;
+    
+    container.appendChild(row);
+    populateReviewRowSelect(row);
+}
+
+function removeReviewRow(button) {
+    const row = button.closest('.review-lesson-row');
+    if (row && row.parentElement.children.length > 1) {
+        row.remove();
+    }
+}
+
+function populateReviewRowSelect(row) {
+    const select = row.querySelector('.review-lesson-select');
+    if (!select) return;
+    
+    // Populate with current lessons
+    displayedLessons.forEach(lesson => {
+        const option = document.createElement('option');
+        option.value = lesson.id;
+        option.textContent = lesson.title;
+        select.appendChild(option);
+    });
+}
+
+// Initialize form handler
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('review-lesson-form');
+    if (form) {
+        form.addEventListener('submit', handleReviewLessonSubmit);
+    }
+});
+
+async function handleReviewLessonSubmit(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('review-lesson-name').value;
+    const rows = document.querySelectorAll('.review-lesson-row');
+    
+    const lessons = Array.from(rows).map(row => ({
+        lessonId: row.querySelector('.review-lesson-select').value,
+        questionCount: parseInt(row.querySelector('.review-question-count').value)
+    })).filter(item => item.lessonId && item.questionCount);
+    
+    if (lessons.length === 0) {
+        showToast('Vui lòng chọn ít nhất một bài học', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/review-lessons', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, lessons })
+        });
+        
+        if (!response.ok) throw new Error('Failed to create review lesson');
+        
+        showToast('Đã tạo bài ôn tập thành công', 'success');
+        closeReviewLessonModal();
+        loadLessonsForAdmin();
+        
+    } catch (error) {
+        console.error('Error creating review lesson:', error);
+        showToast('Không thể tạo bài ôn tập', 'error');
+    }
+}
+
+// Export functions for global access
+window.updateLessonColor = updateLessonColor;
+window.copyShareLink = copyShareLink;
+window.confirmDeleteLesson = confirmDeleteLesson;
+window.openReviewLessonModal = openReviewLessonModal;
+window.closeReviewLessonModal = closeReviewLessonModal;
+window.addReviewRow = addReviewRow;
+window.removeReviewRow = removeReviewRow;

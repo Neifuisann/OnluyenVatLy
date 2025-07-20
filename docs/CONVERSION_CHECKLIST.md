@@ -1,30 +1,30 @@
 # Next.js Conversion Checklist
 
 ## Phase 1: Project Setup
-- [ ] Create Next.js project with TypeScript and Tailwind CSS
-- [ ] Set up project structure (pages/components/hooks/utils)
-- [ ] Configure environment variables
-- [ ] Set up API base URL configuration
-- [ ] Install additional dependencies (axios, react-query, etc.)
+- [x] Create Next.js project with TypeScript and Tailwind CSS
+- [x] Set up project structure (pages/components/hooks/utils)
+- [x] Configure environment variables
+- [x] Set up API base URL configuration
+- [x] Install additional dependencies (axios, react-query, etc.)
 
 ## Phase 2: Core Infrastructure
-- [ ] Create authentication context/hook
-- [ ] Implement API client with error handling
-- [ ] Set up global state management
-- [ ] Create protected route wrapper
-- [ ] Implement CSRF token handling
-- [ ] Set up loading and error components
+- [x] Create authentication context/hook
+- [x] Implement API client with error handling
+- [x] Set up global state management
+- [x] Create protected route wrapper
+- [x] Implement CSRF token handling
+- [x] Set up loading and error components
 
 ## Phase 3: Convert Static Assets
-- [ ] Move CSS files to Next.js public or styles folder
-- [ ] Convert global styles to CSS modules/Tailwind
-- [ ] Move images, audio, and other assets
-- [ ] Update asset paths in components
-- [ ] Optimize images with Next.js Image component
+- [x] Move CSS files to Next.js public or styles folder
+- [x] Convert global styles to CSS modules/Tailwind
+- [x] Move images, audio, and other assets
+- [x] Update asset paths in components
+- [x] Optimize images with Next.js Image component
 
 ## Phase 4: Convert Core Pages
 ### Public Pages
-- [ ] Convert `landing.html` to home page (`pages/index.js`)
+- [x] Convert `landing.html` to home page (`pages/index.js`)
 - [ ] Convert `login.html` to login page
 - [ ] Convert `student-login.html` to student login
 - [ ] Convert `student-register.html` to registration
