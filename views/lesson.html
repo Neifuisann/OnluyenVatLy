@@ -1409,7 +1409,26 @@
             // Process questions
             let allQuestions = [...lesson.questions];
             
-            // Apply random selection if specified
+            // Apply shuffle if enabled
+            console.log('🎲 Shuffle Debug - shuffleQuestions flag:', lesson.shuffleQuestions);
+            console.log('🎲 Shuffle Debug - Questions before shuffle:', allQuestions.map(q => q.question || q.id));
+            
+            // Check URL parameter for force shuffle
+            const urlParams = new URLSearchParams(window.location.search);
+            const forceShuffleQuestions = urlParams.get('shuffle') === 'true';
+            
+            if (lesson.shuffleQuestions || forceShuffleQuestions) {
+                if (forceShuffleQuestions) {
+                    console.log('🔧 Force shuffle enabled via URL parameter');
+                }
+                allQuestions = shuffleArray(allQuestions);
+                console.log('🎲 Shuffle Debug - Questions after shuffle:', allQuestions.map(q => q.question || q.id));
+            } else {
+                console.warn('⚠️ Shuffle Debug - shuffleQuestions is false or undefined!');
+                console.log('💡 Tip: Add ?shuffle=true to URL to force shuffling');
+            }
+            
+            // Apply random selection if specified (legacy support)
             if (lesson.randomQuestions > 0 && lesson.randomQuestions < lesson.questions.length) {
                 allQuestions = shuffleArray(allQuestions).slice(0, lesson.randomQuestions);
             }
@@ -1494,7 +1513,11 @@
                             originalIndex: idx,
                             letter: String.fromCharCode(65 + idx)
                         }));
-                        const shuffledOptions = shuffleArray([...optionsWithIndices]);
+                        
+                        // Only shuffle options if shuffleAnswers is enabled
+                        const shuffledOptions = lesson.shuffleAnswers ? 
+                            shuffleArray([...optionsWithIndices]) : 
+                            optionsWithIndices;
                         
                         questionMappings[originalIndex] = shuffledOptions.map(
                             (opt, newIndex) => ({
@@ -2039,6 +2062,13 @@
                 const responseData = await response.json();
                 const lesson = responseData.lesson || responseData;
                 currentLessonData = lesson;
+                
+                console.log('📚 Lesson loaded:', JSON.stringify(lesson, null, 2));
+                console.log('🔍 Debug - Shuffle flags:', {
+                    shuffleQuestions: lesson.shuffleQuestions,
+                    shuffleAnswers: lesson.shuffleAnswers,
+                    randomQuestions: lesson.randomQuestions
+                });
 
                 if (lesson.error || responseData.error) {
                     document.body.innerHTML = '<h1>Lesson not found</h1>';

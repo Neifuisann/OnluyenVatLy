@@ -64,13 +64,7 @@ function showLoader(show) {
     }
 }
 
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-}
+// Removed duplicate shuffleArray function - using the proper one at line 1296
 
 async function renderQuestions(lesson) {
     console.log('Rendering questions for lesson:', {
@@ -79,6 +73,7 @@ async function renderQuestions(lesson) {
         questionTypeDistribution: lesson.questionTypeDistribution,
         totalQuestions: lesson.questions ? lesson.questions.length : 0
     });
+    console.log('🎨 Render Debug - Questions at render time:', lesson.questions ? lesson.questions.map(q => q.question || q.id) : []);
     
     // Check if lesson has questions property
     if (!lesson || !lesson.questions || !Array.isArray(lesson.questions)) {
@@ -99,49 +94,37 @@ async function renderQuestions(lesson) {
         return;
     }
 
-    const sections = {
-        abcd: { element: document.getElementById('abcd-questions'), questions: [] },
-        truefalse: { element: document.getElementById('truefalse-questions'), questions: [] },
-        number: { element: document.getElementById('number-questions'), questions: [] }
-    };
-
-    // Group all questions by type
-    // Handle both old format (multiple_choice) and new format (abcd)
-    lesson.questions.forEach(q => {
-        const normalizedType = q.type === 'multiple_choice' ? 'abcd' :
-                             q.type === 'true_false' ? 'truefalse' :
-                             q.type === 'fill_blank' ? 'number' : q.type;
-
-        if (sections[normalizedType]) {
-            sections[normalizedType].questions.push(q);
-        } else {
-            console.warn('Unknown question type:', q.type, 'for question:', q);
-        }
-    });
+    // Get the container element where all questions will be rendered
+    const questionsContainer = document.createElement('div');
+    questionsContainer.id = 'all-questions-container';
+    
+    // Find where to insert the questions container
+    const abcdSection = document.getElementById('abcd-questions');
+    const trueFalseSection = document.getElementById('truefalse-questions');
+    const numberSection = document.getElementById('number-questions');
+    
+    // Hide original section headers since we're displaying all questions together
+    if (abcdSection) abcdSection.style.display = 'none';
+    if (trueFalseSection) trueFalseSection.style.display = 'none';
+    if (numberSection) numberSection.style.display = 'none';
+    
+    // Insert the new container before the first section
+    if (abcdSection && abcdSection.parentNode) {
+        abcdSection.parentNode.insertBefore(questionsContainer, abcdSection);
+    }
     
     // Question pool filtering is now handled on the server side
     // The lesson.questions already contains the filtered questions based on pool settings
     console.log('Question pool filtering handled on server side. Total questions:', lesson.questions.length);
+    // Question shuffling has already been handled in applyRandomization() before this function is called
+    // The questions array is already in the shuffled order
 
-    // Question shuffling is already handled in applyRandomization()
-    // No need to shuffle again here
-    
-    // Clear existing questions
-    Object.values(sections).forEach(section => {
-        if (section.element) {
-            section.element.innerHTML = `<h3>${section.element.querySelector('h3')?.textContent || ''}</h3>`;
-        }
-    });
-
-    // Render questions for each section
-    Object.entries(sections).forEach(([type, section]) => {
-        if (!section.element) return;
-        
-        section.questions.forEach((q, index) => {
-            const questionIndex = lesson.questions.indexOf(q);
+    // Render questions in their shuffled order
+    lesson.questions.forEach((q, displayIndex) => {
+        const questionIndex = displayIndex; // Use display index as question index
             let questionHtml = `
                 <div class="question" data-question-index="${questionIndex}">
-                    <p><strong>Câu ${index + 1}.</strong></p>
+                    <p><strong>Câu ${displayIndex + 1}.</strong></p>
             `;
 
             // --- START IMAGE PARSING ---
@@ -191,17 +174,16 @@ async function renderQuestions(lesson) {
                         break;
                     }
 
-                    // Create options with their original indices
+                    // Options have already been shuffled in applyRandomization if shuffleAnswers is enabled
+                    // Just create the display structure without re-shuffling
                     const optionsWithIndices = q.options.map((option, idx) => ({
                         text: typeof option === 'string' ? option : (option.text || ''), // Handle both object and string format
                         originalIndex: idx,
                         letter: String.fromCharCode(65 + idx) // A, B, C, D
                     }));
                     
-                    // Only shuffle options if shuffleAnswers is enabled
-                    const shuffledOptions = lesson.shuffleAnswers ? 
-                        shuffleArray([...optionsWithIndices]) : 
-                        optionsWithIndices;
+                    // Use the options as-is (already shuffled if needed)
+                    const shuffledOptions = optionsWithIndices;
                     
                     // Store the mapping for this question
                     window.questionMappings[questionIndex] = shuffledOptions.map(
@@ -290,28 +272,20 @@ async function renderQuestions(lesson) {
             }
 
             questionHtml += `</div>`;
-            section.element.insertAdjacentHTML('beforeend', questionHtml);
-        });
-
-        if (section.questions.length === 0) {
-            section.element.style.display = 'none';
-        }
+            questionsContainer.insertAdjacentHTML('beforeend', questionHtml);
     });
     
     // Initialize KaTeX rendering after all questions are loaded
     if (typeof renderMathInElement === 'function') {
-        // Target all sections that might contain math
-        const mathContainers = document.querySelectorAll('#abcd-questions, #truefalse-questions, #number-questions');
-        mathContainers.forEach(container => {
-            renderMathInElement(container, {
-                delimiters: [
-                    {left: "$$", right: "$$", display: true},
-                    {left: "$", right: "$", display: false},
-                    {left: "\\(", right: "\\)", display: false},
-                    {left: "\\[", right: "\\]", display: true}
-                ],
-                throwOnError: false
-            });
+        // Target the new questions container
+        renderMathInElement(questionsContainer, {
+            delimiters: [
+                {left: "$$", right: "$$", display: true},
+                {left: "$", right: "$", display: false},
+                {left: "\\(", right: "\\)", display: false},
+                {left: "\\[", right: "\\]", display: true}
+            ],
+            throwOnError: false
         });
     }
 }
@@ -407,7 +381,20 @@ async function initializeLesson() {
         }
         
         // Add console log here to inspect the lesson object
-        console.log('Lesson object before rendering:', JSON.stringify(lesson, null, 2)); 
+        console.log('Lesson object before rendering:', JSON.stringify(lesson, null, 2));
+        console.log('🔍 Debug - Shuffle flags:', {
+            shuffleQuestions: lesson.shuffleQuestions,
+            shuffleAnswers: lesson.shuffleAnswers,
+            enableQuestionPool: lesson.enableQuestionPool
+        });
+        
+        // Apply randomization if enabled - MUST happen before rendering
+        if (lesson.shuffleQuestions || lesson.shuffleAnswers || lesson.enableQuestionPool) {
+            console.log('✅ Calling applyRandomization');
+            applyRandomization(lesson);
+        } else {
+            console.warn('⚠️ Skipping applyRandomization - all flags are false');
+        }
         
         await renderQuestions(lesson);
         console.log('Lesson initialized successfully');
@@ -441,11 +428,6 @@ async function initializeLesson() {
                 // Show previous attempts summary if allowed
                 showPreviousAttemptsSummary(lesson, attemptCheck.previousAttempts);
             }
-        }
-        
-        // Apply randomization if enabled
-        if (lesson.shuffleQuestions || lesson.shuffleAnswers || lesson.enableQuestionPool) {
-            applyRandomization(lesson);
         }
         
         // Initialize countdown timer if enabled
@@ -1297,7 +1279,7 @@ function createSeededRandom(seed) {
         return Math.random;
     }
     
-    // Simple hash function for string seed
+    // Improved hash function for string seed
     let hash = 0;
     for (let i = 0; i < seed.length; i++) {
         const char = seed.charCodeAt(i);
@@ -1305,9 +1287,15 @@ function createSeededRandom(seed) {
         hash = hash & hash; // Convert to 32bit integer
     }
     
-    // Use the hash as seed for a simple PRNG
-    let state = Math.abs(hash);
+    // Add more entropy by mixing in the string length and a magic number
+    hash = Math.abs(hash + seed.length * 0x5bd1e995);
+    
+    // Use the hash as seed for an improved PRNG (Linear Congruential Generator)
+    let state = hash || 1; // Ensure non-zero state
     return function() {
+        // Better constants for the LCG (from Numerical Recipes)
+        state = (state * 1664525 + 1013904223) % 4294967296;
+        // Double application for better distribution
         state = (state * 1664525 + 1013904223) % 4294967296;
         return state / 4294967296;
     };
@@ -1325,7 +1313,9 @@ function shuffleArray(array, randomFunc = Math.random) {
 // selectQuestionPool function removed - question pool filtering is now handled on the server side
 
 function applyRandomization(lesson) {
-    const seed = lesson.randomizationSeed || `${lesson.id}-${Date.now()}`;
+    // Use a combination of lesson ID and current timestamp for better randomization
+    // If a seed is provided, use it; otherwise create one with timestamp
+    const seed = lesson.randomizationSeed || `${lesson.id}-${Date.now()}-${Math.random()}`;
     const randomFunc = createSeededRandom(seed);
 
     console.log('Applying randomization with seed:', seed);
@@ -1334,9 +1324,23 @@ function applyRandomization(lesson) {
     let questions = [...lesson.questions];
 
     // Shuffle question order if enabled
-    if (lesson.shuffleQuestions) {
+    console.log('🎲 Shuffle Debug - shuffleQuestions flag:', lesson.shuffleQuestions);
+    console.log('🎲 Shuffle Debug - Questions before shuffle:', questions.map(q => q.question || q.id));
+    
+    // Check URL parameter for force shuffle (useful for debugging)
+    const urlParams = new URLSearchParams(window.location.search);
+    const forceShuffleQuestions = urlParams.get('shuffle') === 'true';
+    
+    if (lesson.shuffleQuestions || forceShuffleQuestions) {
+        if (forceShuffleQuestions) {
+            console.log('🔧 Force shuffle enabled via URL parameter');
+        }
         questions = shuffleArray(questions, randomFunc);
+        console.log('🎲 Shuffle Debug - Questions after shuffle:', questions.map(q => q.question || q.id));
         console.log('Questions shuffled');
+    } else {
+        console.warn('⚠️ Shuffle Debug - shuffleQuestions is false or undefined!');
+        console.log('💡 Tip: Add ?shuffle=true to URL to force shuffling');
     }
     
     // Shuffle answer choices for multiple choice questions if enabled
