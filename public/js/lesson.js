@@ -123,12 +123,14 @@ async function renderQuestions(lesson) {
     // The lesson.questions already contains the filtered questions based on pool settings
     console.log('Question pool filtering handled on server side. Total questions:', lesson.questions.length);
 
-    // Just shuffle all questions within their types since filtering is done server-side
-    Object.values(sections).forEach(section => {
-        if (section.element) {
-            section.questions = shuffleArray([...section.questions]);
-        }
-    });
+    // Only shuffle questions within their types if shuffleQuestions is enabled
+    if (lesson.shuffleQuestions) {
+        Object.values(sections).forEach(section => {
+            if (section.element) {
+                section.questions = shuffleArray([...section.questions]);
+            }
+        });
+    }
     
     // Clear existing questions
     Object.values(sections).forEach(section => {
@@ -195,13 +197,17 @@ async function renderQuestions(lesson) {
                         break;
                     }
 
-                    // Create shuffled options with their original indices
+                    // Create options with their original indices
                     const optionsWithIndices = q.options.map((option, idx) => ({
                         text: typeof option === 'string' ? option : (option.text || ''), // Handle both object and string format
                         originalIndex: idx,
                         letter: String.fromCharCode(65 + idx) // A, B, C, D
                     }));
-                    const shuffledOptions = shuffleArray([...optionsWithIndices]);
+                    
+                    // Only shuffle options if shuffleAnswers is enabled
+                    const shuffledOptions = lesson.shuffleAnswers ? 
+                        shuffleArray([...optionsWithIndices]) : 
+                        optionsWithIndices;
                     
                     // Store the mapping for this question
                     window.questionMappings[questionIndex] = shuffledOptions.map(
