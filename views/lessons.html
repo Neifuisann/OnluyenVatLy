@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Học Vật Lý - Nền tảng học tập trực tuyến</title>
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+
     <!-- Styles -->
     <link rel="stylesheet" href="/css/style.css">
-    
+
     <style>
         /* Page Specific Overrides */
         .hero-section {
@@ -24,12 +25,12 @@
             position: relative;
             overflow: hidden;
         }
-        
+
         .hero-content {
             position: relative;
             z-index: 1;
         }
-        
+
         .hero-title {
             font-size: clamp(2.5rem, 5vw, 3.5rem);
             margin-bottom: var(--space-md);
@@ -38,39 +39,39 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        
+
         .hero-subtitle {
             font-size: var(--text-xl);
             color: var(--text-secondary);
             margin-bottom: var(--space-xl);
         }
-        
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: var(--space-lg);
             margin-bottom: var(--space-2xl);
         }
-        
+
         .lesson-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: var(--space-xl);
             margin-bottom: var(--space-2xl);
         }
-        
+
         .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: var(--space-xl);
         }
-        
+
         .section-title {
             font-size: var(--text-2xl);
             font-weight: 600;
         }
-        
+
         .view-all-link {
             color: var(--primary-color);
             font-weight: 500;
@@ -78,11 +79,11 @@
             align-items: center;
             gap: var(--space-xs);
         }
-        
+
         .view-all-link:hover {
             gap: var(--space-sm);
         }
-        
+
         /* Progress tracking */
         .progress-section {
             background-color: var(--bg-secondary);
@@ -91,17 +92,17 @@
             padding: var(--space-xl);
             margin-bottom: var(--space-2xl);
         }
-        
+
         .overall-progress {
             margin-bottom: var(--space-lg);
         }
-        
+
         .progress-label {
             display: flex;
             justify-content: space-between;
             margin-bottom: var(--space-sm);
         }
-        
+
         .streak-indicator {
             display: flex;
             align-items: center;
@@ -111,11 +112,11 @@
             border-radius: var(--radius-md);
             font-size: var(--text-sm);
         }
-        
+
         .streak-icon {
             color: var(--warning-color);
         }
-        
+
         /* Categories */
         .category-pills {
             display: flex;
@@ -124,7 +125,7 @@
             overflow-x: auto;
             padding-bottom: var(--space-sm);
         }
-        
+
         .category-pill {
             padding: var(--space-sm) var(--space-lg);
             background-color: var(--bg-tertiary);
@@ -136,12 +137,12 @@
             cursor: pointer;
             transition: all var(--transition-base);
         }
-        
+
         .category-pill:hover {
             background-color: var(--bg-hover);
             color: var(--text-primary);
         }
-        
+
         .category-pill.active {
             background-color: var(--primary-bg);
             color: var(--primary-color);
@@ -154,6 +155,50 @@
             align-items: center;
             gap: 0.5rem;
             position: relative;
+        }
+
+        /* Mobile Category Pills - Horizontal scroll */
+        @media (max-width: 768px) {
+            .category-pills {
+                display: flex;
+                flex-wrap: nowrap; /* Prevent wrapping */
+                overflow-x: auto; /* Enable horizontal scrolling */
+                gap: 0.5rem;
+                padding-bottom: var(--space-sm);
+                -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+                scrollbar-width: none; /* Hide scrollbar for Firefox */
+            }
+            
+            .category-pills::-webkit-scrollbar {
+                display: none; /* Hide scrollbar for Chrome/Safari */
+            }
+
+            .category-pill {
+                flex: 0 0 auto; /* Don't grow or shrink */
+                min-width: auto; /* Remove fixed width */
+                max-width: none; /* Remove fixed width */
+                padding: 0.5rem 1rem;
+                font-size: 0.75rem;
+                white-space: nowrap;
+            }
+
+            .category-pill .tag-name {
+                display: inline; /* Keep text inline */
+            }
+
+            .category-pill .tag-count {
+                margin-top: 0;
+                font-size: 0.625rem;
+                padding: 0.125rem 0.25rem;
+            }
+        }
+
+        /* Extra small phones */
+        @media (max-width: 480px) {
+            .category-pill {
+                font-size: 0.7rem;
+                padding: 0.4rem 0.8rem;
+            }
         }
 
         .tag-name {
@@ -283,6 +328,9 @@
 
         .modal-body {
             padding: 1.5rem;
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
         }
 
         .stats-grid {
@@ -349,6 +397,7 @@
                 transform: translateX(100%);
                 opacity: 0;
             }
+
             to {
                 transform: translateX(0);
                 opacity: 1;
@@ -362,7 +411,7 @@
             gap: var(--space-md);
             margin-bottom: var(--space-2xl);
         }
-        
+
         .quick-action-card {
             background-color: var(--bg-secondary);
             border: 1px solid var(--border-primary);
@@ -372,28 +421,28 @@
             cursor: pointer;
             transition: all var(--transition-base);
         }
-        
+
         .quick-action-card:hover {
             border-color: var(--primary-color);
             transform: translateY(-2px);
         }
-        
+
         .quick-action-icon {
             font-size: var(--text-3xl);
             color: var(--primary-color);
             margin-bottom: var(--space-md);
         }
-        
+
         .quick-action-title {
             font-weight: 600;
             margin-bottom: var(--space-xs);
         }
-        
+
         .quick-action-description {
             font-size: var(--text-sm);
             color: var(--text-secondary);
         }
-        
+
         /* Empty states */
         .empty-lessons {
             text-align: center;
@@ -402,19 +451,63 @@
             border: 1px solid var(--border-primary);
             border-radius: var(--radius-lg);
         }
-        
+
         /* Mobile optimization */
         @media (max-width: 768px) {
             .hero-section {
                 padding: var(--space-xl) 0;
             }
-            
+
             .lesson-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Mobile Category Pills - Horizontal scroll */
+        @media (max-width: 768px) {
+            .category-pills {
+                display: flex;
+                flex-wrap: nowrap; /* Prevent wrapping */
+                overflow-x: auto; /* Enable horizontal scrolling */
+                gap: 0.5rem;
+                padding-bottom: var(--space-sm);
+                -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+                scrollbar-width: none; /* Hide scrollbar for Firefox */
+            }
+            
+            .category-pills::-webkit-scrollbar {
+                display: none; /* Hide scrollbar for Chrome/Safari */
+            }
+
+            .category-pill {
+                flex: 0 0 auto; /* Don't grow or shrink */
+                min-width: auto; /* Remove fixed width */
+                max-width: none; /* Remove fixed width */
+                padding: 0.5rem 1rem;
+                font-size: 0.75rem;
+                white-space: nowrap;
+            }
+
+            .category-pill .tag-name {
+                display: inline; /* Keep text inline */
+            }
+
+            .category-pill .tag-count {
+                margin-top: 0;
+                font-size: 0.625rem;
+                padding: 0.125rem 0.25rem;
+            }
+        }
+
+        /* Extra small phones */
+        @media (max-width: 480px) {
+            .category-pill {
+                font-size: 0.7rem;
+                padding: 0.4rem 0.8rem;
             }
         }
 
@@ -422,6 +515,11 @@
         .lesson-confirmation-content {
             max-width: 600px;
             width: 95%;
+            display: flex;
+            flex-direction: column;
+            max-height: calc(100vh - 2rem);
+            min-height: auto;
+            overflow: hidden;
         }
 
         .lesson-preview {
@@ -497,6 +595,10 @@
             padding: 1.5rem;
             border-top: 1px solid var(--border-primary);
             background: var(--bg-tertiary);
+            flex-shrink: 0;
+            position: sticky;
+            bottom: 0;
+            z-index: 1;
         }
 
         .modal-actions .btn {
@@ -511,6 +613,9 @@
             border-radius: var(--radius-md);
             transition: all var(--transition-base);
             text-decoration: none;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .btn-secondary {
@@ -559,11 +664,58 @@
             transition: all 0.3s ease;
         }
 
+        /* Enhanced Modal Responsive Design */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+
+        .lesson-confirmation-content {
+            display: flex;
+            flex-direction: column;
+            max-height: calc(100vh - 2rem);
+            min-height: auto;
+            overflow: hidden;
+        }
+
+        .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+        }
+
+        .modal-actions {
+            flex-shrink: 0;
+            position: sticky;
+            bottom: 0;
+            background: var(--bg-tertiary);
+            border-top: 1px solid var(--border-primary);
+            z-index: 1;
+        }
+
         /* Mobile Responsive */
         @media (max-width: 768px) {
+            .modal {
+                padding: 0.5rem;
+            }
+
             .lesson-confirmation-content {
-                margin: 1rem;
-                width: calc(100% - 2rem);
+                margin: 0;
+                width: 100%;
+                max-width: 100%;
+                max-height: calc(100vh - 1rem);
+                border-radius: var(--radius-lg);
             }
 
             .lesson-image-container {
@@ -575,35 +727,173 @@
                 gap: 1rem;
             }
 
-            .features-grid {
-                gap: 0.75rem;
-            }
-
-            .feature-item {
-                padding: 0.625rem;
-            }
-
             .modal-actions {
                 flex-direction: column;
                 gap: 0.75rem;
+                padding: 1rem;
             }
 
             .modal-actions .btn {
                 max-width: none;
+                width: 100%;
+                padding: 0.75rem 1rem;
+            }
+
+            .modal-body {
+                padding: 1rem;
+            }
+
+            .lesson-title {
+                font-size: 1.25rem;
+                margin-bottom: 0.75rem;
+            }
+        }
+
+        /* Extra Small Devices */
+        @media (max-width: 480px) {
+            .modal {
+                padding: 0.25rem;
+            }
+
+            .lesson-confirmation-content {
+                max-height: calc(100vh - 0.5rem);
+                border-radius: var(--radius-md);
+            }
+
+            .modal-header {
+                padding: 1rem;
+            }
+
+            .modal-body {
+                padding: 0.75rem;
+            }
+
+            .modal-actions {
+                padding: 0.75rem;
+            }
+
+            .lesson-meta {
+                flex-direction: column;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .btn {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Landscape orientation on small screens */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .modal {
+                padding: 0.25rem;
+            }
+
+            .lesson-confirmation-content {
+                max-height: calc(100vh - 0.5rem);
+            }
+
+            .lesson-image-container {
+                height: 120px;
+                margin-bottom: 0.75rem;
+            }
+
+            .modal-header {
+                padding: 0.75rem 1rem;
+            }
+
+            .modal-body {
+                padding: 0.75rem 1rem;
+            }
+
+            .modal-actions {
+                padding: 0.75rem 1rem;
+                flex-direction: row;
+                gap: 0.75rem;
+            }
+
+            .modal-actions .btn {
+                flex: 1;
+                padding: 0.625rem 1rem;
+                font-size: 0.875rem;
+            }
+
+            .lesson-title {
+                font-size: 1.125rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .lesson-meta {
+                gap: 0.75rem;
+            }
+        }
+
+        /* Very small height screens (zoomed in) */
+        @media (max-height: 400px) {
+            .modal {
+                padding: 0.125rem;
+            }
+
+            .lesson-confirmation-content {
+                max-height: calc(100vh - 0.25rem);
+            }
+
+            .lesson-image-container {
+                height: 80px;
+                margin-bottom: 0.5rem;
+            }
+
+            .modal-header {
+                padding: 0.5rem 0.75rem;
+            }
+
+            .modal-header h3 {
+                font-size: 1rem;
+            }
+
+            .modal-body {
+                padding: 0.5rem 0.75rem;
+            }
+
+            .modal-actions {
+                padding: 0.5rem 0.75rem;
+                flex-direction: row;
+                gap: 0.5rem;
+            }
+
+            .modal-actions .btn {
+                flex: 1;
+                padding: 0.5rem 0.75rem;
+                font-size: 0.8rem;
+            }
+
+            .lesson-title {
+                font-size: 1rem;
+                margin-bottom: 0.25rem;
+            }
+
+            .lesson-meta {
+                gap: 0.5rem;
+                font-size: 0.8rem;
+            }
+
+            .lesson-meta-item i {
+                font-size: 0.75rem;
             }
         }
     </style>
 </head>
+
 <body>
     <!-- Skip Link for Accessibility -->
     <a href="#main-content" class="skip-link">Chuyển đến nội dung chính</a>
-    
+
     <!-- Loading Indicator -->
     <div id="loading-indicator" class="loading-indicator hidden">
         <div class="spinner"></div>
         <p class="loading-text">Đang tải trang bài học...</p>
     </div>
-    
+
     <!-- Navigation -->
     <nav class="main-nav">
         <div class="nav-container">
@@ -611,7 +901,7 @@
                 <i class="fas fa-atom"></i>
                 <span>Học Vật Lý</span>
             </a>
-            
+
             <div class="nav-links" id="nav-links">
                 <a href="/" class="nav-link">
                     <i class="fas fa-home"></i>
@@ -630,13 +920,13 @@
                     <span>Hồ sơ</span>
                 </a>
             </div>
-            
+
             <button class="mobile-menu-toggle nav-mobile-toggle" id="mobile-menu-toggle">
                 <i class="fas fa-bars"></i>
             </button>
         </div>
     </nav>
-    
+
     <!-- Main Content -->
     <main id="main-content" class="main-content">
         <div class="container">
@@ -645,7 +935,7 @@
                 <div class="hero-content">
                     <h1 class="hero-title">Khám phá Vật lý 12 một cách thú vị</h1>
                     <p class="hero-subtitle">Học tập hiệu quả với phương pháp tương tác và theo dõi tiến độ cá nhân</p>
-                    
+
                     <!-- Quick Stats -->
                     <div class="stats-grid">
                         <div class="stat-card">
@@ -667,7 +957,7 @@
                     </div>
                 </div>
             </section>
-            
+
             <!-- Progress Section (for logged in students) -->
             <section class="progress-section hidden" id="progress-section">
                 <div class="section-header">
@@ -677,7 +967,7 @@
                         <span id="streak-count">0 ngày liên tiếp</span>
                     </div>
                 </div>
-                
+
                 <div class="overall-progress">
                     <div class="progress-label">
                         <span>Tổng tiến độ</span>
@@ -687,7 +977,7 @@
                         <div class="progress-fill" style="width: 0%"></div>
                     </div>
                 </div>
-                
+
                 <div class="quick-actions">
                     <div class="quick-action-card" onclick="continueLesson()">
                         <i class="fas fa-play-circle quick-action-icon"></i>
@@ -706,14 +996,14 @@
                     </div>
                 </div>
             </section>
-            
+
             <!-- Search and Filters -->
             <section class="search-filter-container">
                 <div class="search-box">
                     <i class="fas fa-search search-icon"></i>
                     <input type="text" id="search-input" class="search-input" placeholder="Tìm kiếm bài học, chủ đề...">
                 </div>
-                
+
                 <div class="filter-options">
                     <select id="sort-select" class="filter-select">
                         <option value="newest" selected>Mới nhất</option>
@@ -724,30 +1014,30 @@
                     </select>
                 </div>
             </section>
-            
+
             <!-- Category Pills - Dynamic -->
             <div class="category-pills">
                 <!-- Pills will be populated dynamically by JavaScript -->
                 <div class="text-gray-500 text-sm">Đang tải danh mục...</div>
             </div>
-            
+
             <!-- Lessons Section -->
             <section id="lessons-section">
                 <div class="section-header">
                     <h2 class="section-title">Bài học</h2>
                     <div class="filter-chips" id="active-filters"></div>
                 </div>
-                
+
                 <div id="lessons" class="lesson-grid">
                     <!-- Lessons will be dynamically loaded here -->
                 </div>
-                
+
                 <!-- Pagination -->
                 <div id="pagination-controls" class="pagination"></div>
             </section>
         </div>
     </main>
-    
+
     <!-- Student Info Modal -->
     <div id="user-info-modal" class="modal">
         <div class="modal-content">
@@ -757,23 +1047,23 @@
                 </div>
                 <h2 class="modal-title">Thông tin học sinh</h2>
             </div>
-            
+
             <form id="user-info-form" autocomplete="off">
                 <div class="form-group">
                     <label class="form-label">Họ và tên *</label>
                     <input type="text" id="student-name" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label class="form-label">Ngày sinh</label>
                     <input type="date" id="student-dob">
                 </div>
-                
+
                 <div class="form-group">
                     <label class="form-label">Mã số học sinh</label>
                     <input type="text" id="student-id">
                 </div>
-                
+
                 <div class="modal-buttons">
                     <button type="submit" class="button primary">
                         <i class="fas fa-check"></i>
@@ -787,7 +1077,7 @@
             </form>
         </div>
     </div>
-    
+
     <!-- Lesson Confirmation Modal -->
     <div id="lesson-confirmation-modal" class="modal">
         <div class="modal-backdrop"></div>
@@ -801,7 +1091,7 @@
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            
+
             <div class="modal-body">
                 <div class="lesson-preview">
                     <div class="lesson-image-container">
@@ -826,7 +1116,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="modal-actions">
                 <button class="btn btn-secondary" onclick="closeLessonConfirmation()">
                     <i class="fas fa-arrow-left"></i>
@@ -839,13 +1129,13 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Scripts -->
     <script src="/js/nav-mobile.js"></script>
     <script src="/js/lessons.js?v=3"></script>
     <script>
         // Mobile menu functionality is now handled by nav-mobile.js
-        
+
         // Category filter
         const categoryPills = document.querySelectorAll('.category-pill');
         categoryPills.forEach(pill => {
@@ -862,23 +1152,23 @@
                 }
             });
         });
-        
+
         // Progress functions
         function continueLesson() {
             // Navigate to last incomplete lesson
             window.location.href = '/lesson/last-incomplete';
         }
-        
+
         function reviewMistakes() {
             // Navigate to review mode
             window.location.href = 'review-mistakes';
         }
-        
+
         function practiceMode() {
             // Navigate to practice mode
             window.location.href = '/practice';
         }
-        
+
         // Update total lessons count
         async function updateStats() {
             try {
@@ -917,7 +1207,7 @@
                 }
             }
         }
-        
+
         // Initialize on load
         document.addEventListener('DOMContentLoaded', () => {
             updateStats();
@@ -936,7 +1226,7 @@
                 }
             });
         });
-        
+
         // Load student progress
         async function loadStudentProgress() {
             try {
@@ -961,4 +1251,5 @@
         }
     </script>
 </body>
+
 </html>

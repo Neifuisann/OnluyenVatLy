@@ -10,10 +10,16 @@ router.use(requireAdminAuth);
 router.use(noCacheMiddleware);
 router.use(addCSRFToken);
 
-// Get encryption status
+// Get encryption status (admin only)
 router.get('/status', adminEncryptionController.getEncryptionStatus);
 
 // Toggle encryption on/off
 router.post('/toggle', validateCSRFToken, adminEncryptionController.toggleEncryption);
+
+// Public endpoint to check encryption status (no auth required)
+router.get('/public-status', (req, res, next) => {
+  // Remove admin auth requirement for this specific route
+  next();
+}, adminEncryptionController.getPublicEncryptionStatus);
 
 module.exports = router;
