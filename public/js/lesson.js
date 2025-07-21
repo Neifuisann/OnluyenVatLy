@@ -123,14 +123,8 @@ async function renderQuestions(lesson) {
     // The lesson.questions already contains the filtered questions based on pool settings
     console.log('Question pool filtering handled on server side. Total questions:', lesson.questions.length);
 
-    // Only shuffle questions within their types if shuffleQuestions is enabled
-    if (lesson.shuffleQuestions) {
-        Object.values(sections).forEach(section => {
-            if (section.element) {
-                section.questions = shuffleArray([...section.questions]);
-            }
-        });
-    }
+    // Question shuffling is already handled in applyRandomization()
+    // No need to shuffle again here
     
     // Clear existing questions
     Object.values(sections).forEach(section => {
