@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sóng cơ và sự truyền sóng - Vật lý 12</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #7f8c8d;
+            margin-top: 20px;
+        }
+        .definition-box {
+            background-color: #ecf0f1;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .formula-box {
+            background-color: #e8f6f3;
+            border: 1px solid #16a085;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .example-box {
+            background-color: #fef9e7;
+            border: 1px solid #f39c12;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .note-box {
+            background-color: #fadbd8;
+            border-left: 4px solid #e74c3c;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .practice-problem {
+            background-color: #f5f5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .solution {
+            background-color: #d5f4e6;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        .important-formula {
+            background-color: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .wave-type {
+            background-color: #e3f2fd;
+            border: 1px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        .comparison-table {
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sóng cơ và sự truyền sóng</h1>
+    
+    <div class="definition-box">
+        <strong>Giới thiệu:</strong> Sóng cơ là một trong những hiện tượng phổ biến trong tự nhiên. Từ sóng nước trên mặt hồ đến sóng âm thanh mà ta nghe hàng ngày, tất cả đều tuân theo những quy luật chung của sóng cơ học.
+    </div>
+
+    <h2>I. Hiện tượng sóng cơ học</h2>
+    
+    <h3>1. Định nghĩa sóng cơ</h3>
+    
+    <div class="definition-box">
+        <strong>Sóng cơ:</strong> Là quá trình lan truyền dao động cơ học trong một môi trường vật chất.
+    </div>
+
+    <div class="note-box">
+        <strong>Đặc điểm quan trọng:</strong>
+        <ul>
+            <li>Sóng cơ chỉ truyền được trong môi trường vật chất (rắn, lỏng, khí)</li>
+            <li>Sóng cơ không truyền được trong chân không</li>
+            <li>Khi sóng truyền qua, các phần tử môi trường chỉ dao động tại chỗ, không truyền đi theo sóng</li>
+            <li>Sóng truyền năng lượng và pha dao động, không truyền vật chất</li>
+        </ul>
+    </div>
+
+    <h3>2. Phân loại sóng cơ</h3>
+    
+    <div class="comparison-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Loại sóng</th>
+                    <th>Định nghĩa</th>
+                    <th>Môi trường truyền</th>
+                    <th>Ví dụ</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Sóng ngang</strong></td>
+                    <td>Phương dao động ⊥ phương truyền sóng</td>
+                    <td>Chất rắn và bề mặt chất lỏng</td>
+                    <td>Sóng trên dây, sóng nước</td>
+                </tr>
+                <tr>
+                    <td><strong>Sóng dọc</strong></td>
+                    <td>Phương dao động // phương truyền sóng</td>
+                    <td>Rắn, lỏng, khí</td>
+                    <td>Sóng âm, sóng lò xo</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h2>II. Các đại lượng đặc trưng của sóng</h2>
+    
+    <h3>1. Chu kỳ và tần số sóng</h3>
+    
+    <div class="formula-box">
+        <p><strong>Chu kỳ sóng (T):</strong> Thời gian để một phần tử môi trường thực hiện một dao động toàn phần</p>
+        <p>Đơn vị: giây (s)</p>
+        <br>
+        <p><strong>Tần số sóng (f):</strong> Số dao động toàn phần trong một giây</p>
+        <p style="font-size: 1.2em;">\[f = \frac{1}{T}\]</p>
+        <p>Đơn vị: Hertz (Hz)</p>
+    </div>
+
+    <h3>2. Biên độ sóng</h3>
+    
+    <div class="definition-box">
+        <strong>Biên độ sóng (A):</strong> Biên độ dao động của một phần tử môi trường có sóng truyền qua.
+    </div>
+
+    <h3>3. Bước sóng</h3>
+    
+    <div class="definition-box">
+        <strong>Bước sóng (λ):</strong> Khoảng cách giữa hai điểm gần nhau nhất trên phương truyền sóng dao động cùng pha.
+    </div>
+
+    <div class="note-box">
+        <strong>Ý nghĩa vật lý:</strong>
+        <ul>
+            <li>Bước sóng là quãng đường sóng truyền được trong một chu kỳ</li>
+            <li>Hai điểm cách nhau một bước sóng dao động cùng pha</li>
+            <li>Hai điểm cách nhau nửa bước sóng dao động ngược pha</li>
+        </ul>
+    </div>
+
+    <h3>4. Tốc độ truyền sóng</h3>
+    
+    <div class="important-formula">
+        <p><strong>Công thức liên hệ:</strong></p>
+        <p style="font-size: 1.5em; text-align: center;">
+            \[v = \lambda f = \frac{\lambda}{T}\]
+        </p>
+        <p>Trong đó:</p>
+        <ul style="text-align: left;">
+            <li>v: Tốc độ truyền sóng (m/s)</li>
+            <li>λ: Bước sóng (m)</li>
+            <li>f: Tần số (Hz)</li>
+            <li>T: Chu kỳ (s)</li>
+        </ul>
+    </div>
+
+    <div class="note-box">
+        <strong>Lưu ý:</strong> Tốc độ truyền sóng phụ thuộc vào bản chất môi trường và nhiệt độ, không phụ thuộc vào tần số sóng.
+    </div>
+
+    <h2>III. Phương trình sóng</h2>
+    
+    <h3>1. Phương trình dao động tại nguồn</h3>
+    
+    <div class="formula-box">
+        <p>Giả sử nguồn O dao động điều hòa:</p>
+        <p style="font-size: 1.2em;">\[u_O = A\cos(\omega t + \varphi_0)\]</p>
+    </div>
+
+    <h3>2. Phương trình sóng tại điểm M</h3>
+    
+    <div class="important-formula">
+        <p><strong>Phương trình sóng tại M cách nguồn O một khoảng x:</strong></p>
+        <p style="font-size: 1.3em;">
+            \[u_M = A\cos\left(\omega t + \varphi_0 - \frac{2\pi x}{\lambda}\right)\]
+        </p>
+        <p>Hoặc:</p>
+        <p style="font-size: 1.3em;">
+            \[u_M = A\cos\left(2\pi\left(\frac{t}{T} - \frac{x}{\lambda}\right) + \varphi_0\right)\]
+        </p>
+    </div>
+
+    <div class="note-box">
+        <strong>Độ lệch pha:</strong> Giữa hai điểm M và N cách nhau khoảng d:
+        <p style="text-align: center; font-size: 1.2em;">
+            \[\Delta\varphi = \frac{2\pi d}{\lambda}\]
+        </p>
+    </div>
+
+    <h2>IV. Năng lượng sóng</h2>
+    
+    <div class="definition-box">
+        <strong>Năng lượng sóng:</strong> Khi sóng truyền qua, các phần tử môi trường dao động, do đó có năng lượng. Sóng mang năng lượng từ nguồn đến các điểm trong môi trường.
+    </div>
+
+    <div class="formula-box">
+        <p><strong>Năng lượng sóng tỉ lệ với:</strong></p>
+        <ul style="text-align: left;">
+            <li>Bình phương biên độ: E ~ A²</li>
+            <li>Bình phương tần số: E ~ f²</li>
+        </ul>
+    </div>
+
+    <h2>V. Các ví dụ minh họa</h2>
+    
+    <h3>Ví dụ 1: Tính các đại lượng cơ bản</h3>
+    
+    <div class="example-box">
+        <p><strong>Bài toán:</strong> Một sóng cơ truyền dọc theo trục Ox với phương trình: u = 4cos(20πt - πx) cm. Tính:</p>
+        <ol type="a">
+            <li>Biên độ, tần số, chu kỳ</li>
+            <li>Bước sóng, tốc độ truyền sóng</li>
+            <li>Li độ tại x = 2,5 cm khi t = 0,1s</li>
+        </ol>
+        
+        <div class="solution">
+            <strong>Giải:</strong><br>
+            So sánh với phương trình tổng quát: u = Acos(ωt - kx)<br>
+            <br>
+            a) Biên độ: A = 4 cm<br>
+            Tần số góc: ω = 20π rad/s → f = ω/2π = 10 Hz<br>
+            Chu kỳ: T = 1/f = 0,1 s<br>
+            <br>
+            b) Số sóng: k = π rad/m = π/100 rad/cm<br>
+            Bước sóng: λ = 2π/k = 2 cm<br>
+            Tốc độ: v = λf = 2 × 10 = 20 cm/s<br>
+            <br>
+            c) Tại x = 2,5 cm, t = 0,1 s:<br>
+            u = 4cos(20π × 0,1 - π × 2,5)<br>
+            u = 4cos(2π - 2,5π) = 4cos(-0,5π)<br>
+            u = 4cos(0,5π) = 0 cm
+        </div>
+    </div>
+
+    <h3>Ví dụ 2: Độ lệch pha</h3>
+    
+    <div class="example-box">
+        <p><strong>Bài toán:</strong> Sóng cơ có tần số 50 Hz, tốc độ truyền 10 m/s. Tính độ lệch pha giữa hai điểm trên phương truyền sóng cách nhau:</p>
+        <ol type="a">
+            <li>5 cm</li>
+            <li>50 cm</li>
+            <li>100 cm</li>
+        </ol>
+        
+        <div class="solution">
+            <strong>Giải:</strong><br>
+            Bước sóng: λ = v/f = 10/50 = 0,2 m = 20 cm<br>
+            <br>
+            Độ lệch pha: Δφ = 2πd/λ<br>
+            <br>
+            a) d = 5 cm: Δφ = 2π × 5/20 = π/2 rad<br>
+            b) d = 50 cm: Δφ = 2π × 50/20 = 5π rad = π rad (cùng pha)<br>
+            c) d = 100 cm: Δφ = 2π × 100/20 = 10π rad = 0 (cùng pha)
+        </div>
+    </div>
+
+    <h3>Ví dụ 3: Khoảng cách giữa các điểm</h3>
+    
+    <div class="example-box">
+        <p><strong>Bài toán:</strong> Sóng truyền trên dây với bước sóng 40 cm. Tìm khoảng cách ngắn nhất giữa hai điểm:</p>
+        <ol type="a">
+            <li>Dao động cùng pha</li>
+            <li>Dao động ngược pha</li>
+            <li>Dao động vuông pha</li>
+        </ol>
+        
+        <div class="solution">
+            <strong>Giải:</strong><br>
+            λ = 40 cm<br>
+            <br>
+            a) Cùng pha: Δφ = 2πd/λ = 2kπ → d = kλ<br>
+            Khoảng cách ngắn nhất: d_min = λ = 40 cm<br>
+            <br>
+            b) Ngược pha: Δφ = 2πd/λ = (2k+1)π → d = (k+0,5)λ<br>
+            Khoảng cách ngắn nhất: d_min = λ/2 = 20 cm<br>
+            <br>
+            c) Vuông pha: Δφ = 2πd/λ = π/2 + kπ → d = (0,25+0,5k)λ<br>
+            Khoảng cách ngắn nhất: d_min = λ/4 = 10 cm
+        </div>
+    </div>
+
+    <h2>VI. Sự truyền sóng trong các môi trường</h2>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Môi trường</th>
+                <th>Sóng ngang</th>
+                <th>Sóng dọc</th>
+                <th>Tốc độ truyền (m/s)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Chất rắn</strong></td>
+                <td>Có</td>
+                <td>Có</td>
+                <td>3000 - 6000</td>
+            </tr>
+            <tr>
+                <td><strong>Chất lỏng</strong></td>
+                <td>Chỉ trên bề mặt</td>
+                <td>Có</td>
+                <td>1000 - 1500</td>
+            </tr>
+            <tr>
+                <td><strong>Chất khí</strong></td>
+                <td>Không</td>
+                <td>Có</td>
+                <td>300 - 350</td>
+            </tr>
+            <tr>
+                <td><strong>Chân không</strong></td>
+                <td>Không</td>
+                <td>Không</td>
+                <td>0</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>VII. Bài tập tự luyện</h2>
+    
+    <div class="practice-problem">
+        <strong>Bài 1:</strong> Một sóng cơ có tần số 20 Hz, biên độ 3 cm truyền với tốc độ 2 m/s. Viết phương trình sóng tại điểm M cách nguồn 25 cm. Biết tại t = 0, nguồn ở vị trí cân bằng và đang đi theo chiều dương.
+    </div>
+
+    <div class="practice-problem">
+        <strong>Bài 2:</strong> Sóng truyền trên mặt nước với tốc độ 80 cm/s. Tại một điểm, khoảng thời gian giữa 5 lần liên tiếp phao nhô lên cao nhất là 2s. Tính:
+        <ol type="a">
+            <li>Chu kỳ và tần số sóng</li>
+            <li>Bước sóng</li>
+            <li>Khoảng cách giữa 3 đỉnh sóng liên tiếp</li>
+        </ol>
+    </div>
+
+    <div class="practice-problem">
+        <strong>Bài 3:</strong> Hai điểm M, N trên phương truyền sóng cách nhau 60 cm. Sóng có bước sóng 80 cm, biên độ 4 cm. Khi M có li độ 2 cm và đang giảm thì li độ tại N là bao nhiêu?
+    </div>
+
+    <hr style="margin-top: 50px;">
+    
+    <h3>Chủ đề liên quan:</h3>
+    <ul>
+        <li><a href="giao_thoa_song.html">Giao thoa sóng</a></li>
+        <li><a href="song_dung.html">Sóng dừng</a></li>
+        <li><a href="song_am.html">Sóng âm</a></li>
+    </ul>
+</body>
+</html>

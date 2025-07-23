@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tính tương đối của chuyển động - Vật lý 10</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #7f8c8d;
+            margin-top: 20px;
+        }
+        .definition-box {
+            background-color: #ecf0f1;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .formula-box {
+            background-color: #e8f6f3;
+            border: 1px solid #16a085;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .example-box {
+            background-color: #fef9e7;
+            border: 1px solid #f39c12;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .note-box {
+            background-color: #fadbd8;
+            border-left: 4px solid #e74c3c;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .practice-problem {
+            background-color: #f5f5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .solution {
+            background-color: #d5f4e6;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        .important-formula {
+            background-color: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .reference-frame {
+            background-color: #e3f2fd;
+            border: 1px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .velocity-composition {
+            background-color: #f3e5f5;
+            border: 1px solid #9c27b0;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        .diagram {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tính tương đối của chuyển động</h1>
+    
+    <div class="definition-box">
+        <strong>Giới thiệu:</strong> Chuyển động và đứng yên chỉ có tính tương đối. Một vật có thể chuyển động đối với vật này nhưng đứng yên đối với vật khác. Để mô tả chính xác chuyển động, ta cần xác định rõ hệ quy chiếu.
+    </div>
+
+    <h2>I. Tính tương đối của chuyển động</h2>
+    
+    <h3>1. Khái niệm về tính tương đối</h3>
+    
+    <div class="definition-box">
+        <strong>Tính tương đối của chuyển động:</strong> Vị trí và vận tốc của một vật phụ thuộc vào hệ quy chiếu được chọn. Một vật có thể đứng yên trong hệ quy chiếu này nhưng chuyển động trong hệ quy chiếu khác.
+    </div>
+
+    <div class="example-box">
+        <h3>Ví dụ minh họa:</h3>
+        <ul>
+            <li>Hành khách ngồi trên tàu: đứng yên so với tàu, chuyển động so với nhà ga</li>
+            <li>Cây bên đường: đứng yên so với mặt đất, chuyển động so với ô tô đang chạy</li>
+            <li>Phi công trong máy bay: đứng yên so với máy bay, chuyển động so với mặt đất</li>
+        </ul>
+    </div>
+
+    <h3>2. Hệ quy chiếu</h3>
+    
+    <div class="reference-frame">
+        <h3>Các thành phần của hệ quy chiếu:</h3>
+        <ol>
+            <li><strong>Vật làm mốc:</strong> Vật được chọn coi như đứng yên</li>
+            <li><strong>Hệ tọa độ:</strong> Gắn với vật làm mốc để xác định vị trí</li>
+            <li><strong>Đồng hồ:</strong> Để đo thời gian</li>
+        </ol>
+    </div>
+
+    <div class="note-box">
+        <strong>Lưu ý quan trọng:</strong>
+        <ul>
+            <li>Không có hệ quy chiếu tuyệt đối</li>
+            <li>Thường chọn hệ quy chiếu gắn với Trái Đất cho các bài toán thông thường</li>
+            <li>Với các bài toán thiên văn, có thể chọn hệ quy chiếu gắn với Mặt Trời</li>
+        </ul>
+    </div>
+
+    <h2>II. Công thức cộng vận tốc</h2>
+    
+    <h3>1. Các đại lượng và ký hiệu</h3>
+    
+    <div class="definition-box">
+        <strong>Quy ước ký hiệu:</strong>
+        <ul>
+            <li>Vật 1: Vật chuyển động cần khảo sát</li>
+            <li>Vật 2: Hệ quy chiếu chuyển động</li>
+            <li>Vật 3: Hệ quy chiếu đứng yên (thường là mặt đất)</li>
+        </ul>
+        <p><strong>Các vận tốc:</strong></p>
+        <ul>
+            <li>\(\vec{v}_{13}\): Vận tốc của vật 1 so với vật 3 (vận tốc tuyệt đối)</li>
+            <li>\(\vec{v}_{12}\): Vận tốc của vật 1 so với vật 2 (vận tốc tương đối)</li>
+            <li>\(\vec{v}_{23}\): Vận tốc của vật 2 so với vật 3 (vận tốc kéo theo)</li>
+        </ul>
+    </div>
+
+    <h3>2. Công thức cộng vận tốc</h3>
+    
+    <div class="important-formula">
+        <p><strong>Công thức tổng quát:</strong></p>
+        <p style="font-size: 1.5em; text-align: center; margin: 20px 0;">
+            \[\vec{v}_{13} = \vec{v}_{12} + \vec{v}_{23}\]
+        </p>
+        <p><strong>Ý nghĩa:</strong> Vận tốc tuyệt đối = Vận tốc tương đối + Vận tốc kéo theo</p>
+    </div>
+
+    <h3>3. Các trường hợp đặc biệt</h3>
+    
+    <div class="velocity-composition">
+        <h3>a) Các vận tốc cùng phương, cùng chiều</h3>
+        <div class="formula-box">
+            <p>\[v_{13} = v_{12} + v_{23}\]</p>
+        </div>
+        
+        <h3>b) Các vận tốc cùng phương, ngược chiều</h3>
+        <div class="formula-box">
+            <p>\[v_{13} = |v_{12} - v_{23}|\]</p>
+        </div>
+        
+        <h3>c) Các vận tốc vuông góc</h3>
+        <div class="formula-box">
+            <p>\[v_{13} = \sqrt{v_{12}^2 + v_{23}^2}\]</p>
+        </div>
+        
+        <h3>d) Các vận tốc hợp góc α</h3>
+        <div class="formula-box">
+            <p>\[v_{13}^2 = v_{12}^2 + v_{23}^2 + 2v_{12}v_{23}\cos\alpha\]</p>
+        </div>
+    </div>
+
+    <h2>III. Các ví dụ minh họa</h2>
+    
+    <h3>Ví dụ 1: Thuyền qua sông</h3>
+    
+    <div class="example-box">
+        <p><strong>Bài toán:</strong> Một chiếc thuyền chuyển động với vận tốc 5 m/s so với nước. Nước chảy với vận tốc 3 m/s so với bờ. Tính vận tốc của thuyền so với bờ khi:</p>
+        <ol type="a">
+            <li>Thuyền chạy xuôi dòng</li>
+            <li>Thuyền chạy ngược dòng</li>
+            <li>Thuyền chạy vuông góc với dòng nước</li>
+        </ol>
+        
+        <div class="solution">
+            <strong>Giải:</strong><br>
+            Gọi: Thuyền (1), Nước (2), Bờ (3)<br>
+            v₁₂ = 5 m/s (thuyền/nước)<br>
+            v₂₃ = 3 m/s (nước/bờ)<br>
+            <br>
+            a) Xuôi dòng: v₁₂ và v₂₃ cùng chiều<br>
+            v₁₃ = v₁₂ + v₂₃ = 5 + 3 = 8 m/s<br>
+            <br>
+            b) Ngược dòng: v₁₂ và v₂₃ ngược chiều<br>
+            v₁₃ = |v₁₂ - v₂₃| = |5 - 3| = 2 m/s<br>
+            <br>
+            c) Vuông góc: v₁₂ ⊥ v₂₃<br>
+            v₁₃ = √(v₁₂² + v₂₃²) = √(5² + 3²) = √34 ≈ 5,83 m/s
+        </div>
+    </div>
+
+    <h3>Ví dụ 2: Máy bay trong gió</h3>
+    
+    <div class="example-box">
+        <p><strong>Bài toán:</strong> Máy bay có vận tốc 600 km/h so với không khí. Gió thổi từ Tây sang Đông với vận tốc 100 km/h. Máy bay muốn bay thẳng từ Nam lên Bắc. Hỏi:</p>
+        <ol type="a">
+            <li>Máy bay phải hướng mũi theo hướng nào?</li>
+            <li>Vận tốc thực của máy bay so với mặt đất?</li>
+        </ol>
+        
+        <div class="solution">
+            <strong>Giải:</strong><br>
+            Máy bay (1), Không khí (2), Đất (3)<br>
+            v₁₂ = 600 km/h<br>
+            v₂₃ = 100 km/h (hướng Đông)<br>
+            <br>
+            a) Để bay thẳng về phía Bắc, máy bay phải hướng mũi lệch về phía Tây một góc α<br>
+            sin α = v₂₃/v₁₂ = 100/600 = 1/6<br>
+            α = arcsin(1/6) ≈ 9,6°<br>
+            <br>
+            b) Vận tốc thực:<br>
+            v₁₃ = √(v₁₂² - v₂₃²) = √(600² - 100²) = √350000 ≈ 591,6 km/h
+        </div>
+    </div>
+
+    <h3>Ví dụ 3: Người đi trên tàu chuyển động</h3>
+    
+    <div class="example-box">
+        <p><strong>Bài toán:</strong> Tàu chạy với vận tốc 36 km/h. Người đi trên tàu với vận tốc 5 km/h. Tính vận tốc của người so với mặt đất khi:</p>
+        <ol type="a">
+            <li>Người đi cùng chiều tàu</li>
+            <li>Người đi ngược chiều tàu</li>
+            <li>Người đi ngang qua tàu</li>
+        </ol>
+        
+        <div class="solution">
+            <strong>Giải:</strong><br>
+            Người (1), Tàu (2), Đất (3)<br>
+            v₁₂ = 5 km/h<br>
+            v₂₃ = 36 km/h<br>
+            <br>
+            a) Cùng chiều:<br>
+            v₁₃ = v₁₂ + v₂₃ = 5 + 36 = 41 km/h<br>
+            <br>
+            b) Ngược chiều:<br>
+            v₁₃ = |v₂₃ - v₁₂| = |36 - 5| = 31 km/h<br>
+            <br>
+            c) Đi ngang (vuông góc):<br>
+            v₁₃ = √(v₁₂² + v₂₃²) = √(5² + 36²) = √1321 ≈ 36,35 km/h
+        </div>
+    </div>
+
+    <h2>IV. Bài toán thuyền qua sông</h2>
+    
+    <h3>1. Các trường hợp cơ bản</h3>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Trường hợp</th>
+                <th>Điều kiện</th>
+                <th>Kết quả</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Thời gian ngắn nhất</strong></td>
+                <td>Hướng mũi thuyền vuông góc với bờ</td>
+                <td>t_min = L/v₁₂<br>(L: chiều rộng sông)</td>
+            </tr>
+            <tr>
+                <td><strong>Quãng đường ngắn nhất</strong></td>
+                <td>Thuyền đi thẳng qua sông<br>(v₁₂ > v₂₃)</td>
+                <td>s_min = L<br>Góc lệch: sin α = v₂₃/v₁₂</td>
+            </tr>
+            <tr>
+                <td><strong>Không thể qua thẳng</strong></td>
+                <td>v₁₂ < v₂₃</td>
+                <td>Thuyền bị trôi theo dòng</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>2. Ví dụ tổng hợp</h3>
+    
+    <div class="example-box">
+        <p><strong>Bài toán:</strong> Sông rộng 400m, nước chảy với v = 3 m/s. Thuyền có vận tốc 5 m/s so với nước. Tính:</p>
+        <ol type="a">
+            <li>Thời gian ngắn nhất để qua sông</li>
+            <li>Quãng đường thuyền đi được trong trường hợp này</li>
+            <li>Góc hướng mũi thuyền để đi thẳng qua sông</li>
+            <li>Thời gian qua sông khi đi thẳng</li>
+        </ol>
+        
+        <div class="solution">
+            <strong>Giải:</strong><br>
+            L = 400m, v₂₃ = 3 m/s, v₁₂ = 5 m/s<br>
+            <br>
+            a) Thời gian ngắn nhất (mũi thuyền ⊥ bờ):<br>
+            t_min = L/v₁₂ = 400/5 = 80 s<br>
+            <br>
+            b) Quãng đường thực tế:<br>
+            - Thuyền trôi theo dòng: d = v₂₃ × t = 3 × 80 = 240 m<br>
+            - Quãng đường: s = √(L² + d²) = √(400² + 240²) = √217600 ≈ 466,7 m<br>
+            <br>
+            c) Để đi thẳng qua sông:<br>
+            sin α = v₂₃/v₁₂ = 3/5 = 0,6<br>
+            α = arcsin(0,6) ≈ 36,9°<br>
+            <br>
+            d) Thời gian đi thẳng:<br>
+            v_thẳng = √(v₁₂² - v₂₃²) = √(25 - 9) = 4 m/s<br>
+            t = L/v_thẳng = 400/4 = 100 s
+        </div>
+    </div>
+
+    <h2>V. Ứng dụng thực tế</h2>
+    
+    <div class="definition-box">
+        <h3>Các ứng dụng của tính tương đối:</h3>
+        <ul>
+            <li><strong>Hàng không:</strong> Tính toán đường bay có tính đến gió</li>
+            <li><strong>Hàng hải:</strong> Định hướng tàu khi có dòng chảy</li>
+            <li><strong>Thể thao:</strong> Chiến thuật trong bơi lội, chèo thuyền</li>
+            <li><strong>Vũ trụ:</strong> Tính quỹ đạo vệ tinh, tàu vũ trụ</li>
+            <li><strong>Giao thông:</strong> An toàn khi vượt xe trên đường</li>
+        </ul>
+    </div>
+
+    <h2>VI. Bài tập tự luyện</h2>
+    
+    <div class="practice-problem">
+        <strong>Bài 1:</strong> Hai ô tô A và B chuyển động trên hai đường thẳng vuông góc. Xe A đi về hướng Bắc với v = 60 km/h, xe B đi về hướng Đông với v = 80 km/h. Tính vận tốc tương đối của xe A so với xe B.
+    </div>
+
+    <div class="practice-problem">
+        <strong>Bài 2:</strong> Mưa rơi thẳng đứng với v = 10 m/s. Người đi xe máy với v = 36 km/h thấy mưa rơi xiên góc bao nhiêu so với phương thẳng đứng?
+    </div>
+
+    <div class="practice-problem">
+        <strong>Bài 3:</strong> Thang cuốn chuyển động với v = 1 m/s. Người đi trên thang với v = 0,5 m/s so với thang. Thang dài 20m. Tính:
+        <ol type="a">
+            <li>Thời gian người lên hết thang nếu đi cùng chiều thang</li>
+            <li>Thời gian nếu đi ngược chiều thang</li>
+            <li>Thời gian nếu đứng yên trên thang</li>
+        </ol>
+    </div>
+
+    <div class="practice-problem">
+        <strong>Bài 4:</strong> Máy bay bay từ A đến B cách nhau 900km về hướng Đông. Vận tốc máy bay so với không khí là 300 km/h. Gió thổi từ Nam lên Bắc với v = 40 km/h. Tính:
+        <ol type="a">
+            <li>Hướng bay của máy bay</li>
+            <li>Thời gian bay</li>
+            <li>Vận tốc thực của máy bay</li>
+        </ol>
+    </div>
+
+    <hr style="margin-top: 50px;">
+    
+    <h3>Chủ đề liên quan:</h3>
+    <ul>
+        <li><a href="chuyen_dong_thang_deu.html">Chuyển động thẳng đều</a></li>
+        <li><a href="chuyen_dong_tron_deu.html">Chuyển động tròn đều</a></li>
+        <li><a href="../forces_dynamics/luc_va_dinh_luat_newton.html">Lực và Ba định luật Newton</a></li>
+    </ul>
+</body>
+</html>

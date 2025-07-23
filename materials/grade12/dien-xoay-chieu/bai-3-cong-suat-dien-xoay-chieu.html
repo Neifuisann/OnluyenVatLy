@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Công suất điện xoay chiều - Vật lý 12</title>
+    <meta name="description" content="Tìm hiểu về công suất tiêu thụ trong mạch điện xoay chiều, hệ số công suất cosφ, công suất tác dụng, phản kháng và biện pháp nâng cao hệ số công suất.">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1 { color: #1e293b; font-size: 32px; }
+        h2 { color: #334155; font-size: 24px; margin-top: 30px; }
+        h3 { color: #334155; font-size: 20px; }
+        .quote { background: #fdf6eb; border: 1px solid #f9d9b0; padding: 15px; margin: 20px 0; border-radius: 5px; }
+        .quote3 { padding-left: 10px; border-left: 3px solid #cf2e2e; font-style: italic; color: #cf2e2e; margin: 15px 0; }
+        .formula { background: #f0f4f8; padding: 10px; margin: 10px 0; text-align: center; font-size: 18px; }
+        img { max-width: 100%; height: auto; display: block; margin: 20px auto; }
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+        table th, table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        table th { background-color: #f2f2f2; }
+        .example { background: #e8f5e9; padding: 15px; margin: 20px 0; border-left: 4px solid #4caf50; }
+        .important { background: #ffe4e1; padding: 15px; margin: 20px 0; border-left: 4px solid #f44336; }
+        .practical { background: #fff3cd; padding: 15px; margin: 20px 0; border-left: 4px solid #ffc107; }
+    </style>
+</head>
+<body>
+
+<h1>Công suất điện xoay chiều - Vật lý 12</h1>
+
+<p>Công suất điện xoay chiều là một khái niệm quan trọng trong kỹ thuật điện, giúp đánh giá hiệu quả sử dụng điện năng và thiết kế hệ thống điện tối ưu.</p>
+
+<h2>1. Công suất tức thời</h2>
+
+<h3>a) Định nghĩa</h3>
+<p>Công suất tức thời là công suất tại một thời điểm:</p>
+<div class="formula">
+p = ui
+</div>
+
+<h3>b) Biểu thức công suất tức thời</h3>
+<p>Với u = U₀cos(ωt) và i = I₀cos(ωt - φ):</p>
+<div class="formula">
+p = U₀I₀cos(ωt)cos(ωt - φ)
+</div>
+
+<p>Sử dụng công thức lượng giác:</p>
+<div class="formula">
+p = UI cosφ + UI cos(2ωt - φ)
+</div>
+
+<p>Trong đó:</p>
+<ul>
+    <li>UI cosφ: Thành phần không đổi</li>
+    <li>UI cos(2ωt - φ): Thành phần biến thiên với tần số 2f</li>
+</ul>
+
+<h2>2. Công suất trung bình (Công suất tác dụng)</h2>
+
+<h3>a) Định nghĩa</h3>
+<p>Công suất trung bình là giá trị trung bình của công suất tức thời trong một chu kỳ:</p>
+<div class="formula">
+P = p̄ = UI cosφ
+</div>
+
+<h3>b) Ý nghĩa vật lý</h3>
+<ul>
+    <li>P là công suất thực tế tiêu thụ trên mạch</li>
+    <li>Biến đổi thành nhiệt năng, cơ năng, quang năng...</li>
+    <li>Đơn vị: Watt (W)</li>
+</ul>
+
+<h3>c) Công thức tính công suất</h3>
+<p>Trong mạch RLC nối tiếp:</p>
+<div class="formula">
+P = UI cosφ = I²R = U²R/Z²
+</div>
+
+<div class="quote3">
+<strong>Chú ý:</strong> Chỉ có điện trở R mới tiêu thụ công suất. Cuộn cảm L và tụ điện C không tiêu thụ công suất.
+</div>
+
+<h2>3. Hệ số công suất</h2>
+
+<h3>a) Định nghĩa</h3>
+<div class="formula">
+cosφ = R/Z = P/(UI)
+</div>
+
+<p>Trong đó φ là góc lệch pha giữa u và i</p>
+
+<h3>b) Ý nghĩa của hệ số công suất</h3>
+<ul>
+    <li>cosφ cho biết mức độ hiệu quả của việc sử dụng điện</li>
+    <li>0 ≤ cosφ ≤ 1</li>
+    <li>cosφ = 1: Toàn bộ công suất biểu kiến chuyển thành công suất tác dụng</li>
+    <li>cosφ = 0: Không có công suất tác dụng</li>
+</ul>
+
+<h3>c) Các trường hợp đặc biệt</h3>
+<table>
+    <tr>
+        <th>Mạch</th>
+        <th>cosφ</th>
+        <th>Công suất P</th>
+    </tr>
+    <tr>
+        <td>Thuần R</td>
+        <td>1</td>
+        <td>UI</td>
+    </tr>
+    <tr>
+        <td>Thuần L</td>
+        <td>0</td>
+        <td>0</td>
+    </tr>
+    <tr>
+        <td>Thuần C</td>
+        <td>0</td>
+        <td>0</td>
+    </tr>
+    <tr>
+        <td>RLC cộng hưởng</td>
+        <td>1</td>
+        <td>UI = U²/R</td>
+    </tr>
+</table>
+
+<h2>4. Công suất biểu kiến và công suất phản kháng</h2>
+
+<h3>a) Công suất biểu kiến</h3>
+<div class="formula">
+S = UI (VA - Vôn ampe)
+</div>
+
+<p>Đây là công suất "nhìn thấy" từ nguồn điện</p>
+
+<h3>b) Công suất phản kháng</h3>
+<div class="formula">
+Q = UI sinφ (VAr - Vôn ampe phản kháng)
+</div>
+
+<p>Công suất trao đổi qua lại giữa nguồn và phần tử L, C</p>
+
+<h3>c) Tam giác công suất</h3>
+<div class="formula">
+S² = P² + Q²
+</div>
+
+<pre>
+      S (VA)
+     ╱│
+    ╱ │ Q (VAr)
+   ╱φ │
+  ╱   │
+ ╱____│
+   P (W)
+</pre>
+
+<h2>5. Tầm quan trọng của hệ số công suất</h2>
+
+<h3>a) Với người sử dụng điện</h3>
+<ul>
+    <li>cosφ thấp → I lớn → Tổn hao trên dây dẫn I²r lớn</li>
+    <li>Dây dẫn phải có tiết diện lớn → Chi phí cao</li>
+    <li>Máy biến áp, thiết bị đóng cắt phải có công suất lớn</li>
+</ul>
+
+<h3>b) Với nhà máy điện</h3>
+<ul>
+    <li>Phải phát công suất biểu kiến S = UI</li>
+    <li>Nhưng chỉ thu tiền theo công suất tác dụng P = UI cosφ</li>
+    <li>cosφ thấp → Hiệu quả kinh tế thấp</li>
+</ul>
+
+<div class="practical">
+<h3>Quy định về hệ số công suất:</h3>
+<p>- Hộ gia đình: cosφ ≥ 0,85</p>
+<p>- Cơ sở sản xuất: cosφ ≥ 0,90</p>
+<p>- Nếu cosφ thấp hơn quy định sẽ bị phạt</p>
+</div>
+
+<h2>6. Cách nâng cao hệ số công suất</h2>
+
+<h3>a) Nguyên nhân cosφ thấp</h3>
+<ul>
+    <li>Động cơ không đồng bộ chạy non tải</li>
+    <li>Máy biến áp chạy non tải</li>
+    <li>Chấn lưu của đèn huỳnh quang</li>
+</ul>
+
+<h3>b) Biện pháp nâng cao cosφ</h3>
+
+<div class="important">
+<h4>1. Biện pháp tự nhiên:</h4>
+<ul>
+    <li>Sử dụng động cơ đúng công suất</li>
+    <li>Tránh để máy chạy không tải</li>
+    <li>Thay thế động cơ cũ bằng động cơ hiệu suất cao</li>
+</ul>
+
+<h4>2. Biện pháp nhân tạo:</h4>
+<p>Mắc tụ điện song song với tải để bù công suất phản kháng</p>
+</div>
+
+<h3>c) Tính toán tụ bù</h3>
+<p>Để nâng hệ số công suất từ cosφ₁ lên cosφ₂:</p>
+<div class="formula">
+C = P(tanφ₁ - tanφ₂)/(ωU²)
+</div>
+
+<div class="example">
+<h4>Ví dụ 1:</h4>
+<p>Một động cơ có công suất P = 5kW, cosφ₁ = 0,6. Điện áp U = 220V, f = 50Hz.</p>
+<p>a) Tính cường độ dòng điện qua động cơ</p>
+<p>b) Tính điện dung tụ cần mắc để nâng cosφ lên 0,9</p>
+
+<p><strong>Giải:</strong></p>
+<p>a) I = P/(U cosφ₁) = 5000/(220 × 0,6) = 37,9A</p>
+
+<p>b) cosφ₁ = 0,6 → φ₁ = 53,1° → tanφ₁ = 1,33</p>
+<p>cosφ₂ = 0,9 → φ₂ = 25,8° → tanφ₂ = 0,48</p>
+<p>C = P(tanφ₁ - tanφ₂)/(ωU²)</p>
+<p>= 5000(1,33 - 0,48)/(100π × 220²)</p>
+<p>= 5000 × 0,85/(100π × 48400)</p>
+<p>= 2,8 × 10⁻⁴ F = 280 μF</p>
+</div>
+
+<h2>7. Đo công suất điện xoay chiều</h2>
+
+<h3>a) Wattmeter (Oát kế)</h3>
+<ul>
+    <li>Đo trực tiếp công suất tác dụng P</li>
+    <li>Có hai cuộn dây: cuộn dòng và cuộn áp</li>
+    <li>Chỉ số tỉ lệ với UI cosφ</li>
+</ul>
+
+<h3>b) Đo gián tiếp</h3>
+<p>Dùng ampe kế, vôn kế và cos φ kế:</p>
+<div class="formula">
+P = UI cosφ
+</div>
+
+<h2>8. Công suất trong mạch ba pha</h2>
+
+<h3>a) Mạch ba pha đối xứng</h3>
+<p>Công suất mỗi pha:</p>
+<div class="formula">
+P_pha = U_pha × I_pha × cosφ
+</div>
+
+<p>Công suất tổng:</p>
+<div class="formula">
+P = 3P_pha = 3U_pha × I_pha × cosφ
+</div>
+
+<h3>b) Quan hệ giữa đại lượng dây và pha</h3>
+<ul>
+    <li>Nối sao: U_dây = √3 U_pha, I_dây = I_pha</li>
+    <li>Nối tam giác: U_dây = U_pha, I_dây = √3 I_pha</li>
+</ul>
+
+<p>Công suất ba pha (cả hai cách nối):</p>
+<div class="formula">
+P = √3 U_dây × I_dây × cosφ
+</div>
+
+<h2>9. Bài toán cực trị công suất</h2>
+
+<h3>a) Công suất cực đại khi R thay đổi</h3>
+<p>Mạch RLC nối tiếp, R thay đổi:</p>
+<div class="formula">
+P_max khi R = |Z_L - Z_C|
+</div>
+<div class="formula">
+P_max = U²/(2R) = U²/(2|Z_L - Z_C|)
+</div>
+
+<h3>b) Công suất cực đại khi f thay đổi</h3>
+<p>P_max khi cộng hưởng: f = f₀ = 1/(2π√LC)</p>
+<div class="formula">
+P_max = U²/R
+</div>
+
+<div class="example">
+<h4>Ví dụ 2:</h4>
+<p>Mạch RLC có L = 1/π H, C = 100/π μF, U = 100V. Tìm R để công suất cực đại khi f = 50Hz.</p>
+
+<p><strong>Giải:</strong></p>
+<p>Z_L = 2πfL = 2π × 50 × 1/π = 100Ω</p>
+<p>Z_C = 1/(2πfC) = 1/(2π × 50 × 10⁻⁴/π) = 100Ω</p>
+<p>P_max khi R = |Z_L - Z_C| = |100 - 100| = 0Ω</p>
+<p>Trường hợp này là cộng hưởng, P_max với R bất kỳ</p>
+</div>
+
+<h2>10. Ứng dụng thực tế</h2>
+
+<div class="practical">
+<h3>Trong gia đình:</h3>
+<ul>
+    <li><strong>Bóng đèn sợi đốt:</strong> cosφ = 1, P = UI</li>
+    <li><strong>Đèn huỳnh quang:</strong> cosφ ≈ 0,6, cần tụ bù</li>
+    <li><strong>Quạt điện:</strong> cosφ ≈ 0,8</li>
+    <li><strong>Máy giặt:</strong> cosφ ≈ 0,7-0,8</li>
+    <li><strong>Lò vi sóng:</strong> cosφ ≈ 0,85</li>
+</ul>
+
+<h3>Trong công nghiệp:</h3>
+<ul>
+    <li><strong>Động cơ không tải:</strong> cosφ ≈ 0,2-0,3</li>
+    <li><strong>Động cơ đầy tải:</strong> cosφ ≈ 0,8-0,85</li>
+    <li><strong>Máy hàn:</strong> cosφ ≈ 0,5</li>
+    <li><strong>Lò điện trở:</strong> cosφ = 1</li>
+</ul>
+</div>
+
+<h2>11. Bài tập tự luyện</h2>
+
+<div class="quote">
+<h3>Bài 1:</h3>
+<p>Mạch RLC có R = 100Ω, L = 2/π H, C = 100/π μF. Điện áp u = 200cos(100πt) V.</p>
+<p>a) Tính công suất tiêu thụ</p>
+<p>b) Tính hệ số công suất</p>
+<p>c) Muốn cosφ = 1 thì phải mắc thêm tụ có điện dung bao nhiêu?</p>
+</div>
+
+<div class="quote">
+<h3>Bài 2:</h3>
+<p>Một xưởng sản xuất có công suất 50kW, cosφ = 0,7. Điện áp 380V.</p>
+<p>a) Tính dòng điện từ lưới điện</p>
+<p>b) Tính tiền điện phải trả trong 1 tháng (30 ngày, mỗi ngày 8h) biết giá 2000đ/kWh</p>
+<p>c) Nếu nâng cosφ lên 0,9 thì dòng điện giảm bao nhiêu?</p>
+</div>
+
+<h2>12. Tổng kết</h2>
+
+<div class="important">
+<h3>Những điều cần nhớ:</h3>
+<ul>
+    <li>Công suất tác dụng: P = UI cosφ = I²R</li>
+    <li>Hệ số công suất: cosφ = R/Z</li>
+    <li>Chỉ điện trở R tiêu thụ công suất</li>
+    <li>cosφ cao → Hiệu quả sử dụng điện tốt</li>
+    <li>Dùng tụ điện để nâng cao cosφ</li>
+    <li>Công suất cực đại khi R = |Z_L - Z_C| hoặc khi cộng hưởng</li>
+</ul>
+</div>
+
+<div class="related-posts">
+    <h3>Bài viết liên quan:</h3>
+    <ul>
+        <li><a href="bai-1-dai-cuong-dong-dien-xoay-chieu.html">Đại cương về dòng điện xoay chiều</a></li>
+        <li><a href="bai-2-cac-mach-dien-xoay-chieu.html">Các mạch điện xoay chiều</a></li>
+        <li><a href="bai-4-may-bien-ap-truyen-tai-dien-nang.html">Máy biến áp và truyền tải điện năng</a></li>
+    </ul>
+</div>
+
+</body>
+</html>

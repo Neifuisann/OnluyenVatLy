@@ -19,137 +19,221 @@
     <style>
         /* Landing Page Specific Styles */
         .hero-section {
-            min-height: 100vh;
+            min-height: 85vh;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
             position: relative;
             overflow: hidden;
-            padding: 2rem;
+            padding: 8rem 0 4rem;
+            background: radial-gradient(ellipse at top, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
+                        radial-gradient(ellipse at bottom, rgba(118, 75, 162, 0.1) 0%, transparent 50%);
         }
-        
-        .hero-content {
-            text-align: center;
-            z-index: 2;
-            max-width: 1200px;
+
+        /* Animated background particles */
+        .hero-particles {
+            position: absolute;
             width: 100%;
-            animation: fadeIn 1s ease-out;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
         }
-        
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .particle:nth-child(odd) {
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .particle:nth-child(even) {
+            background: rgba(118, 75, 162, 0.1);
+        }
+
+        /* Generate 20 particles with random positions and animations */
+        .particle:nth-child(1) { width: 8px; height: 8px; top: 10%; left: 5%; animation: float-up 20s infinite linear; }
+        .particle:nth-child(2) { width: 6px; height: 6px; top: 20%; left: 15%; animation: float-diagonal 25s infinite linear; }
+        .particle:nth-child(3) { width: 10px; height: 10px; top: 30%; left: 25%; animation: float-up 30s infinite linear; }
+        .particle:nth-child(4) { width: 4px; height: 4px; top: 40%; left: 35%; animation: float-diagonal 22s infinite linear; }
+        .particle:nth-child(5) { width: 12px; height: 12px; top: 50%; left: 45%; animation: float-up 28s infinite linear; }
+        .particle:nth-child(6) { width: 8px; height: 8px; top: 60%; left: 55%; animation: float-diagonal 24s infinite linear; }
+        .particle:nth-child(7) { width: 6px; height: 6px; top: 70%; left: 65%; animation: float-up 26s infinite linear; }
+        .particle:nth-child(8) { width: 10px; height: 10px; top: 80%; left: 75%; animation: float-diagonal 23s infinite linear; }
+        .particle:nth-child(9) { width: 4px; height: 4px; top: 15%; left: 85%; animation: float-up 27s infinite linear; }
+        .particle:nth-child(10) { width: 8px; height: 8px; top: 25%; left: 95%; animation: float-diagonal 21s infinite linear; }
+
+        @keyframes float-up {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) scale(1.5); opacity: 0; }
+        }
+
+        @keyframes float-diagonal {
+            0% { transform: translate(0, 100vh) scale(0); opacity: 0; }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.5; }
+            100% { transform: translate(100vw, -100vh) scale(1.2); opacity: 0; }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .hero-title {
-            font-size: clamp(3rem, 8vw, 6rem);
-            font-weight: 900;
+            font-size: clamp(3rem, 6vw, 5rem);
+            font-weight: 800;
             margin-bottom: 1.5rem;
-            line-height: 1.1;
-            position: relative;
+            line-height: 1.2;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 10px rgba(102, 126, 234, 0.2);
+            animation: titleGlow 3s ease-in-out infinite alternate;
         }
-        
-        .hero-title span {
-            display: inline-block;
-            position: relative;
-            animation: titleFloat 3s ease-in-out infinite;
+
+        @keyframes titleGlow {
+            from { filter: brightness(1); }
+            to { filter: brightness(1.2); }
         }
-        
-        .hero-title span:nth-child(1) { animation-delay: 0s; }
-        .hero-title span:nth-child(2) { animation-delay: 0.1s; }
-        .hero-title span:nth-child(3) { animation-delay: 0.2s; }
-        .hero-title span:nth-child(4) { animation-delay: 0.3s; }
-        .hero-title span:nth-child(5) { animation-delay: 0.4s; }
-        
-        @keyframes titleFloat {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        
+
         .hero-subtitle {
-            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            font-size: clamp(1.1rem, 2vw, 1.4rem);
             color: var(--text-secondary);
             margin-bottom: 3rem;
             max-width: 600px;
             margin-left: auto;
             margin-right: auto;
-            animation: fadeIn 1.2s ease-out;
+            line-height: 1.8;
+            animation: fadeInUp 1s ease-out 0.2s both;
         }
-        
-        .hero-cta {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            animation: fadeIn 1.4s ease-out;
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            max-width: 1000px;
+            margin: 0 auto 3rem;
+            animation: fadeInUp 1s ease-out 0.4s both;
         }
-        
-        .hero-cta .button {
-            padding: 1rem 2.5rem;
-            font-size: 1.1rem;
+
+        /* Enhanced stat cards with glass morphism */
+        .hero-section .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem 1.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
         }
-        
-        .hero-cta .button.primary {
+
+        .hero-section .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .hero-section .stat-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(102, 126, 234, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2),
+                        0 0 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .hero-section .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .hero-section .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-section .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        /* CTA Button */
+        .hero-cta {
+            margin-top: 2rem;
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2.5rem;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
         }
-        
-        .hero-cta .button.primary:hover {
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .cta-button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
         }
-        
-        /* Floating Elements */
-        .floating-elements {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-        
-        .floating-element {
-            position: absolute;
-            opacity: 0.1;
-            animation: float 15s infinite ease-in-out;
-        }
-        
-        .floating-element:nth-child(1) {
-            top: 20%;
-            left: 10%;
-            font-size: 4rem;
-            animation-delay: 0s;
-        }
-        
-        .floating-element:nth-child(2) {
-            top: 60%;
-            right: 15%;
-            font-size: 3rem;
-            animation-delay: 3s;
-        }
-        
-        .floating-element:nth-child(3) {
-            bottom: 20%;
-            left: 20%;
-            font-size: 5rem;
-            animation-delay: 6s;
-        }
-        
-        @keyframes float {
-            0%, 100% { 
-                transform: translateY(0) rotate(0deg); 
-                opacity: 0.1;
-            }
-            25% { 
-                transform: translateY(-20px) rotate(5deg); 
-                opacity: 0.15;
-            }
-            50% { 
-                transform: translateY(0) rotate(-5deg); 
-                opacity: 0.1;
-            }
-            75% { 
-                transform: translateY(20px) rotate(5deg); 
-                opacity: 0.15;
-            }
+
+        .cta-button:hover::before {
+            width: 300px;
+            height: 300px;
         }
         
         /* Custom navigation styles removed to use global .main-nav styles */
@@ -326,8 +410,47 @@
         
         /* Responsive */
         @media (max-width: 768px) {
+            .hero-section {
+                min-height: auto;
+                padding: 6rem 1rem 3rem;
+            }
+
             .hero-title {
-                font-size: clamp(2.5rem, 10vw, 4rem);
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.1rem;
+                padding: 0 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+                margin-bottom: 2rem;
+            }
+
+            .hero-section .stat-card {
+                padding: 1.5rem 1rem;
+            }
+
+            .hero-section .stat-value {
+                font-size: 2rem;
+            }
+
+            .hero-section .stat-label {
+                font-size: 0.8rem;
+            }
+
+            .cta-button {
+                padding: 0.9rem 2rem;
+                font-size: 1rem;
+            }
+
+            /* Disable parallax on mobile for performance */
+            .hero-particles,
+            .hero-content {
+                transform: none !important;
             }
             
             .nav-links {
@@ -343,6 +466,17 @@
             .features-grid,
             .showcase-grid {
                 grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                max-width: 300px;
             }
         }
     </style>
@@ -382,34 +516,52 @@
     
     <!-- Hero Section -->
     <section class="hero-section">
-        <div class="floating-elements">
-            <div class="floating-element">⚛️</div>
-            <div class="floating-element">🧪</div>
-            <div class="floating-element">🔬</div>
-            <div class="floating-element">📐</div>
-            <div class="floating-element">💡</div>
+        <!-- Animated particles background -->
+        <div class="hero-particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
         </div>
-        
-        <div class="hero-content">
-            <h1 class="hero-title">
-                <span>Ôn</span>
-                <span>luyện</span>
-                <span>Vật</span>
-                <span>lí</span>
-                <span>12</span>
-            </h1>
-            <p class="hero-subtitle">
-                Học tập thông minh chỉ với 5 phút mỗi ngày, chinh phục mọi thử thách vật lý 🚀
-            </p>
-            <div class="hero-cta">
-                <a href="/lessons" class="button primary">
-                    <i class="fas fa-rocket"></i>
-                    Bắt đầu ngay
-                </a>
-                <a href="/gallery" class="button secondary">
-                    <i class="fas fa-book-open"></i>
-                    Xem bài học
-                </a>
+
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Khám phá Vật lý 12 một cách thú vị</h1>
+                <p class="hero-subtitle">Học tập hiệu quả với phương pháp tương tác và theo dõi tiến độ cá nhân</p>
+
+                <!-- Quick Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-lessons">0</div>
+                        <div class="stat-label">Bài học</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-students">1,234</div>
+                        <div class="stat-label">Học sinh</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="completion-rate">89%</div>
+                        <div class="stat-label">Tỷ lệ hoàn thành</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="avg-score">8.5</div>
+                        <div class="stat-label">Điểm trung bình</div>
+                    </div>
+                </div>
+
+                <!-- CTA Button -->
+                <div class="hero-cta">
+                    <a href="/lessons" class="cta-button">
+                        <i class="fas fa-rocket"></i>
+                        Bắt đầu học ngay
+                    </a>
+                </div>
             </div>
         </div>
     </section>
@@ -527,13 +679,89 @@
                 });
             });
         });
-        
-        // Add parallax effect on scroll
-        window.addEventListener('scroll', () => {
-            const scrolled = window.pageYOffset;
-            const parallax = document.querySelector('.hero-section');
-            parallax.style.transform = `translateY(${scrolled * 0.5}px)`;
+
+        // Update statistics
+        async function updateStats() {
+            try {
+                // Fetch platform statistics
+                const statsResponse = await fetch('/api/lessons/platform-stats');
+                const statsData = await statsResponse.json();
+
+                if (statsData.success && statsData.data) {
+                    document.getElementById('total-lessons').textContent = statsData.data.totalLessons || 0;
+                    document.getElementById('total-students').textContent = statsData.data.totalStudents || 0;
+                    document.getElementById('completion-rate').textContent = `${statsData.data.completionRate || 0}%`;
+                    document.getElementById('avg-score').textContent = (statsData.data.avgScore || 0).toFixed(1);
+                } else {
+                    // Fallback to original method for total lessons
+                    const response = await fetch('/api/lessons?limit=1');
+                    const data = await response.json();
+                    document.getElementById('total-lessons').textContent = data.total || 0;
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+                // Fallback values
+                try {
+                    const response = await fetch('/api/lessons?limit=1');
+                    const data = await response.json();
+                    document.getElementById('total-lessons').textContent = data.total || 0;
+                } catch (fallbackError) {
+                    console.error('Fallback stats loading also failed:', fallbackError);
+                }
+            }
+        }
+
+        // Load stats on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateStats();
+            
+            // Intersection Observer for reveal animations
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // Observe feature cards and showcase items
+            document.querySelectorAll('.feature-card, .showcase-item').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                el.style.transition = 'all 0.6s ease-out';
+                observer.observe(el);
+            });
         });
+
+        // Parallax effect for hero section
+        let ticking = false;
+        function updateParallax() {
+            const scrolled = window.pageYOffset;
+            const parallaxElements = document.querySelectorAll('.hero-particles, .hero-content');
+            
+            parallaxElements.forEach((el, index) => {
+                const speed = index === 0 ? 0.5 : 0.8;
+                el.style.transform = `translateY(${scrolled * speed}px)`;
+            });
+            
+            ticking = false;
+        }
+
+        function requestTick() {
+            if (!ticking) {
+                window.requestAnimationFrame(updateParallax);
+                ticking = true;
+            }
+        }
+
+        window.addEventListener('scroll', requestTick);
     </script>
 </body>
 </html>

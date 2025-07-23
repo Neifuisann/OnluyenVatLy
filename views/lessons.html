@@ -19,39 +19,6 @@
 
     <style>
         /* Page Specific Overrides */
-        .hero-section {
-            padding: var(--space-3xl) 0;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero-title {
-            font-size: clamp(2.5rem, 5vw, 3.5rem);
-            margin-bottom: var(--space-md);
-            background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary-color) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .hero-subtitle {
-            font-size: var(--text-xl);
-            color: var(--text-secondary);
-            margin-bottom: var(--space-xl);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: var(--space-lg);
-            margin-bottom: var(--space-2xl);
-        }
 
         .lesson-grid {
             display: grid;
@@ -454,16 +421,8 @@
 
         /* Mobile optimization */
         @media (max-width: 768px) {
-            .hero-section {
-                padding: var(--space-xl) 0;
-            }
-
             .lesson-grid {
                 grid-template-columns: 1fr;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
             }
         }
 
@@ -508,6 +467,104 @@
             .category-pill {
                 font-size: 0.7rem;
                 padding: 0.4rem 0.8rem;
+            }
+        }
+
+        /* Pagination Styles - Same as leaderboard */
+        .pagination {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .pagination-top {
+            justify-content: flex-start;
+            margin-bottom: 2rem;
+        }
+        
+        .pagination-bottom {
+            justify-content: flex-start;
+            margin-top: 2rem;
+        }
+        
+        .pagination .nav-btn {
+            padding: 0.5rem 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .pagination .nav-btn:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--neon-purple);
+            color: var(--neon-purple);
+        }
+        
+        .pagination .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .page-numbers {
+            display: flex;
+            gap: 0.25rem;
+        }
+        
+        .page-btn {
+            min-width: 40px;
+            height: 40px;
+            padding: 0;
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+        
+        .page-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+        
+        .page-btn.active {
+            background: var(--neon-purple);
+            color: white;
+            border-color: var(--neon-purple);
+        }
+        
+        .page-btn.ellipsis {
+            cursor: default;
+            border: none;
+        }
+        
+        .page-btn.ellipsis:hover {
+            background: transparent;
+            color: var(--text-secondary);
+        }
+
+        /* Mobile responsive adjustments for pagination */
+        @media (max-width: 768px) {
+            .pagination {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .page-numbers {
+                order: 2;
+                width: 100%;
+                justify-content: center;
+                margin-top: 0.5rem;
             }
         }
 
@@ -930,33 +987,6 @@
     <!-- Main Content -->
     <main id="main-content" class="main-content">
         <div class="container">
-            <!-- Hero Section -->
-            <section class="hero-section">
-                <div class="hero-content">
-                    <h1 class="hero-title">Khám phá Vật lý 12 một cách thú vị</h1>
-                    <p class="hero-subtitle">Học tập hiệu quả với phương pháp tương tác và theo dõi tiến độ cá nhân</p>
-
-                    <!-- Quick Stats -->
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-value" id="total-lessons">0</div>
-                            <div class="stat-label">Bài học</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="total-students">1,234</div>
-                            <div class="stat-label">Học sinh</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="completion-rate">89%</div>
-                            <div class="stat-label">Tỷ lệ hoàn thành</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="avg-score">8.5</div>
-                            <div class="stat-label">Điểm trung bình</div>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
             <!-- Progress Section (for logged in students) -->
             <section class="progress-section hidden" id="progress-section">
@@ -1028,12 +1058,35 @@
                     <div class="filter-chips" id="active-filters"></div>
                 </div>
 
+                <!-- Top Pagination -->
+                <div class="pagination pagination-top">
+                    <button id="prev-page-top" class="nav-btn" disabled>
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="page-numbers" id="page-numbers-top">
+                        <!-- Page numbers will be generated by JS -->
+                    </div>
+                    <button id="next-page-top" class="nav-btn">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+
                 <div id="lessons" class="lesson-grid">
                     <!-- Lessons will be dynamically loaded here -->
                 </div>
 
-                <!-- Pagination -->
-                <div id="pagination-controls" class="pagination"></div>
+                <!-- Bottom Pagination -->
+                <div class="pagination pagination-bottom">
+                    <button id="prev-page" class="nav-btn" disabled>
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="page-numbers" id="page-numbers-bottom">
+                        <!-- Page numbers will be generated by JS -->
+                    </div>
+                    <button id="next-page" class="nav-btn">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
             </section>
         </div>
     </main>
@@ -1132,7 +1185,7 @@
 
     <!-- Scripts -->
     <script src="/js/nav-mobile.js"></script>
-    <script src="/js/lessons.js?v=3"></script>
+    <script src="/js/lessons.js?v=4"></script>
     <script>
         // Mobile menu functionality is now handled by nav-mobile.js
 
@@ -1169,48 +1222,9 @@
             window.location.href = '/practice';
         }
 
-        // Update total lessons count
-        async function updateStats() {
-            try {
-                // Fetch platform statistics from new endpoint
-                const statsResponse = await fetch('/api/lessons/platform-stats');
-                const statsData = await statsResponse.json();
-
-                if (statsData.success && statsData.data) {
-                    document.getElementById('total-lessons').textContent = statsData.data.totalLessons || 0;
-                    document.getElementById('total-students').textContent = statsData.data.totalStudents || 0;
-                    document.getElementById('completion-rate').textContent = `${statsData.data.completionRate || 0}%`;
-                    document.getElementById('avg-score').textContent = (statsData.data.avgScore || 0).toFixed(1);
-                } else {
-                    // Fallback to original method for total lessons
-                    const response = await fetch('/api/lessons?limit=1');
-                    const data = await response.json();
-                    document.getElementById('total-lessons').textContent = data.total || 0;
-
-                    // Keep existing hardcoded values for other stats if API fails
-                    console.warn('Platform stats API failed, using fallback values');
-                }
-            } catch (error) {
-                console.error('Error loading stats:', error);
-                // Fallback to original method
-                try {
-                    const response = await fetch('/api/lessons?limit=1');
-                    const data = await response.json();
-                    document.getElementById('total-lessons').textContent = data.total || 0;
-                } catch (fallbackError) {
-                    console.error('Fallback stats loading also failed:', fallbackError);
-                }
-            } finally {
-                // Mark stats loading as complete
-                if (typeof window.markTaskComplete === 'function') {
-                    window.markTaskComplete('stats');
-                }
-            }
-        }
 
         // Initialize on load
         document.addEventListener('DOMContentLoaded', () => {
-            updateStats();
 
             // Check if student is logged in to show progress section
             checkStudentAuthentication().then(isAuthenticated => {

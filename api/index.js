@@ -143,6 +143,12 @@ app.use(express.static(path.join(process.cwd(), 'public'), {
     }
 }));
 
+// Import test auth middleware
+const { applyTestAuth, testTokenEndpoint } = require('../lib/middleware/testAuth');
+
+// Apply test auth before session middleware
+app.use(applyTestAuth);
+
 // Configure express-session
 app.set('trust proxy', 1); // Trust first proxy, crucial for Vercel/Heroku/etc.
 app.use(sessionConfig);
@@ -186,6 +192,9 @@ app.use(addCSRFToken);
 
 // CSRF token endpoint
 app.get('/api/csrf-token', getCSRFTokenEndpoint);
+
+// Test token endpoint (only in test mode)
+app.get('/api/test-tokens', testTokenEndpoint);
 
 // Add CSRF validation for API routes (except login endpoints)
 app.use('/api', validateCSRFToken);

@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dòng điện trong các môi trường - Vật lý 11</title>
+    <meta name="description" content="Dòng điện trong kim loại, chất điện phân, chất khí và chân không. Tìm hiểu bản chất, định luật và ứng dụng của dòng điện trong các môi trường khác nhau.">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #1e293b;
+            font-size: 32px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #334155;
+            font-size: 24px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        h3 {
+            color: #475569;
+            font-size: 20px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .quote {
+            background: #f0f9ff;
+            border-left: 4px solid #0284c7;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .formula {
+            background: #fef3c7;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .example {
+            background: #f3f4f6;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+        }
+        .important {
+            background: #fee2e2;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            border-left: 4px solid #ef4444;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table th, table td {
+            border: 1px solid #e5e7eb;
+            padding: 10px;
+            text-align: left;
+        }
+        table th {
+            background: #f9fafb;
+            font-weight: bold;
+        }
+        .formula-box {
+            background: #ecfdf5;
+            border: 2px solid #10b981;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .formula-box h4 {
+            margin-top: 0;
+            color: #059669;
+        }
+        .process-diagram {
+            background: #e0e7ff;
+            border: 1px solid #6366f1;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dòng điện trong các môi trường - Vật lý 11</h1>
+    
+    <p>Dòng điện có thể tồn tại trong nhiều môi trường khác nhau, từ kim loại dẫn điện tốt đến chân không. Mỗi môi trường có bản chất dẫn điện riêng, tạo nên những ứng dụng đa dạng trong khoa học và công nghệ.</p>
+
+    <h2>1. Dòng điện trong kim loại</h2>
+    
+    <h3>a) Bản chất dòng điện trong kim loại</h3>
+    <div class="quote">
+        <strong>Dòng điện trong kim loại</strong> là dòng chuyển dời có hướng của các electron tự do dưới tác dụng của điện trường.
+    </div>
+
+    <p>Trong kim loại:</p>
+    <ul>
+        <li>Các nguyên tử mất electron hóa trị → Ion dương</li>
+        <li>Electron hóa trị trở thành electron tự do</li>
+        <li>Mật độ electron tự do: n ~ 10²⁸ - 10²⁹ electron/m³</li>
+    </ul>
+
+    <h3>b) Điện trở và nhiệt độ</h3>
+    <div class="formula-box">
+        <h4>Sự phụ thuộc nhiệt độ:</h4>
+        <div class="formula">
+            ρ = ρ₀[1 + α(t - t₀)]
+        </div>
+        
+        <p>Với kim loại: α > 0 (điện trở tăng khi nhiệt độ tăng)</p>
+    </div>
+
+    <p>Giải thích: Nhiệt độ tăng → Ion dao động mạnh → Cản trở electron nhiều hơn</p>
+
+    <h3>c) Hiện tượng siêu dẫn</h3>
+    <ul>
+        <li>Ở nhiệt độ rất thấp (< T<sub>c</sub>), một số kim loại có R = 0</li>
+        <li>Ví dụ: Hg có T<sub>c</sub> = 4,2K</li>
+        <li>Ứng dụng: Nam châm siêu dẫn, tàu đệm từ</li>
+    </ul>
+
+    <h3>d) Hiện tượng nhiệt điện</h3>
+    <p>Cặp nhiệt điện: Hai kim loại khác nhau hàn với nhau</p>
+    <ul>
+        <li>Khi hai mối hàn có nhiệt độ khác nhau → Xuất hiện suất điện động</li>
+        <li>ℰ = α<sub>T</sub>(T₁ - T₂)</li>
+        <li>Ứng dụng: Đo nhiệt độ cao</li>
+    </ul>
+
+    <h2>2. Dòng điện trong chất điện phân</h2>
+
+    <h3>a) Bản chất dòng điện</h3>
+    <div class="quote">
+        <strong>Dòng điện trong chất điện phân</strong> là dòng chuyển dời có hướng của các ion dương về catot và ion âm về anot.
+    </div>
+
+    <p>Quá trình điện ly:</p>
+    <ul>
+        <li>NaCl → Na⁺ + Cl⁻</li>
+        <li>CuSO₄ → Cu²⁺ + SO₄²⁻</li>
+    </ul>
+
+    <h3>b) Định luật Faraday</h3>
+    <div class="formula-box">
+        <h4>Định luật Faraday về điện phân:</h4>
+        <div class="formula">
+            m = (1/F) × (A/n) × It
+        </div>
+        
+        <p>Trong đó:</p>
+        <ul>
+            <li>m: Khối lượng chất giải phóng (g)</li>
+            <li>F = 96500 C/mol: Hằng số Faraday</li>
+            <li>A: Khối lượng mol nguyên tử</li>
+            <li>n: Hóa trị</li>
+            <li>I: Cường độ dòng điện (A)</li>
+            <li>t: Thời gian (s)</li>
+        </ul>
+    </div>
+
+    <h3>c) Ứng dụng điện phân</h3>
+    <table>
+        <tr>
+            <th>Ứng dụng</th>
+            <th>Mô tả</th>
+            <th>Ví dụ</th>
+        </tr>
+        <tr>
+            <td>Mạ điện</td>
+            <td>Phủ kim loại lên bề mặt</td>
+            <td>Mạ vàng, mạ crôm</td>
+        </tr>
+        <tr>
+            <td>Tinh chế kim loại</td>
+            <td>Làm sạch kim loại</td>
+            <td>Tinh chế đồng</td>
+        </tr>
+        <tr>
+            <td>Điều chế kim loại</td>
+            <td>Tách kim loại từ quặng</td>
+            <td>Điện phân nhôm</td>
+        </tr>
+        <tr>
+            <td>Sạc ắc quy</td>
+            <td>Phục hồi năng lượng</td>
+            <td>Ắc quy chì</td>
+        </tr>
+    </table>
+
+    <h2>3. Dòng điện trong chất khí</h2>
+
+    <h3>a) Điều kiện dẫn điện</h3>
+    <p>Chất khí thông thường không dẫn điện. Để dẫn điện cần:</p>
+    <ul>
+        <li>Ion hóa chất khí (tạo ion và electron)</li>
+        <li>Duy trì điện trường đủ mạnh</li>
+    </ul>
+
+    <div class="process-diagram">
+        <strong>Các giai đoạn phóng điện:</strong>
+        <ol>
+            <li><strong>Phóng điện không tự lực</strong>: Cần tác nhân ion hóa bên ngoài</li>
+            <li><strong>Phóng điện tự lực</strong>: Tự duy trì nhờ ion hóa do va chạm</li>
+            <li><strong>Phóng điện hồ quang</strong>: Nhiệt độ cao, phát sáng mạnh</li>
+        </ol>
+    </div>
+
+    <h3>b) Các dạng phóng điện</h3>
+    
+    <h4>1. Tia lửa điện</h4>
+    <ul>
+        <li>Phóng điện trong điện trường mạnh</li>
+        <li>Thời gian ngắn, cường độ lớn</li>
+        <li>Ví dụ: Sét, tia lửa bugi</li>
+    </ul>
+
+    <h4>2. Hồ quang điện</h4>
+    <ul>
+        <li>Phóng điện ở áp suất thường</li>
+        <li>Nhiệt độ cao (3000-4000°C)</li>
+        <li>Ứng dụng: Hàn điện, lò luyện thép</li>
+    </ul>
+
+    <h4>3. Phóng điện thành miền</h4>
+    <ul>
+        <li>Áp suất thấp (1-10 mmHg)</li>
+        <li>Có vùng sáng và tối xen kẽ</li>
+        <li>Ứng dụng: Đèn neon, đèn huỳnh quang</li>
+    </ul>
+
+    <h2>4. Dòng điện trong chân không</h2>
+
+    <h3>a) Bản chất</h3>
+    <div class="quote">
+        <strong>Dòng điện trong chân không</strong> là dòng chuyển động có hướng của các electron được phát ra từ catot.
+    </div>
+
+    <h3>b) Phát xạ electron</h3>
+    
+    <h4>1. Phát xạ nhiệt electron</h4>
+    <ul>
+        <li>Nung nóng catot → Electron có động năng lớn thoát ra</li>
+        <li>Dòng bão hòa: I<sub>bh</sub> phụ thuộc nhiệt độ catot</li>
+    </ul>
+
+    <h4>2. Phát xạ quang electron</h4>
+    <ul>
+        <li>Chiếu sáng kim loại → Electron hấp thụ photon thoát ra</li>
+        <li>Điều kiện: hf ≥ A (công thoát)</li>
+    </ul>
+
+    <h3>c) Ứng dụng</h3>
+    <table>
+        <tr>
+            <th>Thiết bị</th>
+            <th>Nguyên lý</th>
+            <th>Ứng dụng</th>
+        </tr>
+        <tr>
+            <td>Điốt chân không</td>
+            <td>Dòng điện một chiều</td>
+            <td>Chỉnh lưu</td>
+        </tr>
+        <tr>
+            <td>Ống tia catot (CRT)</td>
+            <td>Electron bắn vào màn huỳnh quang</td>
+            <td>TV, dao động ký</td>
+        </tr>
+        <tr>
+            <td>Ống tia X</td>
+            <td>Electron năng lượng cao đập vào anot</td>
+            <td>Chụp X-quang</td>
+        </tr>
+        <tr>
+            <td>Đèn điện tử</td>
+            <td>Khuếch đại tín hiệu</td>
+            <td>Ampli đèn</td>
+        </tr>
+    </table>
+
+    <h2>5. Dòng điện trong chất bán dẫn</h2>
+
+    <h3>a) Đặc điểm chất bán dẫn</h3>
+    <ul>
+        <li>Điện trở suất: 10⁻⁴ - 10⁸ Ω.m (trung gian giữa kim loại và điện môi)</li>
+        <li>Điện trở giảm khi nhiệt độ tăng (α < 0)</li>
+        <li>Điện trở phụ thuộc tạp chất, ánh sáng, từ trường...</li>
+    </ul>
+
+    <h3>b) Hai loại bán dẫn</h3>
+    <div class="process-diagram">
+        <h4>Bán dẫn loại n:</h4>
+        <ul>
+            <li>Pha tạp chất cho electron (P, As vào Si)</li>
+            <li>Hạt tải điện chủ yếu: electron</li>
+        </ul>
+        
+        <h4>Bán dẫn loại p:</h4>
+        <ul>
+            <li>Pha tạp chất nhận electron (B, Al vào Si)</li>
+            <li>Hạt tải điện chủ yếu: lỗ trống</li>
+        </ul>
+    </div>
+
+    <h3>c) Lớp tiếp xúc p-n</h3>
+    <ul>
+        <li>Dẫn điện một chiều (từ p sang n)</li>
+        <li>Ứng dụng: Điốt, transistor, IC</li>
+    </ul>
+
+    <h2>6. Ví dụ minh họa</h2>
+
+    <div class="example">
+        <strong>Ví dụ 1:</strong> Điện phân dung dịch CuSO₄ với I = 2A trong 30 phút. Tính khối lượng Cu bám vào catot. Cho Cu: A = 64, n = 2.
+        <br><br>
+        <strong>Giải:</strong><br>
+        t = 30 phút = 1800s<br>
+        m = (1/F) × (A/n) × It<br>
+        = (1/96500) × (64/2) × 2 × 1800<br>
+        = 1,19g
+    </div>
+
+    <div class="example">
+        <strong>Ví dụ 2:</strong> Ống tia catot có U = 10kV. Tính vận tốc electron khi đập vào màn hình. Cho m<sub>e</sub> = 9,1×10⁻³¹ kg, e = 1,6×10⁻¹⁹ C.
+        <br><br>
+        <strong>Giải:</strong><br>
+        Động năng electron: W<sub>đ</sub> = eU<br>
+        ½mv² = eU<br>
+        v = √(2eU/m) = √(2×1,6×10⁻¹⁹×10⁴/9,1×10⁻³¹)<br>
+        = 5,93×10⁷ m/s ≈ 0,2c
+    </div>
+
+    <h2>7. So sánh dòng điện trong các môi trường</h2>
+
+    <table>
+        <tr>
+            <th>Môi trường</th>
+            <th>Hạt tải điện</th>
+            <th>Điều kiện dẫn điện</th>
+            <th>Đặc điểm</th>
+        </tr>
+        <tr>
+            <td>Kim loại</td>
+            <td>Electron tự do</td>
+            <td>Luôn dẫn điện</td>
+            <td>R tăng khi T tăng</td>
+        </tr>
+        <tr>
+            <td>Điện phân</td>
+            <td>Ion + và -</td>
+            <td>Phải điện ly</td>
+            <td>Kèm phản ứng hóa học</td>
+        </tr>
+        <tr>
+            <td>Chất khí</td>
+            <td>Ion và electron</td>
+            <td>Phải ion hóa</td>
+            <td>Phóng điện phát sáng</td>
+        </tr>
+        <tr>
+            <td>Chân không</td>
+            <td>Electron</td>
+            <td>Phát xạ từ catot</td>
+            <td>Dòng một chiều</td>
+        </tr>
+        <tr>
+            <td>Bán dẫn</td>
+            <td>Electron và lỗ trống</td>
+            <td>Phụ thuộc nhiều yếu tố</td>
+            <td>R giảm khi T tăng</td>
+        </tr>
+    </table>
+
+    <div class="quote">
+        <strong>Lưu ý khi học:</strong>
+        <ul>
+            <li>Mỗi môi trường có bản chất dẫn điện khác nhau</li>
+            <li>Kim loại: electron; Điện phân: ion; Khí: ion + electron</li>
+            <li>Chỉ kim loại có α > 0 (R tăng khi T tăng)</li>
+            <li>Định luật Faraday rất quan trọng cho điện phân</li>
+        </ul>
+    </div>
+
+    <div class="important">
+        <strong>Tổng kết:</strong> Dòng điện có thể tồn tại trong nhiều môi trường với bản chất khác nhau. Kim loại dẫn điện nhờ electron tự do, điện phân nhờ ion, chất khí cần ion hóa, chân không cần phát xạ electron. Mỗi môi trường có ứng dụng riêng trong khoa học và công nghệ.
+    </div>
+</body>
+</html>

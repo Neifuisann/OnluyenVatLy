@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giao thoa sóng - Vật lý 11</title>
+    <meta name="description" content="Giao thoa sóng là hiện tượng đặc trưng của sóng. Tìm hiểu về điều kiện giao thoa, vân giao thoa và các bài toán liên quan.">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #1e293b;
+            font-size: 32px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #334155;
+            font-size: 24px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        h3 {
+            color: #475569;
+            font-size: 20px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .quote {
+            background: #f0f9ff;
+            border-left: 4px solid #0284c7;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .formula {
+            background: #fef3c7;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .example {
+            background: #f3f4f6;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+        }
+        .important {
+            background: #fee2e2;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            border-left: 4px solid #ef4444;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table th, table td {
+            border: 1px solid #e5e7eb;
+            padding: 10px;
+            text-align: left;
+        }
+        table th {
+            background: #f9fafb;
+            font-weight: bold;
+        }
+        .formula-box {
+            background: #ecfdf5;
+            border: 2px solid #10b981;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .formula-box h4 {
+            margin-top: 0;
+            color: #059669;
+        }
+        .wave-diagram {
+            background: #e0e7ff;
+            border: 1px solid #6366f1;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Giao thoa sóng - Vật lý 11</h1>
+    
+    <p>Năm 1801, Thomas Young thực hiện thí nghiệm giao thoa ánh sáng, chứng minh bản chất sóng của ánh sáng. Hiện tượng giao thoa không chỉ xảy ra với sóng ánh sáng mà còn với mọi loại sóng, từ sóng nước đến sóng âm.</p>
+
+    <h2>1. Hiện tượng giao thoa sóng</h2>
+    
+    <h3>a) Quan sát hiện tượng</h3>
+    <div class="example">
+        <strong>Thí nghiệm với sóng nước:</strong>
+        <ul>
+            <li>Hai nguồn sóng S₁, S₂ dao động cùng tần số</li>
+            <li>Trên mặt nước xuất hiện các gợn sóng ổn định</li>
+            <li>Có những điểm dao động mạnh (cực đại)</li>
+            <li>Có những điểm đứng yên (cực tiểu)</li>
+        </ul>
+    </div>
+
+    <h3>b) Định nghĩa</h3>
+    <div class="quote">
+        <strong>Giao thoa sóng</strong> là hiện tượng hai hay nhiều sóng kết hợp gặp nhau tạo nên những điểm dao động được tăng cường hoặc giảm bớt.
+    </div>
+
+    <h3>c) Giải thích hiện tượng</h3>
+    <p>Tại mỗi điểm trong vùng giao thoa:</p>
+    <ul>
+        <li>Dao động là tổng hợp của các dao động do các nguồn gửi tới</li>
+        <li>Biên độ tổng hợp phụ thuộc vào độ lệch pha</li>
+        <li>Hình ảnh giao thoa ổn định do độ lệch pha không đổi</li>
+    </ul>
+
+    <h2>2. Điều kiện giao thoa</h2>
+
+    <h3>a) Nguồn kết hợp</h3>
+    <div class="quote">
+        <strong>Hai nguồn kết hợp</strong> là hai nguồn dao động:
+        <ul>
+            <li>Cùng tần số</li>
+            <li>Có độ lệch pha không đổi theo thời gian</li>
+        </ul>
+    </div>
+
+    <h3>b) Hai nguồn cùng pha</h3>
+    <p>Trường hợp đặc biệt quan trọng: Hai nguồn dao động cùng pha</p>
+    <ul>
+        <li>u₁ = A₁cos(ωt)</li>
+        <li>u₂ = A₂cos(ωt)</li>
+    </ul>
+
+    <h2>3. Lý thuyết giao thoa hai nguồn cùng pha</h2>
+
+    <h3>a) Phương trình sóng tại điểm M</h3>
+    <p>Xét hai nguồn S₁, S₂ cách nhau khoảng l, dao động cùng pha:</p>
+    
+    <div class="wave-diagram">
+        <p>S₁ •————————• M</p>
+        <p>    \d₁      /d₂</p>
+        <p>     \     /</p>
+        <p>S₂ •——————</p>
+        <p>     l</p>
+    </div>
+
+    <p>Sóng từ S₁ đến M:</p>
+    <div class="formula">
+        u₁M = Acos(ωt - 2πd₁/λ)
+    </div>
+
+    <p>Sóng từ S₂ đến M:</p>
+    <div class="formula">
+        u₂M = Acos(ωt - 2πd₂/λ)
+    </div>
+
+    <h3>b) Dao động tổng hợp tại M</h3>
+    <p>Dao động tại M là tổng hợp:</p>
+    <div class="formula">
+        uM = u₁M + u₂M
+    </div>
+
+    <p>Biên độ dao động tại M:</p>
+    <div class="formula-box">
+        <h4>Công thức biên độ:</h4>
+        <div class="formula">
+            AM = 2A|cos(π(d₂ - d₁)/λ)|
+        </div>
+        
+        <p>Với Δd = d₂ - d₁ là hiệu đường đi</p>
+    </div>
+
+    <h2>4. Vị trí cực đại và cực tiểu giao thoa</h2>
+
+    <h3>a) Cực đại giao thoa</h3>
+    <div class="quote">
+        Điểm có biên độ cực đại khi hai sóng đến cùng pha
+    </div>
+
+    <div class="formula-box">
+        <h4>Điều kiện cực đại:</h4>
+        <div class="formula">
+            d₂ - d₁ = kλ    (k = 0, ±1, ±2,...)
+        </div>
+        
+        <p>Biên độ cực đại: A<sub>max</sub> = 2A</p>
+    </div>
+
+    <h3>b) Cực tiểu giao thoa</h3>
+    <div class="quote">
+        Điểm có biên độ cực tiểu khi hai sóng đến ngược pha
+    </div>
+
+    <div class="formula-box">
+        <h4>Điều kiện cực tiểu:</h4>
+        <div class="formula">
+            d₂ - d₁ = (k + 0,5)λ    (k = 0, ±1, ±2,...)
+        </div>
+        
+        <p>Biên độ cực tiểu: A<sub>min</sub> = 0</p>
+    </div>
+
+    <h2>5. Hình ảnh giao thoa</h2>
+
+    <h3>a) Họa đồ giao thoa</h3>
+    <ul>
+        <li><strong>Vân cực đại</strong>: Tập hợp các điểm dao động cực đại</li>
+        <li><strong>Vân cực tiểu</strong>: Tập hợp các điểm dao động cực tiểu</li>
+        <li>Các vân là các hyperbola có tiêu điểm tại S₁, S₂</li>
+        <li>Vân trung tâm (k = 0) là đường trung trực của S₁S₂</li>
+    </ul>
+
+    <h3>b) Khoảng vân</h3>
+    <p>Trên đường thẳng vuông góc với S₁S₂:</p>
+    <div class="formula">
+        i = λD/l
+    </div>
+    <p>Với D là khoảng cách từ nguồn đến màn quan sát</p>
+
+    <h2>6. Giao thoa với hai nguồn lệch pha</h2>
+
+    <h3>a) Hai nguồn ngược pha</h3>
+    <p>Khi Δφ = π:</p>
+    <ul>
+        <li>Điều kiện cực đại: d₂ - d₁ = (k + 0,5)λ</li>
+        <li>Điều kiện cực tiểu: d₂ - d₁ = kλ</li>
+    </ul>
+    <p>(Ngược lại với hai nguồn cùng pha)</p>
+
+    <h3>b) Hai nguồn lệch pha bất kỳ</h3>
+    <p>Với độ lệch pha Δφ:</p>
+    <ul>
+        <li>Cực đại: d₂ - d₁ = kλ - Δφλ/(2π)</li>
+        <li>Cực tiểu: d₂ - d₁ = (k + 0,5)λ - Δφλ/(2π)</li>
+    </ul>
+
+    <h2>7. Các dạng bài tập giao thoa sóng</h2>
+
+    <h3>Dạng 1: Xác định vị trí cực đại, cực tiểu</h3>
+    <div class="example">
+        <strong>Ví dụ 1:</strong> Hai nguồn S₁, S₂ cách nhau 20cm dao động cùng pha với λ = 4cm. Điểm M cách S₁ là 25cm, cách S₂ là 15cm. M là cực đại hay cực tiểu?
+        <br><br>
+        <strong>Giải:</strong><br>
+        d₁ = 25cm, d₂ = 15cm<br>
+        Hiệu đường đi: Δd = |d₂ - d₁| = |15 - 25| = 10cm<br>
+        Δd/λ = 10/4 = 2,5 = 2 + 0,5<br>
+        → M là cực tiểu (vì Δd = (k + 0,5)λ với k = 2)
+    </div>
+
+    <h3>Dạng 2: Đếm số cực đại, cực tiểu</h3>
+    <div class="example">
+        <strong>Ví dụ 2:</strong> Hai nguồn cùng pha S₁S₂ = 30cm, λ = 4cm. Tìm số cực đại trên S₁S₂.
+        <br><br>
+        <strong>Giải:</strong><br>
+        Trên S₁S₂: -S₁S₂ ≤ d₂ - d₁ ≤ S₁S₂<br>
+        Điều kiện cực đại: d₂ - d₁ = kλ<br>
+        -30 ≤ 4k ≤ 30<br>
+        -7,5 ≤ k ≤ 7,5<br>
+        k = -7, -6,..., 0,..., 6, 7<br>
+        → Có 15 cực đại
+    </div>
+
+    <h3>Dạng 3: Phương trình dao động tại một điểm</h3>
+    <div class="example">
+        <strong>Ví dụ 3:</strong> Hai nguồn S₁, S₂ dao động u = 2cos(20πt) cm. Vận tốc sóng v = 40 cm/s. Viết phương trình dao động tại M cách S₁ 10cm, cách S₂ 14cm.
+        <br><br>
+        <strong>Giải:</strong><br>
+        λ = v/f = vT = v.2π/ω = 40.2π/(20π) = 4cm<br>
+        <br>
+        Dao động tại M do S₁: u₁M = 2cos(20πt - 2π.10/4) = 2cos(20πt - 5π)<br>
+        Dao động tại M do S₂: u₂M = 2cos(20πt - 2π.14/4) = 2cos(20πt - 7π)<br>
+        <br>
+        Δφ = 7π - 5π = 2π → Hai dao động cùng pha<br>
+        uM = u₁M + u₂M = 4cos(20πt - 5π) = -4cos(20πt) cm
+    </div>
+
+    <h2>8. Ứng dụng của giao thoa</h2>
+
+    <table>
+        <tr>
+            <th>Lĩnh vực</th>
+            <th>Ứng dụng</th>
+            <th>Nguyên lý</th>
+        </tr>
+        <tr>
+            <td>Đo lường</td>
+            <td>Giao thoa kế Michelson</td>
+            <td>Đo bước sóng, chiết suất</td>
+        </tr>
+        <tr>
+            <td>Kiểm tra chất lượng</td>
+            <td>Kiểm tra độ phẳng bề mặt</td>
+            <td>Vân giao thoa cho biết độ lệch</td>
+        </tr>
+        <tr>
+            <td>Holography</td>
+            <td>Tạo ảnh 3D</td>
+            <td>Ghi và tái tạo sóng giao thoa</td>
+        </tr>
+        <tr>
+            <td>Radar</td>
+            <td>Phát hiện vật thể</td>
+            <td>Giao thoa sóng phản xạ</td>
+        </tr>
+        <tr>
+            <td>Y học</td>
+            <td>Siêu âm Doppler</td>
+            <td>Giao thoa sóng siêu âm</td>
+        </tr>
+    </table>
+
+    <h2>9. Thí nghiệm giao thoa với sóng nước</h2>
+
+    <h3>a) Dụng cụ</h3>
+    <ul>
+        <li>Khay nước nông (2-3cm)</li>
+        <li>Hai nguồn dao động (có thể dùng hai thanh rung)</li>
+        <li>Máy phát tần số</li>
+        <li>Đèn chiếu và màn quan sát</li>
+    </ul>
+
+    <h3>b) Tiến hành</h3>
+    <ol>
+        <li>Cho hai nguồn dao động cùng tần số (10-20 Hz)</li>
+        <li>Quan sát hình ảnh giao thoa trên mặt nước</li>
+        <li>Đếm số vân cực đại, cực tiểu</li>
+        <li>Thay đổi tần số, khoảng cách nguồn</li>
+    </ol>
+
+    <h3>c) Kết quả</h3>
+    <ul>
+        <li>Quan sát được các vân hyperbola rõ ràng</li>
+        <li>Khoảng vân tỉ lệ với bước sóng</li>
+        <li>Số vân phụ thuộc tỉ số l/λ</li>
+    </ul>
+
+    <div class="important">
+        <strong>Lưu ý quan trọng:</strong>
+        <ul>
+            <li>Giao thoa chỉ xảy ra với các nguồn kết hợp</li>
+            <li>Hiệu đường đi quyết định cực đại hay cực tiểu</li>
+            <li>Với hai nguồn cùng pha: Δd = kλ (cực đại), Δd = (k+0,5)λ (cực tiểu)</li>
+            <li>Trung điểm S₁S₂ luôn là cực đại với hai nguồn cùng pha</li>
+        </ul>
+    </div>
+
+    <div class="quote">
+        <strong>Lưu ý khi học:</strong>
+        <ul>
+            <li>Nắm vững điều kiện giao thoa: nguồn kết hợp</li>
+            <li>Phân biệt rõ cực đại (Δd = kλ) và cực tiểu (Δd = (k+0,5)λ)</li>
+            <li>Khi đếm số vân, chú ý điều kiện giới hạn</li>
+            <li>Giao thoa là bằng chứng quan trọng về bản chất sóng</li>
+        </ul>
+    </div>
+
+    <div class="important">
+        <strong>Tổng kết:</strong> Giao thoa là hiện tượng đặc trưng của sóng, xảy ra khi hai sóng kết hợp gặp nhau. Với hai nguồn cùng pha: cực đại khi d₂ - d₁ = kλ, cực tiểu khi d₂ - d₁ = (k+0,5)λ. Hiện tượng giao thoa có nhiều ứng dụng quan trọng trong khoa học và công nghệ.
+    </div>
+</body>
+</html>

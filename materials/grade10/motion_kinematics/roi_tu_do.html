@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sự rơi tự do - Vật lý 10</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #7f8c8d;
+            margin-top: 20px;
+        }
+        .definition-box {
+            background-color: #ecf0f1;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .formula-box {
+            background-color: #e8f6f3;
+            border: 1px solid #16a085;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .example-box {
+            background-color: #fef9e7;
+            border: 1px solid #f39c12;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .note-box {
+            background-color: #fadbd8;
+            border-left: 4px solid #e74c3c;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .practice-problem {
+            background-color: #f5f5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .solution {
+            background-color: #d5f4e6;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        .important-formula {
+            background-color: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .experiment-box {
+            background-color: #e8f5e9;
+            border: 1px solid #4caf50;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sự rơi tự do</h1>
+    
+    <div class="definition-box">
+        <strong>Định nghĩa:</strong> Sự rơi tự do là sự rơi của các vật chỉ dưới tác dụng của trọng lực, không có sức cản của không khí.
+    </div>
+
+    <h2>I. Sự rơi trong không khí và sự rơi tự do</h2>
+    
+    <h3>1. Sự rơi của các vật trong không khí</h3>
+    <p>Trong không khí, các vật rơi nhanh chậm khác nhau do:</p>
+    <ul>
+        <li>Sức cản của không khí</li>
+        <li>Hình dạng và diện tích bề mặt của vật</li>
+        <li>Khối lượng riêng của vật</li>
+    </ul>
+
+    <div class="experiment-box">
+        <h3>Thí nghiệm ống Newton</h3>
+        <p>Trong ống thủy tinh có không khí: lông vũ rơi chậm hơn viên bi sắt.</p>
+        <p>Khi hút hết không khí trong ống: lông vũ và viên bi rơi nhanh như nhau.</p>
+        <p><strong>Kết luận:</strong> Nếu loại bỏ sức cản không khí, mọi vật đều rơi như nhau.</p>
+    </div>
+
+    <h3>2. Sự rơi tự do</h3>
+    <div class="note-box">
+        <strong>Đặc điểm của rơi tự do:</strong>
+        <ul>
+            <li>Phương: thẳng đứng</li>
+            <li>Chiều: từ trên xuống dưới</li>
+            <li>Là chuyển động thẳng nhanh dần đều</li>
+            <li>Vận tốc ban đầu v₀ = 0 (nếu thả rơi)</li>
+        </ul>
+    </div>
+
+    <h2>II. Nghiên cứu sự rơi tự do</h2>
+    
+    <h3>1. Gia tốc rơi tự do</h3>
+    <p>Tại một nơi trên Trái Đất và ở gần mặt đất, mọi vật đều rơi tự do với cùng một gia tốc g.</p>
+    
+    <div class="formula-box">
+        <p><strong>Gia tốc rơi tự do:</strong></p>
+        <p>\[g \approx 9,8 \text{ m/s}^2\]</p>
+        <p>Trong tính toán thường lấy: \(g = 10 \text{ m/s}^2\)</p>
+    </div>
+
+    <table>
+        <tr>
+            <th>Địa điểm</th>
+            <th>Vĩ độ</th>
+            <th>g (m/s²)</th>
+        </tr>
+        <tr>
+            <td>Xích đạo</td>
+            <td>0°</td>
+            <td>9,780</td>
+        </tr>
+        <tr>
+            <td>Hà Nội</td>
+            <td>21°</td>
+            <td>9,793</td>
+        </tr>
+        <tr>
+            <td>Moskva</td>
+            <td>56°</td>
+            <td>9,816</td>
+        </tr>
+        <tr>
+            <td>Cực Bắc</td>
+            <td>90°</td>
+            <td>9,832</td>
+        </tr>
+    </table>
+
+    <h3>2. Công thức của chuyển động rơi tự do</h3>
+    
+    <div class="important-formula">
+        <h3>Các công thức cơ bản (thả rơi từ độ cao h):</h3>
+        <p>Chọn chiều dương hướng xuống, gốc tọa độ tại vị trí thả:</p>
+        <ol>
+            <li><strong>Vận tốc:</strong> \[v = gt\]</li>
+            <li><strong>Quãng đường:</strong> \[s = \frac{1}{2}gt^2\]</li>
+            <li><strong>Công thức liên hệ:</strong> \[v^2 = 2gs\]</li>
+            <li><strong>Thời gian rơi:</strong> \[t = \sqrt{\frac{2h}{g}}\]</li>
+            <li><strong>Vận tốc chạm đất:</strong> \[v = \sqrt{2gh}\]</li>
+        </ol>
+    </div>
+
+    <h2>III. Các dạng bài toán rơi tự do</h2>
+    
+    <h3>Dạng 1: Thả rơi tự do</h3>
+    
+    <div class="example-box">
+        <h3>Ví dụ 1:</h3>
+        <p>Thả một hòn đá từ độ cao 45m. Lấy g = 10 m/s². Tính:</p>
+        <ol type="a">
+            <li>Thời gian rơi</li>
+            <li>Vận tốc khi chạm đất</li>
+            <li>Vận tốc sau 2s</li>
+            <li>Quãng đường rơi trong giây cuối cùng</li>
+        </ol>
+        
+        <div class="solution">
+            <strong>Giải:</strong><br>
+            a) Thời gian rơi: \(t = \sqrt{\frac{2h}{g}} = \sqrt{\frac{2 \times 45}{10}} = 3\) s<br>
+            <br>
+            b) Vận tốc chạm đất: \(v = \sqrt{2gh} = \sqrt{2 \times 10 \times 45} = 30\) m/s<br>
+            <br>
+            c) Vận tốc sau 2s: \(v = gt = 10 \times 2 = 20\) m/s<br>
+            <br>
+            d) Quãng đường trong 3s: \(s_3 = \frac{1}{2} \times 10 \times 3^2 = 45\) m<br>
+            Quãng đường trong 2s: \(s_2 = \frac{1}{2} \times 10 \times 2^2 = 20\) m<br>
+            Quãng đường trong giây cuối: \(\Delta s = s_3 - s_2 = 45 - 20 = 25\) m
+        </div>
+    </div>
+
+    <h3>Dạng 2: Ném vật thẳng đứng lên cao</h3>
+    
+    <div class="note-box">
+        <strong>Lưu ý:</strong> Khi ném vật lên cao:
+        <ul>
+            <li>Giai đoạn đi lên: v₀ > 0, a = -g (chuyển động chậm dần đều)</li>
+            <li>Tại điểm cao nhất: v = 0</li>
+            <li>Giai đoạn đi xuống: a = g (rơi tự do)</li>
+        </ul>
+    </div>
+
+    <div class="example-box">
+        <h3>Ví dụ 2:</h3>
+        <p>Ném một vật thẳng đứng lên cao với vận tốc 20 m/s. Lấy g = 10 m/s². Tính:</p>
+        <ol type="a">
+            <li>Độ cao cực đại</li>
+            <li>Thời gian lên cao nhất</li>
+            <li>Thời gian vật ở trong không khí</li>
+            <li>Vận tốc khi về đến vị trí ném</li>
+        </ol>
+        
+        <div class="solution">
+            <strong>Giải:</strong><br>
+            Chọn chiều dương hướng lên, gốc tọa độ tại vị trí ném<br>
+            <br>
+            a) Độ cao cực đại (v = 0):<br>
+            \(v^2 - v_0^2 = -2gh_{max}\)<br>
+            \(0 - 20^2 = -2 \times 10 \times h_{max}\)<br>
+            \(h_{max} = 20\) m<br>
+            <br>
+            b) Thời gian lên cao nhất:<br>
+            \(v = v_0 - gt\)<br>
+            \(0 = 20 - 10t\)<br>
+            \(t = 2\) s<br>
+            <br>
+            c) Thời gian trong không khí: Do tính đối xứng<br>
+            \(t_{tổng} = 2t = 4\) s<br>
+            <br>
+            d) Vận tốc về đến vị trí ném: \(v = -v_0 = -20\) m/s<br>
+            (Dấu âm chỉ chiều xuống)
+        </div>
+    </div>
+
+    <h3>Dạng 3: Hai vật rơi tự do</h3>
+    
+    <div class="practice-problem">
+        <strong>Bài tập 1:</strong> Từ độ cao 80m, thả rơi vật A. Sau 1s, từ độ cao 45m thả rơi vật B. Lấy g = 10 m/s². Hỏi:
+        <ol type="a">
+            <li>Hai vật chạm đất cách nhau bao lâu?</li>
+            <li>Khi B bắt đầu rơi, A cách B bao nhiêu?</li>
+            <li>Hai vật có gặp nhau trong không khí không?</li>
+        </ol>
+        
+        <div class="solution">
+            <strong>Giải:</strong><br>
+            a) Thời gian A rơi: \(t_A = \sqrt{\frac{2 \times 80}{10}} = 4\) s<br>
+            Thời gian B rơi: \(t_B = \sqrt{\frac{2 \times 45}{10}} = 3\) s<br>
+            <br>
+            A chạm đất tại t = 4s<br>
+            B chạm đất tại t = 1 + 3 = 4s<br>
+            → Hai vật chạm đất cùng lúc<br>
+            <br>
+            b) Khi B bắt đầu rơi (t = 1s):<br>
+            A đã rơi được: \(s_A = \frac{1}{2} \times 10 \times 1^2 = 5\) m<br>
+            A ở độ cao: 80 - 5 = 75m<br>
+            B ở độ cao: 45m<br>
+            Khoảng cách: 75 - 45 = 30m<br>
+            <br>
+            c) Phương trình chuyển động:<br>
+            A: \(y_A = 80 - 5t^2\) (t ≥ 0)<br>
+            B: \(y_B = 45 - 5(t-1)^2\) (t ≥ 1)<br>
+            <br>
+            Để gặp nhau: \(y_A = y_B\)<br>
+            \(80 - 5t^2 = 45 - 5(t-1)^2\)<br>
+            \(80 - 5t^2 = 45 - 5t^2 + 10t - 5\)<br>
+            \(80 = 40 + 10t\)<br>
+            \(t = 4\) s<br>
+            <br>
+            Tại t = 4s, cả hai đều ở mặt đất → Gặp nhau tại mặt đất
+        </div>
+    </div>
+
+    <h3>Dạng 4: Quãng đường trong n giây cuối</h3>
+    
+    <div class="formula-box">
+        <p><strong>Công thức quãng đường trong n giây cuối:</strong></p>
+        <p>\[\Delta s = h - \frac{g(t-n)^2}{2}\]</p>
+        <p>Trong đó t là tổng thời gian rơi</p>
+    </div>
+
+    <h2>IV. Ứng dụng của sự rơi tự do</h2>
+    
+    <div class="definition-box">
+        <h3>Các ứng dụng thực tế:</h3>
+        <ul>
+            <li><strong>Đo độ sâu giếng:</strong> Thả đá và đo thời gian nghe tiếng đá chạm đáy</li>
+            <li><strong>Tháp thả rơi tự do:</strong> Tạo môi trường không trọng lượng để nghiên cứu</li>
+            <li><strong>Dù lượn:</strong> Tính toán thời gian và vận tốc rơi</li>
+            <li><strong>Thang máy:</strong> Tính toán gia tốc an toàn</li>
+        </ul>
+    </div>
+
+    <h2>V. Bài tập tự luyện</h2>
+    
+    <div class="practice-problem">
+        <strong>Bài 1:</strong> Một vật rơi tự do từ độ cao h. Trong giây cuối cùng vật rơi được 35m. Lấy g = 10 m/s². Tính:
+        <ol type="a">
+            <li>Độ cao h</li>
+            <li>Thời gian rơi</li>
+        </ol>
+    </div>
+
+    <div class="practice-problem">
+        <strong>Bài 2:</strong> Từ một khí cầu đang bay lên với vận tốc 5 m/s ở độ cao 300m, người ta thả một vật. Lấy g = 10 m/s². Tính:
+        <ol type="a">
+            <li>Độ cao cực đại vật đạt được</li>
+            <li>Thời gian vật rơi đến đất</li>
+            <li>Vận tốc khi chạm đất</li>
+        </ol>
+    </div>
+
+    <div class="practice-problem">
+        <strong>Bài 3:</strong> Hai viên bi được thả rơi từ cùng độ cao. Viên bi 2 thả sau viên bi 1 là 0,5s. Tính khoảng cách giữa hai viên bi sau khi viên bi 1 rơi được 2s. Lấy g = 10 m/s².
+    </div>
+
+    <div class="practice-problem">
+        <strong>Bài 4:</strong> Một vật được ném thẳng đứng lên cao từ mặt đất. Sau 4s vật rơi trở lại mặt đất. Lấy g = 10 m/s². Tính:
+        <ol type="a">
+            <li>Vận tốc ném ban đầu</li>
+            <li>Độ cao cực đại</li>
+            <li>Vận tốc của vật ở độ cao 15m</li>
+        </ol>
+    </div>
+
+    <hr style="margin-top: 50px;">
+    
+    <h3>Chủ đề liên quan:</h3>
+    <ul>
+        <li><a href="chuyen_dong_thang_deu.html">Chuyển động thẳng đều</a></li>
+        <li><a href="chuyen_dong_bien_doi_deu.html">Chuyển động thẳng biến đổi đều</a></li>
+        <li><a href="chuyen_dong_tron_deu.html">Chuyển động tròn đều</a></li>
+    </ul>
+</body>
+</html>

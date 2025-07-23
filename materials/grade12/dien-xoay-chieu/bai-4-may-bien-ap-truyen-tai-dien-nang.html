@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Máy biến áp và truyền tải điện năng - Vật lý 12</title>
+    <meta name="description" content="Tìm hiểu về cấu tạo, nguyên lý hoạt động của máy biến áp và ứng dụng trong truyền tải điện năng đi xa. Phân tích cách giảm hao phí điện năng.">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1 { color: #1e293b; font-size: 32px; }
+        h2 { color: #334155; font-size: 24px; margin-top: 30px; }
+        h3 { color: #334155; font-size: 20px; }
+        .quote { background: #fdf6eb; border: 1px solid #f9d9b0; padding: 15px; margin: 20px 0; border-radius: 5px; }
+        .quote3 { padding-left: 10px; border-left: 3px solid #cf2e2e; font-style: italic; color: #cf2e2e; margin: 15px 0; }
+        .formula { background: #f0f4f8; padding: 10px; margin: 10px 0; text-align: center; font-size: 18px; }
+        img { max-width: 100%; height: auto; display: block; margin: 20px auto; }
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+        table th, table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        table th { background-color: #f2f2f2; }
+        .example { background: #e8f5e9; padding: 15px; margin: 20px 0; border-left: 4px solid #4caf50; }
+        .important { background: #ffe4e1; padding: 15px; margin: 20px 0; border-left: 4px solid #f44336; }
+        .diagram { background: #f5f5f5; padding: 20px; margin: 20px 0; border: 2px solid #ddd; text-align: center; font-family: monospace; }
+        .practical { background: #fff3cd; padding: 15px; margin: 20px 0; border-left: 4px solid #ffc107; }
+    </style>
+</head>
+<body>
+
+<h1>Máy biến áp và truyền tải điện năng - Vật lý 12</h1>
+
+<p>Máy biến áp là thiết bị quan trọng nhất trong hệ thống điện, cho phép biến đổi điện áp để truyền tải điện năng hiệu quả đi xa hàng nghìn kilomet.</p>
+
+<h2>1. Cấu tạo của máy biến áp</h2>
+
+<h3>a) Các bộ phận chính</h3>
+<ul>
+    <li><strong>Lõi thép:</strong> Gồm nhiều lá thép kỹ thuật điện ghép lại, có sơn cách điện</li>
+    <li><strong>Cuộn sơ cấp:</strong> N₁ vòng dây, nối với nguồn điện xoay chiều</li>
+    <li><strong>Cuộn thứ cấp:</strong> N₂ vòng dây, nối với tải tiêu thụ</li>
+</ul>
+
+<div class="diagram">
+<pre>
+    Cuộn sơ cấp          Cuộn thứ cấp
+    (N₁ vòng)            (N₂ vòng)
+    ╔═══╗  ┌─────────┐  ╔═══╗
+    ║ ○ ║  │ Lõi thép│  ║ ○ ║
+U₁ →║ ○ ║  │         │  ║ ○ ║→ U₂
+    ║ ○ ║  │    ═════│  ║ ○ ║
+    ╚═══╝  └─────────┘  ╚═══╝
+</pre>
+</div>
+
+<h3>b) Phân loại theo cấu tạo</h3>
+<ul>
+    <li><strong>Máy biến áp lõi đóng:</strong> Từ thông khép kín trong lõi thép</li>
+    <li><strong>Máy biến áp lõi hở:</strong> Có khe hở không khí (ít dùng)</li>
+</ul>
+
+<h2>2. Nguyên lý hoạt động</h2>
+
+<h3>a) Hiện tượng cảm ứng điện từ</h3>
+<p>Khi đặt điện áp xoay chiều u₁ vào cuộn sơ cấp:</p>
+<ol>
+    <li>Dòng điện i₁ tạo từ thông biến thiên trong lõi thép</li>
+    <li>Từ thông này xuyên qua cuộn thứ cấp</li>
+    <li>Xuất hiện suất điện động cảm ứng e₂ trong cuộn thứ cấp</li>
+</ol>
+
+<h3>b) Các phương trình cơ bản</h3>
+<p>Từ thông qua mỗi vòng dây:</p>
+<div class="formula">
+Φ = Φ₀sin(ωt)
+</div>
+
+<p>Suất điện động trong các cuộn dây:</p>
+<div class="formula">
+e₁ = -N₁(dΦ/dt) = N₁ωΦ₀cos(ωt)
+</div>
+<div class="formula">
+e₂ = -N₂(dΦ/dt) = N₂ωΦ₀cos(ωt)
+</div>
+
+<h2>3. Máy biến áp lý tưởng</h2>
+
+<h3>a) Điều kiện lý tưởng</h3>
+<ul>
+    <li>Điện trở các cuộn dây r₁ = r₂ = 0</li>
+    <li>Từ thông không bị rò rỉ ra ngoài</li>
+    <li>Không có tổn hao trong lõi thép</li>
+    <li>Hiệu suất H = 100%</li>
+</ul>
+
+<h3>b) Các hệ thức của máy biến áp lý tưởng</h3>
+
+<div class="important">
+<h4>1. Hệ thức điện áp:</h4>
+<div class="formula">
+U₂/U₁ = N₂/N₁ = k
+</div>
+
+<h4>2. Hệ thức dòng điện:</h4>
+<div class="formula">
+I₂/I₁ = N₁/N₂ = 1/k
+</div>
+
+<h4>3. Bảo toàn công suất:</h4>
+<div class="formula">
+P₁ = P₂ → U₁I₁ = U₂I₂
+</div>
+</div>
+
+<p>Trong đó k = N₂/N₁ là tỉ số biến áp:</p>
+<ul>
+    <li>k > 1: Máy tăng áp</li>
+    <li>k < 1: Máy hạ áp</li>
+    <li>k = 1: Máy biến áp cách ly</li>
+</ul>
+
+<div class="quote3">
+<strong>Ghi nhớ:</strong> Tăng áp bao nhiêu lần thì giảm dòng bấy nhiêu lần và ngược lại.
+</div>
+
+<h2>4. Máy biến áp thực tế</h2>
+
+<h3>a) Các tổn hao trong máy biến áp</h3>
+<ol>
+    <li><strong>Tổn hao đồng:</strong> Do điện trở cuộn dây (I²R)</li>
+    <li><strong>Tổn hao sắt:</strong>
+        <ul>
+            <li>Dòng điện xoáy (Foucault)</li>
+            <li>Từ trễ</li>
+        </ul>
+    </li>
+    <li><strong>Tổn hao do từ thông rò:</strong> Từ thông không khép kín</li>
+</ol>
+
+<h3>b) Hiệu suất</h3>
+<div class="formula">
+H = P₂/P₁ = P₂/(P₂ + ΔP) × 100%
+</div>
+
+<p>Hiệu suất máy biến áp thực tế: 90% - 99%</p>
+
+<h3>c) Biện pháp giảm tổn hao</h3>
+<ul>
+    <li>Dùng lõi thép kỹ thuật điện (silic)</li>
+    <li>Ghép lõi từ nhiều lá mỏng cách điện</li>
+    <li>Dùng dây đồng tiết diện lớn</li>
+    <li>Thiết kế từ thông khép kín</li>
+</ul>
+
+<h2>5. Truyền tải điện năng đi xa</h2>
+
+<h3>a) Sơ đồ truyền tải</h3>
+<div class="diagram">
+<pre>
+Nhà máy điện → MBA tăng áp → Đường dây → MBA hạ áp → Nơi tiêu thụ
+     P              500kV        R,r        220V         P'
+</pre>
+</div>
+
+<h3>b) Công suất hao phí trên đường dây</h3>
+<p>Với đường dây có điện trở R:</p>
+<div class="formula">
+ΔP = I²R = (P/U)²R = P²R/U²
+</div>
+
+<div class="important">
+<h3>Kết luận quan trọng:</h3>
+<p>Công suất hao phí tỉ lệ nghịch với bình phương điện áp truyền tải</p>
+<p>→ Tăng U lên n lần thì ΔP giảm n² lần</p>
+</div>
+
+<h3>c) Hiệu suất truyền tải</h3>
+<div class="formula">
+H = P'ᴾ = (P - ΔP)/P = 1 - ΔP/P
+</div>
+
+<div class="example">
+<h4>Ví dụ 1:</h4>
+<p>Truyền tải công suất P = 10MW đi xa 100km. Điện trở đường dây R = 20Ω.</p>
+<p>a) Tính công suất hao phí khi truyền với U = 10kV</p>
+<p>b) Muốn ΔP < 2% thì phải truyền với điện áp bao nhiêu?</p>
+
+<p><strong>Giải:</strong></p>
+<p>a) ΔP = P²R/U² = (10⁷)² × 20/(10⁴)²</p>
+<p>= 10¹⁴ × 20/10⁸ = 2 × 10⁷W = 20MW</p>
+<p>Vô lý! Hao phí lớn hơn công suất truyền!</p>
+
+<p>b) Để ΔP < 2%P = 0,2MW = 2 × 10⁵W</p>
+<p>U² > P²R/ΔP = (10⁷)² × 20/(2 × 10⁵)</p>
+<p>U² > 10¹⁰ → U > 10⁵V = 100kV</p>
+<p>Thực tế cần truyền với U ≥ 110kV</p>
+</div>
+
+<h2>6. Hệ thống điện quốc gia</h2>
+
+<h3>a) Các cấp điện áp</h3>
+<table>
+    <tr>
+        <th>Cấp điện áp</th>
+        <th>Giá trị (kV)</th>
+        <th>Ứng dụng</th>
+    </tr>
+    <tr>
+        <td>Siêu cao áp</td>
+        <td>500, 220</td>
+        <td>Truyền tải liên vùng</td>
+    </tr>
+    <tr>
+        <td>Cao áp</td>
+        <td>110, 35</td>
+        <td>Truyền tải trong vùng</td>
+    </tr>
+    <tr>
+        <td>Trung áp</td>
+        <td>22, 10, 6</td>
+        <td>Phân phối đến khu vực</td>
+    </tr>
+    <tr>
+        <td>Hạ áp</td>
+        <td>0,4 (380/220V)</td>
+        <td>Cấp cho người dùng</td>
+    </tr>
+</table>
+
+<h3>b) Trạm biến áp</h3>
+<ul>
+    <li><strong>Trạm tăng áp:</strong> Tại nhà máy điện</li>
+    <li><strong>Trạm trung gian:</strong> 500/220kV, 220/110kV</li>
+    <li><strong>Trạm phân phối:</strong> 110/22kV, 22/0,4kV</li>
+</ul>
+
+<h2>7. Các loại máy biến áp đặc biệt</h2>
+
+<h3>a) Máy biến áp tự ngẫu</h3>
+<ul>
+    <li>Chỉ có một cuộn dây</li>
+    <li>Tiết kiệm vật liệu</li>
+    <li>Không cách ly điện</li>
+    <li>Dùng khi k ≈ 1</li>
+</ul>
+
+<h3>b) Máy biến áp ba pha</h3>
+<ul>
+    <li>3 lõi thép nối từ</li>
+    <li>6 cuộn dây (3 sơ + 3 thứ)</li>
+    <li>Hiệu quả cao hơn 3 máy một pha</li>
+</ul>
+
+<h3>c) Máy biến áp đo lường</h3>
+<ul>
+    <li><strong>Biến điện áp (VT):</strong> Hạ áp để đo</li>
+    <li><strong>Biến dòng điện (CT):</strong> Giảm dòng để đo</li>
+    <li>Bảo vệ thiết bị đo</li>
+</ul>
+
+<h2>8. Ứng dụng của máy biến áp</h2>
+
+<div class="practical">
+<h3>Trong đời sống:</h3>
+<ul>
+    <li><strong>Sạc điện thoại:</strong> 220V → 5V</li>
+    <li><strong>Lò vi sóng:</strong> 220V → 2000V</li>
+    <li><strong>Máy hàn:</strong> 220V → 50-80V</li>
+    <li><strong>Đèn halogen:</strong> 220V → 12V</li>
+</ul>
+
+<h3>Trong công nghiệp:</h3>
+<ul>
+    <li><strong>Lò điện:</strong> Điều chỉnh nhiệt độ</li>
+    <li><strong>Máy X-quang:</strong> Tạo cao áp</li>
+    <li><strong>Truyền tải điện:</strong> Tăng/hạ áp</li>
+</ul>
+</div>
+
+<h2>9. An toàn khi sử dụng máy biến áp</h2>
+
+<div class="important">
+<h3>Lưu ý an toàn:</h3>
+<ul>
+    <li>Không chạm vào cuộn thứ cấp của máy tăng áp</li>
+    <li>Nối đất vỏ máy biến áp</li>
+    <li>Kiểm tra cách điện định kỳ</li>
+    <li>Không quá tải máy biến áp</li>
+    <li>Tránh ngắn mạch cuộn thứ cấp</li>
+</ul>
+</div>
+
+<h2>10. Bài toán truyền tải điện năng</h2>
+
+<div class="example">
+<h4>Ví dụ 2:</h4>
+<p>Một nhà máy phát điện công suất 100MW, điện áp 10kV. Điện năng được truyền đi xa bằng đường dây có điện trở tổng cộng R = 10Ω.</p>
+<p>a) Tính công suất hao phí nếu không dùng máy biến áp</p>
+<p>b) Dùng máy biến áp tăng lên 220kV để truyền tải. Tính:</p>
+<p>- Tỉ số biến áp</p>
+<p>- Công suất hao phí</p>
+<p>- Hiệu suất truyền tải</p>
+<p>c) So sánh hai trường hợp</p>
+
+<p><strong>Giải:</strong></p>
+<p>a) Không dùng MBA: U = 10kV</p>
+<p>I = P/U = 10⁸/10⁴ = 10⁴A</p>
+<p>ΔP = I²R = (10⁴)² × 10 = 10⁹W = 1000MW (!)</p>
+<p>Không thể truyền tải!</p>
+
+<p>b) Dùng MBA tăng lên 220kV:</p>
+<p>- Tỉ số: k = 220/10 = 22</p>
+<p>- I' = P/U' = 10⁸/(220 × 10³) = 455A</p>
+<p>- ΔP' = I'²R = 455² × 10 = 2,07MW</p>
+<p>- H = (P - ΔP')/P = (100 - 2,07)/100 = 97,93%</p>
+
+<p>c) So sánh:</p>
+<p>- Tăng U lên 22 lần</p>
+<p>- ΔP giảm 22² = 484 lần</p>
+<p>- Từ không thể truyền → H = 97,93%</p>
+</div>
+
+<h2>11. Tính toán thiết kế đường dây</h2>
+
+<h3>a) Chọn điện áp truyền tải</h3>
+<p>Công thức kinh nghiệm:</p>
+<div class="formula">
+U(kV) ≈ 4,34√(L + 16P)
+</div>
+<p>Với L: khoảng cách (km), P: công suất (MW)</p>
+
+<h3>b) Chọn tiết diện dây dẫn</h3>
+<div class="formula">
+S = ρL/R = I/J
+</div>
+<p>Với J: mật độ dòng cho phép (A/mm²)</p>
+
+<h2>12. Bài tập tự luyện</h2>
+
+<div class="quote">
+<h3>Bài 1:</h3>
+<p>Máy biến áp lý tưởng có N₁ = 1000 vòng, N₂ = 200 vòng. Cuộn sơ cấp nối với điện áp 220V.</p>
+<p>a) Tính điện áp cuộn thứ cấp</p>
+<p>b) Nối cuộn thứ cấp với R = 10Ω. Tính dòng điện trong các cuộn dây</p>
+<p>c) Tính công suất máy biến áp cung cấp cho tải</p>
+</div>
+
+<div class="quote">
+<h3>Bài 2:</h3>
+<p>Truyền tải công suất 50MW đi xa 200km bằng đường dây có điện trở 0,1Ω/km.</p>
+<p>a) Tính điện áp truyền tải để hao phí không quá 5%</p>
+<p>b) Với U = 220kV, tính hiệu suất truyền tải</p>
+<p>c) Nếu công suất tăng gấp đôi, phải tăng U lên bao nhiêu để giữ nguyên hiệu suất?</p>
+</div>
+
+<h2>13. Tổng kết</h2>
+
+<div class="important">
+<h3>Những điều cần nhớ:</h3>
+<ul>
+    <li>MBA hoạt động theo nguyên lý cảm ứng điện từ</li>
+    <li>U₂/U₁ = N₂/N₁ và I₂/I₁ = N₁/N₂</li>
+    <li>Công suất: P₁ = P₂ (máy lý tưởng)</li>
+    <li>Hao phí: ΔP = P²R/U²</li>
+    <li>Tăng U → giảm hao phí theo bình phương</li>
+    <li>Truyền tải điện phải dùng cao áp</li>
+</ul>
+</div>
+
+<div class="quote">
+<h3>Ý nghĩa thực tiễn:</h3>
+<p>Nhờ máy biến áp, điện năng có thể truyền tải hiệu quả đi xa hàng nghìn km, tạo nên mạng lưới điện quốc gia và quốc tế, góp phần phát triển kinh tế - xã hội.</p>
+</div>
+
+<div class="related-posts">
+    <h3>Bài viết liên quan:</h3>
+    <ul>
+        <li><a href="bai-1-dai-cuong-dong-dien-xoay-chieu.html">Đại cương về dòng điện xoay chiều</a></li>
+        <li><a href="bai-2-cac-mach-dien-xoay-chieu.html">Các mạch điện xoay chiều</a></li>
+        <li><a href="bai-3-cong-suat-dien-xoay-chieu.html">Công suất điện xoay chiều</a></li>
+    </ul>
+</div>
+
+</body>
+</html>

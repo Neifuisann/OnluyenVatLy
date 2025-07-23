@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lực và Ba định luật Newton - Vật lý 10</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #7f8c8d;
+            margin-top: 20px;
+        }
+        .definition-box {
+            background-color: #ecf0f1;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .formula-box {
+            background-color: #e8f6f3;
+            border: 1px solid #16a085;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .example-box {
+            background-color: #fef9e7;
+            border: 1px solid #f39c12;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .note-box {
+            background-color: #fadbd8;
+            border-left: 4px solid #e74c3c;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .practice-problem {
+            background-color: #f5f5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .solution {
+            background-color: #d5f4e6;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        .important-formula {
+            background-color: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .law-box {
+            background-color: #e3f2fd;
+            border: 1px solid #2196f3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .method-box {
+            background-color: #f3e5f5;
+            border: 1px solid #9c27b0;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        .diagram {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Lực và Ba định luật Newton</h1>
+    
+    <div class="definition-box">
+        <strong>Giới thiệu:</strong> Ba định luật Newton là nền tảng của cơ học cổ điển, mô tả mối quan hệ giữa lực và chuyển động. Những định luật này giúp giải thích và dự đoán chuyển động của các vật trong tự nhiên.
+    </div>
+
+    <h2>I. Khái niệm về lực</h2>
+    
+    <h3>1. Định nghĩa lực</h3>
+    
+    <div class="definition-box">
+        <strong>Định nghĩa:</strong> Lực là đại lượng vectơ đặc trưng cho tác dụng của vật này lên vật khác, gây ra gia tốc cho vật hoặc làm vật biến dạng.
+    </div>
+
+    <div class="note-box">
+        <strong>Đặc điểm của lực:</strong>
+        <ul>
+            <li>Là đại lượng vectơ - có độ lớn, phương và chiều</li>
+            <li>Đơn vị: Newton (N)</li>
+            <li>1N = 1 kg.m/s²</li>
+            <li>Lực không phải là nguyên nhân duy trì chuyển động</li>
+        </ul>
+    </div>
+
+    <h3>2. Biểu diễn lực</h3>
+    
+    <p>Lực được biểu diễn bằng một mũi tên có:</p>
+    <ul>
+        <li><strong>Gốc:</strong> Điểm đặt của lực</li>
+        <li><strong>Phương, chiều:</strong> Phương, chiều của lực</li>
+        <li><strong>Độ dài:</strong> Tỉ lệ với độ lớn của lực</li>
+    </ul>
+
+    <h3>3. Lực cân bằng</h3>
+    
+    <div class="definition-box">
+        <strong>Hai lực cân bằng:</strong> Là hai lực cùng tác dụng vào một vật, cùng giá, cùng độ lớn nhưng ngược chiều.
+        <p style="text-align: center; margin-top: 10px;">
+            \[\vec{F}_1 + \vec{F}_2 = \vec{0}\]
+        </p>
+    </div>
+
+    <h2>II. Định luật I Newton - Định luật quán tính</h2>
+    
+    <div class="law-box">
+        <h3>1. Phát biểu định luật</h3>
+        <p><strong>Định luật I Newton:</strong> Nếu vật không chịu tác dụng của lực nào hoặc chịu tác dụng của các lực có hợp lực bằng không, thì:</p>
+        <ul>
+            <li>Vật đang đứng yên sẽ tiếp tục đứng yên</li>
+            <li>Vật đang chuyển động sẽ tiếp tục chuyển động thẳng đều</li>
+        </ul>
+        <p style="text-align: center; font-size: 1.2em; margin-top: 15px;">
+            \[\sum \vec{F} = \vec{0} \Rightarrow \vec{v} = \text{const}\]
+        </p>
+    </div>
+
+    <h3>2. Quán tính</h3>
+    
+    <div class="definition-box">
+        <strong>Quán tính:</strong> Là tính chất của mọi vật có xu hướng bảo toàn vận tốc của mình cả về hướng và độ lớn.
+    </div>
+
+    <div class="example-box">
+        <h3>Ví dụ về quán tính:</h3>
+        <ul>
+            <li>Khi xe phanh gấp, hành khách bị nghiêng về phía trước</li>
+            <li>Khi xe tăng tốc đột ngột, hành khách bị ngả về phía sau</li>
+            <li>Giũ mạnh cán búa để lắp chặt đầu búa vào cán</li>
+            <li>Chạy đà trước khi nhảy xa</li>
+        </ul>
+    </div>
+
+    <h2>III. Định luật II Newton</h2>
+    
+    <div class="law-box">
+        <h3>1. Phát biểu định luật</h3>
+        <p><strong>Định luật II Newton:</strong> Gia tốc của một vật cùng hướng với lực tác dụng lên vật. Độ lớn của gia tốc tỉ lệ thuận với độ lớn của lực và tỉ lệ nghịch với khối lượng của vật.</p>
+    </div>
+
+    <div class="important-formula">
+        <p><strong>Công thức định luật II Newton:</strong></p>
+        <p style="font-size: 1.3em; text-align: center;">
+            \[\vec{F} = m\vec{a}\]
+        </p>
+        <p>Trong đó:</p>
+        <ul style="text-align: left;">
+            <li>\(\vec{F}\): Lực tác dụng lên vật (N)</li>
+            <li>\(m\): Khối lượng của vật (kg)</li>
+            <li>\(\vec{a}\): Gia tốc của vật (m/s²)</li>
+        </ul>
+    </div>
+
+    <h3>2. Trường hợp nhiều lực tác dụng</h3>
+    
+    <div class="formula-box">
+        <p><strong>Khi có nhiều lực tác dụng:</strong></p>
+        <p>\[\sum \vec{F} = \vec{F}_1 + \vec{F}_2 + ... + \vec{F}_n = m\vec{a}\]</p>
+    </div>
+
+    <h3>3. Các dạng khác của định luật II Newton</h3>
+    
+    <div class="note-box">
+        <strong>Dạng vi phân:</strong>
+        \[\vec{F} = \frac{d\vec{p}}{dt} = \frac{d(m\vec{v})}{dt}\]
+        <p>Với khối lượng không đổi: \(\vec{F} = m\frac{d\vec{v}}{dt} = m\vec{a}\)</p>
+    </div>
+
+    <h2>IV. Định luật III Newton</h2>
+    
+    <div class="law-box">
+        <h3>1. Phát biểu định luật</h3>
+        <p><strong>Định luật III Newton:</strong> Khi vật A tác dụng lên vật B một lực, thì vật B cũng tác dụng lại vật A một lực. Hai lực này:</p>
+        <ul>
+            <li>Cùng phương</li>
+            <li>Ngược chiều</li>
+            <li>Cùng độ lớn</li>
+            <li>Đặt vào hai vật khác nhau</li>
+        </ul>
+        <p style="text-align: center; font-size: 1.2em; margin-top: 15px;">
+            \[\vec{F}_{AB} = -\vec{F}_{BA}\]
+        </p>
+    </div>
+
+    <h3>2. Lực và phản lực</h3>
+    
+    <div class="note-box">
+        <strong>Lưu ý quan trọng:</strong>
+        <ul>
+            <li>Lực và phản lực luôn xuất hiện từng cặp</li>
+            <li>Lực và phản lực cùng bản chất</li>
+            <li>Lực và phản lực không cân bằng nhau (vì đặt vào hai vật khác nhau)</li>
+            <li>Lực và phản lực xuất hiện và mất đi đồng thời</li>
+        </ul>
+    </div>
+
+    <div class="example-box">
+        <h3>Ví dụ về lực và phản lực:</h3>
+        <ul>
+            <li>Người đẩy tường → Tường đẩy lại người</li>
+            <li>Trái Đất hút vật → Vật hút Trái Đất</li>
+            <li>Nam châm hút sắt → Sắt hút nam châm</li>
+            <li>Súng bắn đạn → Đạn tác dụng lực lên súng (súng giật)</li>
+        </ul>
+    </div>
+
+    <h2>V. Phương pháp giải bài toán động lực học</h2>
+    
+    <div class="method-box">
+        <h3>Các bước giải bài toán:</h3>
+        <ol>
+            <li><strong>Chọn vật khảo sát:</strong> Xác định rõ vật cần nghiên cứu</li>
+            <li><strong>Chọn hệ quy chiếu:</strong> 
+                <ul>
+                    <li>Gốc tọa độ</li>
+                    <li>Hệ trục tọa độ (thường chọn theo hướng chuyển động)</li>
+                    <li>Chiều dương</li>
+                </ul>
+            </li>
+            <li><strong>Xác định và biểu diễn các lực:</strong> Vẽ tất cả các lực tác dụng lên vật</li>
+            <li><strong>Viết phương trình theo định luật II Newton:</strong> \(\sum \vec{F} = m\vec{a}\)</li>
+            <li><strong>Chiếu lên các trục tọa độ:</strong>
+                <ul>
+                    <li>Ox: \(\sum F_x = ma_x\)</li>
+                    <li>Oy: \(\sum F_y = ma_y\)</li>
+                </ul>
+            </li>
+            <li><strong>Giải hệ phương trình:</strong> Tìm các đại lượng cần tìm</li>
+        </ol>
+    </div>
+
+    <h2>VI. Các ví dụ minh họa</h2>
+    
+    <h3>Ví dụ 1: Kéo vật trên mặt phẳng ngang</h3>
+    
+    <div class="example-box">
+        <p><strong>Bài toán:</strong> Kéo vật 5kg trên mặt phẳng ngang với lực F = 20N theo phương ngang. Hệ số ma sát μ = 0,2. Tính gia tốc của vật. Lấy g = 10 m/s².</p>
+        
+        <div class="solution">
+            <strong>Giải:</strong><br>
+            <strong>Bước 1:</strong> Chọn hệ quy chiếu Oxy, chiều dương theo chiều chuyển động<br>
+            <br>
+            <strong>Bước 2:</strong> Các lực tác dụng: \(\vec{F}\), \(\vec{P}\), \(\vec{N}\), \(\vec{F}_{ms}\)<br>
+            <br>
+            <strong>Bước 3:</strong> Áp dụng định luật II Newton: \(\vec{F} + \vec{P} + \vec{N} + \vec{F}_{ms} = m\vec{a}\)<br>
+            <br>
+            <strong>Bước 4:</strong> Chiếu lên các trục:<br>
+            - Oy: N - P = 0 → N = mg = 5 × 10 = 50N<br>
+            - Ox: F - F_{ms} = ma<br>
+            <br>
+            <strong>Bước 5:</strong> Tính lực ma sát:<br>
+            F_{ms} = μN = 0,2 × 50 = 10N<br>
+            <br>
+            <strong>Bước 6:</strong> Tính gia tốc:<br>
+            a = (F - F_{ms})/m = (20 - 10)/5 = 2 m/s²
+        </div>
+    </div>
+
+    <h3>Ví dụ 2: Hai vật nối qua ròng rọc</h3>
+    
+    <div class="example-box">
+        <p><strong>Bài toán:</strong> Vật m₁ = 3kg đặt trên mặt bàn ngang nhẵn, nối với vật m₂ = 2kg treo thẳng đứng qua ròng rọc. Bỏ qua ma sát và khối lượng dây. Tính gia tốc của hệ và lực căng dây.</p>
+        
+        <div class="solution">
+            <strong>Giải:</strong><br>
+            <strong>Chọn chiều dương:</strong> m₁ sang phải, m₂ xuống dưới<br>
+            <br>
+            <strong>Vật m₁:</strong> T = m₁a &nbsp;&nbsp;&nbsp;(1)<br>
+            <strong>Vật m₂:</strong> m₂g - T = m₂a &nbsp;&nbsp;&nbsp;(2)<br>
+            <br>
+            Từ (1) và (2):<br>
+            m₂g = m₁a + m₂a = (m₁ + m₂)a<br>
+            <br>
+            a = m₂g/(m₁ + m₂) = 2 × 10/(3 + 2) = 4 m/s²<br>
+            <br>
+            Lực căng dây: T = m₁a = 3 × 4 = 12N
+        </div>
+    </div>
+
+    <h2>VII. Ứng dụng của ba định luật Newton</h2>
+    
+    <div class="definition-box">
+        <h3>Trong đời sống và kỹ thuật:</h3>
+        <ul>
+            <li><strong>An toàn giao thông:</strong> Dây an toàn, túi khí dựa trên quán tính</li>
+            <li><strong>Động cơ phản lực:</strong> Ứng dụng định luật III Newton</li>
+            <li><strong>Cân lò xo:</strong> Dựa trên định luật II Newton (F = ma khi a = 0)</li>
+            <li><strong>Thể thao:</strong> Kỹ thuật đá bóng, đấm boxing</li>
+            <li><strong>Thiết kế cầu đường:</strong> Tính toán lực tác dụng</li>
+        </ul>
+    </div>
+
+    <h2>VIII. Bài tập tự luyện</h2>
+    
+    <div class="practice-problem">
+        <strong>Bài 1:</strong> Một vật khối lượng 2kg đang chuyển động với vận tốc 5 m/s thì chịu tác dụng của lực cản 4N ngược chiều chuyển động. Hỏi:
+        <ol type="a">
+            <li>Gia tốc của vật</li>
+            <li>Sau bao lâu vật dừng lại</li>
+            <li>Quãng đường vật đi được đến khi dừng</li>
+        </ol>
+    </div>
+
+    <div class="practice-problem">
+        <strong>Bài 2:</strong> Hai vật m₁ = 1kg và m₂ = 2kg nối với nhau bằng sợi dây nhẹ, không dãn. Kéo hệ hai vật bằng lực F = 9N theo phương ngang. Hệ số ma sát giữa các vật và mặt sàn là μ = 0,1. Tính:
+        <ol type="a">
+            <li>Gia tốc của hệ</li>
+            <li>Lực căng dây nối hai vật</li>
+        </ol>
+    </div>
+
+    <div class="practice-problem">
+        <strong>Bài 3:</strong> Thang máy khối lượng 500kg chở người có tổng khối lượng 300kg. Tính lực căng của dây cáp khi thang máy:
+        <ol type="a">
+            <li>Đi lên đều</li>
+            <li>Đi lên nhanh dần đều với a = 2 m/s²</li>
+            <li>Đi xuống chậm dần đều với a = 1 m/s²</li>
+        </ol>
+    </div>
+
+    <hr style="margin-top: 50px;">
+    
+    <h3>Chủ đề liên quan:</h3>
+    <ul>
+        <li><a href="cac_loai_luc.html">Các loại lực</a></li>
+        <li><a href="../motion_kinematics/chuyen_dong_bien_doi_deu.html">Chuyển động biến đổi đều</a></li>
+        <li><a href="../momentum/dong_luong_xung_luong.html">Động lượng và Xung lượng</a></li>
+    </ul>
+</body>
+</html>

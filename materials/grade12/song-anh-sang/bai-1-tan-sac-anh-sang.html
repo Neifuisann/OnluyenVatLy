@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tán sắc ánh sáng - Vật lý 12</title>
+    <meta name="description" content="Tán sắc ánh sáng là hiện tượng phân tích ánh sáng trắng thành các ánh sáng đơn sắc. Tìm hiểu về lăng kính, chiết suất và các ứng dụng của tán sắc.">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #1e293b;
+            font-size: 32px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #334155;
+            font-size: 24px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        h3 {
+            color: #475569;
+            font-size: 20px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .quote {
+            background: #f0f9ff;
+            border-left: 4px solid #0284c7;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .formula {
+            background: #fef3c7;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .example {
+            background: #f3f4f6;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+        }
+        .important {
+            background: #fee2e2;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            border-left: 4px solid #ef4444;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table th, table td {
+            border: 1px solid #e5e7eb;
+            padding: 10px;
+            text-align: left;
+        }
+        table th {
+            background: #f9fafb;
+            font-weight: bold;
+        }
+        .formula-box {
+            background: #ecfdf5;
+            border: 2px solid #10b981;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .formula-box h4 {
+            margin-top: 0;
+            color: #059669;
+        }
+        .spectrum {
+            background: linear-gradient(to right, 
+                #7c3aed 0%, 
+                #4338ca 15%, 
+                #0284c7 30%, 
+                #059669 45%, 
+                #eab308 60%, 
+                #ea580c 75%, 
+                #dc2626 90%);
+            height: 40px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 2px solid #e5e7eb;
+        }
+        .prism-diagram {
+            background: #e0e7ff;
+            border: 1px solid #6366f1;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tán sắc ánh sáng - Vật lý 12</h1>
+    
+    <p>Năm 1666, Isaac Newton thực hiện thí nghiệm với lăng kính, phát hiện ánh sáng trắng thực chất là hỗn hợp của nhiều màu sắc. Khám phá này đã mở ra một chương mới trong quang học, giải thích được nhiều hiện tượng tự nhiên như cầu vồng.</p>
+
+    <h2>1. Thí nghiệm về tán sắc ánh sáng của Newton</h2>
+    
+    <h3>a) Bố trí thí nghiệm</h3>
+    <ul>
+        <li>Nguồn sáng trắng (ánh sáng Mặt Trời)</li>
+        <li>Khe hẹp tạo chùm tia sáng song song</li>
+        <li>Lăng kính thủy tinh</li>
+        <li>Màn ảnh để quan sát</li>
+    </ul>
+
+    <div class="prism-diagram">
+        <p>Ánh sáng trắng → [Lăng kính] → Quang phổ 7 màu</p>
+        <p>                     ↓</p>
+        <p>            Đỏ - Cam - Vàng - Lục - Lam - Chàm - Tím</p>
+    </div>
+
+    <h3>b) Kết quả quan sát</h3>
+    <ul>
+        <li>Chùm sáng trắng bị tách thành dải màu liên tục</li>
+        <li>Thứ tự màu: Đỏ - Cam - Vàng - Lục - Lam - Chàm - Tím</li>
+        <li>Tia đỏ lệch ít nhất, tia tím lệch nhiều nhất</li>
+    </ul>
+
+    <div class="spectrum"></div>
+    <p style="text-align: center;"><em>Quang phổ liên tục của ánh sáng trắng</em></p>
+
+    <h2>2. Hiện tượng tán sắc ánh sáng</h2>
+
+    <h3>a) Định nghĩa</h3>
+    <div class="quote">
+        <strong>Tán sắc ánh sáng</strong> là hiện tượng một chùm ánh sáng phức tạp (ánh sáng trắng) khi đi qua lăng kính bị phân tích thành các chùm sáng đơn sắc khác nhau.
+    </div>
+
+    <h3>b) Ánh sáng đơn sắc và ánh sáng phức tạp</h3>
+    <ul>
+        <li><strong>Ánh sáng đơn sắc</strong>: Ánh sáng có một màu nhất định, không bị tán sắc khi qua lăng kính</li>
+        <li><strong>Ánh sáng phức tạp</strong>: Hỗn hợp nhiều ánh sáng đơn sắc, bị tán sắc khi qua lăng kính</li>
+        <li>Ánh sáng trắng = Tổng hợp vô số ánh sáng đơn sắc</li>
+    </ul>
+
+    <h2>3. Nguyên nhân của hiện tượng tán sắc</h2>
+
+    <h3>a) Chiết suất phụ thuộc bước sóng</h3>
+    <div class="quote">
+        Chiết suất của môi trường trong suốt phụ thuộc vào bước sóng (màu sắc) của ánh sáng.
+    </div>
+
+    <div class="formula-box">
+        <h4>Công thức Cauchy (gần đúng):</h4>
+        <div class="formula">
+            n = A + B/λ²
+        </div>
+        
+        <p>Trong đó:</p>
+        <ul>
+            <li>n: Chiết suất của môi trường</li>
+            <li>λ: Bước sóng ánh sáng trong chân không</li>
+            <li>A, B: Hằng số phụ thuộc vật liệu</li>
+        </ul>
+    </div>
+
+    <h3>b) Quy luật</h3>
+    <ul>
+        <li>λ<sub>đỏ</sub> > λ<sub>tím</sub> → n<sub>đỏ</sub> < n<sub>tím</sub></li>
+        <li>Chiết suất tăng dần từ đỏ đến tím</li>
+        <li>Góc lệch tăng dần từ đỏ đến tím</li>
+    </ul>
+
+    <h2>4. Góc lệch của tia sáng qua lăng kính</h2>
+
+    <h3>a) Công thức góc lệch</h3>
+    <p>Với góc chiết quang A nhỏ và góc tới i₁ nhỏ:</p>
+    
+    <div class="formula-box">
+        <h4>Góc lệch qua lăng kính:</h4>
+        <div class="formula">
+            D = (n - 1)A
+        </div>
+        
+        <p>Với lăng kính có góc lệch cực tiểu:</p>
+        <div class="formula">
+            n = sin[(A + D<sub>min</sub>)/2] / sin(A/2)
+        </div>
+    </div>
+
+    <h3>b) So sánh góc lệch các màu</h3>
+    <table>
+        <tr>
+            <th>Màu sắc</th>
+            <th>Bước sóng (nm)</th>
+            <th>Chiết suất (thủy tinh)</th>
+            <th>Góc lệch tương đối</th>
+        </tr>
+        <tr>
+            <td>Đỏ</td>
+            <td>760 - 620</td>
+            <td>1,514</td>
+            <td>Nhỏ nhất</td>
+        </tr>
+        <tr>
+            <td>Cam</td>
+            <td>620 - 590</td>
+            <td>1,517</td>
+            <td>↓</td>
+        </tr>
+        <tr>
+            <td>Vàng</td>
+            <td>590 - 570</td>
+            <td>1,519</td>
+            <td>↓</td>
+        </tr>
+        <tr>
+            <td>Lục</td>
+            <td>570 - 500</td>
+            <td>1,521</td>
+            <td>↓</td>
+        </tr>
+        <tr>
+            <td>Lam</td>
+            <td>500 - 450</td>
+            <td>1,524</td>
+            <td>↓</td>
+        </tr>
+        <tr>
+            <td>Chàm</td>
+            <td>450 - 430</td>
+            <td>1,528</td>
+            <td>↓</td>
+        </tr>
+        <tr>
+            <td>Tím</td>
+            <td>430 - 380</td>
+            <td>1,532</td>
+            <td>Lớn nhất</td>
+        </tr>
+    </table>
+
+    <h2>5. Các loại quang phổ</h2>
+
+    <h3>a) Quang phổ liên tục</h3>
+    <ul>
+        <li>Dải màu liên tục từ đỏ đến tím</li>
+        <li>Nguồn: Vật rắn, lỏng, khí áp suất cao được nung nóng</li>
+        <li>Ví dụ: Mặt Trời, bóng đèn sợi đốt</li>
+        <li>Phụ thuộc nhiệt độ, không phụ thuộc thành phần hóa học</li>
+    </ul>
+
+    <h3>b) Quang phổ vạch phát xạ</h3>
+    <ul>
+        <li>Gồm các vạch sáng riêng lẻ trên nền tối</li>
+        <li>Nguồn: Khí, hơi ở áp suất thấp bị kích thích</li>
+        <li>Mỗi nguyên tố có quang phổ vạch đặc trưng</li>
+        <li>Ứng dụng: Nhận biết thành phần hóa học</li>
+    </ul>
+
+    <h3>c) Quang phổ vạch hấp thụ</h3>
+    <ul>
+        <li>Quang phổ liên tục bị thiếu một số vạch (vạch tối)</li>
+        <li>Hình thành khi ánh sáng trắng đi qua khí, hơi ở nhiệt độ thấp</li>
+        <li>Vị trí vạch tối trùng với vạch sáng phát xạ của chất đó</li>
+    </ul>
+
+    <h2>6. Ứng dụng của tán sắc ánh sáng</h2>
+
+    <h3>a) Máy quang phổ</h3>
+    <div class="example">
+        <strong>Cấu tạo máy quang phổ lăng kính:</strong>
+        <ol>
+            <li><strong>Ống chuẩn trực</strong>: Tạo chùm tia song song</li>
+            <li><strong>Hệ tán sắc</strong>: Lăng kính (hoặc cách tử)</li>
+            <li><strong>Buồng ảnh</strong>: Thu và ghi quang phổ</li>
+        </ol>
+        
+        <strong>Ứng dụng:</strong>
+        <ul>
+            <li>Phân tích thành phần hóa học</li>
+            <li>Đo bước sóng ánh sáng</li>
+            <li>Nghiên cứu cấu trúc nguyên tử</li>
+        </ul>
+    </div>
+
+    <h3>b) Giải thích hiện tượng tự nhiên</h3>
+    
+    <h4>1. Cầu vồng</h4>
+    <ul>
+        <li>Ánh sáng Mặt Trời bị tán sắc qua các giọt nước mưa</li>
+        <li>Phản xạ toàn phần bên trong giọt nước</li>
+        <li>Góc quan sát: 40-42° so với tia Mặt Trời</li>
+        <li>Thứ tự màu: Đỏ ở ngoài, tím ở trong</li>
+    </ul>
+
+    <h4>2. Ánh sáng hoàng hôn</h4>
+    <ul>
+        <li>Ánh sáng xanh, tím bị tán xạ mạnh</li>
+        <li>Ánh sáng đỏ, cam truyền xa hơn</li>
+        <li>Bầu trời có màu đỏ cam lúc hoàng hôn</li>
+    </ul>
+
+    <h2>7. Ví dụ minh họa</h2>
+
+    <div class="example">
+        <strong>Ví dụ 1:</strong> Chiếu tia sáng trắng qua lăng kính có góc chiết quang A = 60°. Chiết suất của lăng kính với ánh sáng đỏ là 1,514 và với ánh sáng tím là 1,532. Tính góc lệch của tia đỏ và tia tím khi góc tới nhỏ.
+        <br><br>
+        <strong>Giải:</strong><br>
+        Với góc tới nhỏ: D = (n - 1)A<br>
+        <br>
+        Góc lệch tia đỏ:<br>
+        D<sub>đỏ</sub> = (1,514 - 1) × 60° = 0,514 × 60° = 30,84°<br>
+        <br>
+        Góc lệch tia tím:<br>
+        D<sub>tím</sub> = (1,532 - 1) × 60° = 0,532 × 60° = 31,92°<br>
+        <br>
+        Góc tán sắc: ΔD = D<sub>tím</sub> - D<sub>đỏ</sub> = 31,92° - 30,84° = 1,08°
+    </div>
+
+    <div class="example">
+        <strong>Ví dụ 2:</strong> Ánh sáng đơn sắc có bước sóng trong chân không λ₀ = 600 nm. Khi truyền trong thủy tinh có chiết suất n = 1,5. Tính:
+        <ul>
+            <li>a) Bước sóng trong thủy tinh</li>
+            <li>b) Tần số của ánh sáng</li>
+            <li>c) Vận tốc truyền trong thủy tinh</li>
+        </ul>
+        
+        <strong>Giải:</strong><br>
+        a) λ = λ₀/n = 600/1,5 = 400 nm<br>
+        <br>
+        b) f = c/λ₀ = 3×10⁸/(600×10⁻⁹) = 5×10¹⁴ Hz<br>
+        (Tần số không đổi khi đi qua các môi trường)<br>
+        <br>
+        c) v = c/n = 3×10⁸/1,5 = 2×10⁸ m/s
+    </div>
+
+    <div class="example">
+        <strong>Ví dụ 3:</strong> Chiết suất của nước với ánh sáng đỏ (λ = 760 nm) là 1,331 và với ánh sáng tím (λ = 400 nm) là 1,343. Chùm sáng trắng chiếu từ không khí vào nước với góc tới 60°. Tính góc khúc xạ của tia đỏ và tia tím.
+        <br><br>
+        <strong>Giải:</strong><br>
+        Áp dụng định luật khúc xạ: sin i = n sin r<br>
+        <br>
+        Với tia đỏ:<br>
+        sin r<sub>đỏ</sub> = sin 60°/n<sub>đỏ</sub> = 0,866/1,331 = 0,651<br>
+        r<sub>đỏ</sub> = 40,6°<br>
+        <br>
+        Với tia tím:<br>
+        sin r<sub>tím</sub> = sin 60°/n<sub>tím</sub> = 0,866/1,343 = 0,645<br>
+        r<sub>tím</sub> = 40,2°<br>
+        <br>
+        Góc tán sắc: Δr = r<sub>đỏ</sub> - r<sub>tím</sub> = 0,4°
+    </div>
+
+    <h2>8. Thí nghiệm về tán sắc</h2>
+
+    <h3>a) Thí nghiệm với lăng kính</h3>
+    <ul>
+        <li><strong>Dụng cụ</strong>: Đèn chiếu, khe hẹp, lăng kính, màn ảnh</li>
+        <li><strong>Tiến hành</strong>:
+            <ol>
+                <li>Điều chỉnh chùm sáng hẹp qua khe</li>
+                <li>Chiếu qua lăng kính</li>
+                <li>Quan sát quang phổ trên màn</li>
+                <li>Đo góc lệch các màu</li>
+            </ol>
+        </li>
+        <li><strong>Kết quả</strong>: Xác nhận thứ tự màu và góc lệch</li>
+    </ul>
+
+    <h3>b) Thí nghiệm tổng hợp ánh sáng trắng</h3>
+    <ul>
+        <li>Dùng đĩa Newton (đĩa có 7 màu cầu vồng)</li>
+        <li>Quay nhanh → Mắt thấy màu trắng</li>
+        <li>Chứng minh ánh sáng trắng là tổng hợp các màu</li>
+    </ul>
+
+    <h2>9. Lăng kính và ứng dụng</h2>
+
+    <h3>a) Lăng kính phản xạ toàn phần</h3>
+    <ul>
+        <li>Góc chiết quang: 45° - 90° - 45°</li>
+        <li>Ứng dụng: Ống nhòm, kính tiềm vọng</li>
+        <li>Ưu điểm: Phản xạ 100%, không cần tráng bạc</li>
+    </ul>
+
+    <h3>b) Lăng kính tán sắc thẳng</h3>
+    <ul>
+        <li>Nhiều lăng kính ghép để tăng tán sắc</li>
+        <li>Tia ló song song tia tới</li>
+        <li>Ứng dụng trong máy quang phổ chính xác</li>
+    </ul>
+
+    <div class="important">
+        <strong>Lưu ý quan trọng:</strong>
+        <ul>
+            <li>Tán sắc chỉ xảy ra với ánh sáng phức tạp</li>
+            <li>Ánh sáng đơn sắc không bị tán sắc</li>
+            <li>Chiết suất phụ thuộc bước sóng: n<sub>đỏ</sub> < n<sub>tím</sub></li>
+            <li>Góc lệch: D<sub>đỏ</sub> < D<sub>tím</sub></li>
+            <li>Trong chân không, mọi ánh sáng có cùng vận tốc c</li>
+        </ul>
+    </div>
+
+    <div class="quote">
+        <strong>Lưu ý khi học:</strong>
+        <ul>
+            <li>Phân biệt ánh sáng đơn sắc và ánh sáng phức tạp</li>
+            <li>Nhớ thứ tự 7 màu: Đỏ - Cam - Vàng - Lục - Lam - Chàm - Tím</li>
+            <li>Chiết suất tăng dần, góc lệch tăng dần từ đỏ đến tím</li>
+            <li>Tần số ánh sáng không đổi khi qua các môi trường</li>
+        </ul>
+    </div>
+
+    <div class="important">
+        <strong>Tổng kết:</strong> Tán sắc ánh sáng là hiện tượng phân tích ánh sáng phức tạp thành các ánh sáng đơn sắc do chiết suất phụ thuộc bước sóng. Hiện tượng này giải thích được nhiều hiện tượng tự nhiên và có nhiều ứng dụng trong khoa học, công nghệ.
+    </div>
+</body>
+</html>

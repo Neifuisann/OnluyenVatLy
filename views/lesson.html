@@ -108,6 +108,8 @@
             border-right: 1px solid var(--border-color);
             overflow-y: auto;
             flex-shrink: 0;
+            position: relative;
+            z-index: 1000; /* Ensure sidebar is above overlay */
         }
 
         .exam-header {
@@ -559,7 +561,7 @@
             transition: all 0.3s;
             font-size: 0.95rem;
             box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
-            z-index: 1000;
+            z-index: 998; /* Below sidebar overlay */
             display: flex;
             align-items: center;
             gap: var(--space-xs);
@@ -582,6 +584,98 @@
             font-size: 0.9rem;
         }
 
+        /* Zoom Controls in Sidebar */
+        .zoom-controls-sidebar {
+            padding: var(--space-md);
+            border-top: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .zoom-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .zoom-buttons {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-sm);
+        }
+
+        .zoom-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .zoom-btn:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+            transform: scale(1.1);
+        }
+
+        .zoom-btn:active {
+            transform: scale(0.95);
+        }
+
+        .zoom-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .zoom-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 1rem;
+            user-select: none;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .zoom-reset-btn {
+            width: 100%;
+            padding: var(--space-xs) var(--space-sm);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-xs);
+        }
+
+        .zoom-reset-btn:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        /* Zoom transform container */
+        .exam-container {
+            transform-origin: top left;
+            transition: transform 0.3s ease;
+        }
+
         /* Mobile Sidebar Toggle */
         .mobile-sidebar-toggle {
             position: fixed;
@@ -598,7 +692,7 @@
             align-items: center;
             justify-content: center;
             font-size: 1.2rem;
-            z-index: 1001;
+            z-index: 1001; /* Above sidebar and overlay */
             transition: all 0.3s;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
@@ -621,7 +715,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
+            z-index: 999; /* Below sidebar to allow interaction */
             display: none;
             opacity: 0;
             transition: opacity 0.3s;
@@ -926,10 +1020,12 @@
                 height: 100vh;
                 z-index: 1000;
                 transition: left 0.3s ease;
+                box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
             }
 
             .exam-sidebar.show {
                 left: 0;
+                box-shadow: 4px 0 30px rgba(0, 0, 0, 0.5);
             }
 
             .mobile-sidebar-toggle {
@@ -942,6 +1038,7 @@
                 padding: 12px 20px;
                 font-size: 0.9rem;
             }
+
 
             .content-wrapper {
                 padding: var(--space-md);
@@ -1031,6 +1128,7 @@
                 padding-top: 75px;
             }
 
+
             .question-card {
                 padding: var(--space-md);
             }
@@ -1092,6 +1190,40 @@
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
+        
+        /* Mobile Zoom Fixes */
+        @media (max-width: 768px) {
+            /* Ensure exam container fills viewport when zoomed */
+            .exam-container {
+                min-width: 100vw;
+                transform-origin: top left !important;
+            }
+            
+            /* Prevent content from shrinking on zoom out */
+            .exam-content {
+                width: 100% !important;
+                min-width: 100vw;
+            }
+            
+            /* Ensure content wrapper maintains proper width */
+            .content-wrapper {
+                width: 100%;
+                max-width: none;
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+            
+            /* Question cards should fill available width */
+            .question-card {
+                width: 100%;
+                box-sizing: border-box;
+            }
+            
+            /* Fix for zoomed out state */
+            body.zoomed-out {
+                overflow-x: hidden;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1106,6 +1238,7 @@
         <i class="fas fa-paper-plane"></i>
         Nộp bài
     </button>
+
 
     <!-- Mobile Sidebar Toggle -->
     <button class="mobile-sidebar-toggle" id="mobile-sidebar-toggle" style="display: none;">
@@ -1144,6 +1277,23 @@
                     <span class="stat-value" id="flagged-count">0</span>
                 </div>
             </div>
+
+            <!-- Zoom Controls in Sidebar -->
+            <div class="zoom-controls-sidebar">
+                <h3 class="zoom-title">Phóng to/Thu nhỏ</h3>
+                <div class="zoom-buttons">
+                    <button class="zoom-btn" id="decrease-zoom" title="Thu nhỏ">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <span class="zoom-label" id="zoom-percentage">100%</span>
+                    <button class="zoom-btn" id="increase-zoom" title="Phóng to">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <button class="zoom-reset-btn" id="reset-zoom" title="Đặt lại">
+                    <i class="fas fa-undo"></i> Đặt lại
+                </button>
+            </div>
         </aside>
 
         <!-- Main Content -->
@@ -1168,8 +1318,6 @@
         </main>
     </div>
 
-    <!-- Sidebar Overlay for Mobile -->
-    <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
     <!-- Enhanced Image Modal -->
     <div id="image-modal" class="image-modal">
@@ -2127,17 +2275,23 @@
         // Mobile sidebar toggle functions
         function toggleMobileSidebar() {
             const sidebar = document.getElementById('exam-sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
+            const submitButton = document.getElementById('submit-quiz-btn');
             const isVisible = sidebar.classList.contains('show');
             
             if (isVisible) {
                 sidebar.classList.remove('show');
-                overlay.classList.remove('show');
                 document.body.style.overflow = '';
+                // Show submit button again
+                if (submitButton) {
+                    submitButton.style.display = 'flex';
+                }
             } else {
                 sidebar.classList.add('show');
-                overlay.classList.add('show');
                 document.body.style.overflow = 'hidden';
+                // Hide submit button when sidebar is open to prevent overlap
+                if (submitButton) {
+                    submitButton.style.display = 'none';
+                }
             }
         }
 
@@ -2371,18 +2525,191 @@
             document.body.style.overflow = '';
         }
 
+        // Zoom management
+        const zoomLevels = [0.75, 0.8, 0.9, 1, 1.1, 1.25];
+        let currentZoomIndex = 3; // Default to 100% (1.0)
+
+        function initializeZoom() {
+            // Load saved zoom level from localStorage
+            const savedZoomLevel = localStorage.getItem('lessonZoomLevel');
+            if (savedZoomLevel) {
+                const savedZoom = parseFloat(savedZoomLevel);
+                const savedIndex = zoomLevels.indexOf(savedZoom);
+                if (savedIndex !== -1) {
+                    currentZoomIndex = savedIndex;
+                    applyZoom(savedZoom);
+                }
+            } else {
+                // Set default zoom
+                applyZoom(zoomLevels[currentZoomIndex]);
+            }
+
+            // Update zoom label
+            updateZoomLabel();
+        }
+
+        function changeZoom(delta) {
+            let newIndex;
+            
+            // Handle reset to normal (delta = 0)
+            if (delta === 0) {
+                newIndex = 3; // 100% zoom
+            } else {
+                newIndex = currentZoomIndex + delta;
+                
+                // Check bounds
+                if (newIndex < 0 || newIndex >= zoomLevels.length) {
+                    // Provide visual feedback that we've reached the limit
+                    const button = delta > 0 ? document.getElementById('increase-zoom') : document.getElementById('decrease-zoom');
+                    if (button) {
+                        button.style.transform = 'scale(0.9)';
+                        setTimeout(() => {
+                            button.style.transform = '';
+                        }, 200);
+                    }
+                    return;
+                }
+            }
+
+            // Apply new zoom
+            currentZoomIndex = newIndex;
+            const newZoomLevel = zoomLevels[currentZoomIndex];
+            applyZoom(newZoomLevel);
+            
+            // Save to localStorage
+            localStorage.setItem('lessonZoomLevel', newZoomLevel.toString());
+            
+            // Update label
+            updateZoomLabel();
+
+            // Animate the change
+            animateZoomChange();
+        }
+
+        function applyZoom(zoomLevel) {
+            const container = document.querySelector('.exam-container');
+            if (container) {
+                // Set transform origin to top left to prevent content shifting
+                container.style.transformOrigin = 'top left';
+                container.style.transform = `scale(${zoomLevel})`;
+                
+                // Add/remove zoomed-out class for mobile fixes
+                if (zoomLevel < 1) {
+                    document.body.classList.add('zoomed-out');
+                } else {
+                    document.body.classList.remove('zoomed-out');
+                }
+                
+                // On mobile, handle zoom differently
+                if (window.innerWidth <= 768) {
+                    if (zoomLevel < 1) {
+                        // For zoom out on mobile, adjust layout to prevent empty space
+                        container.style.width = '100vw';
+                        container.style.height = 'auto';
+                        container.style.minHeight = '100vh';
+                        
+                        // Reset body overflow
+                        document.body.style.overflow = 'auto';
+                        
+                        // Ensure content wrapper fills width
+                        const contentWrapper = document.querySelector('.content-wrapper');
+                        if (contentWrapper) {
+                            contentWrapper.style.maxWidth = 'none';
+                            contentWrapper.style.width = '100%';
+                        }
+                    } else {
+                        // Normal or zoom in
+                        container.style.width = `${100 / zoomLevel}%`;
+                        container.style.height = `${100 / zoomLevel}vh`;
+                    }
+                } else {
+                    // Desktop behavior remains the same
+                    if (zoomLevel !== 1) {
+                        container.style.width = `${100 / zoomLevel}%`;
+                        container.style.height = `${100 / zoomLevel}vh`;
+                    } else {
+                        container.style.width = '100%';
+                        container.style.height = '100vh';
+                    }
+                }
+                
+                // Scale floating buttons inversely
+                const mobileToggle = document.getElementById('mobile-sidebar-toggle');
+                const submitButton = document.getElementById('submit-quiz-btn');
+                
+                if (mobileToggle) {
+                    mobileToggle.style.transform = `scale(${1 / zoomLevel})`;
+                    mobileToggle.style.transformOrigin = 'top left';
+                }
+                
+                if (submitButton) {
+                    submitButton.style.transform = `scale(${1 / zoomLevel})`;
+                    submitButton.style.transformOrigin = 'top right';
+                }
+            }
+        }
+
+        function updateZoomLabel() {
+            const label = document.getElementById('zoom-percentage');
+            if (label) {
+                const percentage = Math.round(zoomLevels[currentZoomIndex] * 100);
+                label.textContent = `${percentage}%`;
+            }
+
+            // Update button states
+            const decreaseBtn = document.getElementById('decrease-zoom');
+            const increaseBtn = document.getElementById('increase-zoom');
+            
+            if (decreaseBtn) {
+                decreaseBtn.disabled = currentZoomIndex === 0;
+                decreaseBtn.style.opacity = currentZoomIndex === 0 ? '0.5' : '1';
+                decreaseBtn.style.cursor = currentZoomIndex === 0 ? 'not-allowed' : 'pointer';
+            }
+            
+            if (increaseBtn) {
+                increaseBtn.disabled = currentZoomIndex === zoomLevels.length - 1;
+                increaseBtn.style.opacity = currentZoomIndex === zoomLevels.length - 1 ? '0.5' : '1';
+                increaseBtn.style.cursor = currentZoomIndex === zoomLevels.length - 1 ? 'not-allowed' : 'pointer';
+            }
+        }
+
+        function animateZoomChange() {
+            const controls = document.querySelector('.zoom-controls-sidebar');
+            if (controls) {
+                controls.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    controls.style.transform = '';
+                }, 200);
+            }
+        }
+
         // Event listeners for mobile functionality
         document.addEventListener('DOMContentLoaded', () => {
+            // Initialize zoom
+            initializeZoom();
+
+            // Zoom controls
+            const decreaseBtn = document.getElementById('decrease-zoom');
+            const increaseBtn = document.getElementById('increase-zoom');
+            const resetBtn = document.getElementById('reset-zoom');
+
+            if (decreaseBtn) {
+                decreaseBtn.addEventListener('click', () => changeZoom(-1));
+            }
+
+            if (increaseBtn) {
+                increaseBtn.addEventListener('click', () => changeZoom(1));
+            }
+
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => changeZoom(0));
+            }
+
             // Mobile sidebar toggle
             const mobileToggle = document.getElementById('mobile-sidebar-toggle');
-            const sidebarOverlay = document.getElementById('sidebar-overlay');
 
             if (mobileToggle) {
                 mobileToggle.addEventListener('click', toggleMobileSidebar);
-            }
-
-            if (sidebarOverlay) {
-                sidebarOverlay.addEventListener('click', toggleMobileSidebar);
             }
 
             // Initialize enhanced image zoom functionality
@@ -2395,8 +2722,23 @@
                 navigateQuestion(-1);
             } else if (e.key === 'ArrowRight' && currentQuestionIndex < document.querySelectorAll('.question-card').length - 1) {
                 navigateQuestion(1);
+            } else if (e.ctrlKey && e.key === '+') {
+                // Ctrl + Plus: Zoom in
+                e.preventDefault();
+                changeZoom(1);
+            } else if (e.ctrlKey && e.key === '-') {
+                // Ctrl + Minus: Zoom out
+                e.preventDefault();
+                changeZoom(-1);
+            } else if (e.ctrlKey && e.key === '0') {
+                // Ctrl + 0: Reset to 100% zoom
+                e.preventDefault();
+                changeZoom(0);
             }
         });
     </script>
+    
+    <!-- Load external lesson.js file with cache busting -->
+    <script src="/js/lesson.js?v=1.1"></script>
 </body>
 </html>

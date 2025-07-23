@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giao thoa ánh sáng - Vật lý 12</title>
+    <meta name="description" content="Giao thoa ánh sáng là hiện tượng đặc trưng chứng tỏ ánh sáng có tính chất sóng. Tìm hiểu về thí nghiệm Young, vân giao thoa và các ứng dụng.">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #1e293b;
+            font-size: 32px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #334155;
+            font-size: 24px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        h3 {
+            color: #475569;
+            font-size: 20px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .quote {
+            background: #f0f9ff;
+            border-left: 4px solid #0284c7;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .formula {
+            background: #fef3c7;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .example {
+            background: #f3f4f6;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+        }
+        .important {
+            background: #fee2e2;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            border-left: 4px solid #ef4444;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table th, table td {
+            border: 1px solid #e5e7eb;
+            padding: 10px;
+            text-align: left;
+        }
+        table th {
+            background: #f9fafb;
+            font-weight: bold;
+        }
+        .formula-box {
+            background: #ecfdf5;
+            border: 2px solid #10b981;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .formula-box h4 {
+            margin-top: 0;
+            color: #059669;
+        }
+        .interference-pattern {
+            background: #e0e7ff;
+            border: 1px solid #6366f1;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .fringe-pattern {
+            background: repeating-linear-gradient(
+                to right,
+                #000 0px,
+                #000 2px,
+                #fff 2px,
+                #fff 10px
+            );
+            height: 60px;
+            margin: 20px 0;
+            border: 1px solid #d1d5db;
+        }
+    </style>
+</head>
+<body>
+    <h1>Giao thoa ánh sáng - Vật lý 12</h1>
+    
+    <p>Năm 1801, Thomas Young thực hiện thí nghiệm giao thoa ánh sáng, lần đầu tiên chứng minh được bản chất sóng của ánh sáng. Thí nghiệm này đã mở ra kỷ nguyên mới trong quang học, thách thức học thuyết hạt của Newton.</p>
+
+    <h2>1. Hiện tượng giao thoa ánh sáng</h2>
+    
+    <h3>a) Quan sát hiện tượng</h3>
+    <p>Khi chiếu ánh sáng qua hai khe hẹp gần nhau, trên màn quan sát xuất hiện:</p>
+    <ul>
+        <li>Hệ thống các vân sáng và vân tối xen kẽ đều đặn</li>
+        <li>Vân sáng trung tâm nằm trên đường trung trực của hai khe</li>
+        <li>Các vân có cùng độ rộng (trong vùng giao thoa trung tâm)</li>
+    </ul>
+
+    <div class="fringe-pattern"></div>
+    <p style="text-align: center;"><em>Hình ảnh vân giao thoa</em></p>
+
+    <h3>b) Định nghĩa</h3>
+    <div class="quote">
+        <strong>Giao thoa ánh sáng</strong> là hiện tượng hai chùm sáng kết hợp gặp nhau tạo nên những vùng sáng tối xen kẽ, trong đó có những điểm luôn sáng (cực đại giao thoa) và những điểm luôn tối (cực tiểu giao thoa).
+    </div>
+
+    <h2>2. Thí nghiệm Young (Y-âng)</h2>
+
+    <h3>a) Bố trí thí nghiệm</h3>
+    <div class="interference-pattern">
+        <p><strong>Sơ đồ thí nghiệm:</strong></p>
+        <p>S → [Khe F] → [S₁] [S₂] → Màn E</p>
+        <p>     ←  a  →     ← D →</p>
+    </div>
+
+    <ul>
+        <li><strong>S</strong>: Nguồn sáng đơn sắc</li>
+        <li><strong>F</strong>: Khe hẹp tạo nguồn sáng điểm</li>
+        <li><strong>S₁, S₂</strong>: Hai khe hẹp song song, cách nhau khoảng a</li>
+        <li><strong>E</strong>: Màn quan sát cách hai khe khoảng D</li>
+        <li>Điều kiện: a << D (thường a ~ mm, D ~ m)</li>
+    </ul>
+
+    <h3>b) Điều kiện giao thoa</h3>
+    <ul>
+        <li>Hai nguồn phải kết hợp (cùng tần số, độ lệch pha không đổi)</li>
+        <li>Trong thí nghiệm Young: S₁, S₂ là hai nguồn kết hợp do cùng tách từ S</li>
+        <li>Hai sóng phải có phương dao động giống nhau</li>
+    </ul>
+
+    <h2>3. Lý thuyết giao thoa ánh sáng</h2>
+
+    <h3>a) Hiệu đường đi</h3>
+    <p>Xét điểm M trên màn, cách vân trung tâm khoảng x:</p>
+    
+    <div class="formula-box">
+        <h4>Hiệu đường đi:</h4>
+        <div class="formula">
+            δ = d₂ - d₁ = ax/D
+        </div>
+        
+        <p>Với:</p>
+        <ul>
+            <li>d₁, d₂: Khoảng cách từ S₁, S₂ đến M</li>
+            <li>a: Khoảng cách giữa hai khe</li>
+            <li>x: Tọa độ của M (tính từ vân trung tâm)</li>
+            <li>D: Khoảng cách từ hai khe đến màn</li>
+        </ul>
+    </div>
+
+    <h3>b) Vị trí vân sáng</h3>
+    <p>Tại M có vân sáng khi hai sóng đến cùng pha:</p>
+    
+    <div class="formula-box">
+        <h4>Điều kiện vân sáng:</h4>
+        <div class="formula">
+            δ = kλ    (k = 0, ±1, ±2,...)
+        </div>
+        
+        <h4>Vị trí vân sáng:</h4>
+        <div class="formula">
+            x<sub>s</sub> = kλD/a = ki
+        </div>
+        
+        <p>Với i = λD/a là khoảng vân</p>
+    </div>
+
+    <h3>c) Vị trí vân tối</h3>
+    <p>Tại M có vân tối khi hai sóng đến ngược pha:</p>
+    
+    <div class="formula-box">
+        <h4>Điều kiện vân tối:</h4>
+        <div class="formula">
+            δ = (k + 0,5)λ    (k = 0, ±1, ±2,...)
+        </div>
+        
+        <h4>Vị trí vân tối:</h4>
+        <div class="formula">
+            x<sub>t</sub> = (k + 0,5)λD/a = (k + 0,5)i
+        </div>
+    </div>
+
+    <h2>4. Khoảng vân và bề rộng quang phổ</h2>
+
+    <h3>a) Khoảng vân</h3>
+    <div class="quote">
+        <strong>Khoảng vân i</strong> là khoảng cách giữa hai vân sáng (hoặc hai vân tối) liên tiếp.
+    </div>
+
+    <div class="formula-box">
+        <h4>Công thức khoảng vân:</h4>
+        <div class="formula">
+            i = λD/a
+        </div>
+    </div>
+
+    <h3>b) Bề rộng quang phổ bậc k</h3>
+    <p>Với ánh sáng trắng, mỗi bậc giao thoa là một dải màu:</p>
+    
+    <div class="formula">
+        ΔX<sub>k</sub> = k(λ<sub>đỏ</sub> - λ<sub>tím</sub>)D/a
+    </div>
+
+    <h2>5. Giao thoa với ánh sáng trắng</h2>
+
+    <h3>a) Đặc điểm</h3>
+    <ul>
+        <li>Vân trung tâm: Màu trắng (mọi λ đều cho vân sáng)</li>
+        <li>Hai bên vân trung tâm: Dải màu cầu vồng</li>
+        <li>Tím ở trong (gần vân trung tâm), đỏ ở ngoài</li>
+        <li>Bậc cao: Các quang phổ chồng lên nhau</li>
+    </ul>
+
+    <h3>b) Điều kiện quang phổ không chồng lên nhau</h3>
+    <p>Quang phổ bậc k và bậc (k+1) không chồng lên nhau khi:</p>
+    <div class="formula">
+        x<sub>đỏ(k)</sub> < x<sub>tím(k+1)</sub>
+    </div>
+
+    <h2>6. Các dạng bài tập giao thoa</h2>
+
+    <h3>Dạng 1: Tính toán cơ bản</h3>
+    <div class="example">
+        <strong>Ví dụ 1:</strong> Trong thí nghiệm Young, a = 1mm, D = 2m, λ = 600nm. Tính:
+        <ul>
+            <li>a) Khoảng vân</li>
+            <li>b) Vị trí vân sáng bậc 3</li>
+            <li>c) Vị trí vân tối thứ 4</li>
+        </ul>
+        
+        <strong>Giải:</strong><br>
+        a) i = λD/a = (600×10⁻⁹ × 2)/(10⁻³) = 1,2×10⁻³ m = 1,2 mm<br>
+        <br>
+        b) x<sub>s3</sub> = 3i = 3 × 1,2 = 3,6 mm<br>
+        <br>
+        c) Vân tối thứ 4 ứng với k = 3:<br>
+        x<sub>t4</sub> = (3 + 0,5)i = 3,5 × 1,2 = 4,2 mm
+    </div>
+
+    <h3>Dạng 2: Xác định loại vân tại một điểm</h3>
+    <div class="example">
+        <strong>Ví dụ 2:</strong> Tại điểm M cách vân trung tâm 7,2 mm có vân sáng hay vân tối? Biết i = 1,2 mm.
+        <br><br>
+        <strong>Giải:</strong><br>
+        x/i = 7,2/1,2 = 6<br>
+        Vì x/i = 6 (số nguyên) → M là vân sáng bậc 6
+    </div>
+
+    <h3>Dạng 3: Đếm số vân trong khoảng</h3>
+    <div class="example">
+        <strong>Ví dụ 3:</strong> Trên màn, trong khoảng từ M (x<sub>M</sub> = 3mm) đến N (x<sub>N</sub> = 12mm) có bao nhiêu vân sáng? Biết i = 1,5mm.
+        <br><br>
+        <strong>Giải:</strong><br>
+        Vân sáng tại x = ki<br>
+        Điều kiện: 3 ≤ 1,5k ≤ 12<br>
+        → 2 ≤ k ≤ 8<br>
+        k = 2, 3, 4, 5, 6, 7, 8<br>
+        → Có 7 vân sáng
+    </div>
+
+    <h3>Dạng 4: Giao thoa với ánh sáng trắng</h3>
+    <div class="example">
+        <strong>Ví dụ 4:</strong> Chiếu ánh sáng trắng (380nm - 760nm) vào khe Young với a = 0,5mm, D = 1m. Tại điểm M cách vân trung tâm 4mm có những bức xạ nào cho vân sáng?
+        <br><br>
+        <strong>Giải:</strong><br>
+        Tại M có vân sáng: x<sub>M</sub> = kλD/a<br>
+        → λ = ax<sub>M</sub>/(kD) = (0,5×10⁻³ × 4×10⁻³)/(k × 1) = 2×10⁻⁶/k (m)<br>
+        <br>
+        Điều kiện: 380nm ≤ λ ≤ 760nm<br>
+        380×10⁻⁹ ≤ 2×10⁻⁶/k ≤ 760×10⁻⁹<br>
+        2,63 ≤ k ≤ 5,26<br>
+        → k = 3, 4, 5<br>
+        <br>
+        λ₃ = 667nm (đỏ)<br>
+        λ₄ = 500nm (lục)<br>
+        λ₅ = 400nm (tím)
+    </div>
+
+    <h2>7. Ứng dụng của giao thoa ánh sáng</h2>
+
+    <h3>a) Đo bước sóng ánh sáng</h3>
+    <p>Từ công thức i = λD/a → λ = ia/D</p>
+    <ul>
+        <li>Đo i, a, D → Tính được λ</li>
+        <li>Độ chính xác cao (sai số ~ 0,1%)</li>
+    </ul>
+
+    <h3>b) Kiểm tra độ phẳng bề mặt</h3>
+    <ul>
+        <li>Dùng giao thoa kế với nêm không khí</li>
+        <li>Vân cong → Bề mặt không phẳng</li>
+        <li>Độ chính xác đến λ/4</li>
+    </ul>
+
+    <h3>c) Đo chiết suất</h3>
+    <p>Đặt bản mỏng trong một nhánh giao thoa:</p>
+    <ul>
+        <li>Vân dịch chuyển do thay đổi quang lộ</li>
+        <li>Đo độ dịch → Tính chiết suất</li>
+    </ul>
+
+    <h2>8. Các loại giao thoa kế</h2>
+
+    <table>
+        <tr>
+            <th>Loại</th>
+            <th>Nguyên lý</th>
+            <th>Ứng dụng</th>
+        </tr>
+        <tr>
+            <td>Giao thoa kế Young</td>
+            <td>Hai khe hẹp</td>
+            <td>Đo bước sóng</td>
+        </tr>
+        <tr>
+            <td>Giao thoa kế Fresnel</td>
+            <td>Hai gương phẳng</td>
+            <td>Nghiên cứu nguồn sáng</td>
+        </tr>
+        <tr>
+            <td>Giao thoa kế Michelson</td>
+            <td>Chia chùm tia</td>
+            <td>Đo chính xác bước sóng</td>
+        </tr>
+        <tr>
+            <td>Giao thoa kế Fabry-Perot</td>
+            <td>Hai gương song song</td>
+            <td>Phân tích phổ</td>
+        </tr>
+    </table>
+
+    <h2>9. Điều kiện quan sát vân giao thoa rõ</h2>
+
+    <h3>a) Về nguồn sáng</h3>
+    <ul>
+        <li>Nguồn phải đơn sắc hoặc lọc sắc tốt</li>
+        <li>Cường độ hai nguồn gần bằng nhau</li>
+        <li>Kích thước nguồn phải nhỏ</li>
+    </ul>
+
+    <h3>b) Về hệ thống quang học</h3>
+    <ul>
+        <li>a << D để gần đúng δ = ax/D</li>
+        <li>Hai khe phải song song và có độ rộng bằng nhau</li>
+        <li>Màn quan sát song song với mặt phẳng chứa hai khe</li>
+    </ul>
+
+    <h2>10. Thí nghiệm kiểm chứng</h2>
+
+    <h3>a) Dụng cụ</h3>
+    <ul>
+        <li>Laser He-Ne (λ = 632,8 nm)</li>
+        <li>Khe Young (có thể điều chỉnh a)</li>
+        <li>Màn quan sát có thước đo</li>
+        <li>Thước đo khoảng cách D</li>
+    </ul>
+
+    <h3>b) Tiến hành</h3>
+    <ol>
+        <li>Chiếu laser qua khe Young</li>
+        <li>Điều chỉnh để vân rõ nét</li>
+        <li>Đo khoảng 10 khoảng vân → i</li>
+        <li>Đo a, D</li>
+        <li>Tính λ và so sánh với lý thuyết</li>
+    </ol>
+
+    <div class="important">
+        <strong>Lưu ý quan trọng:</strong>
+        <ul>
+            <li>Giao thoa chứng tỏ ánh sáng có tính chất sóng</li>
+            <li>Điều kiện giao thoa: Hai nguồn kết hợp</li>
+            <li>Khoảng vân: i = λD/a</li>
+            <li>Vân sáng: x = ki; Vân tối: x = (k + 0,5)i</li>
+            <li>Với ánh sáng trắng: Vân trung tâm trắng, hai bên là quang phổ</li>
+        </ul>
+    </div>
+
+    <div class="quote">
+        <strong>Lưu ý khi học:</strong>
+        <ul>
+            <li>Phân biệt điều kiện vân sáng (δ = kλ) và vân tối (δ = (k+0,5)λ)</li>
+            <li>Vân tối thứ n ứng với k = n-1</li>
+            <li>Trong khoảng giữa n vân sáng liên tiếp có (n-1) khoảng vân</li>
+            <li>Khi thay đổi môi trường: λ' = λ/n, i' = i/n</li>
+        </ul>
+    </div>
+
+    <div class="important">
+        <strong>Tổng kết:</strong> Giao thoa ánh sáng là hiện tượng đặc trưng của sóng. Thí nghiệm Young với hai khe hẹp tạo ra hệ vân sáng tối xen kẽ. Khoảng vân i = λD/a cho phép đo bước sóng ánh sáng với độ chính xác cao. Hiện tượng này có nhiều ứng dụng trong đo lường và kiểm tra.
+    </div>
+</body>
+</html>

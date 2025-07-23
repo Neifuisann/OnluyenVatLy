@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giao thoa sóng - Vật lý 12</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #7f8c8d;
+            margin-top: 20px;
+        }
+        .definition-box {
+            background-color: #ecf0f1;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .formula-box {
+            background-color: #e8f6f3;
+            border: 1px solid #16a085;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .example-box {
+            background-color: #fef9e7;
+            border: 1px solid #f39c12;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .note-box {
+            background-color: #fadbd8;
+            border-left: 4px solid #e74c3c;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .practice-problem {
+            background-color: #f5f5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .solution {
+            background-color: #d5f4e6;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        .important-formula {
+            background-color: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .condition-box {
+            background-color: #e3f2fd;
+            border: 1px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        .interference-pattern {
+            background-color: #f3e5f5;
+            border: 1px solid #9c27b0;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Giao thoa sóng</h1>
+    
+    <div class="definition-box">
+        <strong>Giới thiệu:</strong> Giao thoa là hiện tượng đặc trưng của sóng. Khi hai sóng kết hợp gặp nhau, chúng sẽ tạo ra một hình ảnh giao thoa với những vùng dao động mạnh và yếu xen kẽ nhau.
+    </div>
+
+    <h2>I. Hiện tượng giao thoa sóng</h2>
+    
+    <h3>1. Định nghĩa</h3>
+    
+    <div class="definition-box">
+        <strong>Giao thoa sóng:</strong> Là hiện tượng hai hay nhiều sóng kết hợp gặp nhau tạo nên những vùng dao động tăng cường hoặc giảm bớt.
+    </div>
+
+    <h3>2. Điều kiện giao thoa</h3>
+    
+    <div class="condition-box">
+        <strong>Hai nguồn sóng kết hợp phải thỏa mãn:</strong>
+        <ul>
+            <li>Có cùng tần số</li>
+            <li>Có độ lệch pha không đổi theo thời gian</li>
+        </ul>
+        <p><strong>Lưu ý:</strong> Hai nguồn cùng pha là trường hợp đặc biệt của nguồn kết hợp.</p>
+    </div>
+
+    <h2>II. Lý thuyết giao thoa hai nguồn</h2>
+    
+    <h3>1. Xét hai nguồn cùng pha</h3>
+    
+    <div class="formula-box">
+        <p>Hai nguồn S₁, S₂ dao động cùng pha:</p>
+        <p>\[u_1 = u_2 = A\cos(\omega t)\]</p>
+    </div>
+
+    <h3>2. Phương trình sóng tại điểm M</h3>
+    
+    <p>Gọi d₁ = S₁M, d₂ = S₂M là khoảng cách từ M đến hai nguồn.</p>
+    
+    <div class="formula-box">
+        <p>Sóng từ S₁ đến M: \[u_{1M} = A\cos\left(\omega t - \frac{2\pi d_1}{\lambda}\right)\]</p>
+        <p>Sóng từ S₂ đến M: \[u_{2M} = A\cos\left(\omega t - \frac{2\pi d_2}{\lambda}\right)\]</p>
+    </div>
+
+    <h3>3. Biên độ tổng hợp tại M</h3>
+    
+    <div class="important-formula">
+        <p><strong>Biên độ dao động tổng hợp:</strong></p>
+        <p style="font-size: 1.3em;">
+            \[A_M = 2A\left|\cos\left(\frac{\pi(d_2 - d_1)}{\lambda}\right)\right|\]
+        </p>
+        <p><strong>Li độ dao động tổng hợp:</strong></p>
+        <p style="font-size: 1.3em;">
+            \[u_M = 2A\cos\left(\frac{\pi(d_2 - d_1)}{\lambda}\right)\cos\left(\omega t - \frac{\pi(d_1 + d_2)}{\lambda}\right)\]
+        </p>
+    </div>
+
+    <h2>III. Vị trí cực đại và cực tiểu</h2>
+    
+    <h3>1. Cực đại giao thoa</h3>
+    
+    <div class="interference-pattern">
+        <p><strong>Điều kiện cực đại:</strong> Hai sóng đến M cùng pha</p>
+        <p style="text-align: center; font-size: 1.2em;">
+            \[d_2 - d_1 = k\lambda\]
+        </p>
+        <p>với k = 0, ±1, ±2, ...</p>
+        <p><strong>Biên độ cực đại:</strong> A_max = 2A</p>
+    </div>
+
+    <h3>2. Cực tiểu giao thoa</h3>
+    
+    <div class="interference-pattern">
+        <p><strong>Điều kiện cực tiểu:</strong> Hai sóng đến M ngược pha</p>
+        <p style="text-align: center; font-size: 1.2em;">
+            \[d_2 - d_1 = \left(k + \frac{1}{2}\right)\lambda\]
+        </p>
+        <p>với k = 0, ±1, ±2, ...</p>
+        <p><strong>Biên độ cực tiểu:</strong> A_min = 0</p>
+    </div>
+
+    <h2>IV. Các trường hợp đặc biệt</h2>
+    
+    <h3>1. Hai nguồn ngược pha</h3>
+    
+    <div class="condition-box">
+        <p>Khi hai nguồn ngược pha (Δφ = π):</p>
+        <ul>
+            <li><strong>Cực đại:</strong> \(d_2 - d_1 = (k + \frac{1}{2})\lambda\)</li>
+            <li><strong>Cực tiểu:</strong> \(d_2 - d_1 = k\lambda\)</li>
+        </ul>
+        <p>Ngược lại với trường hợp cùng pha!</p>
+    </div>
+
+    <h3>2. Hai nguồn lệch pha bất kỳ</h3>
+    
+    <div class="formula-box">
+        <p>Với độ lệch pha Δφ = φ₂ - φ₁:</p>
+        <p><strong>Cực đại:</strong> \(d_2 - d_1 = k\lambda + \frac{\Delta\varphi}{2\pi}\lambda\)</p>
+        <p><strong>Cực tiểu:</strong> \(d_2 - d_1 = (k + \frac{1}{2})\lambda + \frac{\Delta\varphi}{2\pi}\lambda\)</p>
+    </div>
+
+    <h2>V. Số điểm cực đại, cực tiểu</h2>
+    
+    <h3>1. Trên đoạn nối hai nguồn</h3>
+    
+    <div class="important-formula">
+        <p><strong>Với hai nguồn cùng pha, cách nhau L:</strong></p>
+        <p><strong>Số cực đại:</strong></p>
+        <p>\[-\frac{L}{\lambda} < k < \frac{L}{\lambda}\]</p>
+        <p><strong>Số cực tiểu:</strong></p>
+        <p>\[-\frac{L}{\lambda} - \frac{1}{2} < k < \frac{L}{\lambda} - \frac{1}{2}\]</p>
+    </div>
+
+    <h3>2. Trên đường tròn tâm O (trung điểm S₁S₂)</h3>
+    
+    <div class="note-box">
+        <p><strong>Số điểm dao động cực đại = Số điểm cực tiểu = 2 × số cực đại trên S₁S₂</strong></p>
+    </div>
+
+    <h2>VI. Các ví dụ minh họa</h2>
+    
+    <h3>Ví dụ 1: Tìm vị trí cực đại, cực tiểu</h3>
+    
+    <div class="example-box">
+        <p><strong>Bài toán:</strong> Hai nguồn S₁, S₂ cách nhau 10 cm dao động cùng pha với bước sóng λ = 2 cm. Điểm M cách S₁ là 8 cm, cách S₂ là 6 cm. Hỏi M là cực đại hay cực tiểu thứ mấy?</p>
+        
+        <div class="solution">
+            <strong>Giải:</strong><br>
+            d₁ = 8 cm, d₂ = 6 cm<br>
+            Hiệu đường đi: d₂ - d₁ = 6 - 8 = -2 cm<br>
+            <br>
+            So sánh với λ = 2 cm:<br>
+            d₂ - d₁ = -2 = -1 × λ<br>
+            <br>
+            Vậy M là cực đại ứng với k = -1 (cực đại thứ nhất về phía S₁)
+        </div>
+    </div>
+
+    <h3>Ví dụ 2: Đếm số cực đại, cực tiểu</h3>
+    
+    <div class="example-box">
+        <p><strong>Bài toán:</strong> Hai nguồn S₁, S₂ cách nhau 15 cm dao động cùng pha với f = 20 Hz. Tốc độ truyền sóng v = 60 cm/s. Tìm số điểm dao động với biên độ cực đại và cực tiểu trên đoạn S₁S₂.</p>
+        
+        <div class="solution">
+            <strong>Giải:</strong><br>
+            Bước sóng: λ = v/f = 60/20 = 3 cm<br>
+            L = 15 cm<br>
+            <br>
+            <strong>Số cực đại:</strong><br>
+            -L/λ < k < L/λ<br>
+            -15/3 < k < 15/3<br>
+            -5 < k < 5<br>
+            k = -4, -3, -2, -1, 0, 1, 2, 3, 4<br>
+            → Có 9 cực đại<br>
+            <br>
+            <strong>Số cực tiểu:</strong><br>
+            -L/λ - 0,5 < k < L/λ - 0,5<br>
+            -5,5 < k < 4,5<br>
+            k = -5, -4, -3, -2, -1, 0, 1, 2, 3, 4<br>
+            → Có 10 cực tiểu
+        </div>
+    </div>
+
+    <h3>Ví dụ 3: Hai nguồn lệch pha</h3>
+    
+    <div class="example-box">
+        <p><strong>Bài toán:</strong> Hai nguồn A, B cách nhau 8 cm dao động với phương trình u_A = 2cos(40πt) và u_B = 2cos(40πt + π/2). Tốc độ truyền sóng 40 cm/s. Tìm số cực đại trên AB.</p>
+        
+        <div class="solution">
+            <strong>Giải:</strong><br>
+            Tần số: f = ω/2π = 40π/2π = 20 Hz<br>
+            Bước sóng: λ = v/f = 40/20 = 2 cm<br>
+            Độ lệch pha: Δφ = π/2<br>
+            <br>
+            Điều kiện cực đại: d₂ - d₁ = kλ + (Δφ/2π)λ<br>
+            d₂ - d₁ = 2k + 0,5 (cm)<br>
+            <br>
+            Trên AB: -8 < d₂ - d₁ < 8<br>
+            -8 < 2k + 0,5 < 8<br>
+            -4,25 < k < 3,75<br>
+            k = -4, -3, -2, -1, 0, 1, 2, 3<br>
+            → Có 8 cực đại
+        </div>
+    </div>
+
+    <h2>VII. Ứng dụng của giao thoa</h2>
+    
+    <div class="definition-box">
+        <h3>Các ứng dụng thực tế:</h3>
+        <ul>
+            <li><strong>Đo bước sóng:</strong> Từ khoảng cách giữa các vân giao thoa</li>
+            <li><strong>Kiểm tra độ phẳng bề mặt:</strong> Giao thoa kế</li>
+            <li><strong>Công nghệ sóng siêu âm:</strong> Chẩn đoán y học</li>
+            <li><strong>Hệ thống định vị:</strong> GPS sử dụng nguyên lý giao thoa</li>
+            <li><strong>Khử tiếng ồn:</strong> Tai nghe chống ồn dùng giao thoa triệt tiêu</li>
+        </ul>
+    </div>
+
+    <h2>VIII. Bài tập tự luyện</h2>
+    
+    <div class="practice-problem">
+        <strong>Bài 1:</strong> Trong thí nghiệm giao thoa sóng nước, hai nguồn A, B cách nhau 16 cm dao động cùng pha với tần số 25 Hz. Tốc độ truyền sóng 50 cm/s. Gọi C, D là hai điểm trên mặt nước sao cho ABCD là hình vuông. Tính số điểm dao động với biên độ cực đại trên CD.
+    </div>
+
+    <div class="practice-problem">
+        <strong>Bài 2:</strong> Hai nguồn sóng kết hợp S₁, S₂ cách nhau 10 cm dao động theo phương trình u₁ = 4cos(20πt) cm và u₂ = 4cos(20πt + π) cm. Tốc độ truyền sóng v = 20 cm/s. Điểm M cách S₁ là 5 cm và cách S₂ là 8 cm. Tính biên độ dao động tại M.
+    </div>
+
+    <div class="practice-problem">
+        <strong>Bài 3:</strong> Hai nguồn sóng A, B cách nhau 20 cm dao động cùng pha với λ = 4 cm. Điểm M nằm trên đường thẳng qua A vuông góc với AB, cách A một khoảng 15 cm. Hỏi trên đoạn AM có bao nhiêu điểm dao động với biên độ cực đại?
+    </div>
+
+    <hr style="margin-top: 50px;">
+    
+    <h3>Chủ đề liên quan:</h3>
+    <ul>
+        <li><a href="song_co_va_su_truyen_song.html">Sóng cơ và sự truyền sóng</a></li>
+        <li><a href="song_dung.html">Sóng dừng</a></li>
+        <li><a href="song_am.html">Sóng âm</a></li>
+    </ul>
+</body>
+</html>

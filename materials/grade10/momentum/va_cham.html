@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Va chạm đàn hồi và không đàn hồi - Vật lý 10</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #7f8c8d;
+            margin-top: 20px;
+        }
+        .definition-box {
+            background-color: #ecf0f1;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .formula-box {
+            background-color: #e8f6f3;
+            border: 1px solid #16a085;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .example-box {
+            background-color: #fef9e7;
+            border: 1px solid #f39c12;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .note-box {
+            background-color: #fadbd8;
+            border-left: 4px solid #e74c3c;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .practice-problem {
+            background-color: #f5f5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .solution {
+            background-color: #d5f4e6;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        .important-formula {
+            background-color: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .comparison-table th, .comparison-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        .comparison-table th {
+            background-color: #3498db;
+            color: white;
+        }
+        .comparison-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .application-box {
+            background-color: #e8f5e9;
+            border: 1px solid #4caf50;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .special-case {
+            background-color: #e1f5fe;
+            border: 1px solid #03a9f4;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Va chạm đàn hồi và không đàn hồi</h1>
+    
+    <div class="definition-box">
+        <strong>Giới thiệu:</strong> Va chạm là hiện tượng hai hay nhiều vật tác dụng lực lên nhau trong thời gian rất ngắn. Nghiên cứu va chạm giúp hiểu rõ về bảo toàn động lượng và năng lượng, có nhiều ứng dụng trong đời sống và kỹ thuật.
+    </div>
+
+    <h2>I. Phân loại va chạm</h2>
+    
+    <table class="comparison-table">
+        <thead>
+            <tr>
+                <th>Loại va chạm</th>
+                <th>Động lượng</th>
+                <th>Động năng</th>
+                <th>Đặc điểm</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Va chạm đàn hồi</strong></td>
+                <td>Bảo toàn</td>
+                <td>Bảo toàn</td>
+                <td>Vật tách rời sau va chạm</td>
+            </tr>
+            <tr>
+                <td><strong>Va chạm không đàn hồi</strong></td>
+                <td>Bảo toàn</td>
+                <td>Không bảo toàn</td>
+                <td>Một phần động năng chuyển thành nhiệt</td>
+            </tr>
+            <tr>
+                <td><strong>Va chạm mềm</strong></td>
+                <td>Bảo toàn</td>
+                <td>Giảm nhiều nhất</td>
+                <td>Vật dính vào nhau sau va chạm</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>II. Va chạm đàn hồi</h2>
+    
+    <h3>1. Định nghĩa và đặc điểm</h3>
+    
+    <div class="definition-box">
+        <strong>Định nghĩa:</strong> Va chạm đàn hồi là va chạm mà sau va chạm, các vật tách rời nhau và tổng động năng được bảo toàn.
+    </div>
+
+    <div class="note-box">
+        <strong>Đặc điểm:</strong>
+        <ul>
+            <li>Động lượng được bảo toàn</li>
+            <li>Động năng được bảo toàn</li>
+            <li>Không có sự biến đổi động năng thành các dạng năng lượng khác</li>
+            <li>Các vật tách rời nhau sau va chạm</li>
+        </ul>
+    </div>
+
+    <h3>2. Công thức tổng quát</h3>
+    
+    <div class="important-formula">
+        <p><strong>Hệ phương trình va chạm đàn hồi:</strong></p>
+        <p>1. Bảo toàn động lượng:</p>
+        <p style="text-align: center;">\[m_1v_1 + m_2v_2 = m_1v_1' + m_2v_2'\]</p>
+        <p>2. Bảo toàn động năng:</p>
+        <p style="text-align: center;">\[\frac{1}{2}m_1v_1^2 + \frac{1}{2}m_2v_2^2 = \frac{1}{2}m_1v_1'^2 + \frac{1}{2}m_2v_2'^2\]</p>
+    </div>
+
+    <h3>3. Các trường hợp đặc biệt</h3>
+    
+    <div class="special-case">
+        <h4>a) Hai vật có khối lượng bằng nhau (m₁ = m₂)</h4>
+        <p><strong>Kết quả:</strong> Hai vật trao đổi vận tốc cho nhau</p>
+        <p style="text-align: center;">\[v_1' = v_2\]</p>
+        <p style="text-align: center;">\[v_2' = v_1\]</p>
+    </div>
+
+    <div class="special-case">
+        <h4>b) Vật 2 ban đầu đứng yên (v₂ = 0)</h4>
+        <p><strong>Công thức vận tốc sau va chạm:</strong></p>
+        <p style="text-align: center;">\[v_1' = \frac{m_1 - m_2}{m_1 + m_2}v_1\]</p>
+        <p style="text-align: center;">\[v_2' = \frac{2m_1}{m_1 + m_2}v_1\]</p>
+    </div>
+
+    <div class="special-case">
+        <h4>c) Va chạm với vật có khối lượng rất lớn</h4>
+        <p>Khi m₂ >> m₁ và v₂ = 0:</p>
+        <ul>
+            <li>v₁' ≈ -v₁ (vật nhỏ bật ngược lại)</li>
+            <li>v₂' ≈ 0 (vật lớn gần như không động)</li>
+        </ul>
+    </div>
+
+    <h2>III. Va chạm không đàn hồi (va chạm mềm)</h2>
+    
+    <h3>1. Va chạm mềm hoàn toàn</h3>
+    
+    <div class="definition-box">
+        <strong>Định nghĩa:</strong> Va chạm mềm là va chạm mà sau va chạm hai vật dính vào nhau và chuyển động với cùng vận tốc.
+    </div>
+
+    <div class="formula-box">
+        <p><strong>Công thức va chạm mềm:</strong></p>
+        <p>\[m_1v_1 + m_2v_2 = (m_1 + m_2)V\]</p>
+        <p><strong>Vận tốc chung sau va chạm:</strong></p>
+        <p>\[V = \frac{m_1v_1 + m_2v_2}{m_1 + m_2}\]</p>
+    </div>
+
+    <h3>2. Năng lượng mất đi trong va chạm mềm</h3>
+    
+    <div class="formula-box">
+        <p><strong>Động năng mất đi:</strong></p>
+        <p>\[\Delta W_đ = W_{đ(trước)} - W_{đ(sau)}\]</p>
+        <p>\[\Delta W_đ = \frac{1}{2}m_1v_1^2 + \frac{1}{2}m_2v_2^2 - \frac{1}{2}(m_1 + m_2)V^2\]</p>
+    </div>
+
+    <div class="note-box">
+        <strong>Lưu ý:</strong> Năng lượng mất đi chuyển thành nhiệt năng, âm thanh, biến dạng vật thể.
+    </div>
+
+    <h2>IV. Va chạm không đàn hồi một phần</h2>
+    
+    <h3>Hệ số phục hồi</h3>
+    
+    <div class="definition-box">
+        <strong>Định nghĩa:</strong> Hệ số phục hồi e đặc trưng cho mức độ đàn hồi của va chạm.
+        <p style="text-align: center; margin-top: 10px;">\[e = \frac{|v_2' - v_1'|}{|v_2 - v_1|}\]</p>
+    </div>
+
+    <div class="note-box">
+        <strong>Giá trị của e:</strong>
+        <ul>
+            <li>e = 1: Va chạm đàn hồi hoàn toàn</li>
+            <li>0 < e < 1: Va chạm không đàn hồi một phần</li>
+            <li>e = 0: Va chạm mềm (hoàn toàn không đàn hồi)</li>
+        </ul>
+    </div>
+
+    <h2>V. Các ví dụ điển hình</h2>
+    
+    <h3>Ví dụ 1: Va chạm đàn hồi cùng khối lượng</h3>
+    
+    <div class="example-box">
+        <p><strong>Bài toán:</strong> Hai viên bi giống nhau, bi 1 chuyển động với v = 5 m/s đến va chạm với bi 2 đứng yên. Tính vận tốc sau va chạm.</p>
+        
+        <div class="solution">
+            <strong>Giải:</strong><br>
+            Do m₁ = m₂ và v₂ = 0<br>
+            Áp dụng công thức va chạm đàn hồi với khối lượng bằng nhau:<br>
+            v₁' = v₂ = 0<br>
+            v₂' = v₁ = 5 m/s<br>
+            <br>
+            <strong>Kết quả:</strong> Hai viên bi trao đổi vận tốc - bi 1 dừng lại, bi 2 chuyển động với v = 5 m/s
+        </div>
+    </div>
+
+    <h3>Ví dụ 2: Va chạm mềm</h3>
+    
+    <div class="example-box">
+        <p><strong>Bài toán:</strong> Ô tô 5 tấn với v = 4 m/s tông vào xe máy 250kg đứng yên. Sau va chạm dính nhau. Tính vận tốc chung và năng lượng mất đi.</p>
+        
+        <div class="solution">
+            <strong>Giải:</strong><br>
+            m₁ = 5000 kg, v₁ = 4 m/s<br>
+            m₂ = 250 kg, v₂ = 0<br>
+            <br>
+            Vận tốc chung:<br>
+            \(V = \frac{m_1v_1 + m_2v_2}{m_1 + m_2} = \frac{5000 \times 4 + 0}{5000 + 250} = 3.81\) m/s<br>
+            <br>
+            Động năng trước: \(W_{đ1} = \frac{1}{2} \times 5000 \times 4^2 = 40000\) J<br>
+            Động năng sau: \(W_{đ2} = \frac{1}{2} \times 5250 \times 3.81^2 = 38095\) J<br>
+            <br>
+            Năng lượng mất: ΔW = 40000 - 38095 = 1905 J
+        </div>
+    </div>
+
+    <h3>Ví dụ 3: Con lắc thử đạn</h3>
+    
+    <div class="example-box">
+        <p><strong>Bài toán:</strong> Bắn viên đạn 10g vào túi cát 1kg treo lơ lửng. Sau va chạm, túi cát được nâng lên cao 0.8m. Tìm vận tốc đạn.</p>
+        
+        <div class="solution">
+            <strong>Giải:</strong><br>
+            m = 0.01 kg (đạn), M = 1 kg (túi cát), h = 0.8 m<br>
+            <br>
+            <strong>Bước 1:</strong> Tìm vận tốc chung sau va chạm<br>
+            Bảo toàn cơ năng: \(\frac{1}{2}(m + M)V^2 = (m + M)gh\)<br>
+            \(V = \sqrt{2gh} = \sqrt{2 \times 10 \times 0.8} = 4\) m/s<br>
+            <br>
+            <strong>Bước 2:</strong> Tìm vận tốc đạn<br>
+            Bảo toàn động lượng: \(mv = (m + M)V\)<br>
+            \(v = \frac{(m + M)V}{m} = \frac{1.01 \times 4}{0.01} = 404\) m/s
+        </div>
+    </div>
+
+    <h2>VI. Va chạm hai chiều</h2>
+    
+    <div class="example-box">
+        <p><strong>Bài toán:</strong> Bi 1 (200g) chuyển động với v = 3 m/s theo hướng Đông va chạm với bi 2 (300g) chuyển động 2 m/s theo hướng Bắc. Sau va chạm dính nhau. Tìm vận tốc sau va chạm.</p>
+        
+        <div class="solution">
+            <strong>Giải:</strong><br>
+            Chọn Ox hướng Đông, Oy hướng Bắc<br>
+            <br>
+            Chiếu lên Ox: \((m_1 + m_2)V_x = m_1v_1 = 0.2 \times 3 = 0.6\)<br>
+            \(V_x = \frac{0.6}{0.5} = 1.2\) m/s<br>
+            <br>
+            Chiếu lên Oy: \((m_1 + m_2)V_y = m_2v_2 = 0.3 \times 2 = 0.6\)<br>
+            \(V_y = \frac{0.6}{0.5} = 1.2\) m/s<br>
+            <br>
+            Độ lớn: \(V = \sqrt{V_x^2 + V_y^2} = \sqrt{1.2^2 + 1.2^2} = 1.7\) m/s<br>
+            Hướng: góc 45° với hướng Đông
+        </div>
+    </div>
+
+    <h2>VII. Ứng dụng thực tế</h2>
+    
+    <div class="application-box">
+        <h3>1. Trò chơi bi-a</h3>
+        <p>Sử dụng nguyên lý va chạm đàn hồi để tính toán hướng và tốc độ các viên bi sau va chạm.</p>
+    </div>
+
+    <div class="application-box">
+        <h3>2. An toàn giao thông</h3>
+        <p>Thiết kế vùng biến dạng ô tô để tạo va chạm không đàn hồi, kéo dài thời gian va chạm và giảm lực tác dụng.</p>
+    </div>
+
+    <div class="application-box">
+        <h3>3. Con lắc Newton</h3>
+        <p>Minh họa trực quan về bảo toàn động lượng và năng lượng trong va chạm đàn hồi.</p>
+    </div>
+
+    <div class="application-box">
+        <h3>4. Va chạm thiên thạch</h3>
+        <p>Tính toán hậu quả va chạm của thiên thạch với Trái Đất dựa trên va chạm không đàn hồi.</p>
+    </div>
+
+    <h2>VIII. Bài tập tự luyện</h2>
+    
+    <div class="practice-problem">
+        <strong>Bài 1:</strong> Quả cầu A (0.5kg) chuyển động với v = 4 m/s va chạm đàn hồi với quả cầu B (0.3kg) đứng yên. Tính vận tốc của hai quả cầu sau va chạm.
+    </div>
+
+    <div class="practice-problem">
+        <strong>Bài 2:</strong> Viên đạn 20g bay ngang với v = 300 m/s xuyên qua khối gỗ 2kg đặt trên mặt bàn nhẵn. Sau khi xuyên qua, đạn có v = 100 m/s. Tính:
+        <ol type="a">
+            <li>Vận tốc của khối gỗ</li>
+            <li>Năng lượng mất đi</li>
+        </ol>
+    </div>
+
+    <div class="practice-problem">
+        <strong>Bài 3:</strong> Hai xe lăn A và B có khối lượng 2kg và 3kg chuyển động ngược chiều nhau với vận tốc 3 m/s và 2 m/s. Biết hệ số phục hồi e = 0.8. Tính vận tốc hai xe sau va chạm.
+    </div>
+
+    <hr style="margin-top: 50px;">
+    
+    <h3>Chủ đề liên quan:</h3>
+    <ul>
+        <li><a href="dong_luong_xung_luong.html">Động lượng và Xung lượng</a></li>
+        <li><a href="bao_toan_dong_luong.html">Định luật bảo toàn động lượng</a></li>
+        <li><a href="../energy/co_nang_bao_toan.html">Định luật bảo toàn cơ năng</a></li>
+    </ul>
+</body>
+</html>

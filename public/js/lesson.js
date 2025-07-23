@@ -73,7 +73,11 @@ async function renderQuestions(lesson) {
         questionTypeDistribution: lesson.questionTypeDistribution,
         totalQuestions: lesson.questions ? lesson.questions.length : 0
     });
-    console.log('🎨 Render Debug - Questions at render time:', lesson.questions ? lesson.questions.map(q => q.question || q.id) : []);
+    console.log('🎨 Render Debug - Questions at render time:', lesson.questions ? lesson.questions.map((q, idx) => ({
+        position: idx + 1,
+        type: q.type,
+        question: (q.question || q.id || '').substring(0, 30) + '...'
+    })) : []);
     
     // Check if lesson has questions property
     if (!lesson || !lesson.questions || !Array.isArray(lesson.questions)) {
@@ -144,6 +148,11 @@ async function renderQuestions(lesson) {
                 questionTextForSaving = questionTextForSaving.replace(imgRegex, '').trim();
             }
             // --- END NEW ---
+
+            // Remove points marking pattern [X pts] or [X.X pts] from display
+            // Handle both inline and multiline cases
+            const pointsRegex = /[\s\n]*\[\s*[\d.]+\s*pts?\s*\][\s\n]*$/i;
+            questionTextForSaving = questionTextForSaving.replace(pointsRegex, '').trim();
 
             questionHtml += `<p>${questionTextForSaving}</p>`;
 
@@ -555,6 +564,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         // If an image was found, remove the tag for the text we save
                         questionTextForSaving = questionTextForSaving.replace(imgRegex, '').trim();
                     }
+                    
+                    // Remove points marking pattern [X pts] or [X.X pts] from saved text
+                    // Handle both inline and multiline cases
+                    const pointsRegex = /[\s\n]*\[\s*[\d.]+\s*pts?\s*\][\s\n]*$/i;
+                    questionTextForSaving = questionTextForSaving.replace(pointsRegex, '').trim();
                     // --- END NEW ---
 
                     // Handle both old format (multiple_choice) and new format (abcd)
@@ -1335,9 +1349,56 @@ function applyRandomization(lesson) {
         if (forceShuffleQuestions) {
             console.log('🔧 Force shuffle enabled via URL parameter');
         }
-        questions = shuffleArray(questions, randomFunc);
-        console.log('🎲 Shuffle Debug - Questions after shuffle:', questions.map(q => q.question || q.id));
-        console.log('Questions shuffled');
+        
+        // Group questions by type
+        const questionGroups = {
+            abcd: [],
+            truefalse: [],
+            number: []
+        };
+        
+        // Log unique question types before grouping
+        const uniqueTypes = [...new Set(questions.map(q => q.type))];
+        console.log('🔍 Unique question types in lesson:', uniqueTypes);
+        
+        // Normalize type names and group questions
+        questions.forEach((q, originalIndex) => {
+            // Store original index to maintain reference
+            q._originalIndex = originalIndex;
+            
+            const normalizedType = q.type === 'multiple_choice' ? 'abcd' :
+                                 q.type === 'true_false' ? 'truefalse' :
+                                 q.type === 'fill_blank' ? 'number' : q.type;
+            
+            if (questionGroups[normalizedType]) {
+                questionGroups[normalizedType].push(q);
+            } else {
+                // If unknown type, add to abcd group as fallback
+                console.warn(`Unknown question type: ${q.type}, adding to abcd group`);
+                questionGroups.abcd.push(q);
+            }
+        });
+        
+        console.log('🎲 Question groups before shuffle:', {
+            abcd: questionGroups.abcd.length,
+            truefalse: questionGroups.truefalse.length,
+            number: questionGroups.number.length
+        });
+        
+        // Shuffle each group independently
+        const shuffledAbcd = shuffleArray(questionGroups.abcd, randomFunc);
+        const shuffledTrueFalse = shuffleArray(questionGroups.truefalse, randomFunc);
+        const shuffledNumber = shuffleArray(questionGroups.number, randomFunc);
+        
+        // Combine groups in the desired order: ABCD → True/False → Short Answer
+        questions = [...shuffledAbcd, ...shuffledTrueFalse, ...shuffledNumber];
+        
+        console.log('🎲 Shuffle Debug - Questions after group shuffle:', questions.map(q => ({
+            question: q.question || q.id,
+            type: q.type,
+            originalIndex: q._originalIndex
+        })));
+        console.log('Questions shuffled within groups while maintaining type order');
     } else {
         console.warn('⚠️ Shuffle Debug - shuffleQuestions is false or undefined!');
         console.log('💡 Tip: Add ?shuffle=true to URL to force shuffling');
@@ -1375,6 +1436,32 @@ function applyRandomization(lesson) {
     lesson.questions = questions;
     
     console.log('Randomization complete. Final question count:', questions.length);
+    console.log('🎯 Final question order:', questions.map((q, idx) => ({
+        position: idx + 1,
+        type: q.type,
+        question: (q.question || '').substring(0, 30) + '...',
+        originalIndex: q._originalIndex
+    })));
+    
+    // Verify group order
+    let groupOrder = [];
+    let currentGroup = null;
+    questions.forEach(q => {
+        const normalizedType = q.type === 'multiple_choice' ? 'abcd' :
+                             q.type === 'true_false' ? 'truefalse' :
+                             q.type === 'fill_blank' ? 'number' : q.type;
+        if (normalizedType !== currentGroup) {
+            currentGroup = normalizedType;
+            groupOrder.push(normalizedType);
+        }
+    });
+    console.log('✅ Group order verification:', groupOrder.join(' → '));
+    
+    if (groupOrder.join('-') !== 'abcd-truefalse-number') {
+        console.warn('⚠️ Warning: Groups are not in the expected order!');
+        console.warn('Expected: abcd → truefalse → number');
+        console.warn('Actual:', groupOrder.join(' → '));
+    }
 }
 
 // Attempt management functions

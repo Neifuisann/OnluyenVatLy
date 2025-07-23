@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hiệu ứng Doppler - Vật lý 12</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #7f8c8d;
+            margin-top: 20px;
+        }
+        .definition-box {
+            background-color: #ecf0f1;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .formula-box {
+            background-color: #e8f6f3;
+            border: 1px solid #16a085;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .example-box {
+            background-color: #fef9e7;
+            border: 1px solid #f39c12;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .note-box {
+            background-color: #fadbd8;
+            border-left: 4px solid #e74c3c;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .practice-problem {
+            background-color: #f5f5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .solution {
+            background-color: #d5f4e6;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        .important-formula {
+            background-color: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .doppler-case {
+            background-color: #e3f2fd;
+            border: 1px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        .application-box {
+            background-color: #f3e5f5;
+            border: 1px solid #9c27b0;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .doppler-shift {
+            background-color: #e8f5e9;
+            border: 1px solid #4caf50;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hiệu ứng Doppler</h1>
+    
+    <div class="definition-box">
+        <strong>Giới thiệu:</strong> Hiệu ứng Doppler là hiện tượng thay đổi tần số sóng khi có chuyển động tương đối giữa nguồn sóng và người quan sát. Đây là hiện tượng phổ biến trong đời sống và có nhiều ứng dụng quan trọng.
+    </div>
+
+    <h2>I. Hiện tượng Doppler</h2>
+    
+    <h3>1. Định nghĩa</h3>
+    
+    <div class="definition-box">
+        <strong>Hiệu ứng Doppler:</strong> Là hiện tượng tần số của sóng mà người quan sát thu được khác với tần số của nguồn phát khi có sự chuyển động tương đối giữa nguồn và người quan sát.
+    </div>
+
+    <h3>2. Mô tả định tính</h3>
+    
+    <div class="note-box">
+        <strong>Quan sát thực tế:</strong>
+        <ul>
+            <li>Khi xe cứu thương đến gần: Âm thanh cao hơn (tần số tăng)</li>
+            <li>Khi xe cứu thương đi xa: Âm thanh thấp hơn (tần số giảm)</li>
+            <li>Khi đứng yên cạnh nguồn: Tần số không đổi</li>
+        </ul>
+    </div>
+
+    <h2>II. Công thức hiệu ứng Doppler</h2>
+    
+    <h3>1. Công thức tổng quát</h3>
+    
+    <div class="important-formula">
+        <p><strong>Tần số thu được:</strong></p>
+        <p style="font-size: 1.5em;">
+            \[f' = f \cdot \frac{v \pm v_M}{v \mp v_S}\]
+        </p>
+        <p>Trong đó:</p>
+        <ul style="text-align: left;">
+            <li>f': Tần số người quan sát thu được</li>
+            <li>f: Tần số nguồn phát</li>
+            <li>v: Tốc độ truyền sóng trong môi trường</li>
+            <li>v_M: Tốc độ người quan sát</li>
+            <li>v_S: Tốc độ nguồn sóng</li>
+        </ul>
+    </div>
+
+    <h3>2. Quy tắc dấu</h3>
+    
+    <div class="doppler-shift">
+        <strong>Nguyên tắc chọn dấu:</strong>
+        <ul>
+            <li><strong>Tử số (v ± v_M):</strong>
+                <ul>
+                    <li>Dấu (+): Người quan sát tiến lại gần nguồn</li>
+                    <li>Dấu (-): Người quan sát ra xa nguồn</li>
+                </ul>
+            </li>
+            <li><strong>Mẫu số (v ∓ v_S):</strong>
+                <ul>
+                    <li>Dấu (-): Nguồn tiến lại gần người quan sát</li>
+                    <li>Dấu (+): Nguồn ra xa người quan sát</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <h2>III. Các trường hợp đặc biệt</h2>
+    
+    <h3>1. Nguồn đứng yên, người quan sát chuyển động</h3>
+    
+    <div class="doppler-case">
+        <p><strong>v_S = 0</strong></p>
+        <p>Công thức: \[f' = f \cdot \frac{v \pm v_M}{v}\]</p>
+        <ul>
+            <li>Tiến lại gần: f' = f(1 + v_M/v) > f</li>
+            <li>Ra xa: f' = f(1 - v_M/v) < f</li>
+        </ul>
+    </div>
+
+    <h3>2. Người quan sát đứng yên, nguồn chuyển động</h3>
+    
+    <div class="doppler-case">
+        <p><strong>v_M = 0</strong></p>
+        <p>Công thức: \[f' = f \cdot \frac{v}{v \mp v_S}\]</p>
+        <ul>
+            <li>Nguồn tiến lại: f' = f × v/(v - v_S) > f</li>
+            <li>Nguồn ra xa: f' = f × v/(v + v_S) < f</li>
+        </ul>
+    </div>
+
+    <h3>3. Cả nguồn và người quan sát cùng chuyển động</h3>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Trường hợp</th>
+                <th>Công thức</th>
+                <th>Kết quả</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Cùng chiều, cùng vận tốc</td>
+                <td>f' = f</td>
+                <td>Không có hiệu ứng Doppler</td>
+            </tr>
+            <tr>
+                <td>Ngược chiều, tiến lại gần</td>
+                <td>f' = f(v + v_M)/(v - v_S)</td>
+                <td>Tần số tăng mạnh</td>
+            </tr>
+            <tr>
+                <td>Cùng chiều, ra xa nhau</td>
+                <td>f' = f(v - v_M)/(v + v_S)</td>
+                <td>Tần số giảm mạnh</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>IV. Hiệu ứng Doppler với sóng điện từ</h2>
+    
+    <div class="definition-box">
+        <strong>Đặc điểm:</strong> Với sóng điện từ (ánh sáng), hiệu ứng Doppler cũng xảy ra nhưng công thức phức tạp hơn do phải tính đến thuyết tương đối.
+    </div>
+
+    <div class="doppler-shift">
+        <strong>Dịch chuyển Doppler với ánh sáng:</strong>
+        <ul>
+            <li><strong>Dịch chuyển đỏ (Redshift):</strong> Khi nguồn sáng ra xa → Bước sóng tăng → Ánh sáng dịch về phía đỏ</li>
+            <li><strong>Dịch chuyển xanh (Blueshift):</strong> Khi nguồn sáng tiến lại → Bước sóng giảm → Ánh sáng dịch về phía xanh</li>
+        </ul>
+    </div>
+
+    <h2>V. Các ví dụ minh họa</h2>
+    
+    <h3>Ví dụ 1: Nguồn chuyển động</h3>
+    
+    <div class="example-box">
+        <p><strong>Bài toán:</strong> Một ô tô chạy với vận tốc 20 m/s, phát ra tiếng còi có tần số 1000 Hz. Tính tần số âm mà người đứng bên đường nghe được khi:</p>
+        <ol type="a">
+            <li>Ô tô tiến lại gần</li>
+            <li>Ô tô đi xa</li>
+        </ol>
+        <p>Cho tốc độ âm trong không khí v = 340 m/s.</p>
+        
+        <div class="solution">
+            <strong>Giải:</strong><br>
+            f = 1000 Hz; v_S = 20 m/s; v = 340 m/s; v_M = 0<br>
+            <br>
+            a) Ô tô tiến lại gần:<br>
+            f' = f × v/(v - v_S) = 1000 × 340/(340 - 20)<br>
+            f' = 1000 × 340/320 = 1062,5 Hz<br>
+            <br>
+            b) Ô tô đi xa:<br>
+            f' = f × v/(v + v_S) = 1000 × 340/(340 + 20)<br>
+            f' = 1000 × 340/360 = 944,4 Hz
+        </div>
+    </div>
+
+    <h3>Ví dụ 2: Người quan sát chuyển động</h3>
+    
+    <div class="example-box">
+        <p><strong>Bài toán:</strong> Một người đi xe đạp với vận tốc 5 m/s về phía một nguồn âm đứng yên phát tần số 440 Hz. Tính tần số người đó nghe được. Sau đó người này quay xe chạy ra xa nguồn với cùng vận tốc, tần số nghe được là bao nhiêu?</p>
+        
+        <div class="solution">
+            <strong>Giải:</strong><br>
+            f = 440 Hz; v_M = 5 m/s; v = 340 m/s; v_S = 0<br>
+            <br>
+            Khi tiến lại gần nguồn:<br>
+            f' = f(v + v_M)/v = 440 × (340 + 5)/340<br>
+            f' = 440 × 345/340 = 446,5 Hz<br>
+            <br>
+            Khi ra xa nguồn:<br>
+            f' = f(v - v_M)/v = 440 × (340 - 5)/340<br>
+            f' = 440 × 335/340 = 433,5 Hz
+        </div>
+    </div>
+
+    <h3>Ví dụ 3: Cả nguồn và người quan sát chuyển động</h3>
+    
+    <div class="example-box">
+        <p><strong>Bài toán:</strong> Xe A chạy với vận tốc 15 m/s phát còi tần số 800 Hz. Xe B chạy cùng chiều phía trước với vận tốc 10 m/s. Tính tần số mà người trên xe B nghe được. Tốc độ âm v = 340 m/s.</p>
+        
+        <div class="solution">
+            <strong>Giải:</strong><br>
+            f = 800 Hz; v_S = 15 m/s; v_M = 10 m/s; v = 340 m/s<br>
+            <br>
+            Xe A (nguồn) đuổi theo xe B (người quan sát)<br>
+            Nguồn tiến lại gần → dấu (-) ở mẫu<br>
+            Người quan sát ra xa nguồn → dấu (-) ở tử<br>
+            <br>
+            f' = f × (v - v_M)/(v - v_S)<br>
+            f' = 800 × (340 - 10)/(340 - 15)<br>
+            f' = 800 × 330/325 = 812,3 Hz
+        </div>
+    </div>
+
+    <h2>VI. Ứng dụng của hiệu ứng Doppler</h2>
+    
+    <div class="application-box">
+        <h3>1. Trong y học</h3>
+        <ul>
+            <li><strong>Siêu âm Doppler:</strong> Đo tốc độ máu chảy trong mạch</li>
+            <li><strong>Siêu âm tim:</strong> Đánh giá chức năng van tim</li>
+            <li><strong>Theo dõi thai nhi:</strong> Đo nhịp tim và lưu lượng máu</li>
+        </ul>
+    </div>
+
+    <div class="application-box">
+        <h3>2. Trong thiên văn học</h3>
+        <ul>
+            <li><strong>Đo vận tốc sao và thiên hà:</strong> Từ dịch chuyển đỏ/xanh</li>
+            <li><strong>Phát hiện hành tinh ngoài hệ mặt trời:</strong> Dao động của ngôi sao</li>
+            <li><strong>Chứng minh vũ trụ giãn nở:</strong> Dịch chuyển đỏ của các thiên hà xa</li>
+        </ul>
+    </div>
+
+    <div class="application-box">
+        <h3>3. Trong đời sống</h3>
+        <ul>
+            <li><strong>Radar đo tốc độ:</strong> Cảnh sát giao thông</li>
+            <li><strong>Dự báo thời tiết:</strong> Radar Doppler theo dõi mây mưa</li>
+            <li><strong>Cảm biến chuyển động:</strong> Hệ thống báo động</li>
+            <li><strong>Sonar:</strong> Định vị tàu ngầm, cá</li>
+        </ul>
+    </div>
+
+    <h2>VII. Một số lưu ý quan trọng</h2>
+    
+    <div class="note-box">
+        <strong>Các điểm cần nhớ:</strong>
+        <ul>
+            <li>Hiệu ứng Doppler chỉ xảy ra khi có chuyển động tương đối theo phương nối nguồn và người quan sát</li>
+            <li>Chuyển động vuông góc với phương truyền sóng không gây hiệu ứng Doppler (với sóng cơ)</li>
+            <li>Độ lớn hiệu ứng phụ thuộc vào tỉ số v_S/v và v_M/v</li>
+            <li>Khi v_S hoặc v_M << v, có thể dùng công thức gần đúng</li>
+        </ul>
+    </div>
+
+    <h2>VIII. Công thức gần đúng</h2>
+    
+    <div class="formula-box">
+        <p><strong>Khi v_S, v_M << v:</strong></p>
+        <p>Độ biến thiên tần số:</p>
+        <p>\[\Delta f = f' - f \approx \pm f \cdot \frac{v_{tương đối}}{v}\]</p>
+        <p>Trong đó v_{tương đối} là tốc độ tiến lại gần của nguồn và người quan sát</p>
+    </div>
+
+    <h2>IX. Bài tập tự luyện</h2>
+    
+    <div class="practice-problem">
+        <strong>Bài 1:</strong> Một tàu hỏa chạy với vận tốc 25 m/s, khi đến gần nhà ga phát ra tiếng còi có tần số 600 Hz. Người đứng trên sân ga nghe được âm có tần số bao nhiêu khi:
+        <ol type="a">
+            <li>Tàu đang đến gần</li>
+            <li>Tàu vừa đi qua và đang ra xa</li>
+            <li>Độ biến thiên tần số là bao nhiêu?</li>
+        </ol>
+        Cho tốc độ âm v = 340 m/s.
+    </div>
+
+    <div class="practice-problem">
+        <strong>Bài 2:</strong> Một máy phát siêu âm gắn trên xe cứu thương phát tần số 40 kHz. Xe chạy với vận tốc 30 m/s về phía một bức tường và thu được âm phản xạ. Tính:
+        <ol type="a">
+            <li>Tần số âm đến tường</li>
+            <li>Tần số âm phản xạ mà xe thu được</li>
+            <li>Tần số phách (hiệu hai tần số)</li>
+        </ol>
+    </div>
+
+    <div class="practice-problem">
+        <strong>Bài 3:</strong> Hai xe chạy ngược chiều trên cùng một đường thẳng. Xe A có vận tốc 20 m/s phát còi tần số 1000 Hz. Xe B có vận tốc 15 m/s. Tính tần số mà người trên xe B nghe được:
+        <ol type="a">
+            <li>Khi hai xe tiến lại gần nhau</li>
+            <li>Sau khi hai xe vượt qua nhau</li>
+        </ol>
+    </div>
+
+    <hr style="margin-top: 50px;">
+    
+    <h3>Chủ đề liên quan:</h3>
+    <ul>
+        <li><a href="song_co_va_su_truyen_song.html">Sóng cơ và sự truyền sóng</a></li>
+        <li><a href="giao_thoa_song.html">Giao thoa sóng</a></li>
+        <li><a href="song_dung.html">Sóng dừng</a></li>
+        <li><a href="song_am.html">Sóng âm</a></li>
+    </ul>
+</body>
+</html>

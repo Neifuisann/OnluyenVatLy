@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hiện tượng quang điện trong - Vật lý 12</title>
+    <meta name="description" content="Tìm hiểu về hiện tượng quang điện trong, quang dẫn, pin quang điện, quang trở và các ứng dụng trong công nghệ hiện đại.">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1 { color: #1e293b; font-size: 32px; }
+        h2 { color: #334155; font-size: 24px; margin-top: 30px; }
+        h3 { color: #334155; font-size: 20px; }
+        .quote { background: #fdf6eb; border: 1px solid #f9d9b0; padding: 15px; margin: 20px 0; border-radius: 5px; }
+        .quote3 { padding-left: 10px; border-left: 3px solid #cf2e2e; font-style: italic; color: #cf2e2e; margin: 15px 0; }
+        .formula { background: #f0f4f8; padding: 10px; margin: 10px 0; text-align: center; font-size: 18px; }
+        img { max-width: 100%; height: auto; display: block; margin: 20px auto; }
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+        table th, table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        table th { background-color: #f2f2f2; }
+        .example { background: #e8f5e9; padding: 15px; margin: 20px 0; border-left: 4px solid #4caf50; }
+        .important { background: #ffe4e1; padding: 15px; margin: 20px 0; border-left: 4px solid #f44336; }
+        .device { background: #e3f2fd; padding: 15px; margin: 20px 0; border-left: 4px solid #2196f3; }
+        .application { background: #fff3cd; padding: 15px; margin: 20px 0; border-left: 4px solid #ffc107; }
+    </style>
+</head>
+<body>
+
+<h1>Hiện tượng quang điện trong - Vật lý 12</h1>
+
+<p>Hiện tượng quang điện trong là cơ sở của nhiều linh kiện quang điện tử hiện đại như pin mặt trời, cảm biến hình ảnh CCD/CMOS, và các thiết bị quang dẫn.</p>
+
+<h2>1. Hiện tượng quang điện trong</h2>
+
+<h3>a) Định nghĩa</h3>
+<p>Hiện tượng quang điện trong là hiện tượng electron liên kết được giải phóng thành electron dẫn (và lỗ trống) khi chất bán dẫn hấp thụ photon có năng lượng đủ lớn.</p>
+
+<h3>b) So sánh với quang điện ngoài</h3>
+<table>
+    <tr>
+        <th>Đặc điểm</th>
+        <th>Quang điện ngoài</th>
+        <th>Quang điện trong</th>
+    </tr>
+    <tr>
+        <td>Vị trí xảy ra</td>
+        <td>Bề mặt kim loại</td>
+        <td>Trong khối bán dẫn</td>
+    </tr>
+    <tr>
+        <td>Electron sau khi hấp thụ</td>
+        <td>Bật ra khỏi vật</td>
+        <td>Vẫn trong vật</td>
+    </tr>
+    <tr>
+        <td>Điều kiện năng lượng</td>
+        <td>hf ≥ A (công thoát)</td>
+        <td>hf ≥ ΔE (năng lượng vùng cấm)</td>
+    </tr>
+    <tr>
+        <td>Giới hạn quang điện</td>
+        <td>λ₀ ~ 0,3-0,6 μm</td>
+        <td>λ₀ ~ 1-5 μm</td>
+    </tr>
+</table>
+
+<h3>c) Điều kiện xảy ra</h3>
+<div class="formula">
+hf ≥ ΔE → λ ≤ λ₀ = hc/ΔE
+</div>
+<p>Với ΔE là độ rộng vùng cấm của bán dẫn</p>
+
+<h2>2. Chất quang dẫn</h2>
+
+<h3>a) Định nghĩa</h3>
+<p>Chất quang dẫn là chất bán dẫn có tính dẫn điện tăng mạnh khi được chiếu sáng do hiện tượng quang điện trong.</p>
+
+<h3>b) Cơ chế quang dẫn</h3>
+<ol>
+    <li>Photon có ε ≥ ΔE bị hấp thụ</li>
+    <li>Electron từ vùng hóa trị → vùng dẫn</li>
+    <li>Tạo cặp electron - lỗ trống</li>
+    <li>Độ dẫn điện tăng: σ = σ₀ + Δσ</li>
+</ol>
+
+<h3>c) Các chất quang dẫn thông dụng</h3>
+<table>
+    <tr>
+        <th>Chất</th>
+        <th>ΔE (eV)</th>
+        <th>λ₀ (μm)</th>
+        <th>Vùng nhạy</th>
+    </tr>
+    <tr>
+        <td>Si</td>
+        <td>1,12</td>
+        <td>1,11</td>
+        <td>Hồng ngoại gần</td>
+    </tr>
+    <tr>
+        <td>Ge</td>
+        <td>0,67</td>
+        <td>1,85</td>
+        <td>Hồng ngoại</td>
+    </tr>
+    <tr>
+        <td>CdS</td>
+        <td>2,42</td>
+        <td>0,51</td>
+        <td>Khả kiến</td>
+    </tr>
+    <tr>
+        <td>PbS</td>
+        <td>0,37</td>
+        <td>3,35</td>
+        <td>Hồng ngoại</td>
+    </tr>
+    <tr>
+        <td>GaAs</td>
+        <td>1,43</td>
+        <td>0,87</td>
+        <td>Hồng ngoại gần</td>
+    </tr>
+</table>
+
+<h2>3. Quang điện trở</h2>
+
+<div class="device">
+<h3>a) Cấu tạo</h3>
+<ul>
+    <li>Lớp bán dẫn mỏng trên đế cách điện</li>
+    <li>Hai điện cực ở hai đầu</li>
+    <li>Bề mặt nhạy sáng hình ziczac để tăng diện tích</li>
+    <li>Vỏ bảo vệ có cửa sổ trong suốt</li>
+</ul>
+
+<h3>b) Nguyên lý hoạt động</h3>
+<ul>
+    <li>Tối: Điện trở lớn (MΩ)</li>
+    <li>Sáng: Điện trở giảm mạnh (kΩ)</li>
+    <li>Độ nhạy: ΔR/R ~ cường độ sáng</li>
+</ul>
+
+<h3>c) Đặc tính</h3>
+<ul>
+    <li>Quan hệ R-E gần tuyến tính ở vùng làm việc</li>
+    <li>Thời gian đáp ứng: ms đến s</li>
+    <li>Nhiệt độ ảnh hưởng đến điện trở tối</li>
+</ul>
+</div>
+
+<h2>4. Pin quang điện (Pin mặt trời)</h2>
+
+<div class="device">
+<h3>a) Cấu tạo</h3>
+<ul>
+    <li>Lớp tiếp xúc p-n trong bán dẫn</li>
+    <li>Điện cực trên: lưới mỏng để ánh sáng xuyên qua</li>
+    <li>Điện cực dưới: tấm kim loại</li>
+    <li>Lớp chống phản xạ tăng hiệu suất</li>
+</ul>
+
+<h3>b) Nguyên lý hoạt động</h3>
+<ol>
+    <li>Photon tạo cặp electron - lỗ trống gần lớp p-n</li>
+    <li>Điện trường trong tách electron về vùng n, lỗ trống về vùng p</li>
+    <li>Tạo hiệu điện thế giữa hai cực</li>
+    <li>Khi nối mạch ngoài → dòng điện</li>
+</ol>
+
+<h3>c) Đặc trưng vôn-ampe</h3>
+<div class="formula">
+I = I_s - I₀(e^(eU/kT) - 1)
+</div>
+<p>Trong đó:</p>
+<ul>
+    <li>I_s: Dòng quang điện (tỉ lệ với cường độ sáng)</li>
+    <li>I₀: Dòng bão hòa ngược</li>
+    <li>U: Hiệu điện thế</li>
+</ul>
+</div>
+
+<h2>5. Các thông số của pin mặt trời</h2>
+
+<h3>a) Hiệu điện thế hở mạch (V_oc)</h3>
+<p>Hiệu điện thế khi không có dòng (I = 0):</p>
+<div class="formula">
+V_oc = (kT/e)ln(I_s/I₀ + 1)
+</div>
+
+<h3>b) Dòng ngắn mạch (I_sc)</h3>
+<p>Dòng điện khi U = 0: I_sc ≈ I_s</p>
+
+<h3>c) Công suất cực đại</h3>
+<div class="formula">
+P_max = V_m × I_m = FF × V_oc × I_sc
+</div>
+<p>FF: Hệ số lấp đầy (Fill Factor) ~ 0,7-0,8</p>
+
+<h3>d) Hiệu suất chuyển đổi</h3>
+<div class="formula">
+η = P_max/P_in × 100%
+</div>
+
+<table>
+    <tr>
+        <th>Loại pin</th>
+        <th>Hiệu suất (%)</th>
+        <th>Ưu điểm</th>
+        <th>Nhược điểm</th>
+    </tr>
+    <tr>
+        <td>Si đơn tinh thể</td>
+        <td>20-25</td>
+        <td>Hiệu suất cao</td>
+        <td>Đắt</td>
+    </tr>
+    <tr>
+        <td>Si đa tinh thể</td>
+        <td>15-20</td>
+        <td>Rẻ hơn</td>
+        <td>Hiệu suất thấp hơn</td>
+    </tr>
+    <tr>
+        <td>Màng mỏng</td>
+        <td>10-15</td>
+        <td>Rất rẻ, mềm dẻo</td>
+        <td>Hiệu suất thấp</td>
+    </tr>
+    <tr>
+        <td>GaAs</td>
+        <td>25-30</td>
+        <td>Hiệu suất cao nhất</td>
+        <td>Rất đắt</td>
+    </tr>
+</table>
+
+<h2>6. Photodiode</h2>
+
+<h3>a) Cấu tạo và nguyên lý</h3>
+<ul>
+    <li>Diode p-n phân cực ngược</li>
+    <li>Khi chiếu sáng: dòng ngược tăng</li>
+    <li>Dòng tỉ lệ tuyến tính với cường độ sáng</li>
+</ul>
+
+<h3>b) Các chế độ hoạt động</h3>
+<ul>
+    <li><strong>Chế độ quang dẫn:</strong> Phân cực ngược, đáp ứng nhanh</li>
+    <li><strong>Chế độ quang thế:</strong> Không phân cực, như pin</li>
+</ul>
+
+<h3>c) Đặc điểm</h3>
+<ul>
+    <li>Đáp ứng nhanh: ns - μs</li>
+    <li>Tuyến tính tốt</li>
+    <li>Nhiễu thấp</li>
+    <li>Kích thước nhỏ</li>
+</ul>
+
+<h2>7. Phototransistor</h2>
+
+<h3>a) Cấu tạo</h3>
+<ul>
+    <li>Transistor với vùng base nhạy sáng</li>
+    <li>Hoặc không có chân base</li>
+</ul>
+
+<h3>b) Nguyên lý</h3>
+<ul>
+    <li>Ánh sáng tạo dòng base quang điện</li>
+    <li>Được khuếch đại β lần thành dòng collector</li>
+    <li>Độ nhạy cao hơn photodiode β lần</li>
+</ul>
+
+<h3>c) So sánh với photodiode</h3>
+<table>
+    <tr>
+        <th>Đặc điểm</th>
+        <th>Photodiode</th>
+        <th>Phototransistor</th>
+    </tr>
+    <tr>
+        <td>Độ nhạy</td>
+        <td>Thấp</td>
+        <td>Cao (β lần)</td>
+    </tr>
+    <tr>
+        <td>Tốc độ</td>
+        <td>Nhanh</td>
+        <td>Chậm hơn</td>
+    </tr>
+    <tr>
+        <td>Tuyến tính</td>
+        <td>Tốt</td>
+        <td>Kém hơn</td>
+    </tr>
+    <tr>
+        <td>Ứng dụng</td>
+        <td>Đo chính xác</td>
+        <td>Chuyển mạch</td>
+    </tr>
+</table>
+
+<h2>8. Ứng dụng của quang điện trong</h2>
+
+<div class="application">
+<h3>a) Năng lượng mặt trời</h3>
+<ul>
+    <li>Hệ thống điện mặt trời dân dụng</li>
+    <li>Nhà máy điện mặt trời</li>
+    <li>Vệ tinh, trạm vũ trụ</li>
+    <li>Thiết bị di động</li>
+</ul>
+
+<h3>b) Cảm biến và đo lường</h3>
+<ul>
+    <li>Máy đo ánh sáng</li>
+    <li>Cảm biến vị trí, tốc độ</li>
+    <li>Máy quét mã vạch</li>
+    <li>Điều khiển từ xa</li>
+</ul>
+
+<h3>c) Truyền thông quang</h3>
+<ul>
+    <li>Thu tín hiệu cáp quang</li>
+    <li>Truyền dữ liệu không dây</li>
+    <li>LiFi - truyền dữ liệu qua ánh sáng</li>
+</ul>
+
+<h3>d) Hình ảnh và video</h3>
+<ul>
+    <li>Cảm biến CCD/CMOS trong camera</li>
+    <li>Máy ảnh kỹ thuật số</li>
+    <li>Camera an ninh</li>
+    <li>Thiết bị y tế</li>
+</ul>
+</div>
+
+<h2>9. Cảm biến hình ảnh CCD/CMOS</h2>
+
+<h3>a) CCD (Charge Coupled Device)</h3>
+<ul>
+    <li>Ma trận photodiode tích điện</li>
+    <li>Chuyển điện tích tuần tự</li>
+    <li>Chất lượng ảnh cao</li>
+    <li>Tiêu thụ điện nhiều</li>
+</ul>
+
+<h3>b) CMOS (Complementary Metal Oxide Semiconductor)</h3>
+<ul>
+    <li>Mỗi pixel có bộ khuếch đại riêng</li>
+    <li>Đọc trực tiếp từng pixel</li>
+    <li>Tiêu thụ điện ít</li>
+    <li>Tích hợp xử lý trên chip</li>
+</ul>
+
+<div class="example">
+<h4>Ví dụ 1: Pin mặt trời</h4>
+<p>Pin Si có diện tích 100cm², V_oc = 0,6V, I_sc = 3A, FF = 0,75. Cường độ ánh sáng 1000W/m².</p>
+<p>a) Tính công suất cực đại</p>
+<p>b) Tính hiệu suất</p>
+
+<p><strong>Giải:</strong></p>
+<p>a) P_max = FF × V_oc × I_sc = 0,75 × 0,6 × 3 = 1,35W</p>
+
+<p>b) P_in = 1000 × 0,01 = 10W</p>
+<p>η = P_max/P_in × 100% = 1,35/10 × 100% = 13,5%</p>
+</div>
+
+<h2>10. Hiệu ứng quang điện âm</h2>
+
+<h3>a) Định nghĩa</h3>
+<p>Độ dẫn điện giảm khi chiếu sáng do electron bị bẫy vào các tâm tái hợp.</p>
+
+<h3>b) Điều kiện xảy ra</h3>
+<ul>
+    <li>Nhiều tâm tái hợp (tạp chất, sai hỏng)</li>
+    <li>Tốc độ bẫy > tốc độ sinh cặp e-h</li>
+    <li>Thường ở nhiệt độ thấp</li>
+</ul>
+
+<h2>11. Bài toán quang điện trong</h2>
+
+<div class="example">
+<h4>Ví dụ 2: Quang điện trở</h4>
+<p>CdS có ΔE = 2,42eV. Chiếu ánh sáng λ = 500nm, công suất 1mW lên điện trở.</p>
+<p>Hiệu suất lượng tử 20%. Mỗi cặp e-h tồn tại 10⁻⁴s. Tính số hạt dẫn được tạo ra.</p>
+
+<p><strong>Giải:</strong></p>
+<p>Năng lượng photon: ε = hc/λ = 2,48eV > ΔE → gây quang điện</p>
+<p>Số photon/s: N = P/ε = 10⁻³/(2,48×1,6×10⁻¹⁹) = 2,52×10¹⁵</p>
+<p>Số cặp e-h/s: n = 0,2 × N = 5,04×10¹⁴</p>
+<p>Số hạt dẫn: N_dẫn = 2 × n × τ = 2 × 5,04×10¹⁴ × 10⁻⁴ = 1,01×10¹¹</p>
+</div>
+
+<h2>12. Bài tập tự luyện</h2>
+
+<div class="quote">
+<h3>Bài 1:</h3>
+<p>Si có ΔE = 1,12eV. Tính:</p>
+<p>a) Giới hạn quang điện</p>
+<p>b) Có thể dùng Si làm cảm biến ánh sáng khả kiến không?</p>
+</div>
+
+<div class="quote">
+<h3>Bài 2:</h3>
+<p>Pin mặt trời 10×10cm, chiếu sáng 800W/m² cho V_oc = 0,55V, I_sc = 2,4A.</p>
+<p>a) Tính công suất cực đại nếu FF = 0,72</p>
+<p>b) Để có 12V, 10W cần bao nhiêu pin và mắc thế nào?</p>
+</div>
+
+<div class="quote">
+<h3>Bài 3:</h3>
+<p>Photodiode Si phân cực ngược 5V. Khi tối I = 10nA, khi chiếu sáng I = 50μA.</p>
+<p>a) Tính dòng quang điện</p>
+<p>b) Nếu mỗi photon tạo 1 cặp e-h, tính số photon/s</p>
+</div>
+
+<h2>13. Tổng kết</h2>
+
+<div class="important">
+<h3>Những điều cần nhớ:</h3>
+<ul>
+    <li>Quang điện trong: e được giải phóng nhưng vẫn trong vật</li>
+    <li>Điều kiện: hf ≥ ΔE (năng lượng vùng cấm)</li>
+    <li>Quang dẫn: Độ dẫn điện tăng khi chiếu sáng</li>
+    <li>Pin mặt trời: Chuyển quang năng → điện năng</li>
+    <li>Hiệu suất pin Si: 15-25%</li>
+    <li>Photodiode: Nhanh, tuyến tính</li>
+    <li>Phototransistor: Nhạy, chậm hơn</li>
+    <li>Ứng dụng: Năng lượng, cảm biến, camera</li>
+</ul>
+</div>
+
+<div class="related-posts">
+    <h3>Bài viết liên quan:</h3>
+    <ul>
+        <li><a href="bai-1-hien-tuong-quang-dien.html">Hiện tượng quang điện - Thuyết lượng tử ánh sáng</a></li>
+        <li><a href="bai-3-quang-pho-vach-nguyen-tu-hydro.html">Quang phổ vạch của nguyên tử Hydro</a></li>
+        <li><a href="bai-4-hien-tuong-quang-phat-quang-laser.html">Hiện tượng quang - phát quang. Laser</a></li>
+    </ul>
+</div>
+
+</body>
+</html>

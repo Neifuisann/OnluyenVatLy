@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Điện trở - Định luật Ohm - Vật lý 11</title>
+    <meta name="description" content="Điện trở và định luật Ohm là kiến thức cốt lõi về mạch điện. Tìm hiểu về điện trở, định luật Ohm, cách ghép điện trở và ứng dụng thực tế.">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #1e293b;
+            font-size: 32px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #334155;
+            font-size: 24px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        h3 {
+            color: #475569;
+            font-size: 20px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .quote {
+            background: #f0f9ff;
+            border-left: 4px solid #0284c7;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .formula {
+            background: #fef3c7;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .example {
+            background: #f3f4f6;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+        }
+        .important {
+            background: #fee2e2;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            border-left: 4px solid #ef4444;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table th, table td {
+            border: 1px solid #e5e7eb;
+            padding: 10px;
+            text-align: left;
+        }
+        table th {
+            background: #f9fafb;
+            font-weight: bold;
+        }
+        .formula-box {
+            background: #ecfdf5;
+            border: 2px solid #10b981;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .formula-box h4 {
+            margin-top: 0;
+            color: #059669;
+        }
+        .circuit-diagram {
+            background: #e0e7ff;
+            border: 1px solid #6366f1;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Điện trở - Định luật Ohm - Vật lý 11</h1>
+    
+    <p>Năm 1827, Georg Simon Ohm phát hiện ra mối quan hệ giữa hiệu điện thế và cường độ dòng điện, mở ra kỷ nguyên mới cho khoa học điện. Định luật mang tên ông là một trong những định luật cơ bản nhất của điện học.</p>
+
+    <h2>1. Điện trở của vật dẫn</h2>
+    
+    <h3>a) Khái niệm điện trở</h3>
+    <div class="quote">
+        <strong>Điện trở</strong> là đại lượng đặc trưng cho mức độ cản trở dòng điện của vật dẫn.
+    </div>
+
+    <p>Khi có hiệu điện thế đặt vào hai đầu vật dẫn:</p>
+    <ul>
+        <li>Vật dẫn tốt (Cu, Ag): Dòng điện lớn → Điện trở nhỏ</li>
+        <li>Vật dẫn kém (Nichrome, Tungsten): Dòng điện nhỏ → Điện trở lớn</li>
+    </ul>
+
+    <h3>b) Định nghĩa điện trở</h3>
+    <div class="formula-box">
+        <h4>Công thức điện trở:</h4>
+        <div class="formula">
+            R = U/I
+        </div>
+        
+        <p>Trong đó:</p>
+        <ul>
+            <li>R: Điện trở (Ω - Ohm)</li>
+            <li>U: Hiệu điện thế (V)</li>
+            <li>I: Cường độ dòng điện (A)</li>
+        </ul>
+    </div>
+
+    <h3>c) Đơn vị và ký hiệu</h3>
+    <ul>
+        <li>Đơn vị: Ohm (Ω)</li>
+        <li>1Ω = 1V/A</li>
+        <li>Bội số: 1kΩ = 10³Ω; 1MΩ = 10⁶Ω</li>
+        <li>Ký hiệu trong mạch: —[R]— hoặc —⟨⟩—</li>
+    </ul>
+
+    <h2>2. Định luật Ohm</h2>
+
+    <h3>a) Phát biểu định luật</h3>
+    <div class="quote">
+        <strong>Định luật Ohm:</strong> Cường độ dòng điện chạy qua một đoạn mạch tỉ lệ thuận với hiệu điện thế đặt vào hai đầu đoạn mạch và tỉ lệ nghịch với điện trở của đoạn mạch đó.
+    </div>
+
+    <div class="formula-box">
+        <h4>Công thức định luật Ohm:</h4>
+        <div class="formula">
+            I = U/R
+        </div>
+        
+        <p>Hay các dạng biến đổi:</p>
+        <div class="formula">
+            U = I.R    ;    R = U/I
+        </div>
+    </div>
+
+    <h3>b) Đặc tuyến vôn-ampe</h3>
+    <p>Đồ thị biểu diễn sự phụ thuộc I = f(U) gọi là đặc tuyến vôn-ampe:</p>
+    <ul>
+        <li>Vật dẫn tuân theo định luật Ohm: Đường thẳng qua gốc tọa độ</li>
+        <li>Độ dốc = 1/R (càng dốc → R càng nhỏ)</li>
+    </ul>
+
+    <div class="circuit-diagram">
+        <p>Đặc tuyến V-A của điện trở thuần:</p>
+        <p>I ↑</p>
+        <p>  |  /</p>
+        <p>  | /</p>
+        <p>  |/___→ U</p>
+        <p>  O</p>
+    </div>
+
+    <h2>3. Điện trở phụ thuộc vào các yếu tố nào?</h2>
+
+    <h3>a) Công thức điện trở của dây dẫn</h3>
+    <div class="formula-box">
+        <h4>Điện trở của dây dẫn đồng chất:</h4>
+        <div class="formula">
+            R = ρl/S
+        </div>
+        
+        <p>Trong đó:</p>
+        <ul>
+            <li>ρ: Điện trở suất (Ω.m)</li>
+            <li>l: Chiều dài dây dẫn (m)</li>
+            <li>S: Tiết diện dây dẫn (m²)</li>
+        </ul>
+    </div>
+
+    <h3>b) Điện trở suất</h3>
+    <p>Điện trở suất ρ phụ thuộc vào:</p>
+    <ul>
+        <li>Bản chất vật liệu</li>
+        <li>Nhiệt độ</li>
+    </ul>
+
+    <table>
+        <tr>
+            <th>Vật liệu</th>
+            <th>ρ (×10⁻⁸ Ω.m) ở 20°C</th>
+            <th>Ứng dụng</th>
+        </tr>
+        <tr>
+            <td>Bạc (Ag)</td>
+            <td>1,6</td>
+            <td>Dẫn điện tốt nhất</td>
+        </tr>
+        <tr>
+            <td>Đồng (Cu)</td>
+            <td>1,7</td>
+            <td>Dây điện</td>
+        </tr>
+        <tr>
+            <td>Nhôm (Al)</td>
+            <td>2,8</td>
+            <td>Đường dây tải điện</td>
+        </tr>
+        <tr>
+            <td>Vonfram (W)</td>
+            <td>5,5</td>
+            <td>Dây tóc bóng đèn</td>
+        </tr>
+        <tr>
+            <td>Sắt (Fe)</td>
+            <td>10</td>
+            <td>Dây dẫn rẻ tiền</td>
+        </tr>
+        <tr>
+            <td>Constantan</td>
+            <td>50</td>
+            <td>Điện trở chuẩn</td>
+        </tr>
+        <tr>
+            <td>Nichrome</td>
+            <td>100</td>
+            <td>Dây điện trở</td>
+        </tr>
+    </table>
+
+    <h3>c) Sự phụ thuộc nhiệt độ</h3>
+    <div class="formula">
+        ρ = ρ₀[1 + α(t - t₀)]
+    </div>
+    
+    <p>Với α là hệ số nhiệt điện trở (K⁻¹)</p>
+    <ul>
+        <li>Kim loại: α > 0 (R tăng khi t tăng)</li>
+        <li>Than, điện phân: α < 0 (R giảm khi t tăng)</li>
+    </ul>
+
+    <h2>4. Ghép điện trở</h2>
+
+    <h3>a) Ghép nối tiếp</h3>
+    <div class="circuit-diagram">
+        <p>—[R₁]—[R₂]—[R₃]—</p>
+    </div>
+
+    <div class="formula-box">
+        <h4>Công thức ghép nối tiếp:</h4>
+        <ul>
+            <li>Điện trở tương đương: <strong>R = R₁ + R₂ + ... + Rₙ</strong></li>
+            <li>Cường độ dòng điện: I = I₁ = I₂ = ... = Iₙ</li>
+            <li>Hiệu điện thế: U = U₁ + U₂ + ... + Uₙ</li>
+        </ul>
+    </div>
+
+    <h3>b) Ghép song song</h3>
+    <div class="circuit-diagram">
+        <p>  —[R₁]—</p>
+        <p>—⟨      ⟩—</p>
+        <p>  —[R₂]—</p>
+    </div>
+
+    <div class="formula-box">
+        <h4>Công thức ghép song song:</h4>
+        <ul>
+            <li>Điện trở tương đương: <strong>1/R = 1/R₁ + 1/R₂ + ... + 1/Rₙ</strong></li>
+            <li>Hiệu điện thế: U = U₁ = U₂ = ... = Uₙ</li>
+            <li>Cường độ dòng điện: I = I₁ + I₂ + ... + Iₙ</li>
+        </ul>
+    </div>
+
+    <div class="important">
+        <strong>Trường hợp đặc biệt - 2 điện trở song song:</strong>
+        <div class="formula">
+            R = (R₁ × R₂)/(R₁ + R₂)
+        </div>
+    </div>
+
+    <h2>5. Công và công suất điện</h2>
+
+    <h3>a) Công của dòng điện</h3>
+    <div class="formula-box">
+        <h4>Công thức tính công:</h4>
+        <div class="formula">
+            A = UIt = I²Rt = U²t/R
+        </div>
+        
+        <p>Đơn vị: J (Joule) hoặc kWh (1kWh = 3,6×10⁶ J)</p>
+    </div>
+
+    <h3>b) Công suất điện</h3>
+    <div class="formula-box">
+        <h4>Công thức công suất:</h4>
+        <div class="formula">
+            P = UI = I²R = U²/R
+        </div>
+        
+        <p>Đơn vị: W (Watt)</p>
+    </div>
+
+    <h3>c) Định luật Joule-Lenz</h3>
+    <div class="quote">
+        Nhiệt lượng tỏa ra trên vật dẫn tỉ lệ thuận với điện trở, bình phương cường độ dòng điện và thời gian dòng điện chạy qua.
+    </div>
+
+    <div class="formula">
+        Q = I²Rt
+    </div>
+
+    <h2>6. Ví dụ minh họa</h2>
+
+    <div class="example">
+        <strong>Ví dụ 1:</strong> Dây dẫn bằng đồng dài 100m, tiết diện 1mm². Tính điện trở của dây. Biết ρ<sub>Cu</sub> = 1,7×10⁻⁸ Ω.m.
+        <br><br>
+        <strong>Giải:</strong><br>
+        l = 100m; S = 1mm² = 10⁻⁶ m²<br>
+        R = ρl/S = 1,7×10⁻⁸ × 100/10⁻⁶ = 1,7 Ω
+    </div>
+
+    <div class="example">
+        <strong>Ví dụ 2:</strong> Ba điện trở R₁ = 10Ω, R₂ = 15Ω, R₃ = 30Ω mắc song song. Tính điện trở tương đương.
+        <br><br>
+        <strong>Giải:</strong><br>
+        1/R = 1/10 + 1/15 + 1/30 = 3/30 + 2/30 + 1/30 = 6/30 = 1/5<br>
+        → R = 5Ω<br>
+        <br>
+        <em>Kiểm tra: R < R<sub>min</sub> = 10Ω (đúng với mạch song song)</em>
+    </div>
+
+    <div class="example">
+        <strong>Ví dụ 3:</strong> Bóng đèn ghi 220V - 75W. Tính:
+        <ul>
+            <li>a) Điện trở của bóng đèn khi sáng bình thường</li>
+            <li>b) Cường độ dòng điện qua bóng</li>
+            <li>c) Điện năng tiêu thụ trong 5 giờ</li>
+        </ul>
+        
+        <strong>Giải:</strong><br>
+        a) R = U²/P = 220²/75 = 645,3 Ω<br>
+        <br>
+        b) I = P/U = 75/220 = 0,341 A<br>
+        <br>
+        c) A = P.t = 75 × 5 = 375 Wh = 0,375 kWh
+    </div>
+
+    <h2>7. Đo điện trở</h2>
+
+    <h3>a) Phương pháp vôn-ampe</h3>
+    <ul>
+        <li>Dùng vôn kế đo U</li>
+        <li>Dùng ampe kế đo I</li>
+        <li>Tính R = U/I</li>
+    </ul>
+
+    <h3>b) Đồng hồ vạn năng (Ohm kế)</h3>
+    <ul>
+        <li>Đo trực tiếp điện trở</li>
+        <li>Ngắt điện trước khi đo</li>
+        <li>Chọn thang đo phù hợp</li>
+    </ul>
+
+    <h3>c) Cầu Wheatstone</h3>
+    <p>Phương pháp chính xác để đo điện trở nhỏ.</p>
+
+    <h2>8. Ứng dụng của điện trở</h2>
+
+    <table>
+        <tr>
+            <th>Loại</th>
+            <th>Công dụng</th>
+            <th>Ví dụ</th>
+        </tr>
+        <tr>
+            <td>Điện trở nhiệt</td>
+            <td>Chuyển điện năng → nhiệt năng</td>
+            <td>Lò sưởi, bàn là</td>
+        </tr>
+        <tr>
+            <td>Điện trở phân áp</td>
+            <td>Chia nhỏ điện áp</td>
+            <td>Biến trở, chiết áp</td>
+        </tr>
+        <tr>
+            <td>Điện trở hạn dòng</td>
+            <td>Giới hạn dòng điện</td>
+            <td>Bảo vệ LED</td>
+        </tr>
+        <tr>
+            <td>Điện trở shunt</td>
+            <td>Mở rộng thang đo ampe kế</td>
+            <td>Ampe kế</td>
+        </tr>
+        <tr>
+            <td>Điện trở tải</td>
+            <td>Tiêu thụ công suất</td>
+            <td>Test nguồn</td>
+        </tr>
+    </table>
+
+    <h2>9. Các loại điện trở đặc biệt</h2>
+
+    <ul>
+        <li><strong>Nhiệt trở (Thermistor)</strong>: R thay đổi theo nhiệt độ</li>
+        <li><strong>Quang trở (LDR)</strong>: R thay đổi theo ánh sáng</li>
+        <li><strong>Biến trở (Rheostat)</strong>: R điều chỉnh được</li>
+        <li><strong>Áp trở (Varistor)</strong>: R phụ thuộc điện áp</li>
+        <li><strong>Từ trở</strong>: R thay đổi theo từ trường</li>
+    </ul>
+
+    <div class="quote">
+        <strong>Lưu ý khi học:</strong>
+        <ul>
+            <li>Định luật Ohm chỉ đúng với vật dẫn kim loại ở nhiệt độ không đổi</li>
+            <li>Phân biệt rõ ghép nối tiếp (R = ΣR) và song song (1/R = Σ1/R)</li>
+            <li>Công suất định mức là công suất thiết bị hoạt động bình thường</li>
+            <li>Điện trở càng lớn → cản trở dòng điện càng mạnh</li>
+        </ul>
+    </div>
+
+    <div class="important">
+        <strong>Tổng kết:</strong> Điện trở R = U/I đặc trưng cho khả năng cản trở dòng điện. Định luật Ohm: I = U/R là định luật cơ bản của mạch điện. Điện trở phụ thuộc vào vật liệu, kích thước và nhiệt độ: R = ρl/S. Công suất P = UI = I²R = U²/R.
+    </div>
+</body>
+</html>

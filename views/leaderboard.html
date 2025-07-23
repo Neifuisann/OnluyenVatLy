@@ -17,6 +17,290 @@
     <link rel="stylesheet" href="/css/style.css">
     
     <style>
+        /* New layout styles */
+        .leaderboard-header {
+            text-align: left;
+            margin-bottom: 2rem;
+        }
+        
+        .leaderboard-header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        
+        .controls-section {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 1.5rem;
+        }
+        
+        .filter-section {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .filter-button {
+            padding: 0.5rem 1.25rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+        
+        .filter-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--neon-purple);
+        }
+        
+        .filter-button.active {
+            background: var(--neon-purple);
+            color: white;
+            border-color: var(--neon-purple);
+        }
+        
+        .pagination-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            gap: 2rem;
+        }
+        
+        .search-container {
+            position: relative;
+            width: 300px;
+        }
+        
+        .search-container input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            text-align: right;
+        }
+        
+        .search-container input:focus {
+            outline: none;
+            border-color: var(--neon-purple);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+        }
+        
+        .search-container input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+            text-align: right;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.4);
+            pointer-events: none;
+        }
+        
+        /* Pagination styles */
+        .pagination {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .pagination-top {
+            justify-content: flex-start;
+        }
+        
+        .pagination-bottom {
+            justify-content: flex-start;
+        }
+        
+        .pagination .nav-btn {
+            padding: 0.5rem 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .pagination .nav-btn:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--neon-purple);
+            color: var(--neon-purple);
+        }
+        
+        .pagination .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .page-numbers {
+            display: flex;
+            gap: 0.25rem;
+        }
+        
+        .page-btn {
+            min-width: 40px;
+            height: 40px;
+            padding: 0;
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+        
+        .page-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+        
+        .page-btn.active {
+            background: var(--neon-purple);
+            color: white;
+            border-color: var(--neon-purple);
+        }
+        
+        .page-btn.ellipsis {
+            cursor: default;
+            border: none;
+        }
+        
+        .page-btn.ellipsis:hover {
+            background: transparent;
+            color: var(--text-secondary);
+        }
+        
+        /* Table styling improvements */
+        .leaderboard-table {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        
+        .leaderboard-table th {
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            position: relative;
+        }
+        
+        .leaderboard-table th:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 25%;
+            height: 50%;
+            width: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .leaderboard-table td {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .leaderboard-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .leaderboard-table tbody tr {
+            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .leaderboard-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-left-color: var(--neon-purple);
+        }
+        
+        .leaderboard-table tbody tr.top-3 {
+            background: rgba(139, 92, 246, 0.05);
+        }
+        
+        .leaderboard-table tbody tr.top-3:hover {
+            background: rgba(139, 92, 246, 0.1);
+        }
+        
+        /* Rank column styling */
+        .leaderboard-table .rank {
+            color: var(--neon-purple);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        
+        .leaderboard-table tr.top-3 .rank {
+            color: #fff;
+        }
+        
+        /* Name cell styling */
+        .name-cell {
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Add wrapper styling */
+        .table-responsive-wrapper {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        /* Rating-based color coding */
+        .user-profile a {
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        /* Newbie (0-1200) */
+        .rating-newbie {
+            color: #808080 !important;
+        }
+        
+        /* Học viên (1200-1400) */
+        .rating-hocvien {
+            color: #00c853 !important;
+        }
+        
+        /* Chuyên cần (1400-1600) */
+        .rating-chuyencan {
+            color: #03a9f4 !important;
+        }
+        
+        /* Giỏi (1600-1900) */
+        .rating-gioi {
+            color: #aa00ff !important;
+        }
+        
+        /* Xuất sắc (1900-2200) */
+        .rating-xuatsac {
+            color: #ff9100 !important;
+        }
+        
+        /* Master (2200-3000) */
+        .rating-master {
+            color: #ff3d00 !important;
+        }
+        
+        /* Grandmaster (3000+) */
+        .rating-grandmaster {
+            color: #d50000 !important;
+        }
+        
         /* Mobile responsive adjustments */
         @media (max-width: 768px) {
             .leaderboard-container {
@@ -24,12 +308,43 @@
                 margin-top: 5rem;
             }
             
-            .leaderboard-header h1 {
-                font-size: 2rem;
+            .controls-section {
+                justify-content: center;
             }
             
-            .leaderboard-header p {
-                font-size: 1rem;
+            .filter-section {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .pagination-section {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .leaderboard-header {
+                text-align: center;
+            }
+            
+            .leaderboard-header h1 {
+                font-size: 1.75rem;
+            }
+            
+            .search-container {
+                width: 100%;
+                order: -1;
+            }
+            
+            .pagination {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .page-numbers {
+                order: 2;
+                width: 100%;
+                justify-content: center;
+                margin-top: 0.5rem;
             }
             
             .filter-button {
@@ -130,19 +445,39 @@
     <div class="leaderboard-container">
         <div class="leaderboard-header">
             <h1>Bảng xếp hạng</h1>
-            <p>Xem thứ hạng của bạn so với các học viên khác 🏆</p>
         </div>
 
-        <div class="leaderboard-filters">
-            <button class="filter-button active" data-filter="all">
-                <i class="fas fa-globe"></i> Tất cả
-            </button>
-            <button class="filter-button" data-filter="month">
-                <i class="fas fa-calendar-alt"></i> Tháng này
-            </button>
-            <button class="filter-button" data-filter="week">
-                <i class="fas fa-calendar-week"></i> Tuần này
-            </button>
+        <div class="controls-section">
+            <div class="filter-section">
+                <button class="filter-button active" data-filter="all">
+                    <i class="fas fa-globe"></i> Tất cả
+                </button>
+                <button class="filter-button" data-filter="month">
+                    <i class="fas fa-calendar-alt"></i> Tháng này
+                </button>
+                <button class="filter-button" data-filter="week">
+                    <i class="fas fa-calendar-week"></i> Tuần này
+                </button>
+            </div>
+        </div>
+
+        <!-- Top Pagination with Search -->
+        <div class="pagination-section">
+            <div class="pagination pagination-top">
+                <button id="prev-page-top" class="nav-btn" disabled>
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="page-numbers" id="page-numbers-top">
+                    <!-- Page numbers will be generated by JS -->
+                </div>
+                <button id="next-page-top" class="nav-btn">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Tìm kiếm theo tên..." />
+                <i class="fas fa-search search-icon"></i>
+            </div>
         </div>
 
         <div class="table-responsive-wrapper">
@@ -151,13 +486,16 @@
             </div>
         </div>
 
-        <div class="pagination">
-            <button id="prev-page" disabled>
-                <i class="fas fa-chevron-left"></i> Trước
+        <!-- Bottom Pagination -->
+        <div class="pagination pagination-bottom">
+            <button id="prev-page" class="nav-btn" disabled>
+                <i class="fas fa-chevron-left"></i>
             </button>
-            <span id="page-info">Trang 1</span>
-            <button id="next-page">
-                Tiếp <i class="fas fa-chevron-right"></i>
+            <div class="page-numbers" id="page-numbers-bottom">
+                <!-- Page numbers will be generated by JS -->
+            </div>
+            <button id="next-page" class="nav-btn">
+                <i class="fas fa-chevron-right"></i>
             </button>
         </div>
     </div>
@@ -166,8 +504,78 @@
     <script>
         let currentPage = 1;
         let currentFilter = 'all';
+        let searchQuery = '';
+        let totalPages = 1;
         const pageSize = 20;
         const loadingIndicator = document.getElementById('loading-indicator');
+        let searchDebounceTimer;
+
+        function generatePageNumbers(current, total) {
+            const pageNumbersTop = document.getElementById('page-numbers-top');
+            const pageNumbersBottom = document.getElementById('page-numbers-bottom');
+            pageNumbersTop.innerHTML = '';
+            pageNumbersBottom.innerHTML = '';
+            
+            let pages = [];
+            
+            if (total <= 7) {
+                // Show all pages if total is 7 or less
+                for (let i = 1; i <= total; i++) {
+                    pages.push(i);
+                }
+            } else {
+                // Always show first page
+                pages.push(1);
+                
+                if (current > 3) {
+                    pages.push('...');
+                }
+                
+                // Show pages around current
+                let start = Math.max(2, current - 1);
+                let end = Math.min(total - 1, current + 1);
+                
+                for (let i = start; i <= end; i++) {
+                    pages.push(i);
+                }
+                
+                if (current < total - 2) {
+                    pages.push('...');
+                }
+                
+                // Always show last page
+                pages.push(total);
+            }
+            
+            // Create buttons for both pagination controls
+            pages.forEach(page => {
+                // Top pagination
+                const btnTop = document.createElement('button');
+                if (page === '...') {
+                    btnTop.className = 'page-btn ellipsis';
+                    btnTop.textContent = '...';
+                    btnTop.disabled = true;
+                } else {
+                    btnTop.className = page === current ? 'page-btn active' : 'page-btn';
+                    btnTop.textContent = page;
+                    btnTop.addEventListener('click', () => {
+                        currentPage = page;
+                        loadLeaderboard();
+                    });
+                }
+                pageNumbersTop.appendChild(btnTop);
+                
+                // Bottom pagination (clone)
+                const btnBottom = btnTop.cloneNode(true);
+                if (page !== '...') {
+                    btnBottom.addEventListener('click', () => {
+                        currentPage = page;
+                        loadLeaderboard();
+                    });
+                }
+                pageNumbersBottom.appendChild(btnBottom);
+            });
+        }
 
         async function loadLeaderboard() {
             const contentDiv = document.getElementById('leaderboard-content');
@@ -176,6 +584,8 @@
             // Disable pagination during load
             document.getElementById('prev-page').disabled = true;
             document.getElementById('next-page').disabled = true;
+            document.getElementById('prev-page-top').disabled = true;
+            document.getElementById('next-page-top').disabled = true;
 
             try {
                 const response = await fetch(`/api/ratings?page=${currentPage}&filter=${currentFilter}`);
@@ -193,9 +603,11 @@
 
                 if (!ratings || ratings.length === 0) {
                     contentDiv.innerHTML = '<div class="no-data"><i class="fas fa-trophy"></i><br>Không có dữ liệu xếp hạng cho bộ lọc này.</div>';
-                    document.getElementById('page-info').textContent = `Trang ${currentPage}`;
                     document.getElementById('prev-page').disabled = currentPage === 1;
+                    document.getElementById('prev-page-top').disabled = currentPage === 1;
                     document.getElementById('next-page').disabled = true;
+                    document.getElementById('next-page-top').disabled = true;
+                    generatePageNumbers(1, 1);
                     loadingIndicator.style.display = 'none';
                     return;
                 }
@@ -217,16 +629,42 @@
                 table.appendChild(thead);
 
                 const tbody = document.createElement('tbody');
-                ratings.forEach((rating, index) => {
+                
+                // Filter ratings based on search query
+                let filteredRatings = ratings;
+                if (searchQuery) {
+                    filteredRatings = ratings.filter(rating => 
+                        rating.students?.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
+                    );
+                }
+                
+                filteredRatings.forEach((rating, index) => {
                     const rank = (currentPage - 1) * pageSize + index + 1;
                     const row = document.createElement('tr');
-                    if (rank <= 3) row.className = 'top-3';
+                    if (rank <= 3 && !searchQuery) row.className = 'top-3';
 
                     // Get rating change from backend response
                     const ratingChange = rating.ratingChange !== null && rating.ratingChange !== undefined ? rating.ratingChange : 0;
                     const changeClass = ratingChange > 0 ? 'positive' : ratingChange < 0 ? 'negative' : '';
                     const changeSymbol = ratingChange > 0 ? '+' : '';
                     const changeIcon = ratingChange > 0 ? 'arrow-up' : ratingChange < 0 ? 'arrow-down' : 'minus';
+                    
+                    // Determine rating class based on score
+                    const ratingValue = Math.round(rating.rating);
+                    let ratingClass = 'rating-newbie';
+                    if (ratingValue >= 3000) {
+                        ratingClass = 'rating-grandmaster';
+                    } else if (ratingValue >= 2200) {
+                        ratingClass = 'rating-master';
+                    } else if (ratingValue >= 1900) {
+                        ratingClass = 'rating-xuatsac';
+                    } else if (ratingValue >= 1600) {
+                        ratingClass = 'rating-gioi';
+                    } else if (ratingValue >= 1400) {
+                        ratingClass = 'rating-chuyencan';
+                    } else if (ratingValue >= 1200) {
+                        ratingClass = 'rating-hocvien';
+                    }
                     
                     // Build change cell HTML only if showing change column
                     const changeCell = showChangeColumn ? `
@@ -246,7 +684,7 @@
                         <td class="name-cell">
                             <div class="user-profile">
                                 <div class="user-avatar">${rating.students?.full_name?.[0]?.toUpperCase() || '?'}</div>
-                                <a href="/profile/${rating.student_id || '#'}" title="Xem hồ sơ của ${rating.students?.full_name || 'Vô danh'}">
+                                <a href="/profile/${rating.student_id || '#'}" class="${ratingClass}" title="Xem hồ sơ của ${rating.students?.full_name || 'Vô danh'}">
                                     <span>${rating.students?.full_name || 'Vô danh'}</span>
                                 </a>
                             </div>
@@ -261,10 +699,22 @@
                 contentDiv.innerHTML = '';
                 contentDiv.appendChild(table);
 
-                // Update pagination using response data
+                // Calculate total pages (estimate based on hasMore)
+                // Since the API doesn't provide total count, we'll estimate
+                if (data.pagination?.hasMore) {
+                    totalPages = Math.max(totalPages, currentPage + 1);
+                } else {
+                    totalPages = currentPage;
+                }
+                
+                // Update both pagination controls
                 document.getElementById('prev-page').disabled = currentPage === 1;
-                document.getElementById('page-info').textContent = `Trang ${currentPage}`;
+                document.getElementById('prev-page-top').disabled = currentPage === 1;
                 document.getElementById('next-page').disabled = !data.pagination?.hasMore;
+                document.getElementById('next-page-top').disabled = !data.pagination?.hasMore;
+                
+                // Generate page numbers
+                generatePageNumbers(currentPage, totalPages);
                 
                 // Hide loading indicator
                 loadingIndicator.style.display = 'none';
@@ -273,8 +723,10 @@
                 console.error('Error loading leaderboard:', error);
                 contentDiv.innerHTML = '<div class="error-message"><i class="fas fa-exclamation-triangle"></i> Không thể tải bảng xếp hạng. Vui lòng thử lại sau.</div>';
                 document.getElementById('prev-page').disabled = currentPage === 1;
+                document.getElementById('prev-page-top').disabled = currentPage === 1;
                 document.getElementById('next-page').disabled = true;
-                document.getElementById('page-info').textContent = `Trang ${currentPage}`;
+                document.getElementById('next-page-top').disabled = true;
+                generatePageNumbers(currentPage, totalPages);
                 loadingIndicator.style.display = 'none';
             }
         }
@@ -288,6 +740,7 @@
                 button.classList.add('active');
                 currentFilter = button.dataset.filter;
                 currentPage = 1;
+                totalPages = 1; // Reset total pages
                 loadLeaderboard();
             });
         });
@@ -304,6 +757,33 @@
                 currentPage++;
                 loadLeaderboard();
             }
+        });
+
+        // Top pagination controls
+        document.getElementById('prev-page-top').addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                loadLeaderboard();
+            }
+        });
+
+        document.getElementById('next-page-top').addEventListener('click', () => {
+            if (!document.getElementById('next-page-top').disabled) {
+                currentPage++;
+                loadLeaderboard();
+            }
+        });
+
+        // Search functionality
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            clearTimeout(searchDebounceTimer);
+            searchQuery = e.target.value.trim();
+            
+            searchDebounceTimer = setTimeout(() => {
+                currentPage = 1; // Reset to first page on search
+                totalPages = 1; // Reset total pages
+                loadLeaderboard();
+            }, 300); // Debounce for 300ms
         });
 
         // Initial load

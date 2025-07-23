@@ -1012,42 +1012,87 @@ function createLessonCard(lesson) {
 }
 
 // --- Render Pagination Function ---
-function renderPagination(currentPage, total, limit) {
-    const paginationContainer = document.getElementById('pagination-controls');
-    if (!paginationContainer) return;
-
+function renderPagination(current, total, limit) {
+    const pageNumbersTop = document.getElementById('page-numbers-top');
+    const pageNumbersBottom = document.getElementById('page-numbers-bottom');
+    
+    if (!pageNumbersTop || !pageNumbersBottom) return;
+    
     const totalPages = Math.ceil(total / limit);
+    
+    // Clear existing page numbers
+    pageNumbersTop.innerHTML = '';
+    pageNumbersBottom.innerHTML = '';
+    
     if (totalPages <= 1) {
-        paginationContainer.innerHTML = '';
+        // Disable all navigation buttons
+        document.getElementById('prev-page').disabled = true;
+        document.getElementById('next-page').disabled = true;
+        document.getElementById('prev-page-top').disabled = true;
+        document.getElementById('next-page-top').disabled = true;
         return;
     }
-
-    let paginationHTML = '';
-
-    // Previous button
-    if (currentPage > 1) {
-        paginationHTML += `<button class="pagination-btn" onclick="goToPage(${currentPage - 1})">
-            <i class="fas fa-chevron-left"></i>
-        </button>`;
+    
+    // Generate page numbers
+    let pages = [];
+    
+    if (totalPages <= 7) {
+        // Show all pages if total is 7 or less
+        for (let i = 1; i <= totalPages; i++) {
+            pages.push(i);
+        }
+    } else {
+        // Always show first page
+        pages.push(1);
+        
+        if (current > 3) {
+            pages.push('...');
+        }
+        
+        // Show pages around current
+        let start = Math.max(2, current - 1);
+        let end = Math.min(totalPages - 1, current + 1);
+        
+        for (let i = start; i <= end; i++) {
+            pages.push(i);
+        }
+        
+        if (current < totalPages - 2) {
+            pages.push('...');
+        }
+        
+        // Always show last page
+        pages.push(totalPages);
     }
-
-    // Page numbers
-    const startPage = Math.max(1, currentPage - 2);
-    const endPage = Math.min(totalPages, currentPage + 2);
-
-    for (let i = startPage; i <= endPage; i++) {
-        paginationHTML += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}"
-                          onclick="goToPage(${i})">${i}</button>`;
-    }
-
-    // Next button
-    if (currentPage < totalPages) {
-        paginationHTML += `<button class="pagination-btn" onclick="goToPage(${currentPage + 1})">
-            <i class="fas fa-chevron-right"></i>
-        </button>`;
-    }
-
-    paginationContainer.innerHTML = paginationHTML;
+    
+    // Create buttons for both pagination controls
+    pages.forEach(page => {
+        // Top pagination
+        const btnTop = document.createElement('button');
+        if (page === '...') {
+            btnTop.className = 'page-btn ellipsis';
+            btnTop.textContent = '...';
+            btnTop.disabled = true;
+        } else {
+            btnTop.className = page === current ? 'page-btn active' : 'page-btn';
+            btnTop.textContent = page;
+            btnTop.addEventListener('click', () => goToPage(page));
+        }
+        pageNumbersTop.appendChild(btnTop);
+        
+        // Bottom pagination (clone)
+        const btnBottom = btnTop.cloneNode(true);
+        if (page !== '...') {
+            btnBottom.addEventListener('click', () => goToPage(page));
+        }
+        pageNumbersBottom.appendChild(btnBottom);
+    });
+    
+    // Update navigation buttons state
+    document.getElementById('prev-page').disabled = current === 1;
+    document.getElementById('prev-page-top').disabled = current === 1;
+    document.getElementById('next-page').disabled = current === totalPages;
+    document.getElementById('next-page-top').disabled = current === totalPages;
 }
 
 // --- Pagination Helper Function ---
@@ -1108,6 +1153,44 @@ document.addEventListener('DOMContentLoaded', () => {
             currentSort = sortSelect.value;
             currentPage = 1; // Reset to first page when sorting
             filterAndRenderLessons();
+        });
+    }
+    
+    // Set up pagination event listeners
+    const prevPageBtn = document.getElementById('prev-page');
+    const nextPageBtn = document.getElementById('next-page');
+    const prevPageTopBtn = document.getElementById('prev-page-top');
+    const nextPageTopBtn = document.getElementById('next-page-top');
+    
+    if (prevPageBtn) {
+        prevPageBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                goToPage(currentPage - 1);
+            }
+        });
+    }
+    
+    if (nextPageBtn) {
+        nextPageBtn.addEventListener('click', () => {
+            if (!nextPageBtn.disabled) {
+                goToPage(currentPage + 1);
+            }
+        });
+    }
+    
+    if (prevPageTopBtn) {
+        prevPageTopBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                goToPage(currentPage - 1);
+            }
+        });
+    }
+    
+    if (nextPageTopBtn) {
+        nextPageTopBtn.addEventListener('click', () => {
+            if (!nextPageTopBtn.disabled) {
+                goToPage(currentPage + 1);
+            }
         });
     }
 });

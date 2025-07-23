@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Con lắc đơn - Vật lý 12</title>
+    <meta name="description" content="Con lắc đơn là hệ dao động cơ học quan trọng. Tìm hiểu về cấu tạo, điều kiện dao động điều hòa, chu kỳ và ứng dụng của con lắc đơn trong thực tế.">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1 { color: #1e293b; font-size: 32px; }
+        h2 { color: #334155; font-size: 24px; margin-top: 30px; }
+        h3 { color: #334155; font-size: 20px; }
+        .quote { background: #fdf6eb; border: 1px solid #f9d9b0; padding: 15px; margin: 20px 0; border-radius: 5px; }
+        .quote3 { padding-left: 10px; border-left: 3px solid #cf2e2e; font-style: italic; color: #cf2e2e; margin: 15px 0; }
+        .formula { background: #f0f4f8; padding: 10px; margin: 10px 0; text-align: center; font-size: 18px; }
+        img { max-width: 100%; height: auto; display: block; margin: 20px auto; }
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+        table th, table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        table th { background-color: #f2f2f2; }
+        .example { background: #e8f5e9; padding: 15px; margin: 20px 0; border-left: 4px solid #4caf50; }
+        .important { background: #ffe4e1; padding: 15px; margin: 20px 0; border-left: 4px solid #f44336; }
+    </style>
+</head>
+<body>
+
+<h1>Con lắc đơn - Vật lý 12</h1>
+
+<p>Con lắc đơn là một trong những hệ dao động cơ học cổ điển, được Galileo phát hiện và nghiên cứu từ thế kỷ 17. Đây là cơ sở để chế tạo đồng hồ quả lắc và nhiều ứng dụng khác.</p>
+
+<h2>1. Cấu tạo của con lắc đơn</h2>
+
+<h3>a) Định nghĩa</h3>
+<p>Con lắc đơn gồm:</p>
+<ul>
+    <li>Một vật nhỏ khối lượng m (coi như chất điểm)</li>
+    <li>Treo vào đầu một sợi dây không dãn, khối lượng không đáng kể</li>
+    <li>Chiều dài dây là l</li>
+    <li>Dao động trong trọng trường đều g</li>
+</ul>
+
+<h3>b) Vị trí cân bằng</h3>
+<p>Vị trí cân bằng là vị trí dây treo thẳng đứng, vật ở vị trí thấp nhất.</p>
+
+<h2>2. Phương trình dao động của con lắc đơn</h2>
+
+<h3>a) Lực tác dụng</h3>
+<p>Khi con lắc lệch góc α so với phương thẳng đứng:</p>
+<ul>
+    <li>Trọng lực: P = mg</li>
+    <li>Lực căng dây: T</li>
+    <li>Thành phần tiếp tuyến của trọng lực: P_t = -mg.sinα</li>
+</ul>
+
+<h3>b) Dao động nhỏ</h3>
+<p>Với góc lệch nhỏ (α ≤ 10°), ta có: sinα ≈ α (rad)</p>
+<p>Li độ cong: s = lα</p>
+<p>Li độ góc: α = s/l</p>
+
+<div class="formula">
+P_t = -mgα = -mg(s/l) = -(mg/l)s
+</div>
+
+<h3>c) Phương trình dao động</h3>
+<p>Áp dụng định luật II Newton:</p>
+<div class="formula">
+ma = -(mg/l)s → a = -(g/l)s
+</div>
+
+<p>So sánh với a = -ω²s, ta có:</p>
+<div class="formula">
+ω = √(g/l)
+</div>
+
+<div class="important">
+<h3>Điều kiện dao động điều hòa:</h3>
+<p>Con lắc đơn chỉ dao động điều hòa khi biên độ góc nhỏ (α₀ ≤ 10°)</p>
+<p>Khi đó: s = s₀cos(ωt + φ) hoặc α = α₀cos(ωt + φ)</p>
+</div>
+
+<h2>3. Chu kỳ và tần số dao động</h2>
+
+<h3>a) Chu kỳ</h3>
+<div class="formula">
+T = 2π/ω = 2π√(l/g)
+</div>
+
+<h3>b) Tần số</h3>
+<div class="formula">
+f = 1/T = 1/(2π)√(g/l)
+</div>
+
+<div class="quote">
+<h3>Nhận xét quan trọng:</h3>
+<p>- Chu kỳ con lắc đơn chỉ phụ thuộc vào l và g</p>
+<p>- Chu kỳ không phụ thuộc vào khối lượng m và biên độ A (khi dao động nhỏ)</p>
+<p>- Chu kỳ tỉ lệ với √l và tỉ lệ nghịch với √g</p>
+</div>
+
+<div class="example">
+<h4>Ví dụ 1:</h4>
+<p>Một con lắc đơn có chiều dài l = 1m dao động tại nơi có g = 9,8 m/s².</p>
+<p>a) Tính chu kỳ dao động</p>
+<p>b) Muốn chu kỳ tăng gấp đôi thì phải thay đổi chiều dài như thế nào?</p>
+<p><strong>Giải:</strong></p>
+<p>a) T = 2π√(l/g) = 2π√(1/9,8) = 2,006s ≈ 2s</p>
+<p>b) T' = 2T → 2π√(l'/g) = 2.2π√(l/g)</p>
+<p>→ √(l'/g) = 2√(l/g) → l' = 4l = 4m</p>
+<p>Vậy phải tăng chiều dài lên 4 lần.</p>
+</div>
+
+<h2>4. Năng lượng của con lắc đơn</h2>
+
+<h3>a) Động năng</h3>
+<div class="formula">
+W_đ = ½mv²
+</div>
+
+<h3>b) Thế năng</h3>
+<p>Chọn mốc thế năng tại vị trí cân bằng:</p>
+<div class="formula">
+W_t = mgh = mgl(1 - cosα)
+</div>
+
+<p>Với góc nhỏ: 1 - cosα ≈ α²/2</p>
+<div class="formula">
+W_t ≈ ½mglα² = ½mg(s²/l) = ½(mg/l)s²
+</div>
+
+<h3>c) Cơ năng</h3>
+<p>Với dao động nhỏ:</p>
+<div class="formula">
+W = W_đ + W_t = ½mglα₀² = ½(mg/l)s₀² = const
+</div>
+
+<h2>5. Vận tốc và lực căng dây</h2>
+
+<h3>a) Vận tốc tại vị trí bất kỳ</h3>
+<p>Áp dụng bảo toàn cơ năng:</p>
+<div class="formula">
+v² = 2gl(cosα - cosα₀)
+</div>
+
+<p>Tại vị trí cân bằng (α = 0):</p>
+<div class="formula">
+v_max = √(2gl(1 - cosα₀))
+</div>
+
+<p>Với góc nhỏ: v_max ≈ α₀√(gl)</p>
+
+<h3>b) Lực căng dây</h3>
+<p>Tại vị trí góc lệch α:</p>
+<div class="formula">
+T = mg(3cosα - 2cosα₀)
+</div>
+
+<p>Tại vị trí cân bằng: T_max = mg(3 - 2cosα₀)</p>
+<p>Tại vị trí biên: T_min = mgcosα₀</p>
+
+<div class="example">
+<h4>Ví dụ 2:</h4>
+<p>Con lắc đơn dao động với biên độ góc α₀ = 60°. Tính tỉ số T_max/T_min.</p>
+<p><strong>Giải:</strong></p>
+<p>T_max = mg(3 - 2cos60°) = mg(3 - 2.0,5) = 2mg</p>
+<p>T_min = mgcos60° = 0,5mg</p>
+<p>T_max/T_min = 2mg/(0,5mg) = 4</p>
+</div>
+
+<h2>6. Con lắc đơn chịu thêm lực phụ</h2>
+
+<h3>a) Lực quán tính</h3>
+<p>Khi con lắc trong thang máy chuyển động với gia tốc a:</p>
+<ul>
+    <li>Thang máy đi lên nhanh dần: g' = g + a</li>
+    <li>Thang máy đi xuống nhanh dần: g' = g - a</li>
+</ul>
+
+<h3>b) Lực điện trường</h3>
+<p>Quả cầu tích điện q trong điện trường E:</p>
+<div class="formula">
+g' = g ± qE/m
+</div>
+
+<h3>c) Lực đẩy Archimedes</h3>
+<p>Con lắc trong chất lỏng có khối lượng riêng ρ₀:</p>
+<div class="formula">
+g' = g(1 - ρ₀/ρ)
+</div>
+
+<div class="quote3">
+<strong>Nguyên tắc chung:</strong> Thay g bằng g' trong các công thức tính chu kỳ
+</div>
+
+<h2>7. Sự thay đổi chu kỳ</h2>
+
+<h3>a) Do thay đổi chiều dài</h3>
+<p>Chiều dài thay đổi do nhiệt độ:</p>
+<div class="formula">
+l = l₀(1 + αΔt)
+</div>
+
+<p>Độ biến thiên tương đối của chu kỳ:</p>
+<div class="formula">
+ΔT/T ≈ ½αΔt
+</div>
+
+<h3>b) Do thay đổi độ cao</h3>
+<p>Gia tốc trọng trường ở độ cao h:</p>
+<div class="formula">
+g_h = g₀R²/(R + h)²
+</div>
+
+<p>Với h << R:</p>
+<div class="formula">
+ΔT/T ≈ h/R
+</div>
+
+<h3>c) Đồng hồ quả lắc</h3>
+<p>Thời gian đồng hồ chạy sai trong một ngày đêm:</p>
+<div class="formula">
+Δτ = 86400.|ΔT/T| (giây)
+</div>
+
+<h2>8. Con lắc đơn trong thực tế</h2>
+
+<h3>a) Đo gia tốc trọng trường</h3>
+<p>Từ T = 2π√(l/g), ta có:</p>
+<div class="formula">
+g = 4π²l/T²
+</div>
+
+<h3>b) Con lắc Foucault</h3>
+<p>Chứng minh Trái Đất tự quay quanh trục của nó.</p>
+
+<h3>c) Đồng hồ quả lắc</h3>
+<p>Ứng dụng tính tuần hoàn của con lắc để đo thời gian.</p>
+
+<h2>9. So sánh con lắc đơn và con lắc lò xo</h2>
+
+<table>
+    <tr>
+        <th>Đặc điểm</th>
+        <th>Con lắc đơn</th>
+        <th>Con lắc lò xo</th>
+    </tr>
+    <tr>
+        <td>Điều kiện dao động điều hòa</td>
+        <td>Góc lệch nhỏ (≤ 10°)</td>
+        <td>Luôn dao động điều hòa</td>
+    </tr>
+    <tr>
+        <td>Chu kỳ phụ thuộc vào</td>
+        <td>l và g</td>
+        <td>m và k</td>
+    </tr>
+    <tr>
+        <td>Phụ thuộc khối lượng</td>
+        <td>Không</td>
+        <td>Có</td>
+    </tr>
+    <tr>
+        <td>Phụ thuộc trọng trường</td>
+        <td>Có</td>
+        <td>Không</td>
+    </tr>
+    <tr>
+        <td>Lực kéo về</td>
+        <td>F = -(mg/l)s</td>
+        <td>F = -kx</td>
+    </tr>
+</table>
+
+<h2>10. Tổng kết</h2>
+
+<p>Con lắc đơn là một hệ dao động quan trọng với nhiều ứng dụng thực tế. Cần nắm vững:</p>
+<ul>
+    <li>Điều kiện để con lắc đơn dao động điều hòa</li>
+    <li>Công thức tính chu kỳ T = 2π√(l/g)</li>
+    <li>Các yếu tố ảnh hưởng đến chu kỳ</li>
+    <li>Cách tính năng lượng và lực căng dây</li>
+</ul>
+
+<div class="related-posts">
+    <h3>Bài viết liên quan:</h3>
+    <ul>
+        <li><a href="bai-1-dao-dong-dieu-hoa.html">Dao động điều hòa</a></li>
+        <li><a href="bai-2-con-lac-lo-xo.html">Con lắc lò xo</a></li>
+        <li><a href="bai-4-dao-dong-tat-dan-cuong-buc.html">Dao động tắt dần và dao động cưỡng bức</a></li>
+    </ul>
+</div>
+
+</body>
+</html>

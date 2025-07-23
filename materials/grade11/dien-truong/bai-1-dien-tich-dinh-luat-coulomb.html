@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Điện tích - Định luật Coulomb - Vật lý 11</title>
+    <meta name="description" content="Điện tích và định luật Coulomb là nền tảng của điện học. Tìm hiểu về các loại điện tích, sự tương tác và định luật Coulomb trong vật lý 11.">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #1e293b;
+            font-size: 32px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #334155;
+            font-size: 24px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        h3 {
+            color: #475569;
+            font-size: 20px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .quote {
+            background: #f0f9ff;
+            border-left: 4px solid #0284c7;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .formula {
+            background: #fef3c7;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .example {
+            background: #f3f4f6;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+        }
+        .important {
+            background: #fee2e2;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            border-left: 4px solid #ef4444;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table th, table td {
+            border: 1px solid #e5e7eb;
+            padding: 10px;
+            text-align: left;
+        }
+        table th {
+            background: #f9fafb;
+            font-weight: bold;
+        }
+        .formula-box {
+            background: #ecfdf5;
+            border: 2px solid #10b981;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .formula-box h4 {
+            margin-top: 0;
+            color: #059669;
+        }
+        .experiment {
+            background: #e0e7ff;
+            border: 1px solid #6366f1;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Điện tích - Định luật Coulomb - Vật lý 11</h1>
+    
+    <p>Điện học bắt đầu từ việc nghiên cứu điện tích và tương tác giữa chúng. Từ thời cổ đại, con người đã biết đến hiện tượng hổ phách cọ xát hút được rơm rạ. Đến thế kỷ 18, Charles Coulomb đã phát hiện định luật định lượng về lực tương tác giữa các điện tích.</p>
+
+    <h2>1. Điện tích và sự nhiễm điện</h2>
+    
+    <h3>a) Khái niệm điện tích</h3>
+    <div class="quote">
+        <strong>Điện tích</strong> là một thuộc tính cơ bản của vật chất, biểu hiện khả năng tương tác điện của vật.
+    </div>
+
+    <p>Có hai loại điện tích:</p>
+    <ul>
+        <li><strong>Điện tích dương (+)</strong>: Quy ước là điện tích của proton</li>
+        <li><strong>Điện tích âm (-)</strong>: Quy ước là điện tích của electron</li>
+    </ul>
+
+    <h3>b) Tương tác giữa các điện tích</h3>
+    <div class="important">
+        <strong>Quy luật tương tác:</strong>
+        <ul>
+            <li>Các điện tích cùng dấu: Đẩy nhau</li>
+            <li>Các điện tích trái dấu: Hút nhau</li>
+        </ul>
+    </div>
+
+    <h3>c) Các cách nhiễm điện cho vật</h3>
+    
+    <h4>1. Nhiễm điện do cọ xát</h4>
+    <div class="experiment">
+        <strong>Thí nghiệm:</strong> Cọ xát thanh nhựa vào len
+        <ul>
+            <li>Thanh nhựa nhận thêm electron → Nhiễm điện âm</li>
+            <li>Miếng len mất electron → Nhiễm điện dương</li>
+        </ul>
+        <p><strong>Giải thích:</strong> Khi cọ xát, electron chuyển từ vật này sang vật khác do lực ma sát.</p>
+    </div>
+
+    <h4>2. Nhiễm điện do tiếp xúc</h4>
+    <p>Khi vật không mang điện tiếp xúc với vật mang điện:</p>
+    <ul>
+        <li>Điện tích được chia sẻ giữa hai vật</li>
+        <li>Sau khi tách ra, cả hai vật đều mang điện cùng dấu</li>
+    </ul>
+
+    <h4>3. Nhiễm điện do hưởng ứng</h4>
+    <p>Khi đưa vật mang điện lại gần vật dẫn điện trung hòa:</p>
+    <ul>
+        <li>Điện tích trong vật dẫn bị phân bố lại</li>
+        <li>Phần gần vật mang điện: Điện tích trái dấu</li>
+        <li>Phần xa vật mang điện: Điện tích cùng dấu</li>
+    </ul>
+
+    <h2>2. Thuyết electron</h2>
+
+    <h3>a) Cấu tạo nguyên tử</h3>
+    <ul>
+        <li><strong>Hạt nhân</strong>: Chứa proton (+) và neutron (trung hòa)</li>
+        <li><strong>Electron</strong>: Chuyển động xung quanh hạt nhân</li>
+        <li>Nguyên tử trung hòa: Số proton = Số electron</li>
+    </ul>
+
+    <h3>b) Điện tích nguyên tố</h3>
+    <div class="formula-box">
+        <h4>Điện tích nguyên tố:</h4>
+        <div class="formula">
+            e = 1,6 × 10⁻¹⁹ C (Coulomb)
+        </div>
+        <ul>
+            <li>Điện tích proton: +e</li>
+            <li>Điện tích electron: -e</li>
+        </ul>
+    </div>
+
+    <h3>c) Định luật bảo toàn điện tích</h3>
+    <div class="quote">
+        Trong một hệ cô lập về điện, tổng đại số các điện tích luôn được bảo toàn.
+    </div>
+
+    <h2>3. Định luật Coulomb</h2>
+
+    <h3>a) Phát biểu định luật</h3>
+    <div class="quote">
+        <strong>Định luật Coulomb:</strong> Lực tương tác giữa hai điện tích điểm tỉ lệ thuận với tích độ lớn của hai điện tích và tỉ lệ nghịch với bình phương khoảng cách giữa chúng.
+    </div>
+
+    <h3>b) Công thức định luật Coulomb</h3>
+    <div class="formula-box">
+        <h4>Trong chân không hoặc không khí:</h4>
+        <div class="formula">
+            F = k|q₁q₂|/r²
+        </div>
+        
+        <p>Trong đó:</p>
+        <ul>
+            <li>F: Lực tương tác (N)</li>
+            <li>q₁, q₂: Độ lớn điện tích (C)</li>
+            <li>r: Khoảng cách giữa hai điện tích (m)</li>
+            <li>k = 9×10⁹ Nm²/C²: Hằng số điện</li>
+        </ul>
+    </div>
+
+    <h3>c) Đặc điểm của lực Coulomb</h3>
+    <ul>
+        <li><strong>Phương</strong>: Nằm trên đường thẳng nối hai điện tích</li>
+        <li><strong>Chiều</strong>: 
+            <ul>
+                <li>Hướng ra xa nhau nếu cùng dấu (lực đẩy)</li>
+                <li>Hướng vào nhau nếu trái dấu (lực hút)</li>
+            </ul>
+        </li>
+        <li><strong>Độ lớn</strong>: Theo công thức F = k|q₁q₂|/r²</li>
+    </ul>
+
+    <h3>d) Hằng số điện môi</h3>
+    <p>Trong môi trường điện môi:</p>
+    <div class="formula">
+        F = k|q₁q₂|/(εr²)
+    </div>
+    
+    <p>Với ε là hằng số điện môi của môi trường (ε ≥ 1)</p>
+    
+    <table>
+        <tr>
+            <th>Môi trường</th>
+            <th>Hằng số điện môi ε</th>
+        </tr>
+        <tr>
+            <td>Chân không, không khí</td>
+            <td>≈ 1</td>
+        </tr>
+        <tr>
+            <td>Nước cất</td>
+            <td>81</td>
+        </tr>
+        <tr>
+            <td>Dầu hỏa</td>
+            <td>2,1</td>
+        </tr>
+        <tr>
+            <td>Thủy tinh</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>Mica</td>
+            <td>6</td>
+        </tr>
+    </table>
+
+    <h2>4. Nguyên lý chồng chất lực điện</h2>
+
+    <div class="quote">
+        Khi một điện tích chịu tác dụng của nhiều điện tích khác, lực tổng hợp bằng tổng vectơ của các lực thành phần.
+    </div>
+
+    <div class="formula">
+        F⃗ = F⃗₁ + F⃗₂ + ... + F⃗ₙ
+    </div>
+
+    <h2>5. Ví dụ minh họa</h2>
+
+    <div class="example">
+        <strong>Ví dụ 1:</strong> Hai điện tích q₁ = +2×10⁻⁸ C và q₂ = -3×10⁻⁸ C đặt cách nhau 10 cm trong không khí. Tính lực tương tác giữa chúng.
+        <br><br>
+        <strong>Giải:</strong><br>
+        r = 10 cm = 0,1 m<br>
+        F = k|q₁q₂|/r² = 9×10⁹ × |2×10⁻⁸ × (-3×10⁻⁸)|/(0,1)²<br>
+        = 9×10⁹ × 6×10⁻¹⁶/0,01<br>
+        = 5,4×10⁻⁴ N<br>
+        <br>
+        Vì q₁ và q₂ trái dấu nên lực là lực hút.
+    </div>
+
+    <div class="example">
+        <strong>Ví dụ 2:</strong> Ba điện tích q₁ = q₂ = q₃ = +10⁻⁷ C đặt tại ba đỉnh của tam giác đều cạnh a = 10 cm. Tính lực tác dụng lên q₁.
+        <br><br>
+        <strong>Giải:</strong><br>
+        Lực do q₂ tác dụng lên q₁:<br>
+        F₂₁ = kq²/a² = 9×10⁹ × (10⁻⁷)²/(0,1)² = 9×10⁻³ N<br>
+        <br>
+        Lực do q₃ tác dụng lên q₁:<br>
+        F₃₁ = kq²/a² = 9×10⁻³ N<br>
+        <br>
+        Hai lực này hợp với nhau góc 60°, lực tổng hợp:<br>
+        F = 2F₂₁cos30° = 2 × 9×10⁻³ × √3/2 = 9√3×10⁻³ ≈ 1,56×10⁻² N
+    </div>
+
+    <div class="example">
+        <strong>Ví dụ 3:</strong> Hai quả cầu nhỏ giống nhau, mỗi quả có khối lượng m = 0,1g, được treo bằng hai sợi dây mảnh cách điện dài l = 50cm vào cùng một điểm. Khi tích điện cho mỗi quả cầu điện tích q như nhau, chúng đẩy nhau và cân bằng khi dây treo hợp với phương thẳng đứng góc α = 30°. Tính q. Lấy g = 10 m/s².
+        <br><br>
+        <strong>Giải:</strong><br>
+        Khi cân bằng: tanα = F/P = F/(mg)<br>
+        → F = mg.tanα = 0,1×10⁻³ × 10 × tan30° = 10⁻³/√3 N<br>
+        <br>
+        Khoảng cách giữa hai quả cầu:<br>
+        r = 2l.sinα = 2 × 0,5 × sin30° = 0,5 m<br>
+        <br>
+        Từ F = kq²/r²:<br>
+        q² = Fr²/k = (10⁻³/√3) × (0,5)² / (9×10⁹)<br>
+        q² = 1,6×10⁻¹⁴<br>
+        q = 4×10⁻⁷ C
+    </div>
+
+    <h2>6. Ứng dụng của định luật Coulomb</h2>
+
+    <ul>
+        <li><strong>Máy photocopy, máy in laser</strong>: Sử dụng lực điện để hút mực in</li>
+        <li><strong>Lọc bụi tĩnh điện</strong>: Hút bụi bẩn bằng lực điện</li>
+        <li><strong>Sơn tĩnh điện</strong>: Phủ sơn đều nhờ lực hút điện</li>
+        <li><strong>Máy gia tốc hạt</strong>: Tăng tốc hạt mang điện</li>
+        <li><strong>Tụ điện</strong>: Lưu trữ năng lượng điện</li>
+    </ul>
+
+    <h2>7. Bài tập tự luyện</h2>
+
+    <div class="example">
+        <strong>Bài 1:</strong> Hai điện tích điểm đặt trong không khí cách nhau 20cm, lực đẩy giữa chúng là 1,8N. Điện tích tổng cộng của hai vật là 6×10⁻⁶ C. Tìm điện tích mỗi vật.
+        <br><br>
+        <strong>Hướng dẫn:</strong> Sử dụng hệ phương trình:
+        <ul>
+            <li>q₁ + q₂ = 6×10⁻⁶</li>
+            <li>k|q₁q₂|/r² = 1,8</li>
+        </ul>
+    </div>
+
+    <div class="quote">
+        <strong>Lưu ý khi học:</strong> 
+        <ul>
+            <li>Phân biệt rõ lực hút và lực đẩy dựa vào dấu của điện tích</li>
+            <li>Khi tính toán, chú ý đơn vị: điện tích (C), khoảng cách (m), lực (N)</li>
+            <li>Với bài toán nhiều điện tích, sử dụng nguyên lý chồng chất và phép cộng vectơ</li>
+        </ul>
+    </div>
+
+    <div class="important">
+        <strong>Tổng kết:</strong> Định luật Coulomb là định luật cơ bản của điện học, mô tả định lượng lực tương tác giữa các điện tích. Công thức F = k|q₁q₂|/r² cần được nắm vững để giải quyết các bài toán điện học.
+    </div>
+</body>
+</html>
