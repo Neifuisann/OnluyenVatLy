@@ -147,6 +147,58 @@ Available test files:
 - Session management is critical - ensure device validation works correctly
 - The points distribution algorithm in pointsService.js is complex - understand it before modifying
 
+## Study Materials Guidelines
+
+### Material HTML Format Requirements
+
+When working with study materials in `/materials/grade{10,11,12}/`:
+
+1. **Remove problematic scripts**:
+   - Always remove `polyfill.io` scripts as they cause slow loading
+   - MathJax should be loaded directly from CDN
+
+2. **CSS Classes for Dark Theme Compatibility**:
+   - `.definition-box` - Purple accent background for definitions
+   - `.formula-box` - Green-tinted background for formulas
+   - `.important-formula` - Yellow accent for important formulas
+   - `.example-box` or `.vi-du` - Purple-tinted for examples
+   - `.solution` or `.giai` - Green-tinted for solutions
+   - `.note-box` - Blue accent for notes
+   - `.warning-box` - Red accent for warnings
+   - `.practice-problem` - Purple border with "Bài tập" label
+   - `.experiment-box` - Green border with "Thí nghiệm" label for experiments
+   - `.force-type` - Light red background for force type explanations
+   - `.special-case` - Orange border with "Trường hợp đặc biệt" label
+   - `.energy-type` - Light green background for energy type explanations
+   - `.comparison-table` - Styled table container for comparisons
+
+3. **Standardized Class Mappings** (for consistency):
+   - `application-box` → `note-box`
+   - `classification-box` → `definition-box`
+   - `conservation-box` → `important-formula`
+   - `law-box` → `important-formula`
+   - `method-box` → `note-box`
+   - `theorem-box` → `important-formula`
+   - `transformation-box` → `formula-box`
+   - `unit-box` → `definition-box`
+
+4. **List Alignment**:
+   - Ordered lists with `type="a"` need extra padding (2rem)
+   - Regular ordered lists use 1.5rem padding
+   - List items should have proper spacing (0.5rem margin)
+
+5. **Color Contrast**:
+   - All text in colored boxes must use `var(--text-primary)` for readability
+   - Avoid light text on light backgrounds
+   - Use semi-transparent backgrounds with solid text colors
+
+6. **MathJax Compatibility**:
+   - Ensure MathJax containers use `var(--text-primary)` color
+   - Remove polyfill dependencies
+
+### Implementation Location
+These styles are applied in `routes/views.js` when serving individual material pages at `/materials/grade:gradeId/:chapterId/:topicId`.
+
 ## Important Reminders
 
 Do what has been asked; nothing more, nothing less.

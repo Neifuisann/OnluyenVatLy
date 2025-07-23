@@ -5,105 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tụ điện - Vật lý 11</title>
     <meta name="description" content="Tụ điện là linh kiện điện tử quan trọng. Tìm hiểu về cấu tạo, điện dung, cách ghép tụ điện và năng lượng điện trường trong tụ điện.">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 16px;
-            line-height: 1.6;
-            color: #333;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        h1 {
-            color: #1e293b;
-            font-size: 32px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 10px;
-        }
-        h2 {
-            color: #334155;
-            font-size: 24px;
-            margin-top: 30px;
-            margin-bottom: 15px;
-        }
-        h3 {
-            color: #475569;
-            font-size: 20px;
-            margin-top: 20px;
-            margin-bottom: 10px;
-        }
-        .quote {
-            background: #f0f9ff;
-            border-left: 4px solid #0284c7;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
-        }
-        .formula {
-            background: #fef3c7;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 4px;
-            text-align: center;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        .example {
-            background: #f3f4f6;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
-            border: 1px solid #d1d5db;
-        }
-        .important {
-            background: #fee2e2;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
-            border-left: 4px solid #ef4444;
-        }
-        img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-            margin: 20px auto;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        table th, table td {
-            border: 1px solid #e5e7eb;
-            padding: 10px;
-            text-align: left;
-        }
-        table th {
-            background: #f9fafb;
-            font-weight: bold;
-        }
-        .formula-box {
-            background: #ecfdf5;
-            border: 2px solid #10b981;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 8px;
-        }
-        .formula-box h4 {
-            margin-top: 0;
-            color: #059669;
-        }
-        .circuit-diagram {
-            background: #e0e7ff;
-            border: 1px solid #6366f1;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 8px;
-            text-align: center;
-        }
-    </style>
+    
+
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
     <h1>Tụ điện - Vật lý 11</h1>
@@ -113,7 +17,7 @@
     <h2>1. Cấu tạo và nguyên lý hoạt động</h2>
     
     <h3>a) Cấu tạo của tụ điện</h3>
-    <div class="quote">
+    <div class="definition-box">
         <strong>Tụ điện</strong> là hệ thống gồm hai vật dẫn đặt gần nhau và ngăn cách nhau bằng một lớp cách điện (điện môi).
     </div>
 
@@ -134,7 +38,7 @@
     </ol>
 
     <h3>c) Ký hiệu trong mạch điện</h3>
-    <div class="circuit-diagram">
+    <div class="note-box">
         <p>Tụ điện thường: —||—</p>
         <p>Tụ điện phân cực: —|+—</p>
         <p>Tụ điện biến đổi: —|↗—</p>
@@ -143,13 +47,13 @@
     <h2>2. Điện dung của tụ điện</h2>
 
     <h3>a) Định nghĩa</h3>
-    <div class="quote">
+    <div class="definition-box">
         <strong>Điện dung</strong> của tụ điện là đại lượng đặc trưng cho khả năng tích điện của tụ điện ở một hiệu điện thế nhất định.
     </div>
 
     <div class="formula-box">
         <h4>Công thức điện dung:</h4>
-        <div class="formula">
+        <div class="formula-box">
             C = Q/U
         </div>
         
@@ -191,7 +95,7 @@
     <h3>b) Công thức điện dung</h3>
     <div class="formula-box">
         <h4>Điện dung tụ phẳng:</h4>
-        <div class="formula">
+        <div class="formula-box">
             C = εε₀S/d
         </div>
         
@@ -206,21 +110,21 @@
 
     <h3>c) Điện trường trong tụ phẳng</h3>
     <p>Điện trường giữa hai bản là điện trường đều:</p>
-    <div class="formula">
+    <div class="formula-box">
         E = U/d = Q/(εε₀S)
     </div>
 
     <h2>4. Ghép tụ điện</h2>
 
     <h3>a) Ghép nối tiếp</h3>
-    <div class="circuit-diagram">
+    <div class="note-box">
         <p>—||—||—||—</p>
         <p>C₁  C₂  C₃</p>
     </div>
 
     <div class="formula-box">
         <h4>Công thức ghép nối tiếp:</h4>
-        <div class="formula">
+        <div class="formula-box">
             1/C<sub>b</sub> = 1/C₁ + 1/C₂ + ... + 1/Cₙ
         </div>
         
@@ -233,7 +137,7 @@
     </div>
 
     <h3>b) Ghép song song</h3>
-    <div class="circuit-diagram">
+    <div class="note-box">
         <p>  —||—</p>
         <p>  —||—  </p>
         <p>  —||—</p>
@@ -241,7 +145,7 @@
 
     <div class="formula-box">
         <h4>Công thức ghép song song:</h4>
-        <div class="formula">
+        <div class="formula-box">
             C<sub>b</sub> = C₁ + C₂ + ... + Cₙ
         </div>
         
@@ -260,14 +164,14 @@
 
     <div class="formula-box">
         <h4>Ba công thức tương đương:</h4>
-        <div class="formula">
+        <div class="formula-box">
             W = ½CU² = ½Q²/C = ½QU
         </div>
     </div>
 
     <h3>b) Mật độ năng lượng điện trường</h3>
     <p>Năng lượng trên một đơn vị thể tích:</p>
-    <div class="formula">
+    <div class="formula-box">
         w = W/V = ½εε₀E²
     </div>
 
@@ -314,7 +218,7 @@
 
     <h2>7. Ví dụ minh họa</h2>
 
-    <div class="example">
+    <div class="example-box">
         <strong>Ví dụ 1:</strong> Tụ điện phẳng có S = 100 cm², d = 1mm, điện môi là không khí (ε = 1). Tính:
         <ul>
             <li>a) Điện dung của tụ</li>
@@ -328,7 +232,7 @@
         b) Q = CU = 88,5×10⁻¹² × 100 = 8,85×10⁻⁹ C = 8,85 nC
     </div>
 
-    <div class="example">
+    <div class="example-box">
         <strong>Ví dụ 2:</strong> Ba tụ điện C₁ = 2μF, C₂ = 3μF, C₃ = 6μF mắc nối tiếp. Tính điện dung tương đương.
         <br><br>
         <strong>Giải:</strong><br>
@@ -338,7 +242,7 @@
         Kiểm tra: C<sub>b</sub> < C<sub>min</sub> = 2μF (đúng với ghép nối tiếp)
     </div>
 
-    <div class="example">
+    <div class="example-box">
         <strong>Ví dụ 3:</strong> Tụ điện C = 10μF được tích điện đến U = 200V. Tính:
         <ul>
             <li>a) Năng lượng tích trữ</li>
@@ -370,7 +274,7 @@
 
     <h2>9. An toàn khi sử dụng tụ điện</h2>
 
-    <div class="important">
+    <div class="important-formula">
         <strong>Lưu ý an toàn:</strong>
         <ul>
             <li>Tụ điện có thể giữ điện tích sau khi ngắt nguồn</li>
@@ -381,7 +285,7 @@
         </ul>
     </div>
 
-    <div class="quote">
+    <div class="definition-box">
         <strong>Lưu ý khi học:</strong>
         <ul>
             <li>Nắm vững công thức C = Q/U và các công thức ghép tụ</li>
@@ -391,7 +295,7 @@
         </ul>
     </div>
 
-    <div class="important">
+    <div class="important-formula">
         <strong>Tổng kết:</strong> Tụ điện là linh kiện tích trữ năng lượng điện trường với điện dung C = Q/U. Điện dung tụ phẳng: C = εε₀S/d. Ghép nối tiếp: 1/C = Σ(1/Cᵢ); ghép song song: C = ΣCᵢ. Năng lượng: W = ½CU². Tụ điện có vai trò quan trọng trong mọi mạch điện tử.
     </div>
 </body>

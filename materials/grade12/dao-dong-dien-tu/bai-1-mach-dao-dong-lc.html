@@ -38,7 +38,7 @@
     <li><strong>Điện trở:</strong> R = 0 (mạch lý tưởng)</li>
 </ul>
 
-<div class="circuit">
+<div class="example-box">
 <p><strong>Sơ đồ mạch LC:</strong></p>
 <p>L ━━━━┫┣━━━━ C</p>
 <p>Cuộn cảm nối tiếp với tụ điện</p>
@@ -54,7 +54,7 @@
     <li>Quá trình lặp lại tạo dao động điện từ</li>
 </ol>
 
-<div class="quote3">
+<div class="warning-box">
 <strong>Tương tự cơ học:</strong> Mạch LC giống như con lắc lò xo, với tụ điện tương tự lò xo và cuộn cảm tương tự khối lượng.
 </div>
 
@@ -62,7 +62,7 @@
 
 <h3>a) Điện tích trên tụ điện</h3>
 <p>Điện tích q trên tụ điện biến thiên điều hòa:</p>
-<div class="formula">
+<div class="important-formula">
 q = Q₀cos(ωt + φ)
 </div>
 
@@ -75,13 +75,13 @@ q = Q₀cos(ωt + φ)
 
 <h3>b) Cường độ dòng điện</h3>
 <p>Dòng điện là đạo hàm của điện tích:</p>
-<div class="formula">
+<div class="important-formula">
 i = dq/dt = -ωQ₀sin(ωt + φ) = I₀cos(ωt + φ + π/2)
 </div>
 
 <p>Với I₀ = ωQ₀ là cường độ dòng điện cực đại</p>
 
-<div class="important">
+<div class="warning-box">
 <h3>Quan hệ pha:</h3>
 <p>- Dòng điện i sớm pha π/2 so với điện tích q</p>
 <p>- Khi q = Q₀ thì i = 0 và ngược lại</p>
@@ -89,7 +89,7 @@ i = dq/dt = -ωQ₀sin(ωt + φ) = I₀cos(ωt + φ + π/2)
 </div>
 
 <h3>c) Hiệu điện thế giữa hai bản tụ</h3>
-<div class="formula">
+<div class="important-formula">
 u = q/C = (Q₀/C)cos(ωt + φ) = U₀cos(ωt + φ)
 </div>
 
@@ -99,31 +99,31 @@ u = q/C = (Q₀/C)cos(ωt + φ) = U₀cos(ωt + φ)
 
 <h3>a) Phương trình vi phân</h3>
 <p>Áp dụng định luật Kirchhoff cho mạch LC:</p>
-<div class="formula">
+<div class="important-formula">
 L(di/dt) + u = 0
 </div>
 
 <p>Thay u = q/C và i = dq/dt:</p>
-<div class="formula">
+<div class="important-formula">
 L(d²q/dt²) + q/C = 0
 </div>
 
 <h3>b) Tần số góc riêng</h3>
 <p>Giải phương trình vi phân ta được:</p>
-<div class="formula">
+<div class="important-formula">
 ω = 1/√(LC)
 </div>
 
 <h3>c) Chu kỳ và tần số</h3>
-<div class="formula">
+<div class="important-formula">
 T = 2π/ω = 2π√(LC)
 </div>
 
-<div class="formula">
+<div class="important-formula">
 f = 1/T = 1/(2π√(LC))
 </div>
 
-<div class="quote">
+<div class="definition-box">
 <h3>Công thức Thomson:</h3>
 <p>T = 2π√(LC) được gọi là công thức Thomson, do nhà vật lý William Thomson (Lord Kelvin) tìm ra năm 1853.</p>
 </div>
@@ -132,23 +132,23 @@ f = 1/T = 1/(2π√(LC))
 
 <h3>a) Năng lượng điện trường</h3>
 <p>Năng lượng tích trữ trong tụ điện:</p>
-<div class="formula">
+<div class="important-formula">
 W_C = ½(q²/C) = ½Cu² = ½(Q₀²/C)cos²(ωt + φ)
 </div>
 
 <h3>b) Năng lượng từ trường</h3>
 <p>Năng lượng tích trữ trong cuộn cảm:</p>
-<div class="formula">
+<div class="important-formula">
 W_L = ½Li² = ½LI₀²sin²(ωt + φ)
 </div>
 
 <h3>c) Năng lượng toàn phần</h3>
 <p>Tổng năng lượng điện từ:</p>
-<div class="formula">
+<div class="important-formula">
 W = W_C + W_L = ½(Q₀²/C) = ½LI₀² = const
 </div>
 
-<div class="important">
+<div class="warning-box">
 <h3>Định luật bảo toàn năng lượng:</h3>
 <p>- Năng lượng toàn phần không đổi (mạch lý tưởng)</p>
 <p>- W_C và W_L biến thiên tuần hoàn với tần số 2f</p>
@@ -159,25 +159,25 @@ W = W_C + W_L = ½(Q₀²/C) = ½LI₀² = const
 <h2>5. Các hệ thức quan trọng</h2>
 
 <h3>a) Liên hệ giữa Q₀, I₀, U₀</h3>
-<div class="formula">
+<div class="important-formula">
 I₀ = ωQ₀ = Q₀/√(LC)
 </div>
 
-<div class="formula">
+<div class="important-formula">
 U₀ = Q₀/C = I₀√(L/C)
 </div>
 
 <h3>b) Hệ thức độc lập thời gian</h3>
 <p>Tương tự dao động cơ:</p>
-<div class="formula">
+<div class="important-formula">
 q² + (i/ω)² = Q₀²
 </div>
 
-<div class="formula">
+<div class="important-formula">
 u² + (Li)²/C = U₀²
 </div>
 
-<div class="example">
+<div class="example-box">
 <h4>Ví dụ 1:</h4>
 <p>Mạch dao động LC có L = 2mH, C = 8μF. Tại t = 0, tụ điện có điện tích Q₀ = 4.10⁻⁶C và dòng điện bằng 0.</p>
 <p>a) Tính chu kỳ và tần số dao động</p>
@@ -254,7 +254,7 @@ u² + (Li)²/C = U₀²
 <h3>b) Điều kiện duy trì dao động</h3>
 <p>Để duy trì dao động cần cung cấp năng lượng bù đắp phần hao phí.</p>
 
-<div class="quote3">
+<div class="warning-box">
 <strong>Ứng dụng:</strong> Trong các mạch dao động thực tế, người ta dùng transistor hoặc IC để bù năng lượng, tạo dao động duy trì.
 </div>
 
@@ -272,7 +272,7 @@ u² + (Li)²/C = U₀²
 <h3>d) Mạch cộng hưởng</h3>
 <p>Ứng dụng trong lò vi sóng, máy MRI, sạc không dây.</p>
 
-<div class="example">
+<div class="example-box">
 <h4>Ví dụ 2: Mạch chọn sóng</h4>
 <p>Mạch chọn sóng của radio gồm L = 2μH và tụ xoay có C biến thiên từ 10pF đến 360pF.</p>
 <p>Tính dải tần số mà mạch có thể thu được.</p>
@@ -289,7 +289,7 @@ u² + (Li)²/C = U₀²
 
 <h2>9. Bài tập tự luyện</h2>
 
-<div class="quote">
+<div class="definition-box">
 <h3>Bài 1:</h3>
 <p>Mạch LC có L = 0,1H, C = 10μF. Ban đầu tụ được tích điện đến U₀ = 100V.</p>
 <p>a) Tính chu kỳ dao động</p>
@@ -297,7 +297,7 @@ u² + (Li)²/C = U₀²
 <p>c) Tính năng lượng từ trường khi u = 60V</p>
 </div>
 
-<div class="quote">
+<div class="definition-box">
 <h3>Bài 2:</h3>
 <p>Mạch dao động LC lý tưởng đang hoạt động. Tại thời điểm năng lượng điện trường bằng 3 lần năng lượng từ trường thì:</p>
 <p>a) Tính tỉ số |q|/Q₀</p>

@@ -528,6 +528,536 @@ router.get('/share/lesson/:lessonId', async (req, res) => {
     }
 });
 
+// Study Materials page - Public access for theory content
+router.get('/study-materials',
+  optionalAuth,
+  addSessionInfo,
+  longCacheMiddleware(3600), // 1 hour cache
+  serveHTML('study-materials.html')
+);
+
+// Individual material page
+router.get('/materials/grade:gradeId/:chapterId/:topicId',
+  optionalAuth,
+  addSessionInfo,
+  longCacheMiddleware(3600), // 1 hour cache
+  async (req, res) => {
+    const { gradeId, chapterId, topicId } = req.params;
+    
+    try {
+        // Validate inputs
+        if (!['10', '11', '12'].includes(gradeId)) {
+            return res.status(400).send('Invalid grade ID');
+        }
+
+        // Path to HTML file
+        const htmlPath = path.join(__dirname, '..', 'materials', `grade${gradeId}`, chapterId, `${topicId}.html`);
+        
+        // Check if file exists
+        try {
+            await fs.access(htmlPath);
+        } catch (error) {
+            return res.status(404).send('Material not found');
+        }
+
+        // Read and send HTML file
+        const htmlContent = await fs.readFile(htmlPath, 'utf-8');
+        
+        // Remove polyfill.io script and update styles for better readability
+        let processedContent = htmlContent;
+        
+        // Remove the problematic polyfill.io script
+        processedContent = processedContent.replace(
+            /<script[^>]*src="https:\/\/polyfill\.io[^"]*"[^>]*><\/script>/gi,
+            ''
+        );
+        
+        // Wrap the content in a proper layout
+        const wrappedContent = `
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vật lý ${gradeId} - ${topicId}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- Use CDN MathJax directly instead of polyfill -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: Inter, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .material-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            text-decoration: none;
+            margin-bottom: 2rem;
+            transition: all var(--transition-base);
+        }
+        .back-button:hover {
+            background: var(--bg-hover);
+            transform: translateX(-2px);
+        }
+        .material-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+        }
+        /* Override material styles for dark theme compatibility */
+        .material-content h1, .material-content h2, .material-content h3 {
+            color: var(--text-primary) !important;
+        }
+        .material-content p, .material-content li {
+            color: var(--text-secondary) !important;
+            line-height: 1.8;
+        }
+        
+        /* Definition box - Material Design inspired */
+        .material-content .definition-box {
+            background: rgba(99, 102, 241, 0.1) !important;
+            border-left: 4px solid var(--primary-color) !important;
+            border-radius: var(--radius-md);
+            padding: 1.5rem !important;
+            margin: 1.5rem 0;
+            color: var(--text-primary) !important;
+        }
+        
+        .material-content .definition-box p,
+        .material-content .definition-box li {
+            color: var(--text-primary) !important;
+        }
+        
+        /* Formula box - Better contrast */
+        .material-content .formula-box {
+            background: rgba(16, 185, 129, 0.1) !important;
+            border: 2px solid rgba(16, 185, 129, 0.3) !important;
+            border-radius: var(--radius-md);
+            padding: 1.5rem !important;
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+        
+        .material-content .formula-box,
+        .material-content .formula-box * {
+            color: var(--text-primary) !important;
+        }
+        
+        /* Important formula - High contrast */
+        .material-content .important-formula {
+            background: rgba(251, 191, 36, 0.15) !important;
+            border: 2px solid rgba(251, 191, 36, 0.4) !important;
+            border-radius: var(--radius-md);
+            padding: 1.5rem !important;
+            margin: 2rem 0;
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.1);
+        }
+        
+        .material-content .important-formula,
+        .material-content .important-formula * {
+            color: var(--text-primary) !important;
+            font-weight: 600;
+        }
+        
+        /* Example box */
+        .material-content .example-box {
+            background: rgba(168, 85, 247, 0.08) !important;
+            border: 1px solid rgba(168, 85, 247, 0.2) !important;
+            border-radius: var(--radius-md);
+            padding: 1.5rem !important;
+            margin: 1.5rem 0;
+        }
+        
+        .material-content .example-box,
+        .material-content .example-box p,
+        .material-content .example-box li {
+            color: var(--text-primary) !important;
+        }
+        
+        /* Solution box - Better readability */
+        .material-content .solution {
+            background: rgba(16, 185, 129, 0.08) !important;
+            border: 1px solid rgba(16, 185, 129, 0.2) !important;
+            border-radius: var(--radius-md);
+            padding: 1.5rem !important;
+            margin: 1.5rem 0;
+        }
+        
+        .material-content .solution,
+        .material-content .solution p,
+        .material-content .solution li,
+        .material-content .solution * {
+            color: var(--text-primary) !important;
+        }
+        
+        /* Note box */
+        .material-content .note-box {
+            background: rgba(59, 130, 246, 0.08) !important;
+            border-left: 4px solid rgba(59, 130, 246, 0.5) !important;
+            border-radius: var(--radius-md);
+            padding: 1.5rem !important;
+            margin: 1.5rem 0;
+        }
+        
+        .material-content .note-box,
+        .material-content .note-box p,
+        .material-content .note-box li {
+            color: var(--text-primary) !important;
+        }
+        
+        /* Warning box */
+        .material-content .warning-box {
+            background: rgba(239, 68, 68, 0.08) !important;
+            border-left: 4px solid rgba(239, 68, 68, 0.5) !important;
+            border-radius: var(--radius-md);
+            padding: 1.5rem !important;
+            margin: 1.5rem 0;
+        }
+        
+        .material-content .warning-box,
+        .material-content .warning-box p,
+        .material-content .warning-box li {
+            color: var(--text-primary) !important;
+        }
+        
+        /* Images */
+        .material-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: var(--radius-md);
+            margin: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Tables */
+        .material-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+        
+        .material-content th {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--text-primary);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid var(--border-primary);
+        }
+        
+        .material-content td {
+            padding: 1rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-primary);
+        }
+        
+        .material-content tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* MathJax compatibility */
+        .material-content mjx-container {
+            color: var(--text-primary) !important;
+        }
+        
+        /* Strong emphasis */
+        .material-content strong,
+        .material-content b {
+            color: var(--text-primary) !important;
+            font-weight: 600;
+        }
+        
+        /* Links */
+        .material-content a {
+            color: var(--primary-color) !important;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: all var(--transition-base);
+        }
+        
+        .material-content a:hover {
+            border-bottom-color: var(--primary-color);
+        }
+        
+        /* Fix ordered list alignment */
+        .material-content ol {
+            padding-left: 1.5rem !important;
+            margin: 1rem 0;
+        }
+        
+        .material-content ol[type="a"],
+        .material-content ol[type="A"],
+        .material-content ol[type="i"],
+        .material-content ol[type="I"] {
+            padding-left: 2rem !important;
+        }
+        
+        .material-content ol li {
+            margin: 0.5rem 0;
+            padding-left: 0.5rem;
+            color: var(--text-secondary) !important;
+        }
+        
+        .material-content ul {
+            padding-left: 1.5rem !important;
+            margin: 1rem 0;
+        }
+        
+        .material-content ul li {
+            margin: 0.5rem 0;
+            padding-left: 0.5rem;
+            color: var(--text-secondary) !important;
+        }
+        
+        /* Practice problems - Better visibility */
+        .material-content .practice-problem {
+            background: rgba(139, 92, 246, 0.05) !important;
+            border: 2px solid rgba(139, 92, 246, 0.2) !important;
+            border-radius: var(--radius-md);
+            padding: 1.5rem !important;
+            margin: 2rem 0;
+            position: relative;
+        }
+        
+        .material-content .practice-problem::before {
+            content: "Bài tập";
+            position: absolute;
+            top: -12px;
+            left: 1rem;
+            background: var(--bg-secondary);
+            padding: 0 0.5rem;
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        .material-content .practice-problem,
+        .material-content .practice-problem p,
+        .material-content .practice-problem li,
+        .material-content .practice-problem * {
+            color: var(--text-primary) !important;
+        }
+        
+        /* Problem statement */
+        .material-content .problem-statement {
+            background: rgba(59, 130, 246, 0.08) !important;
+            border-left: 3px solid var(--primary-color) !important;
+            padding: 1rem 1.5rem !important;
+            margin: 1rem 0;
+            border-radius: var(--radius-sm);
+        }
+        
+        /* Specific example styling */
+        .material-content .example,
+        .material-content .vi-du {
+            background: rgba(168, 85, 247, 0.05) !important;
+            border: 1px solid rgba(168, 85, 247, 0.15) !important;
+            border-radius: var(--radius-md);
+            padding: 1.5rem !important;
+            margin: 2rem 0;
+            position: relative;
+        }
+        
+        /* Headers in example boxes */
+        .material-content .example h3,
+        .material-content .example h4,
+        .material-content .vi-du h3,
+        .material-content .vi-du h4 {
+            color: var(--primary-color) !important;
+            margin-bottom: 1rem;
+        }
+        
+        /* Solution sections */
+        .material-content .giai,
+        .material-content .solution-section {
+            background: rgba(16, 185, 129, 0.05) !important;
+            border: 1px solid rgba(16, 185, 129, 0.15) !important;
+            border-radius: var(--radius-sm);
+            padding: 1rem !important;
+            margin: 1rem 0;
+        }
+        
+        .material-content .giai h4,
+        .material-content .solution-section h4 {
+            color: rgb(16, 185, 129) !important;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Experiment box */
+        .material-content .experiment-box {
+            background: rgba(34, 197, 94, 0.08) !important;
+            border: 2px solid rgba(34, 197, 94, 0.25) !important;
+            border-radius: var(--radius-md);
+            padding: 1.5rem !important;
+            margin: 2rem 0;
+            position: relative;
+        }
+        
+        .material-content .experiment-box::before {
+            content: "Thí nghiệm";
+            position: absolute;
+            top: -12px;
+            left: 1rem;
+            background: var(--bg-secondary);
+            padding: 0 0.5rem;
+            color: rgb(34, 197, 94);
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        .material-content .experiment-box,
+        .material-content .experiment-box p,
+        .material-content .experiment-box li,
+        .material-content .experiment-box * {
+            color: var(--text-primary) !important;
+        }
+        
+        .material-content .experiment-box h3,
+        .material-content .experiment-box h4 {
+            color: rgb(34, 197, 94) !important;
+            margin-bottom: 1rem;
+        }
+        
+        /* Force type box */
+        .material-content .force-type {
+            background: rgba(239, 68, 68, 0.05) !important;
+            border: 1px solid rgba(239, 68, 68, 0.2) !important;
+            border-radius: var(--radius-md);
+            padding: 1.5rem !important;
+            margin: 1.5rem 0;
+        }
+        
+        .material-content .force-type,
+        .material-content .force-type p,
+        .material-content .force-type li,
+        .material-content .force-type * {
+            color: var(--text-primary) !important;
+        }
+        
+        /* Special case box */
+        .material-content .special-case {
+            background: rgba(251, 146, 60, 0.08) !important;
+            border: 2px solid rgba(251, 146, 60, 0.3) !important;
+            border-radius: var(--radius-md);
+            padding: 1.5rem !important;
+            margin: 2rem 0;
+            position: relative;
+        }
+        
+        .material-content .special-case::before {
+            content: "Trường hợp đặc biệt";
+            position: absolute;
+            top: -12px;
+            left: 1rem;
+            background: var(--bg-secondary);
+            padding: 0 0.5rem;
+            color: rgb(251, 146, 60);
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        .material-content .special-case,
+        .material-content .special-case p,
+        .material-content .special-case li,
+        .material-content .special-case * {
+            color: var(--text-primary) !important;
+        }
+        
+        /* Energy type box */
+        .material-content .energy-type {
+            background: rgba(34, 197, 94, 0.05) !important;
+            border: 1px solid rgba(34, 197, 94, 0.2) !important;
+            border-radius: var(--radius-md);
+            padding: 1.5rem !important;
+            margin: 1.5rem 0;
+        }
+        
+        .material-content .energy-type,
+        .material-content .energy-type p,
+        .material-content .energy-type li,
+        .material-content .energy-type * {
+            color: var(--text-primary) !important;
+        }
+        
+        /* Comparison table */
+        .material-content .comparison-table {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-md);
+            padding: 1.5rem !important;
+            margin: 2rem 0;
+            overflow-x: auto;
+        }
+        
+        .material-content .comparison-table table {
+            width: 100%;
+            margin: 0;
+        }
+        
+        .material-content .comparison-table th {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--text-primary);
+            font-weight: 600;
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 2px solid var(--border-primary);
+        }
+        
+        .material-content .comparison-table td {
+            padding: 1rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-primary);
+        }
+        
+        .material-content .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="material-wrapper">
+        <a href="/study-materials" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            Quay lại danh sách
+        </a>
+        <div class="material-content">
+            ${processedContent}
+        </div>
+    </div>
+    <script src="/js/nav-mobile.js"></script>
+</body>
+</html>
+        `;
+        
+        res.send(wrappedContent);
+
+    } catch (error) {
+        console.error('Error serving material:', error);
+        res.status(500).send('Error loading material');
+    }
+  }
+);
+
 // Health check page
 router.get('/health',
   longCacheMiddleware(60), // 1 minute cache

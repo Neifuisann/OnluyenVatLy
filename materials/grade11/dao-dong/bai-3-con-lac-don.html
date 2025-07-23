@@ -5,97 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Con lắc đơn - Vật lý 11</title>
     <meta name="description" content="Con lắc đơn là hệ dao động quan trọng trong vật lý. Tìm hiểu về cấu tạo, phương trình dao động, chu kỳ và các ứng dụng của con lắc đơn.">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 16px;
-            line-height: 1.6;
-            color: #333;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        h1 {
-            color: #1e293b;
-            font-size: 32px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 10px;
-        }
-        h2 {
-            color: #334155;
-            font-size: 24px;
-            margin-top: 30px;
-            margin-bottom: 15px;
-        }
-        h3 {
-            color: #475569;
-            font-size: 20px;
-            margin-top: 20px;
-            margin-bottom: 10px;
-        }
-        .quote {
-            background: #f0f9ff;
-            border-left: 4px solid #0284c7;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
-        }
-        .formula {
-            background: #fef3c7;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 4px;
-            text-align: center;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        .example {
-            background: #f3f4f6;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
-            border: 1px solid #d1d5db;
-        }
-        .important {
-            background: #fee2e2;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
-            border-left: 4px solid #ef4444;
-        }
-        img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-            margin: 20px auto;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        table th, table td {
-            border: 1px solid #e5e7eb;
-            padding: 10px;
-            text-align: left;
-        }
-        table th {
-            background: #f9fafb;
-            font-weight: bold;
-        }
-        .formula-box {
-            background: #ecfdf5;
-            border: 2px solid #10b981;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 8px;
-        }
-        .formula-box h4 {
-            margin-top: 0;
-            color: #059669;
-        }
-    </style>
+    
+
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
     <h1>Con lắc đơn - Vật lý 11</h1>
@@ -112,7 +24,7 @@
         <li><strong>Điểm treo</strong>: Cố định</li>
     </ul>
 
-    <div class="quote">
+    <div class="definition-box">
         <strong>Định nghĩa:</strong> Con lắc đơn là hệ gồm một vật nhỏ khối lượng m được treo vào đầu một sợi dây không dãn, khối lượng không đáng kể, chiều dài l.
     </div>
 
@@ -140,13 +52,13 @@
     <h3>c) Phương trình dao động</h3>
     <p>Với dao động nhỏ, con lắc đơn dao động điều hòa với:</p>
     
-    <div class="formula">
+    <div class="formula-box">
         s = s₀cos(ωt + φ)
     </div>
     
     <p>Hoặc theo li độ góc:</p>
     
-    <div class="formula">
+    <div class="formula-box">
         α = α₀cos(ωt + φ)
     </div>
     
@@ -156,22 +68,22 @@
 
     <div class="formula-box">
         <h4>Tần số góc:</h4>
-        <div class="formula">
+        <div class="formula-box">
             ω = √(g/l)
         </div>
         
         <h4>Chu kỳ dao động:</h4>
-        <div class="formula">
+        <div class="formula-box">
             T = 2π/ω = 2π√(l/g)
         </div>
         
         <h4>Tần số dao động:</h4>
-        <div class="formula">
+        <div class="formula-box">
             f = 1/T = (1/2π)√(g/l)
         </div>
     </div>
 
-    <div class="important">
+    <div class="important-formula">
         <strong>Nhận xét quan trọng:</strong>
         <ul>
             <li>Chu kỳ T chỉ phụ thuộc vào l và g, không phụ thuộc vào m và biên độ α₀</li>
@@ -185,7 +97,7 @@
 
     <h3>a) Vận tốc</h3>
     <p>Vận tốc dài của vật:</p>
-    <div class="formula">
+    <div class="formula-box">
         v = s' = -ωs₀sin(ωt + φ)
     </div>
     
@@ -201,13 +113,13 @@
     <h2>5. Năng lượng của con lắc đơn</h2>
 
     <h3>a) Động năng</h3>
-    <div class="formula">
+    <div class="formula-box">
         W<sub>đ</sub> = ½mv²
     </div>
 
     <h3>b) Thế năng</h3>
     <p>Chọn mốc thế năng tại VTCB:</p>
-    <div class="formula">
+    <div class="formula-box">
         W<sub>t</sub> = mgh = mgl(1 - cosα)
     </div>
     
@@ -216,7 +128,7 @@
     <h3>c) Cơ năng</h3>
     <div class="formula-box">
         <h4>Cơ năng toàn phần:</h4>
-        <div class="formula">
+        <div class="formula-box">
             W = W<sub>đ</sub> + W<sub>t</sub> = ½mglα₀² = const
         </div>
     </div>
@@ -254,21 +166,21 @@
 
     <h3>b) Con lắc trong điện trường</h3>
     <p>Khi con lắc mang điện tích q trong điện trường E:</p>
-    <div class="formula">
+    <div class="formula-box">
         g' = g + qE/m
     </div>
     <p>(Dấu + hoặc - tùy thuộc hướng của E)</p>
 
     <h2>7. Bài tập ví dụ</h2>
 
-    <div class="example">
+    <div class="example-box">
         <strong>Ví dụ 1:</strong> Con lắc đơn có chiều dài 1m, dao động tại nơi có g = 10 m/s². Tính chu kỳ dao động.
         <br><br>
         <strong>Giải:</strong><br>
         T = 2π√(l/g) = 2π√(1/10) = 2π/√10 ≈ 1,99 s ≈ 2 s
     </div>
 
-    <div class="example">
+    <div class="example-box">
         <strong>Ví dụ 2:</strong> Con lắc đơn dao động với biên độ góc 5°. Tại vị trí có li độ góc 3°, tính tỉ số giữa động năng và thế năng.
         <br><br>
         <strong>Giải:</strong><br>
@@ -280,7 +192,7 @@
         W<sub>đ</sub>/W<sub>t</sub> = [(5π/180)² - (3π/180)²]/(3π/180)² = (25 - 9)/9 = 16/9
     </div>
 
-    <div class="example">
+    <div class="example-box">
         <strong>Ví dụ 3:</strong> Con lắc đơn dao động trong thang máy. Khi thang máy đứng yên, chu kỳ là T₀ = 2s. Tính chu kỳ khi thang máy đi lên nhanh dần đều với gia tốc a = 2 m/s². Lấy g = 10 m/s².
         <br><br>
         <strong>Giải:</strong><br>
@@ -336,11 +248,11 @@
         </tr>
     </table>
 
-    <div class="quote">
+    <div class="definition-box">
         <strong>Lưu ý học tập:</strong> Con lắc đơn là mô hình lý tưởng hóa nhưng rất quan trọng trong vật lý. Cần nắm vững điều kiện dao động điều hòa (góc nhỏ) và công thức chu kỳ T = 2π√(l/g). Khi giải bài tập, chú ý phân tích các yếu tố ảnh hưởng đến gia tốc hiệu dụng.
     </div>
 
-    <div class="important">
+    <div class="important-formula">
         <strong>Tổng kết:</strong> Con lắc đơn dao động điều hòa khi góc lệch nhỏ với chu kỳ không phụ thuộc khối lượng vật nặng. Đây là cơ sở cho nhiều ứng dụng quan trọng trong đo lường và nghiên cứu khoa học.
     </div>
 </body>

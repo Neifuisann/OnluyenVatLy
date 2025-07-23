@@ -5,86 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dao động điều hòa - Vật lý 11</title>
     <meta name="description" content="Dao động điều hòa là một trong những chuyển động cơ bản nhất trong vật lý. Tìm hiểu về phương trình, đồ thị và các đại lượng đặc trưng của dao động điều hòa.">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 16px;
-            line-height: 1.6;
-            color: #333;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        h1 {
-            color: #1e293b;
-            font-size: 32px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 10px;
-        }
-        h2 {
-            color: #334155;
-            font-size: 24px;
-            margin-top: 30px;
-            margin-bottom: 15px;
-        }
-        h3 {
-            color: #475569;
-            font-size: 20px;
-            margin-top: 20px;
-            margin-bottom: 10px;
-        }
-        .quote {
-            background: #f0f9ff;
-            border-left: 4px solid #0284c7;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
-        }
-        .formula {
-            background: #fef3c7;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 4px;
-            text-align: center;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        .example {
-            background: #f3f4f6;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
-            border: 1px solid #d1d5db;
-        }
-        .important {
-            background: #fee2e2;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
-            border-left: 4px solid #ef4444;
-        }
-        img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-            margin: 20px auto;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        table th, table td {
-            border: 1px solid #e5e7eb;
-            padding: 10px;
-            text-align: left;
-        }
-        table th {
-            background: #f9fafb;
-            font-weight: bold;
-        }
-    </style>
+    
+
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
     <h1>Dao động điều hòa - Vật lý 11</h1>
@@ -96,7 +19,7 @@
     <h3>a) Thế nào là dao động cơ?</h3>
     <p>Dao động cơ là chuyển động qua lại quanh một vị trí cân bằng.</p>
     
-    <div class="example">
+    <div class="example-box">
         <strong>Ví dụ:</strong>
         <ul>
             <li>Con lắc đồng hồ dao động qua lại quanh vị trí thẳng đứng</li>
@@ -111,12 +34,12 @@
     <h2>2. Phương trình dao động điều hòa</h2>
 
     <h3>a) Định nghĩa dao động điều hòa</h3>
-    <div class="quote">
+    <div class="definition-box">
         Dao động điều hòa là dao động trong đó li độ của vật là một hàm cosin (hoặc sin) của thời gian.
     </div>
 
     <h3>b) Phương trình dao động điều hòa</h3>
-    <div class="formula">
+    <div class="formula-box">
         x = A.cos(ωt + φ)
     </div>
     
@@ -134,17 +57,17 @@
 
     <h3>a) Chu kỳ và tần số</h3>
     
-    <div class="formula">
+    <div class="formula-box">
         T = 2π/ω
     </div>
     <p><strong>Chu kỳ T</strong>: Thời gian để vật thực hiện một dao động toàn phần (đơn vị: s)</p>
 
-    <div class="formula">
+    <div class="formula-box">
         f = 1/T = ω/2π
     </div>
     <p><strong>Tần số f</strong>: Số dao động toàn phần thực hiện trong một giây (đơn vị: Hz)</p>
 
-    <div class="formula">
+    <div class="formula-box">
         ω = 2πf = 2π/T
     </div>
     <p><strong>Tần số góc ω</strong>: Tốc độ biến thiên của pha dao động (đơn vị: rad/s)</p>
@@ -152,13 +75,13 @@
     <h3>b) Vận tốc trong dao động điều hòa</h3>
     <p>Vận tốc là đạo hàm của li độ theo thời gian:</p>
     
-    <div class="formula">
+    <div class="formula-box">
         v = x' = -Aω.sin(ωt + φ)
     </div>
     
     <p>Có thể viết: v = ωA.cos(ωt + φ + π/2)</p>
     
-    <div class="important">
+    <div class="important-formula">
         <strong>Nhận xét quan trọng:</strong>
         <ul>
             <li>Vận tốc biến thiên điều hòa cùng tần số với li độ</li>
@@ -171,11 +94,11 @@
     <h3>c) Gia tốc trong dao động điều hòa</h3>
     <p>Gia tốc là đạo hàm của vận tốc theo thời gian:</p>
     
-    <div class="formula">
+    <div class="formula-box">
         a = v' = x'' = -ω²A.cos(ωt + φ) = -ω²x
     </div>
     
-    <div class="important">
+    <div class="important-formula">
         <strong>Nhận xét quan trọng:</strong>
         <ul>
             <li>Gia tốc luôn hướng về vị trí cân bằng</li>
@@ -218,17 +141,17 @@
     </table>
 
     <h3>Công thức độc lập thời gian</h3>
-    <div class="formula">
+    <div class="formula-box">
         A² = x² + (v/ω)²
     </div>
     
-    <div class="formula">
+    <div class="formula-box">
         v² = ω²(A² - x²)
     </div>
 
     <h2>6. Bài tập ví dụ</h2>
 
-    <div class="example">
+    <div class="example-box">
         <strong>Ví dụ 1:</strong> Một vật dao động điều hòa với phương trình x = 5cos(4πt + π/3) cm. Xác định:
         <ul>
             <li>a) Biên độ, tần số góc, chu kỳ, tần số</li>
@@ -261,7 +184,7 @@
         <li>Thiết kế nhạc cụ và âm học</li>
     </ul>
 
-    <div class="quote">
+    <div class="definition-box">
         <strong>Lưu ý khi học:</strong> Dao động điều hòa là nền tảng để học các phần tiếp theo như con lắc lò xo, con lắc đơn, sóng cơ. Cần nắm vững các công thức và mối quan hệ giữa các đại lượng.
     </div>
 </body>

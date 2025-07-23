@@ -38,6 +38,7 @@ const activityRoutes = require('../routes/activity');
 const leagueRoutes = require('../routes/leagues');
 const webhookRoutes = require('../routes/webhooks');
 const debugRoutes = require('../routes/debug');
+const materialsRoutes = require('../routes/materials');
 
 // Import utilities
 const logger = require('../lib/utils/logger');
@@ -233,6 +234,7 @@ app.use('/api/activity', activityRoutes);
 app.use('/api/leagues', leagueRoutes);
 app.use('/api/webhooks', webhookRoutes);
 app.use('/api/debug', debugRoutes);
+app.use('/api/materials', materialsRoutes);
 
 // Setup view routes (HTML pages) - Register early to avoid conflicts
 app.use('/', viewRoutes);

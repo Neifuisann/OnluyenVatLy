@@ -5,105 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nguồn điện - Vật lý 11</title>
     <meta name="description" content="Nguồn điện là thiết bị tạo và duy trì hiệu điện thế. Tìm hiểu về suất điện động, điện trở trong, định luật Ohm toàn mạch và cách ghép nguồn điện.">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 16px;
-            line-height: 1.6;
-            color: #333;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        h1 {
-            color: #1e293b;
-            font-size: 32px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 10px;
-        }
-        h2 {
-            color: #334155;
-            font-size: 24px;
-            margin-top: 30px;
-            margin-bottom: 15px;
-        }
-        h3 {
-            color: #475569;
-            font-size: 20px;
-            margin-top: 20px;
-            margin-bottom: 10px;
-        }
-        .quote {
-            background: #f0f9ff;
-            border-left: 4px solid #0284c7;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
-        }
-        .formula {
-            background: #fef3c7;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 4px;
-            text-align: center;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        .example {
-            background: #f3f4f6;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
-            border: 1px solid #d1d5db;
-        }
-        .important {
-            background: #fee2e2;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
-            border-left: 4px solid #ef4444;
-        }
-        img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-            margin: 20px auto;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        table th, table td {
-            border: 1px solid #e5e7eb;
-            padding: 10px;
-            text-align: left;
-        }
-        table th {
-            background: #f9fafb;
-            font-weight: bold;
-        }
-        .formula-box {
-            background: #ecfdf5;
-            border: 2px solid #10b981;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 8px;
-        }
-        .formula-box h4 {
-            margin-top: 0;
-            color: #059669;
-        }
-        .circuit-diagram {
-            background: #e0e7ff;
-            border: 1px solid #6366f1;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 8px;
-            text-align: center;
-        }
-    </style>
+    
+
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
     <h1>Nguồn điện - Vật lý 11</h1>
@@ -119,7 +23,7 @@
         <li>Năng lượng bù đắp phần tiêu hao trên điện trở</li>
     </ul>
 
-    <div class="quote">
+    <div class="definition-box">
         <strong>Nguồn điện</strong> là thiết bị tạo ra và duy trì hiệu điện thế giữa hai cực của nó, cung cấp năng lượng cho dòng điện.
     </div>
 
@@ -162,13 +66,13 @@
     <h2>2. Suất điện động của nguồn</h2>
 
     <h3>a) Định nghĩa</h3>
-    <div class="quote">
+    <div class="definition-box">
         <strong>Suất điện động (ℰ)</strong> của nguồn điện là đại lượng đặc trưng cho khả năng thực hiện công của nguồn điện, được đo bằng công của lực lạ khi dịch chuyển một đơn vị điện tích dương ngược chiều điện trường bên trong nguồn từ cực âm đến cực dương.
     </div>
 
     <div class="formula-box">
         <h4>Công thức suất điện động:</h4>
-        <div class="formula">
+        <div class="formula-box">
             ℰ = A/q
         </div>
         
@@ -198,7 +102,7 @@
     </ul>
 
     <h3>b) Mô hình nguồn điện</h3>
-    <div class="circuit-diagram">
+    <div class="note-box">
         <p>Nguồn điện thực = Nguồn lý tưởng (ℰ) + Điện trở trong (r)</p>
         <p>—[ℰ, r]—</p>
     </div>
@@ -210,12 +114,12 @@
 
     <div class="formula-box">
         <h4>Định luật Ohm toàn mạch:</h4>
-        <div class="formula">
+        <div class="formula-box">
             I = ℰ/(R + r)
         </div>
         
         <p>Hay viết dưới dạng:</p>
-        <div class="formula">
+        <div class="formula-box">
             ℰ = I(R + r) = U + Ir
         </div>
     </div>
@@ -230,7 +134,7 @@
     <h3>c) Hiệu suất của nguồn</h3>
     <div class="formula-box">
         <h4>Công thức hiệu suất:</h4>
-        <div class="formula">
+        <div class="formula-box">
             H = U/ℰ = R/(R + r) × 100%
         </div>
     </div>
@@ -238,16 +142,16 @@
     <h2>5. Hiện tượng đoản mạch</h2>
 
     <h3>a) Định nghĩa</h3>
-    <div class="quote">
+    <div class="definition-box">
         <strong>Đoản mạch</strong> xảy ra khi nối tắt hai cực nguồn điện (R ≈ 0).
     </div>
 
     <h3>b) Dòng điện đoản mạch</h3>
-    <div class="formula">
+    <div class="formula-box">
         I<sub>đm</sub> = ℰ/r
     </div>
 
-    <div class="important">
+    <div class="important-formula">
         <strong>Nguy hiểm:</strong>
         <ul>
             <li>I<sub>đm</sub> rất lớn vì r nhỏ</li>
@@ -259,7 +163,7 @@
     <h2>6. Ghép nguồn điện</h2>
 
     <h3>a) Ghép nối tiếp</h3>
-    <div class="circuit-diagram">
+    <div class="note-box">
         <p>—[ℰ₁,r₁]—[ℰ₂,r₂]—[ℰ₃,r₃]—</p>
     </div>
 
@@ -278,7 +182,7 @@
     </div>
 
     <h3>b) Ghép song song</h3>
-    <div class="circuit-diagram">
+    <div class="note-box">
         <p>  —[ℰ,r]—</p>
         <p>—⟨       ⟩—</p>
         <p>  —[ℰ,r]—</p>
@@ -301,7 +205,7 @@
 
     <h2>7. Ví dụ minh họa</h2>
 
-    <div class="example">
+    <div class="example-box">
         <strong>Ví dụ 1:</strong> Nguồn điện có ℰ = 12V, r = 2Ω nối với R = 10Ω. Tính:
         <ul>
             <li>a) Cường độ dòng điện trong mạch</li>
@@ -318,7 +222,7 @@
         c) H = U/ℰ = 10/12 = 0,833 = 83,3%
     </div>
 
-    <div class="example">
+    <div class="example-box">
         <strong>Ví dụ 2:</strong> Pin có ℰ = 1,5V, r = 0,5Ω. Tính dòng điện đoản mạch và công suất tỏa nhiệt khi đó.
         <br><br>
         <strong>Giải:</strong><br>
@@ -328,7 +232,7 @@
         <em>Nhận xét: Công suất lớn → Pin nóng, có thể hỏng</em>
     </div>
 
-    <div class="example">
+    <div class="example-box">
         <strong>Ví dụ 3:</strong> Ba nguồn giống nhau ℰ₀ = 3V, r₀ = 1Ω ghép nối tiếp thành bộ, nối với R = 5Ω. Tính I và U.
         <br><br>
         <strong>Giải:</strong><br>
@@ -403,7 +307,7 @@
 
     <h2>10. An toàn khi sử dụng nguồn điện</h2>
 
-    <div class="important">
+    <div class="important-formula">
         <strong>Lưu ý an toàn:</strong>
         <ul>
             <li>Không để nguồn bị đoản mạch</li>
@@ -415,7 +319,7 @@
         </ul>
     </div>
 
-    <div class="quote">
+    <div class="definition-box">
         <strong>Lưu ý khi học:</strong>
         <ul>
             <li>Phân biệt rõ suất điện động ℰ và hiệu điện thế U</li>
@@ -425,7 +329,7 @@
         </ul>
     </div>
 
-    <div class="important">
+    <div class="important-formula">
         <strong>Tổng kết:</strong> Nguồn điện tạo và duy trì hiệu điện thế với suất điện động ℰ = A/q. Định luật Ohm toàn mạch: I = ℰ/(R + r). Ghép nối tiếp: ℰ tăng, r tăng; ghép song song: ℰ không đổi, r giảm. Cần tránh đoản mạch vì dòng điện rất lớn.
     </div>
 </body>

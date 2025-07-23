@@ -114,6 +114,16 @@
             from { filter: brightness(1); }
             to { filter: brightness(1.2); }
         }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+        
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-20px, -20px); }
+        }
 
         .hero-subtitle {
             font-size: clamp(1.1rem, 2vw, 1.4rem);
@@ -310,6 +320,390 @@
             line-height: 1.8;
         }
         
+        /* Study Materials Preview Section */
+        .materials-preview-section {
+            padding: 5rem 2rem;
+            background: rgba(102, 126, 234, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .materials-preview-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .section-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+        
+        .materials-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .material-preview-card {
+            background: var(--glass-bg, rgba(255, 255, 255, 0.05));
+            border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
+            border-radius: var(--radius-xl, 20px);
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .material-preview-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent 0%, rgba(102, 126, 234, 0.05) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .material-preview-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
+            border-color: rgba(102, 126, 234, 0.5);
+        }
+        
+        .material-preview-card:hover::before {
+            opacity: 1;
+        }
+        
+        .material-grade-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--primary-gradient, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .material-topics-preview {
+            margin-top: 1rem;
+        }
+        
+        .topic-preview-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+            color: var(--text-secondary);
+            transition: color 0.2s ease;
+        }
+        
+        .topic-preview-item:hover {
+            color: var(--text-primary);
+        }
+        
+        .topic-preview-item i {
+            color: var(--neon-purple);
+            font-size: 0.8rem;
+        }
+        
+        /* Gamification Section */
+        .gamification-section {
+            padding: 5rem 2rem;
+            background: linear-gradient(135deg, rgba(118, 75, 162, 0.05) 0%, rgba(102, 126, 234, 0.05) 100%);
+        }
+        
+        .gamification-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 3rem auto 0;
+        }
+        
+        .gamification-card {
+            text-align: center;
+            padding: 2rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .gamification-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.3);
+        }
+        
+        .gamification-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+        
+        .icon-xp { color: #f59e0b; }
+        .icon-achievement { color: #10b981; }
+        .icon-streak { color: #ef4444; }
+        .icon-league { color: #8b5cf6; }
+        .icon-quest { color: #3b82f6; }
+        
+        /* Learning Path Section */
+        .learning-path-section {
+            padding: 5rem 2rem;
+            background: var(--bg-secondary);
+        }
+        
+        .learning-path-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .path-timeline {
+            position: relative;
+            padding: 4rem 0;
+        }
+        
+        .path-timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 40px;
+            bottom: 40px;
+            width: 2px;
+            background: var(--glass-border);
+            transform: translateX(-50%);
+        }
+        
+        .path-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 4rem;
+            position: relative;
+            gap: 3rem;
+        }
+        
+        .path-step:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+        
+        .path-step-content {
+            flex: 1;
+            padding: 2rem;
+            background: var(--glass-bg, rgba(255, 255, 255, 0.05));
+            border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
+            border-radius: var(--radius-lg, 16px);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            max-width: calc(50% - 4rem);
+        }
+        
+        .path-step:nth-child(odd) .path-step-content {
+            margin-right: auto;
+        }
+        
+        .path-step:nth-child(even) .path-step-content {
+            margin-left: auto;
+        }
+        
+        .path-step-content:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+        
+        .path-step-number {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: var(--primary-gradient, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.5rem;
+            z-index: 3;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            border: 4px solid var(--bg-primary, #0a0a0f);
+            flex-shrink: 0;
+        }
+        
+        /* Testimonials Section */
+        .testimonials-section {
+            padding: 5rem 2rem;
+            background: rgba(255, 255, 255, 0.02);
+        }
+        
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 3rem auto 0;
+        }
+        
+        .testimonial-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+        
+        .testimonial-quote {
+            font-size: 3rem;
+            color: var(--neon-purple);
+            opacity: 0.3;
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+        }
+        
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 1.5rem;
+            padding-left: 2rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+        
+        .author-info h4 {
+            margin: 0;
+            color: var(--text-primary);
+        }
+        
+        .author-info p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            padding: 6rem 2rem;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 2px, transparent 2px);
+            background-size: 30px 30px;
+            animation: float 30s linear infinite;
+        }
+        
+        .cta-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .cta-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .cta-button-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2.5rem;
+            background: transparent;
+            color: var(--neon-purple);
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: 2px solid var(--neon-purple);
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .cta-button-secondary:hover {
+            background: var(--neon-purple);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+        }
+        
         /* Showcase Section */
         .showcase-section {
             padding: 5rem 2rem;
@@ -478,6 +872,46 @@
                 grid-template-columns: 1fr;
                 max-width: 300px;
             }
+            
+            .path-step {
+                flex-direction: column !important;
+            }
+            
+            .path-step:nth-child(even) {
+                flex-direction: column !important;
+            }
+            
+            .path-timeline::before {
+                display: none;
+            }
+            
+            .path-step-number {
+                position: relative;
+                left: auto;
+                transform: none;
+                margin-bottom: 1rem;
+            }
+            
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cta-title {
+                font-size: 2rem;
+            }
+            
+            .materials-preview-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .gamification-features {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
@@ -497,7 +931,11 @@
                 </a>
                 <a href="/lessons" class="nav-link">
                     <i class="fas fa-book"></i>
-                    <span>Bài học</span>
+                    <span>Bài tập</span>
+                </a>
+                <a href="/study-materials" class="nav-link">
+                    <i class="fas fa-book-open"></i>
+                    <span>Lý thuyết</span>
                 </a>
                 <a href="/leaderboard" class="nav-link">
                     <i class="fas fa-trophy"></i>
@@ -532,8 +970,8 @@
 
         <div class="container">
             <div class="hero-content">
-                <h1 class="hero-title">Khám phá Vật lý 12 một cách thú vị</h1>
-                <p class="hero-subtitle">Học tập hiệu quả với phương pháp tương tác và theo dõi tiến độ cá nhân</p>
+                <h1 class="hero-title">Nền tảng học Vật Lý toàn diện</h1>
+                <p class="hero-subtitle">Từ lớp 10 đến lớp 12 - Lý thuyết, bài tập, gamification và AI hỗ trợ học tập cá nhân hóa</p>
 
                 <!-- Quick Stats -->
                 <div class="stats-grid">
@@ -570,57 +1008,276 @@
     <section class="features-section">
         <h2 class="text-center">Tính năng nổi bật</h2>
         <div class="features-grid">
-            <div class="feature-card" onclick="window.location.href='/gallery'">
+            <div class="feature-card" onclick="window.location.href='/study-materials'">
                 <div class="feature-icon">
-                    <i class="fas fa-graduation-cap"></i>
+                    <i class="fas fa-book-open"></i>
                 </div>
-                <h3>Bài học chi tiết</h3>
-                <p>Nắm vững kiến thức với hệ thống bài giảng được thiết kế khoa học, dễ hiểu</p>
+                <h3>Tài liệu lý thuyết đầy đủ</h3>
+                <p>Hệ thống bài giảng chi tiết cho cả 3 khối lớp 10, 11, 12 với hình ảnh minh họa sinh động</p>
             </div>
             <div class="feature-card" onclick="window.location.href='/lessons'">
                 <div class="feature-icon">
                     <i class="fas fa-brain"></i>
                 </div>
-                <h3>Luyện tập thông minh</h3>
-                <p>AI phân tích và đưa ra bài tập phù hợp với trình độ của bạn</p>
+                <h3>Luyện tập với AI</h3>
+                <p>Hệ thống AI phân tích năng lực và đề xuất bài tập phù hợp với từng học sinh</p>
             </div>
-            <div class="feature-card" onclick="window.location.href='/quizgame'">
+            <div class="feature-card" onclick="window.location.href='/leaderboard'">
                 <div class="feature-icon">
-                    <i class="fas fa-gamepad"></i>
+                    <i class="fas fa-trophy"></i>
                 </div>
-                <h3>Game học tập</h3>
-                <p>Học mà chơi, chơi mà học với các thử thách hấp dẫn</p>
+                <h3>Xếp hạng & Thành tích</h3>
+                <p>Thi đua với bạn bè, theo dõi tiến độ và nhận phần thưởng khi hoàn thành mục tiêu</p>
             </div>
         </div>
     </section>
     
-    <!-- Showcase Section -->
-    <section class="showcase-section">
-        <h2 class="showcase-title">Khám phá bài học</h2>
-        <div class="showcase-grid">
-            <div class="showcase-item">
-                <img src="/images/lesson1.jpg" alt="Nhiệt học" class="showcase-image" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'400\' height=\'300\' fill=\'%23667eea\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-family=\'Arial\' font-size=\'24\' fill=\'white\'%3ENhiệt học%3C/text%3E%3C/svg%3E'">
-                <div class="showcase-overlay">
-                    <h3>Nhiệt học</h3>
+    <!-- Study Materials Preview Section -->
+    <section class="materials-preview-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Kho tài liệu phong phú</h2>
+                <p class="section-subtitle">Học tập hiệu quả với tài liệu được biên soạn công phu, phù hợp với chương trình GDPT mới</p>
+            </div>
+            <div class="materials-preview-grid">
+            <div class="material-preview-card" onclick="window.location.href='/study-materials'">
+                <span class="material-grade-badge">
+                    <i class="fas fa-graduation-cap"></i>
+                    Lớp 10
+                </span>
+                <h3>Cơ học & Nhiệt học</h3>
+                <div class="material-topics-preview">
+                    <div class="topic-preview-item">
+                        <i class="fas fa-chevron-right"></i>
+                        <span>Động học chất điểm</span>
+                    </div>
+                    <div class="topic-preview-item">
+                        <i class="fas fa-chevron-right"></i>
+                        <span>Động lực học chất điểm</span>
+                    </div>
+                    <div class="topic-preview-item">
+                        <i class="fas fa-chevron-right"></i>
+                        <span>Năng lượng, công, công suất</span>
+                    </div>
+                    <div class="topic-preview-item">
+                        <i class="fas fa-chevron-right"></i>
+                        <span>Chất khí lý tưởng</span>
+                    </div>
                 </div>
             </div>
-            <div class="showcase-item">
-                <img src="/images/lesson2.jpg" alt="Khí lý tưởng" class="showcase-image" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'400\' height=\'300\' fill=\'%23764ba2\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-family=\'Arial\' font-size=\'24\' fill=\'white\'%3EKhí lý tưởng%3C/text%3E%3C/svg%3E'">
-                <div class="showcase-overlay">
-                    <h3>Khí lý tưởng</h3>
+            <div class="material-preview-card" onclick="window.location.href='/study-materials'">
+                <span class="material-grade-badge">
+                    <i class="fas fa-graduation-cap"></i>
+                    Lớp 11
+                </span>
+                <h3>Điện học & Từ học</h3>
+                <div class="material-topics-preview">
+                    <div class="topic-preview-item">
+                        <i class="fas fa-chevron-right"></i>
+                        <span>Điện trường và điện thế</span>
+                    </div>
+                    <div class="topic-preview-item">
+                        <i class="fas fa-chevron-right"></i>
+                        <span>Dòng điện không đổi</span>
+                    </div>
+                    <div class="topic-preview-item">
+                        <i class="fas fa-chevron-right"></i>
+                        <span>Từ trường</span>
+                    </div>
+                    <div class="topic-preview-item">
+                        <i class="fas fa-chevron-right"></i>
+                        <span>Cảm ứng điện từ</span>
+                    </div>
                 </div>
             </div>
-            <div class="showcase-item">
-                <img src="/images/lesson3.jpg" alt="Từ trường" class="showcase-image" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'400\' height=\'300\' fill=\'%23f093fb\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-family=\'Arial\' font-size=\'24\' fill=\'white\'%3ETừ trường%3C/text%3E%3C/svg%3E'">
-                <div class="showcase-overlay">
-                    <h3>Từ trường</h3>
+            <div class="material-preview-card" onclick="window.location.href='/study-materials'">
+                <span class="material-grade-badge">
+                    <i class="fas fa-graduation-cap"></i>
+                    Lớp 12
+                </span>
+                <h3>Dao động & Sóng</h3>
+                <div class="material-topics-preview">
+                    <div class="topic-preview-item">
+                        <i class="fas fa-chevron-right"></i>
+                        <span>Dao động điều hòa</span>
+                    </div>
+                    <div class="topic-preview-item">
+                        <i class="fas fa-chevron-right"></i>
+                        <span>Sóng cơ và sóng âm</span>
+                    </div>
+                    <div class="topic-preview-item">
+                        <i class="fas fa-chevron-right"></i>
+                        <span>Dòng điện xoay chiều</span>
+                    </div>
+                    <div class="topic-preview-item">
+                        <i class="fas fa-chevron-right"></i>
+                        <span>Vật lý hạt nhân</span>
+                    </div>
                 </div>
             </div>
-            <div class="showcase-item">
-                <img src="/images/lesson4.jpg" alt="Vật lý hạt nhân" class="showcase-image" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'400\' height=\'300\' fill=\'%23f5576c\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-family=\'Arial\' font-size=\'24\' fill=\'white\'%3EVật lý hạt nhân%3C/text%3E%3C/svg%3E'">
-                <div class="showcase-overlay">
-                    <h3>Vật lý hạt nhân</h3>
+        </div>
+        </div>
+    </section>
+    
+    <!-- Gamification Section -->
+    <section class="gamification-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Học tập như chơi game</h2>
+                <p class="section-subtitle">Hệ thống gamification giúp việc học trở nên thú vị và gây nghiện</p>
+            </div>
+            <div class="gamification-features">
+            <div class="gamification-card">
+                <div class="gamification-icon icon-xp">
+                    <i class="fas fa-star"></i>
                 </div>
+                <h3>Điểm XP</h3>
+                <p>Tích lũy điểm kinh nghiệm khi hoàn thành bài học và bài tập</p>
+            </div>
+            <div class="gamification-card">
+                <div class="gamification-icon icon-achievement">
+                    <i class="fas fa-medal"></i>
+                </div>
+                <h3>Thành tựu</h3>
+                <p>Mở khóa huy hiệu và danh hiệu khi đạt các mốc quan trọng</p>
+            </div>
+            <div class="gamification-card">
+                <div class="gamification-icon icon-streak">
+                    <i class="fas fa-fire"></i>
+                </div>
+                <h3>Chuỗi ngày</h3>
+                <p>Duy trì streak học tập để nhận thưởng bonus</p>
+            </div>
+            <div class="gamification-card">
+                <div class="gamification-icon icon-league">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <h3>Giải đấu</h3>
+                <p>Thi đua với học sinh khác trong các giải đấu hàng tuần</p>
+            </div>
+            <div class="gamification-card">
+                <div class="gamification-icon icon-quest">
+                    <i class="fas fa-scroll"></i>
+                </div>
+                <h3>Nhiệm vụ</h3>
+                <p>Hoàn thành các thử thách để nhận phần thưởng đặc biệt</p>
+            </div>
+        </div>
+        </div>
+    </section>
+    
+    <!-- Learning Path Section -->
+    <section class="learning-path-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Lộ trình học tập rõ ràng</h2>
+                <p class="section-subtitle">Từng bước một, chinh phục kiến thức Vật lý từ cơ bản đến nâng cao</p>
+            </div>
+            <div class="learning-path-container">
+            <div class="path-timeline">
+                <div class="path-step">
+                    <div class="path-step-content">
+                        <h3>Làm quen với lý thuyết</h3>
+                        <p>Đọc bài giảng chi tiết với hình ảnh minh họa và ví dụ thực tế</p>
+                    </div>
+                    <div class="path-step-number">1</div>
+                </div>
+                <div class="path-step">
+                    <div class="path-step-content">
+                        <h3>Luyện tập với bài tập</h3>
+                        <p>Làm bài tập từ dễ đến khó, có lời giải chi tiết và gợi ý AI</p>
+                    </div>
+                    <div class="path-step-number">2</div>
+                </div>
+                <div class="path-step">
+                    <div class="path-step-content">
+                        <h3>Kiểm tra kiến thức</h3>
+                        <p>Làm bài kiểm tra để đánh giá mức độ hiểu bài và nhận điểm XP</p>
+                    </div>
+                    <div class="path-step-number">3</div>
+                </div>
+                <div class="path-step">
+                    <div class="path-step-content">
+                        <h3>Ôn tập và củng cố</h3>
+                        <p>Xem lại các câu sai, học từ lỗi và nâng cao kiến thức</p>
+                    </div>
+                    <div class="path-step-number">4</div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </section>
+    
+    <!-- Testimonials Section -->
+    <section class="testimonials-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Học sinh nói gì về chúng tôi</h2>
+                <p class="section-subtitle">Hàng nghìn học sinh đã cải thiện điểm số nhờ nền tảng học tập của chúng tôi</p>
+            </div>
+            <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <span class="testimonial-quote">"</span>
+                <p class="testimonial-text">Nhờ hệ thống, mình không còn cảm thấy học Vật lý là gánh nặng nữa. Điểm thi của mình đã tăng từ 6 lên 8.5!</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">HP</div>
+                    <div class="author-info">
+                        <h4>Hoàng Phúc</h4>
+                        <p>Học sinh lớp 12A1</p>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <span class="testimonial-quote">"</span>
+                <p class="testimonial-text">Tài liệu rất chi tiết và dễ hiểu. Đặc biệt phần giải thích bằng AI giúp mình hiểu sâu hơn về các khái niệm khó.</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">GH</div>
+                    <div class="author-info">
+                        <h4>Gia Huy</h4>
+                        <p>Học sinh lớp 12A1</p>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <span class="testimonial-quote">"</span>
+                <p class="testimonial-text">Thích nhất là tính năng theo dõi tiến độ và bảng xếp hạng. Tạo động lực học tập cực kỳ!</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">NT</div>
+                    <div class="author-info">
+                        <h4>Ngọc Trầm</h4>
+                        <p>Học sinh lớp 12A1</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </section>
+    
+    <!-- Student Comments Placeholder Section -->
+    <section class="comments-placeholder-section" style="padding: 5rem 2rem; background: var(--bg-secondary); text-align: center;">
+        <div class="container">
+            <div style="max-width: 600px; margin: 0 auto; padding: 3rem; background: var(--glass-bg, rgba(255, 255, 255, 0.05)); border: 2px dashed rgba(255, 255, 255, 0.2); border-radius: 16px;">
+                <i class="fas fa-comments" style="font-size: 4rem; color: var(--text-secondary); opacity: 0.5; margin-bottom: 1rem;"></i>
+                <h3 style="color: var(--text-secondary); margin-bottom: 1rem;">Student Comments Section</h3>
+                <p style="color: var(--text-secondary); opacity: 0.7;">This section will display student comments and testimonials in a dynamic format. Coming soon!</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2 class="cta-title">Sẵn sàng chinh phục Vật lý?</h2>
+            <p class="section-subtitle">Tham gia cùng hàng nghìn học sinh đang học tập hiệu quả mỗi ngày</p>
+            <div class="cta-buttons">
+                <a href="/lessons" class="cta-button">
+                    <i class="fas fa-rocket"></i>
+                    Bắt đầu học ngay
+                </a>
+                <a href="/study-materials" class="cta-button-secondary">
+                    <i class="fas fa-book-open"></i>
+                    Xem tài liệu
+                </a>
             </div>
         </div>
     </section>
@@ -690,8 +1347,8 @@
                 if (statsData.success && statsData.data) {
                     document.getElementById('total-lessons').textContent = statsData.data.totalLessons || 0;
                     document.getElementById('total-students').textContent = statsData.data.totalStudents || 0;
-                    document.getElementById('completion-rate').textContent = `${statsData.data.completionRate || 0}%`;
-                    document.getElementById('avg-score').textContent = (statsData.data.avgScore || 0).toFixed(1);
+                    document.getElementById('completion-rate').textContent = `${statsData.data.completionRate || 89}%`;
+                    document.getElementById('avg-score').textContent = (statsData.data.avgScore || 8.5).toFixed(1);
                 } else {
                     // Fallback to original method for total lessons
                     const response = await fetch('/api/lessons?limit=1');

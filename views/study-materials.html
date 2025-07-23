@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tài liệu học tập - Học Vật Lý</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <style>
+        /* Page Specific Styles */
+        .materials-hero {
+            background: var(--gradient-primary);
+            padding: 4rem 0 3rem;
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .materials-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            animation: float 20s linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-20px, -20px); }
+        }
+
+        .materials-hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .materials-hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Controls Row */
+        .controls-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .grade-selector {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .grade-tab {
+            padding: 0.75rem 2rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+            color: var(--text-secondary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .grade-tab:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+
+        .grade-tab.active {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .materials-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .chapter-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all var(--transition-base);
+        }
+
+        .chapter-section:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .chapter-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+        }
+
+        .chapter-info {
+            flex: 1;
+        }
+
+        .chapter-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .chapter-description {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .chapter-toggle {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            transition: transform var(--transition-base);
+        }
+
+        .chapter-section.expanded .chapter-toggle {
+            transform: rotate(180deg);
+        }
+
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+
+        .chapter-section.expanded .topics-grid {
+            max-height: 1000px;
+        }
+
+        .topic-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .topic-card:hover {
+            background: var(--bg-hover);
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .topic-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .topic-title i {
+            color: var(--primary-color);
+        }
+
+        .topic-subtopics {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .topic-tag {
+            display: inline-block;
+            background: var(--primary-bg);
+            color: var(--primary-color);
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            margin-right: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .loading-spinner.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid var(--border-primary);
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Search Container */
+        .search-container {
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-box {
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-md);
+            padding: 0.6rem 1rem;
+            display: flex;
+            align-items: center;
+            transition: all var(--transition-base);
+        }
+
+        .search-box:focus-within {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .search-icon {
+            color: rgba(255, 255, 255, 0.4);
+            margin-right: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .clear-search {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            padding: 0.25rem;
+            margin-left: 0.5rem;
+            border-radius: var(--radius-sm);
+            transition: all var(--transition-base);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .clear-search:hover {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .search-results-info {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Highlight search matches */
+        .search-highlight {
+            background: rgba(99, 102, 241, 0.3);
+            color: var(--text-primary);
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+
+        .chapter-section.search-hidden {
+            display: none;
+        }
+
+        .topic-card.search-hidden {
+            display: none;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .materials-hero h1 {
+                font-size: 2rem;
+            }
+
+            .materials-hero p {
+                font-size: 1rem;
+                padding: 0 1rem;
+            }
+
+            .grade-selector {
+                padding: 0 1rem;
+            }
+
+            .grade-tab {
+                padding: 0.6rem 1.5rem;
+                font-size: 0.95rem;
+            }
+
+            .chapter-section {
+                padding: 1.5rem;
+            }
+
+            .chapter-title {
+                font-size: 1.25rem;
+            }
+
+            .topics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .controls-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+
+            .grade-selector {
+                justify-content: center;
+            }
+
+            .search-container {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <i class="fas fa-atom"></i>
+                <span>Học Vật Lý</span>
+            </a>
+
+            <div class="nav-links" id="nav-links">
+                <a href="/" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    <span>Trang chủ</span>
+                </a>
+                <a href="/lessons" class="nav-link">
+                    <i class="fas fa-book"></i>
+                    <span>Bài tập</span>
+                </a>
+                <a href="/study-materials" class="nav-link active">
+                    <i class="fas fa-book-open"></i>
+                    <span>Lý thuyết</span>
+                </a>
+                <a href="/leaderboard" class="nav-link">
+                    <i class="fas fa-trophy"></i>
+                    <span>Bảng xếp hạng</span>
+                </a>
+                <a href="/profile" class="nav-link" id="profile-link">
+                    <i class="fas fa-user"></i>
+                    <span>Hồ sơ</span>
+                </a>
+            </div>
+
+            <button class="mobile-menu-toggle nav-mobile-toggle" id="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="materials-container">
+            <!-- Controls Row -->
+            <div class="controls-row">
+                <!-- Grade Selector -->
+                <div class="grade-selector">
+                    <button class="grade-tab active" data-grade="10">
+                        <i class="fas fa-graduation-cap"></i>
+                        Lớp 10
+                    </button>
+                    <button class="grade-tab" data-grade="11">
+                        <i class="fas fa-graduation-cap"></i>
+                        Lớp 11
+                    </button>
+                    <button class="grade-tab" data-grade="12">
+                        <i class="fas fa-graduation-cap"></i>
+                        Lớp 12
+                    </button>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="search-container">
+                    <div class="search-box">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" 
+                               id="materials-search" 
+                               class="search-input" 
+                               placeholder="Tìm kiếm bài học, chủ đề..."
+                               autocomplete="off">
+                        <button id="clear-search" class="clear-search" style="display: none;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Search Results Info -->
+            <div class="search-results-info" id="search-results-info" style="display: none;">
+                <span id="search-results-count"></span>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div class="loading-spinner" id="loading-spinner">
+                <div class="spinner"></div>
+                <p>Đang tải tài liệu...</p>
+            </div>
+
+            <!-- Materials Content -->
+            <div id="materials-content">
+                <!-- Content will be dynamically loaded here -->
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="empty-state" style="display: none;">
+                <i class="fas fa-folder-open"></i>
+                <h3>Chưa có tài liệu</h3>
+                <p>Tài liệu cho lớp này đang được cập nhật</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="/js/nav-mobile.js"></script>
+    <script>
+        // Global variables
+        let currentGrade = 10;
+        let materialsData = {};
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            setupGradeTabs();
+            setupSearch();
+            loadMaterials(currentGrade);
+        });
+
+        // Setup grade tab clicks
+        function setupGradeTabs() {
+            const tabs = document.querySelectorAll('.grade-tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const grade = parseInt(tab.dataset.grade);
+                    if (grade !== currentGrade) {
+                        // Update active tab
+                        tabs.forEach(t => t.classList.remove('active'));
+                        tab.classList.add('active');
+                        
+                        // Load new grade materials
+                        currentGrade = grade;
+                        loadMaterials(grade);
+                    }
+                });
+            });
+        }
+
+        // Load materials for a specific grade
+        async function loadMaterials(grade) {
+            const spinner = document.getElementById('loading-spinner');
+            const content = document.getElementById('materials-content');
+            const emptyState = document.getElementById('empty-state');
+
+            // Show loading
+            spinner.classList.add('active');
+            content.innerHTML = '';
+            emptyState.style.display = 'none';
+
+            try {
+                const response = await fetch(`/api/materials/grade/${grade}`);
+                const data = await response.json();
+
+                if (data.success && data.materials && 
+                    (data.materials.chapters || data.materials.topics || data.materials.danh_sách_chương)) {
+                    materialsData[grade] = data.materials;
+                    renderMaterials(data.materials, grade);
+                } else {
+                    showEmptyState();
+                }
+            } catch (error) {
+                console.error('Error loading materials:', error);
+                showEmptyState();
+            } finally {
+                spinner.classList.remove('active');
+            }
+        }
+
+        // Render materials content
+        function renderMaterials(materials, grade) {
+            const content = document.getElementById('materials-content');
+            const emptyState = document.getElementById('empty-state');
+
+            // Handle different data structures for different grades
+            const sections = materials.chapters || materials.topics || materials.danh_sách_chương || [];
+            
+            if (sections.length === 0) {
+                showEmptyState();
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            
+            // For grade 11/12 structure (topics with subtopics in JSON files)
+            if (materials.topics) {
+                // Define file mappings for grade 11 with subtopics
+                const grade11FileMappings = {
+                    'dao-dong': [
+                        { 
+                            title: 'Dao động điều hòa', 
+                            file: 'bai-1-dao-dong-dieu-hoa',
+                            subtopics: ['Phương trình dao động', 'Chu kỳ', 'Tần số', 'Vận tốc', 'Gia tốc']
+                        },
+                        { 
+                            title: 'Con lắc lò xo', 
+                            file: 'bai-2-con-lac-lo-xo',
+                            subtopics: ['Lực kéo về', 'Năng lượng', 'Con lắc treo', 'Con lắc ngang']
+                        },
+                        { 
+                            title: 'Con lắc đơn', 
+                            file: 'bai-3-con-lac-don',
+                            subtopics: ['Chu kỳ con lắc', 'Phương trình dao động', 'Năng lượng', 'Ứng dụng']
+                        },
+                        { 
+                            title: 'Tổng hợp dao động', 
+                            file: 'bai-4-tong-hop-dao-dong',
+                            subtopics: ['Phương pháp giản đồ', 'Cùng phương', 'Cùng tần số', 'Độ lệch pha']
+                        }
+                    ],
+                    'song': [
+                        { 
+                            title: 'Sóng cơ và sự truyền sóng', 
+                            file: 'bai-1-song-co-va-su-truyen-song',
+                            subtopics: ['Bước sóng', 'Tần số sóng', 'Vận tốc truyền sóng', 'Phương trình sóng']
+                        },
+                        { 
+                            title: 'Giao thoa sóng', 
+                            file: 'bai-2-giao-thoa-song',
+                            subtopics: ['Hai nguồn kết hợp', 'Cực đại', 'Cực tiểu', 'Vân giao thoa']
+                        },
+                        { 
+                            title: 'Sóng dừng', 
+                            file: 'bai-3-song-dung',
+                            subtopics: ['Nút sóng', 'Bụng sóng', 'Điều kiện sóng dừng', 'Ứng dụng']
+                        },
+                        { 
+                            title: 'Sóng âm', 
+                            file: 'bai-4-song-am',
+                            subtopics: ['Đặc trưng âm', 'Cường độ âm', 'Mức cường độ âm', 'Nguồn âm']
+                        }
+                    ],
+                    'dien-truong': [
+                        { 
+                            title: 'Điện tích - Định luật Coulomb', 
+                            file: 'bai-1-dien-tich-dinh-luat-coulomb',
+                            subtopics: ['Điện tích', 'Lực Coulomb', 'Nguyên lý chồng chất', 'Hằng số điện môi']
+                        },
+                        { 
+                            title: 'Điện trường và cường độ điện trường', 
+                            file: 'bai-2-dien-truong-cuong-do-dien-truong',
+                            subtopics: ['Cường độ điện trường', 'Đường sức', 'Điện trường đều', 'Nguyên lý chồng chất']
+                        },
+                        { 
+                            title: 'Điện thế - Hiệu điện thế', 
+                            file: 'bai-3-dien-the-hieu-dien-the',
+                            subtopics: ['Công của lực điện', 'Điện thế', 'Hiệu điện thế', 'Liên hệ E và U']
+                        },
+                        { 
+                            title: 'Tụ điện', 
+                            file: 'bai-4-tu-dien',
+                            subtopics: ['Điện dung', 'Ghép tụ điện', 'Năng lượng tụ điện', 'Ứng dụng']
+                        }
+                    ],
+                    'dong-dien': [
+                        { 
+                            title: 'Dòng điện không đổi', 
+                            file: 'bai-1-dong-dien-khong-doi',
+                            subtopics: ['Cường độ dòng điện', 'Điện lượng', 'Chiều dòng điện', 'Tác dụng']
+                        },
+                        { 
+                            title: 'Điện trở - Định luật Ohm', 
+                            file: 'bai-2-dien-tro-dinh-luat-ohm',
+                            subtopics: ['Định luật Ohm', 'Điện trở', 'Ghép điện trở', 'Điện trở suất']
+                        },
+                        { 
+                            title: 'Nguồn điện', 
+                            file: 'bai-3-nguon-dien',
+                            subtopics: ['Suất điện động', 'Điện trở trong', 'Ghép nguồn', 'Hiệu suất']
+                        },
+                        { 
+                            title: 'Dòng điện trong các môi trường', 
+                            file: 'bai-4-dong-dien-trong-cac-moi-truong',
+                            subtopics: ['Kim loại', 'Chất điện phân', 'Chất khí', 'Chân không']
+                        }
+                    ]
+                };
+                
+                content.innerHTML = sections.map((topic, index) => {
+                    // Get file mappings for this topic
+                    const topicFiles = grade11FileMappings[topic.id] || [];
+                    
+                    return `
+                        <div class="chapter-section expanded" id="chapter-${topic.id}">
+                            <div class="chapter-header" onclick="toggleChapter('${topic.id}')">
+                                <div class="chapter-info">
+                                    <h3 class="chapter-title">${topic.name}</h3>
+                                    <p class="chapter-description">${topic.description}</p>
+                                </div>
+                                <i class="fas fa-chevron-down chapter-toggle"></i>
+                            </div>
+                            <div class="topics-grid">
+                                ${topicFiles.map(item => `
+                                    <a href="/materials/grade${grade}/${topic.id}/${item.file}" 
+                                       class="topic-card">
+                                        <h4 class="topic-title">
+                                            <i class="fas fa-file-alt"></i>
+                                            ${item.title}
+                                        </h4>
+                                        <div class="topic-subtopics">
+                                            ${item.subtopics.map(subtopic => 
+                                                `<span class="topic-tag">${subtopic}</span>`
+                                            ).join('')}
+                                        </div>
+                                    </a>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else if (materials.danh_sách_chương) {
+                // For grade 10/12 Vietnamese structure
+                content.innerHTML = sections.map((chapter, index) => {
+                    const chapterId = chapter.folder || chapter.id;
+                    return `
+                    <div class="chapter-section expanded" id="chapter-${chapterId}">
+                        <div class="chapter-header" onclick="toggleChapter('${chapterId}')">
+                            <div class="chapter-info">
+                                <h3 class="chapter-title">${chapter.tên || chapter.title}</h3>
+                                <p class="chapter-description">${chapter.nội_dung_chính ? chapter.nội_dung_chính.join(', ') : ''}</p>
+                            </div>
+                            <i class="fas fa-chevron-down chapter-toggle"></i>
+                        </div>
+                        <div class="topics-grid">
+                            ${renderTopicsForVietnameseStructure(grade, chapter)}
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+                
+                // All chapters are expanded by default
+            } else {
+                // For generic structure (chapters with topics)
+                content.innerHTML = sections.map((chapter, index) => `
+                    <div class="chapter-section expanded" id="chapter-${chapter.id}">
+                        <div class="chapter-header" onclick="toggleChapter('${chapter.id}')">
+                            <div class="chapter-info">
+                                <h3 class="chapter-title">${chapter.title}</h3>
+                                <p class="chapter-description">${chapter.description}</p>
+                            </div>
+                            <i class="fas fa-chevron-down chapter-toggle"></i>
+                        </div>
+                        <div class="topics-grid">
+                            ${chapter.topics.map(topic => `
+                                <a href="/materials/grade${currentGrade}/${chapter.id}/${topic.file.replace('.json', '').replace('.html', '')}" 
+                                   class="topic-card">
+                                    <h4 class="topic-title">
+                                        <i class="fas fa-file-alt"></i>
+                                        ${topic.title}
+                                    </h4>
+                                    <div class="topic-subtopics">
+                                        ${topic.subtopics.map(subtopic => 
+                                            `<span class="topic-tag">${subtopic}</span>`
+                                        ).join('')}
+                                    </div>
+                                </a>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('');
+
+                // All chapters are expanded by default
+            }
+        }
+
+        // Toggle chapter expansion
+        function toggleChapter(chapterId) {
+            const chapter = document.getElementById(`chapter-${chapterId}`);
+            if (chapter) {
+                chapter.classList.toggle('expanded');
+            }
+        }
+
+        // Show empty state
+        function showEmptyState() {
+            document.getElementById('empty-state').style.display = 'block';
+        }
+
+        // Helper function to render topics for Vietnamese structure
+        function renderTopicsForVietnameseStructure(grade, chapter) {
+            // For grade 10/12, we need to generate topic links based on the chapter structure
+            const chapterFolder = chapter.folder;
+            
+            // Define topic details for grade 12
+            const grade12Topics = {
+                'dao-dong-co': [
+                    {
+                        title: 'Dao động điều hòa',
+                        file: 'bai-1-dao-dong-dieu-hoa',
+                        subtopics: ['Phương trình dao động', 'Li độ, vận tốc, gia tốc', 'Chu kỳ, tần số', 'Đồ thị dao động']
+                    },
+                    {
+                        title: 'Con lắc lò xo',
+                        file: 'bai-2-con-lac-lo-xo',
+                        subtopics: ['Chu kỳ, tần số', 'Năng lượng dao động', 'Con lắc treo thẳng đứng', 'Con lắc ngang']
+                    },
+                    {
+                        title: 'Con lắc đơn',
+                        file: 'bai-3-con-lac-don',
+                        subtopics: ['Phương trình dao động', 'Chu kỳ con lắc đơn', 'Năng lượng con lắc', 'Con lắc vật lý']
+                    },
+                    {
+                        title: 'Dao động tắt dần, dao động cưỡng bức',
+                        file: 'bai-4-dao-dong-tat-dan-cuong-buc',
+                        subtopics: ['Dao động tắt dần', 'Dao động duy trì', 'Dao động cưỡng bức', 'Hiện tượng cộng hưởng']
+                    }
+                ],
+                'song-co-song-am': [
+                    {
+                        title: 'Sóng cơ và sự truyền sóng',
+                        file: 'song_co_va_su_truyen_song',
+                        subtopics: ['Khái niệm sóng cơ', 'Phương trình sóng', 'Bước sóng', 'Tốc độ truyền sóng']
+                    },
+                    {
+                        title: 'Giao thoa sóng',
+                        file: 'giao_thoa_song',
+                        subtopics: ['Hiện tượng giao thoa', 'Hai nguồn kết hợp', 'Vân giao thoa', 'Điều kiện cực đại, cực tiểu']
+                    },
+                    {
+                        title: 'Sóng dừng',
+                        file: 'song_dung',
+                        subtopics: ['Phản xạ sóng', 'Sóng dừng trên dây', 'Điều kiện có sóng dừng', 'Ứng dụng']
+                    },
+                    {
+                        title: 'Sóng âm',
+                        file: 'song_am',
+                        subtopics: ['Đặc trưng vật lý', 'Đặc trưng sinh lý', 'Cường độ âm', 'Mức cường độ âm']
+                    },
+                    {
+                        title: 'Hiệu ứng Doppler',
+                        file: 'hieu_ung_doppler',
+                        subtopics: ['Nguồn âm chuyển động', 'Người nghe chuyển động', 'Công thức Doppler', 'Ứng dụng']
+                    }
+                ],
+                'dien-xoay-chieu': [
+                    {
+                        title: 'Đại cương về dòng điện xoay chiều',
+                        file: 'bai-1-dai-cuong-dong-dien-xoay-chieu',
+                        subtopics: ['Nguyên tắc tạo ra', 'Giá trị hiệu dụng', 'Biểu diễn bằng vectơ quay', 'Phương trình']
+                    },
+                    {
+                        title: 'Các mạch điện xoay chiều',
+                        file: 'bai-2-cac-mach-dien-xoay-chieu',
+                        subtopics: ['Mạch R', 'Mạch L', 'Mạch C', 'Mạch RLC nối tiếp']
+                    },
+                    {
+                        title: 'Công suất điện xoay chiều',
+                        file: 'bai-3-cong-suat-dien-xoay-chieu',
+                        subtopics: ['Công suất tức thời', 'Công suất trung bình', 'Hệ số công suất', 'Nâng cao hệ số công suất']
+                    },
+                    {
+                        title: 'Máy biến áp và truyền tải điện năng',
+                        file: 'bai-4-may-bien-ap-truyen-tai-dien-nang',
+                        subtopics: ['Cấu tạo máy biến áp', 'Nguyên lý hoạt động', 'Truyền tải điện năng', 'Hiệu suất truyền tải']
+                    }
+                ],
+                'dao-dong-dien-tu': [
+                    {
+                        title: 'Mạch dao động LC',
+                        file: 'bai-1-mach-dao-dong-lc',
+                        subtopics: ['Mạch dao động', 'Dao động điện từ tự do', 'Năng lượng điện từ', 'Chu kỳ, tần số']
+                    },
+                    {
+                        title: 'Điện từ trường',
+                        file: 'bai-2-dien-tu-truong',
+                        subtopics: ['Điện trường biến thiên', 'Từ trường biến thiên', 'Điện từ trường', 'Thuyết Maxwell']
+                    },
+                    {
+                        title: 'Sóng điện từ',
+                        file: 'bai-3-song-dien-tu',
+                        subtopics: ['Đặc điểm sóng điện từ', 'Thang sóng điện từ', 'Truyền thông tin', 'Ứng dụng']
+                    }
+                ],
+                'song-anh-sang': [
+                    {
+                        title: 'Tán sắc ánh sáng',
+                        file: 'bai-1-tan-sac-anh-sang',
+                        subtopics: ['Hiện tượng tán sắc', 'Ánh sáng trắng', 'Chiết suất', 'Quang phổ']
+                    },
+                    {
+                        title: 'Giao thoa ánh sáng',
+                        file: 'bai-2-giao-thoa-anh-sang',
+                        subtopics: ['Thí nghiệm Young', 'Vân giao thoa', 'Khoảng vân', 'Ánh sáng đơn sắc']
+                    },
+                    {
+                        title: 'Nhiễu xạ ánh sáng',
+                        file: 'bai-3-nhieu-xa-anh-sang',
+                        subtopics: ['Hiện tượng nhiễu xạ', 'Nhiễu xạ qua khe hẹp', 'Cách tử nhiễu xạ', 'Ứng dụng']
+                    },
+                    {
+                        title: 'Quang phổ',
+                        file: 'bai-4-quang-pho',
+                        subtopics: ['Quang phổ liên tục', 'Quang phổ vạch', 'Quang phổ hấp thụ', 'Phân tích quang phổ']
+                    }
+                ],
+                'luong-tu-anh-sang': [
+                    {
+                        title: 'Hiện tượng quang điện trong',
+                        file: 'bai-2-hien-tuong-quang-dien-trong',
+                        subtopics: ['Chất quang dẫn', 'Quang điện trở', 'Pin quang điện', 'Ứng dụng']
+                    },
+                    {
+                        title: 'Quang phổ vạch nguyên tử hydro',
+                        file: 'bai-3-quang-pho-vach-nguyen-tu-hydro',
+                        subtopics: ['Mẫu nguyên tử Bohr', 'Quang phổ hydro', 'Các dãy quang phổ', 'Năng lượng ion hóa']
+                    },
+                    {
+                        title: 'Hiện tượng quang phát quang - Laser',
+                        file: 'bai-4-hien-tuong-quang-phat-quang-laser',
+                        subtopics: ['Huỳnh quang', 'Lân quang', 'Nguyên lý laser', 'Ứng dụng laser']
+                    }
+                ],
+                'hat-nhan-nguyen-tu': [
+                    {
+                        title: 'Tính chất và cấu tạo hạt nhân',
+                        file: 'bai-1-tinh-chat-va-cau-tao-hat-nhan',
+                        subtopics: ['Cấu tạo hạt nhân', 'Ký hiệu hạt nhân', 'Đồng vị', 'Đơn vị khối lượng nguyên tử']
+                    },
+                    {
+                        title: 'Năng lượng liên kết hạt nhân',
+                        file: 'bai-2-nang-luong-lien-ket-hat-nhan',
+                        subtopics: ['Độ hụt khối', 'Năng lượng liên kết', 'Năng lượng liên kết riêng', 'Độ bền hạt nhân']
+                    },
+                    {
+                        title: 'Phóng xạ',
+                        file: 'bai-3-phong-xa',
+                        subtopics: ['Định luật phóng xạ', 'Chu kỳ bán rã', 'Các tia phóng xạ', 'Ứng dụng phóng xạ']
+                    },
+                    {
+                        title: 'Phản ứng hạt nhân',
+                        file: 'bai-4-phan-ung-hat-nhan',
+                        subtopics: ['Phản ứng hạt nhân', 'Định luật bảo toàn', 'Phân hạch', 'Nhiệt hạch']
+                    }
+                ]
+            };
+            
+            // Get the topics for this chapter
+            if (grade === 12 && grade12Topics[chapterFolder]) {
+                const topics = grade12Topics[chapterFolder];
+                return topics.map(topic => `
+                    <a href="/materials/grade${grade}/${chapterFolder}/${topic.file}" 
+                       class="topic-card">
+                        <h4 class="topic-title">
+                            <i class="fas fa-file-alt"></i>
+                            ${topic.title}
+                        </h4>
+                        <div class="topic-subtopics">
+                            ${topic.subtopics.map(subtopic => 
+                                `<span class="topic-tag">${subtopic}</span>`
+                            ).join('')}
+                        </div>
+                    </a>
+                `).join('');
+            }
+            
+            // Fallback for chapters without detailed info
+            if (chapter.nội_dung_chính && chapter.nội_dung_chính.length > 0) {
+                return chapter.nội_dung_chính.map((topic, idx) => {
+                    const filename = `bai-${idx + 1}-${topic.toLowerCase()
+                        .replace(/[,\.]/g, '')
+                        .replace(/\s+/g, '-')
+                        .replace(/[àáạảãâầấậẩẫăằắặẳẵ]/g, 'a')
+                        .replace(/[èéẹẻẽêềếệểễ]/g, 'e')
+                        .replace(/[ìíịỉĩ]/g, 'i')
+                        .replace(/[òóọỏõôồốộổỗơờớợởỡ]/g, 'o')
+                        .replace(/[ùúụủũưừứựửữ]/g, 'u')
+                        .replace(/[ỳýỵỷỹ]/g, 'y')
+                        .replace(/[đ]/g, 'd')}`;
+                    
+                    return `
+                        <a href="/materials/grade${grade}/${chapterFolder}/${filename}" 
+                           class="topic-card">
+                            <h4 class="topic-title">
+                                <i class="fas fa-file-alt"></i>
+                                ${topic}
+                            </h4>
+                        </a>
+                    `;
+                }).join('');
+            }
+            return '<p class="no-topics">Chưa có bài học</p>';
+        }
+
+        // Setup search functionality
+        function setupSearch() {
+            const searchInput = document.getElementById('materials-search');
+            const clearButton = document.getElementById('clear-search');
+            const searchInfo = document.getElementById('search-results-info');
+            const searchCount = document.getElementById('search-results-count');
+
+            let searchTimeout;
+
+            // Search input handler
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                const query = e.target.value.trim();
+
+                // Show/hide clear button
+                clearButton.style.display = query ? 'flex' : 'none';
+
+                // Debounce search
+                searchTimeout = setTimeout(() => {
+                    performSearch(query);
+                }, 300);
+            });
+
+            // Clear search handler
+            clearButton.addEventListener('click', () => {
+                searchInput.value = '';
+                clearButton.style.display = 'none';
+                performSearch('');
+            });
+
+            // Enter key handler
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    clearTimeout(searchTimeout);
+                    performSearch(searchInput.value.trim());
+                }
+            });
+        }
+
+        // Perform search
+        function performSearch(query) {
+            const searchInfo = document.getElementById('search-results-info');
+            const searchCount = document.getElementById('search-results-count');
+            const chapters = document.querySelectorAll('.chapter-section');
+            
+            if (!query) {
+                // Reset search - show all
+                chapters.forEach(chapter => {
+                    chapter.classList.remove('search-hidden');
+                    const topics = chapter.querySelectorAll('.topic-card');
+                    topics.forEach(topic => {
+                        topic.classList.remove('search-hidden');
+                        // Remove highlights
+                        removeHighlights(topic);
+                    });
+                });
+                searchInfo.style.display = 'none';
+                return;
+            }
+
+            // Normalize search query
+            const normalizedQuery = normalizeVietnamese(query.toLowerCase());
+            let totalMatches = 0;
+            let matchedChapters = 0;
+
+            chapters.forEach(chapter => {
+                let chapterHasMatch = false;
+                const chapterTitle = chapter.querySelector('.chapter-title');
+                const chapterDesc = chapter.querySelector('.chapter-description');
+                const topics = chapter.querySelectorAll('.topic-card');
+
+                // Check chapter title and description
+                const chapterTitleText = normalizeVietnamese(chapterTitle.textContent.toLowerCase());
+                const chapterDescText = normalizeVietnamese(chapterDesc.textContent.toLowerCase());
+                
+                if (chapterTitleText.includes(normalizedQuery) || chapterDescText.includes(normalizedQuery)) {
+                    chapterHasMatch = true;
+                    // Highlight matches in chapter
+                    highlightText(chapterTitle, query);
+                    highlightText(chapterDesc, query);
+                } else {
+                    removeHighlights(chapterTitle);
+                    removeHighlights(chapterDesc);
+                }
+
+                // Check topics
+                topics.forEach(topic => {
+                    const topicTitle = topic.querySelector('.topic-title');
+                    const topicTags = topic.querySelectorAll('.topic-tag');
+                    
+                    const topicTitleText = normalizeVietnamese(topicTitle.textContent.toLowerCase());
+                    let topicHasMatch = topicTitleText.includes(normalizedQuery);
+
+                    // Check tags
+                    topicTags.forEach(tag => {
+                        const tagText = normalizeVietnamese(tag.textContent.toLowerCase());
+                        if (tagText.includes(normalizedQuery)) {
+                            topicHasMatch = true;
+                            highlightText(tag, query);
+                        } else {
+                            removeHighlights(tag);
+                        }
+                    });
+
+                    if (topicHasMatch) {
+                        topic.classList.remove('search-hidden');
+                        highlightText(topicTitle, query);
+                        totalMatches++;
+                        chapterHasMatch = true;
+                    } else {
+                        topic.classList.add('search-hidden');
+                        removeHighlights(topicTitle);
+                    }
+                });
+
+                // Show/hide chapter based on matches
+                if (chapterHasMatch) {
+                    chapter.classList.remove('search-hidden');
+                    matchedChapters++;
+                } else {
+                    chapter.classList.add('search-hidden');
+                }
+            });
+
+            // Update search results info
+            if (totalMatches > 0) {
+                searchCount.textContent = `Tìm thấy ${totalMatches} bài học trong ${matchedChapters} chương`;
+                searchInfo.style.display = 'block';
+            } else {
+                searchCount.textContent = 'Không tìm thấy kết quả phù hợp';
+                searchInfo.style.display = 'block';
+            }
+        }
+
+        // Normalize Vietnamese text for search
+        function normalizeVietnamese(text) {
+            return text
+                .replace(/[àáạảãâầấậẩẫăằắặẳẵ]/g, 'a')
+                .replace(/[èéẹẻẽêềếệểễ]/g, 'e')
+                .replace(/[ìíịỉĩ]/g, 'i')
+                .replace(/[òóọỏõôồốộổỗơờớợởỡ]/g, 'o')
+                .replace(/[ùúụủũưừứựửữ]/g, 'u')
+                .replace(/[ỳýỵỷỹ]/g, 'y')
+                .replace(/[đ]/g, 'd')
+                .replace(/[ÀÁẠẢÃÂẦẤẬẨẪĂẰẮẶẲẴ]/g, 'A')
+                .replace(/[ÈÉẸẺẼÊỀẾỆỂỄ]/g, 'E')
+                .replace(/[ÌÍỊỈĨ]/g, 'I')
+                .replace(/[ÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠ]/g, 'O')
+                .replace(/[ÙÚỤỦŨƯỪỨỰỬỮ]/g, 'U')
+                .replace(/[ỲÝỴỶỸ]/g, 'Y')
+                .replace(/[Đ]/g, 'D');
+        }
+
+        // Highlight matching text
+        function highlightText(element, query) {
+            if (!query) return;
+            
+            // Remove existing highlights
+            removeHighlights(element);
+            
+            const text = element.textContent;
+            const regex = new RegExp(`(${escapeRegex(query)})`, 'gi');
+            
+            // Only highlight text nodes, not icons
+            const walker = document.createTreeWalker(
+                element,
+                NodeFilter.SHOW_TEXT,
+                null,
+                false
+            );
+
+            const textNodes = [];
+            let node;
+            while (node = walker.nextNode()) {
+                textNodes.push(node);
+            }
+
+            textNodes.forEach(textNode => {
+                const matches = textNode.textContent.match(regex);
+                if (matches) {
+                    const span = document.createElement('span');
+                    span.innerHTML = textNode.textContent.replace(regex, '<span class="search-highlight">$1</span>');
+                    textNode.parentNode.replaceChild(span, textNode);
+                }
+            });
+        }
+
+        // Remove highlights
+        function removeHighlights(element) {
+            const highlights = element.querySelectorAll('.search-highlight');
+            highlights.forEach(highlight => {
+                const parent = highlight.parentNode;
+                parent.replaceChild(document.createTextNode(highlight.textContent), highlight);
+                parent.normalize();
+            });
+        }
+
+        // Escape regex special characters
+        function escapeRegex(str) {
+            return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+    </script>
+</body>
+
+</html>

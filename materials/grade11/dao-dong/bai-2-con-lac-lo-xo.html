@@ -5,97 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Con lắc lò xo - Vật lý 11</title>
     <meta name="description" content="Con lắc lò xo là hệ dao động điều hòa điển hình. Tìm hiểu về cấu tạo, phương trình dao động, chu kỳ, năng lượng và các bài tập về con lắc lò xo.">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 16px;
-            line-height: 1.6;
-            color: #333;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        h1 {
-            color: #1e293b;
-            font-size: 32px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 10px;
-        }
-        h2 {
-            color: #334155;
-            font-size: 24px;
-            margin-top: 30px;
-            margin-bottom: 15px;
-        }
-        h3 {
-            color: #475569;
-            font-size: 20px;
-            margin-top: 20px;
-            margin-bottom: 10px;
-        }
-        .quote {
-            background: #f0f9ff;
-            border-left: 4px solid #0284c7;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
-        }
-        .formula {
-            background: #fef3c7;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 4px;
-            text-align: center;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        .example {
-            background: #f3f4f6;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
-            border: 1px solid #d1d5db;
-        }
-        .important {
-            background: #fee2e2;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
-            border-left: 4px solid #ef4444;
-        }
-        img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-            margin: 20px auto;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        table th, table td {
-            border: 1px solid #e5e7eb;
-            padding: 10px;
-            text-align: left;
-        }
-        table th {
-            background: #f9fafb;
-            font-weight: bold;
-        }
-        .formula-box {
-            background: #ecfdf5;
-            border: 2px solid #10b981;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 8px;
-        }
-        .formula-box h4 {
-            margin-top: 0;
-            color: #059669;
-        }
-    </style>
+    
+
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
     <h1>Con lắc lò xo - Vật lý 11</h1>
@@ -113,7 +25,7 @@
     </ul>
 
     <h3>b) Các loại con lắc lò xo</h3>
-    <div class="example">
+    <div class="example-box">
         <ul>
             <li><strong>Con lắc lò xo ngang</strong>: Vật dao động trên mặt phẳng ngang, không có ma sát</li>
             <li><strong>Con lắc lò xo thẳng đứng</strong>: Vật dao động theo phương thẳng đứng</li>
@@ -126,7 +38,7 @@
     <h3>a) Lực phục hồi</h3>
     <p>Khi vật ở li độ x so với vị trí cân bằng, lò xo biến dạng một đoạn |x|. Lực đàn hồi của lò xo:</p>
     
-    <div class="formula">
+    <div class="formula-box">
         F = -kx
     </div>
     
@@ -135,18 +47,18 @@
     <h3>b) Phương trình vi phân dao động</h3>
     <p>Áp dụng định luật II Newton:</p>
     
-    <div class="formula">
+    <div class="formula-box">
         ma = -kx → a = -(k/m)x
     </div>
     
     <p>So sánh với a = -ω²x, ta được:</p>
     
-    <div class="formula">
+    <div class="formula-box">
         ω = √(k/m)
     </div>
 
     <h3>c) Phương trình dao động</h3>
-    <div class="formula">
+    <div class="formula-box">
         x = A.cos(ωt + φ)
     </div>
     
@@ -156,17 +68,17 @@
 
     <div class="formula-box">
         <h4>Công thức chu kỳ con lắc lò xo:</h4>
-        <div class="formula">
+        <div class="formula-box">
             T = 2π/ω = 2π√(m/k)
         </div>
         
         <h4>Công thức tần số:</h4>
-        <div class="formula">
+        <div class="formula-box">
             f = 1/T = (1/2π)√(k/m)
         </div>
     </div>
 
-    <div class="important">
+    <div class="important-formula">
         <strong>Nhận xét quan trọng:</strong>
         <ul>
             <li>Chu kỳ T chỉ phụ thuộc vào m và k, không phụ thuộc vào biên độ A</li>
@@ -181,7 +93,7 @@
     <h3>a) Vị trí cân bằng</h3>
     <p>Tại vị trí cân bằng, trọng lực cân bằng với lực đàn hồi:</p>
     
-    <div class="formula">
+    <div class="formula-box">
         mg = k.Δl₀ → Δl₀ = mg/k
     </div>
     
@@ -190,7 +102,7 @@
     <h3>b) Phương trình dao động</h3>
     <p>Chọn gốc tọa độ tại vị trí cân bằng, chiều dương hướng xuống:</p>
     
-    <div class="formula">
+    <div class="formula-box">
         x = A.cos(ωt + φ)
     </div>
     
@@ -223,24 +135,24 @@
     <h2>5. Năng lượng của con lắc lò xo</h2>
 
     <h3>a) Động năng</h3>
-    <div class="formula">
+    <div class="formula-box">
         W<sub>đ</sub> = ½mv² = ½mω²A²sin²(ωt + φ)
     </div>
 
     <h3>b) Thế năng đàn hồi</h3>
-    <div class="formula">
+    <div class="formula-box">
         W<sub>t</sub> = ½kx² = ½kA²cos²(ωt + φ)
     </div>
 
     <h3>c) Cơ năng</h3>
     <div class="formula-box">
         <h4>Cơ năng toàn phần:</h4>
-        <div class="formula">
+        <div class="formula-box">
             W = W<sub>đ</sub> + W<sub>t</sub> = ½kA² = ½mω²A² = const
         </div>
     </div>
 
-    <div class="important">
+    <div class="important-formula">
         <strong>Đặc điểm năng lượng:</strong>
         <ul>
             <li>Cơ năng được bảo toàn (nếu bỏ qua ma sát)</li>
@@ -254,7 +166,7 @@
     <h2>6. Các dạng bài tập thường gặp</h2>
 
     <h3>Dạng 1: Xác định chu kỳ, tần số</h3>
-    <div class="example">
+    <div class="example-box">
         <strong>Ví dụ 1:</strong> Con lắc lò xo có k = 100 N/m, m = 250g. Tính chu kỳ dao động.
         <br><br>
         <strong>Giải:</strong><br>
@@ -263,7 +175,7 @@
     </div>
 
     <h3>Dạng 2: Con lắc lò xo thẳng đứng</h3>
-    <div class="example">
+    <div class="example-box">
         <strong>Ví dụ 2:</strong> Con lắc lò xo thẳng đứng, tại VTCB lò xo giãn 10cm. Lấy g = 10 m/s². Tính chu kỳ dao động.
         <br><br>
         <strong>Giải:</strong><br>
@@ -274,7 +186,7 @@
     </div>
 
     <h3>Dạng 3: Năng lượng dao động</h3>
-    <div class="example">
+    <div class="example-box">
         <strong>Ví dụ 3:</strong> Con lắc lò xo dao động với biên độ A = 5cm, k = 200 N/m. Tính:
         <ul>
             <li>a) Cơ năng của con lắc</li>
@@ -293,7 +205,7 @@
 
     <h2>7. Một số lưu ý khi giải bài tập</h2>
 
-    <div class="quote">
+    <div class="definition-box">
         <strong>Kinh nghiệm giải bài:</strong>
         <ul>
             <li>Đổi đơn vị: khối lượng về kg, độ cứng về N/m</li>
@@ -315,7 +227,7 @@
         <li><strong>Bộ phận đàn hồi trong máy móc</strong>: Tạo lực ép, lực kéo về</li>
     </ul>
 
-    <div class="important">
+    <div class="important-formula">
         <strong>Tổng kết:</strong> Con lắc lò xo là mô hình dao động điều hòa cơ bản. Cần nắm vững công thức T = 2π√(m/k) và các đặc điểm riêng của từng loại con lắc lò xo để giải quyết bài tập hiệu quả.
     </div>
 </body>
