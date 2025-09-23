@@ -438,29 +438,51 @@
         paginationControls.appendChild(pageInfo);
     }
     
+    async function fetchCSRFToken() {
+        const response = await fetch('/api/csrf-token', { credentials: 'include' });
+        if (!response.ok) {
+            throw new Error('Failed to fetch CSRF token');
+        }
+
+        const data = await response.json();
+        if (!data || !data.csrfToken) {
+            throw new Error('Missing CSRF token in response');
+        }
+
+        return data.csrfToken;
+    }
+
     async function approveStudent(studentId) {
         if (!confirm('Xác nhận chấp nhận học sinh này?')) {
             return;
         }
-        
+
         showLoader(true);
         try {
-            const response = await fetch(`/api/admin/approve-student/${studentId}`, {
+            const csrfToken = await fetchCSRFToken();
+
+            const response = await fetch(`/api/admin/students/${studentId}/approve`, {
                 method: 'POST',
-                credentials: 'include'
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-csrf-token': csrfToken
+                },
+                body: JSON.stringify({ csrfToken })
             });
-            
+
             if (!response.ok) {
                 if (response.status === 401) {
                     alert('Phiên đăng nhập quản trị viên đã hết hạn. Vui lòng đăng nhập lại.');
                     window.location.href = '/admin/login';
                     return;
                 }
-                throw new Error('Failed to approve student');
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || 'Failed to approve student');
             }
-            
+
             const result = await response.json();
-            
+
             if (result.success) {
                 alert('Đã duyệt học sinh thành công.');
                 loadData();
@@ -469,35 +491,43 @@
             }
         } catch (error) {
             console.error('Error approving student:', error);
-            alert('Lỗi khi duyệt học sinh.');
+            alert('Lỗi khi duyệt học sinh: ' + error.message);
         } finally {
             showLoader(false);
         }
     }
-    
+
     async function rejectStudent(studentId) {
         if (!confirm('Bạn có chắc chắn muốn từ chối yêu cầu đăng ký này không?')) {
             return;
         }
-        
+
         showLoader(true);
         try {
-            const response = await fetch(`/api/admin/reject-student/${studentId}`, {
-                method: 'DELETE',
-                credentials: 'include'
+            const csrfToken = await fetchCSRFToken();
+
+            const response = await fetch(`/api/admin/students/${studentId}/reject`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-csrf-token': csrfToken
+                },
+                body: JSON.stringify({ csrfToken })
             });
-            
+
             if (!response.ok) {
                 if (response.status === 401) {
                     alert('Phiên đăng nhập quản trị viên đã hết hạn. Vui lòng đăng nhập lại.');
                     window.location.href = '/admin/login';
                     return;
                 }
-                throw new Error('Failed to reject student');
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || 'Failed to reject student');
             }
-            
+
             const result = await response.json();
-            
+
             if (result.success) {
                 alert('Đã từ chối yêu cầu đăng ký.');
                 loadData();
@@ -506,7 +536,7 @@
             }
         } catch (error) {
             console.error('Error rejecting student:', error);
-            alert('Lỗi khi từ chối yêu cầu đăng ký.');
+            alert('Lỗi khi từ chối yêu cầu đăng ký: ' + error.message);
         } finally {
             showLoader(false);
         }
