@@ -419,14 +419,25 @@
             }
 
             try {
+                const csrfResponse = await fetch('/api/csrf-token');
+                if (!csrfResponse.ok) {
+                    throw new Error('Không thể lấy CSRF token');
+                }
+
+                const { csrfToken } = await csrfResponse.json();
+
                 const response = await fetch('/api/auth/student/register', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': csrfToken
+                    },
                     body: JSON.stringify({
                         full_name: document.getElementById('full_name').value,
                         date_of_birth: document.getElementById('date_of_birth').value || null,
                         phone_number: document.getElementById('phone_number').value,
-                        password: password
+                        password: password,
+                        csrfToken
                     })
                 });
 
@@ -451,7 +462,10 @@
                 }
             } catch (error) {
                 console.error('Registration error:', error);
-                messageDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Đã xảy ra lỗi trong quá trình đăng ký. Vui lòng thử lại.';
+                const errorMessage = error?.message === 'Không thể lấy CSRF token'
+                    ? 'Không thể kết nối tới máy chủ bảo mật. Vui lòng tải lại trang và thử lại.'
+                    : 'Đã xảy ra lỗi trong quá trình đăng ký. Vui lòng thử lại.';
+                messageDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${errorMessage}`;
                 messageDiv.className = 'message error-message';
                 messageDiv.style.display = 'flex';
             } finally {
