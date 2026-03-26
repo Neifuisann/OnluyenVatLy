@@ -1,6 +1,13 @@
 // Store chart instance globally
 let scoreChartInstance = null;
 
+// Helper to format question text
+function formatQuestionContent(text) {
+    if (!text) return '';
+    // Replace [img src="..."] with actual img tags
+    return text.replace(/\[img\s+src=["']([^"']+)["']\]/gi, '<br><img src="$1" alt="Question" style="max-width: 100%; max-height: 200px; display: block; margin-top: 10px; border-radius: 6px;">');
+}
+
 async function loadStatistics() {
     try {
         // Extract lesson ID from URL path like /admin/lessons/1744597118421/statistics
@@ -128,7 +135,7 @@ async function loadStatistics() {
                     ${defaultStats.questionStats.map((q, idx) => `
                         <tr>
                             <td>${idx + 1}</td>
-                            <td>${q.question}</td>
+                            <td>${formatQuestionContent(q.question)}</td>
                             <td>${q.totalStudents}</td>
                             <td>${q.completed}</td>
                             <td>${q.notCompleted}</td>
@@ -139,10 +146,30 @@ async function loadStatistics() {
                     `).join('')}
                 </tbody>
             `;
+
+            // Wait a moment for KaTeX to be fully loaded if deferred, then render math
+            setTimeout(() => {
+                if (window.renderMathInElement) {
+                    try {
+                        renderMathInElement(questionTable, {
+                            delimiters: [
+                                {left: '$$', right: '$$', display: true},
+                                {left: '$', right: '$', display: false},
+                                {left: '\\(', right: '\\)', display: false},
+                                {left: '\\[', right: '\\]', display: true}
+                            ],
+                            throwOnError: false
+                        });
+                    } catch (e) {
+                        console.error('KaTeX rendering error in statistics:', e);
+                    }
+                }
+            }, 500);
         }
 
         const transcriptsTable = document.getElementById('transcripts');
         if (transcriptsTable) {
+            const transcriptData = defaultStats.transcripts || defaultStats.topScorers || [];
             transcriptsTable.innerHTML = `
                 <thead>
                     <tr>
@@ -153,14 +180,18 @@ async function loadStatistics() {
                     </tr>
                 </thead>
                 <tbody>
-                    ${(defaultStats.transcripts || defaultStats.topScorers || []).map((t, idx) => `
+                    ${transcriptData.length > 0 ? transcriptData.map((t, idx) => `
                         <tr>
                             <td>${idx + 1}</td>
                             <td>${t.name}</td>
                             <td>${t.dob || 'N/A'}</td>
-                            <td>${t.score}</td>
+                            <td>${t.score}%</td>
                         </tr>
-                    `).join('')}
+                    `).join('') : `
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 20px; color: #888;">Chưa có dữ liệu</td>
+                        </tr>
+                    `}
                 </tbody>
             `;
         }
@@ -217,11 +248,11 @@ function exportToExcel() {
     XLSX.utils.book_append_sheet(workbook, questionSheet, 'Phân tích câu hỏi');
 
     // Add Student Transcripts sheet
-    const transcriptData = window.lessonStats.transcripts.map((t, idx) => ({
+    const transcriptData = (window.lessonStats.transcripts || window.lessonStats.topScorers || []).map((t, idx) => ({
         'STT': idx + 1,
         'Tên': t.name,
         'Ngày sinh': t.dob || 'N/A',
-        'Điểm': t.score
+        'Điểm': `${t.score}%`
     }));
     const transcriptSheet = XLSX.utils.json_to_sheet(transcriptData);
     XLSX.utils.book_append_sheet(workbook, transcriptSheet, 'Bảng điểm');
