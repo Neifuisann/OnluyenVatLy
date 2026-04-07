@@ -845,3 +845,18 @@ body {
         color: black;
     }
 }
+
+/* Points badge displayed next to question number */
+.question-points-badge {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 1px 8px;
+    background: rgba(99, 102, 241, 0.12);
+    color: var(--accent-primary, #6366f1);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    vertical-align: middle;
+}

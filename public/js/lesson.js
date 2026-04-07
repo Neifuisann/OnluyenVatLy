@@ -126,9 +126,19 @@ async function renderQuestions(lesson) {
     // Render questions in their shuffled order
     lesson.questions.forEach((q, displayIndex) => {
         const questionIndex = displayIndex; // Use display index as question index
+            // Extract points value from question text for display in header
+            const pointsExtractRegex = /\[\s*([\d.]+)\s*pts?\s*\]/i;
+            const pointsExtractMatch = lesson.questions[questionIndex].question.match(pointsExtractRegex);
+            let pointsBadge = '';
+            if (pointsExtractMatch && pointsExtractMatch[1]) {
+                const rawPts = parseFloat(pointsExtractMatch[1]);
+                // Round to at most 4 decimal places, removing trailing zeros
+                const roundedPts = parseFloat(rawPts.toFixed(4));
+                pointsBadge = ` <span class="question-points-badge">[${roundedPts} pts]</span>`;
+            }
             let questionHtml = `
                 <div class="question" data-question-index="${questionIndex}">
-                    <p><strong>Câu ${displayIndex + 1}.</strong></p>
+                    <p><strong>Câu ${displayIndex + 1}.</strong>${pointsBadge}</p>
             `;
 
             // --- START IMAGE PARSING ---
@@ -149,10 +159,10 @@ async function renderQuestions(lesson) {
             }
             // --- END NEW ---
 
-            // Remove points marking pattern [X pts] or [X.X pts] from display
-            // Handle both inline and multiline cases
-            const pointsRegex = /[\s\n]*\[\s*[\d.]+\s*pts?\s*\][\s\n]*$/i;
-            questionTextForSaving = questionTextForSaving.replace(pointsRegex, '').trim();
+            // Remove points marking pattern [X pts] or [X.X pts] from displayed question text
+            // Match anywhere in the text (not just at the end) to handle all positions
+            const pointsRegex = /\s*\[\s*[\d.]+\s*pts?\s*\]\s*/gi;
+            questionTextForSaving = questionTextForSaving.replace(pointsRegex, ' ').trim();
 
             questionHtml += `<p>${questionTextForSaving}</p>`;
 
