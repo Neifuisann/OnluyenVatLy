@@ -131,10 +131,12 @@ router.get('/without-images',
 );
 
 // Get lesson by ID - ENCRYPTED (contains quiz questions)
+// NOTE: Must NOT be cached - question pool selection is random per request.
+// Caching would lock students into the same pool subset for the entire cache window.
 router.get('/:id',
   optionalAuth,
   validateIdParam('id'),
-  lessonCacheMiddleware,
+  noCacheMiddleware,
   lessonEncryptionMiddleware,
   lessonController.getLessonById
 );

@@ -35,7 +35,7 @@ const mockResults = [
 function calculateStats(lesson, results) {
     const uniqueStudents = new Set(results.map(r => r.student_id)).size;
     const lessonQuestions = lesson.questions;
-    
+
     const questionStats = lessonQuestions.map((lessonQ, index) => {
         let correct = 0;
         let incorrect = 0;
@@ -67,12 +67,12 @@ function calculateStats(lesson, results) {
             question: lessonQText || `Câu ${index + 1}`,
             totalStudents: uniqueStudents,
             completed: completedCount,
-            notCompleted: uniqueStudents - completedCount,
+            notCompleted: Math.max(0, uniqueStudents - completedCount),
             correct,
             incorrect
         };
     });
-    
+
     return questionStats;
 }
 

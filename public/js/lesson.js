@@ -309,7 +309,13 @@ async function initializeLesson() {
     document.title = 'Loading lesson...';
     
     try {
-        const response = await fetch(`/api/lessons/${lessonId}`);
+        // Add cache-busting param so the browser never serves a cached response.
+        // This ensures the server runs fresh random pool selection on every page load,
+        // giving students a different set of questions each time (e.g. 15 from 40).
+        const cacheBuster = Date.now();
+        const response = await fetch(`/api/lessons/${lessonId}?_=${cacheBuster}`, {
+            cache: 'no-store'
+        });
         if (!response.ok) {
             throw new Error(`Failed to fetch lesson: ${response.status}`);
         }
