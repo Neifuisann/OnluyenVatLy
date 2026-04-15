@@ -2006,8 +2006,10 @@
                             letter: String.fromCharCode(65 + idx)
                         }));
                         
-                        // Only shuffle options if shuffleAnswers is enabled
-                        const shuffledOptions = lesson.shuffleAnswers ? 
+                        // Only shuffle options if shuffleAnswers is enabled AND applyRandomization has NOT
+                        // already handled it (applyRandomization shuffles options AND updates question.correct;
+                        // re-shuffling here without updating question.correct would break scoring).
+                        const shuffledOptions = (lesson.shuffleAnswers && !lesson._randomized) ? 
                             shuffleArray([...optionsWithIndices]) : 
                             optionsWithIndices;
                         
@@ -2366,7 +2368,7 @@
                         }
 
                         if (selectedValue) {
-                            const mapping = questionMappings[originalIndex];
+                            const mapping = (window.questionMappings || questionMappings)[originalIndex];
                             const selectedMapping = mapping ? mapping.find(m => m.displayedLetter === selectedValue) : null;
                             
                             if (selectedMapping && q.options[selectedMapping.originalIndex]) {
@@ -2576,6 +2578,12 @@
                     titleElement.textContent = lesson.title;
                 }
                 
+                // Apply randomization (shuffle questions, shuffle answers, select question pool/subtest)
+                // MUST run before renderQuestions so lesson.js's renderQuestions gets the already-randomized array.
+                if (typeof applyRandomization === 'function') {
+                    applyRandomization(lesson);
+                }
+
                 await renderQuestions(lesson);
                 showLoader(false);
                 

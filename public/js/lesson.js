@@ -815,7 +815,9 @@ function applyRandomization(lesson) {
     
     // Update the lesson object with randomized questions
     lesson.questions = questions;
+    lesson._randomized = true; // Flag so inline renderQuestions won't double-shuffle answers
     
+
     console.log('Randomization complete. Final question count:', questions.length);
     console.log('🎯 Final question order:', questions.map((q, idx) => ({
         position: idx + 1,
