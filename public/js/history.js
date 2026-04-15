@@ -459,6 +459,12 @@ function updateTable() {
                         </span>
                     </td>
                     <td>
+                        <span class="violation-badge ${log.flagCount > 0 ? 'has-violations' : ''}">
+                            <i class="fas fa-flag"></i>
+                            ${log.flagCount || 0}
+                        </span>
+                    </td>
+                    <td>
                         <button class="view-detail-btn" data-result-id="${escapeHtml(resultId)}" title="Xem chi tiết"> 
                             <i class="fas fa-eye"></i>
                             Chi tiết

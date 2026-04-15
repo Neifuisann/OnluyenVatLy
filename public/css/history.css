@@ -317,12 +317,13 @@
     text-overflow: ellipsis;
 }
 
-.statistics-table th:nth-child(1) { width: 8%; }   /* STT */
-.statistics-table th:nth-child(2) { width: 20%; }  /* Tên */
-.statistics-table th:nth-child(3) { width: 25%; }  /* Bài */
-.statistics-table th:nth-child(4) { width: 20%; }  /* Thời gian */
-.statistics-table th:nth-child(5) { width: 15%; }  /* Điểm */
-.statistics-table th:nth-child(6) { width: 12%; }  /* Chi tiết */
+.statistics-table th:nth-child(1) { width: 6%;  }   /* STT */
+.statistics-table th:nth-child(2) { width: 18%; }  /* Tên */
+.statistics-table th:nth-child(3) { width: 22%; }  /* Bài */
+.statistics-table th:nth-child(4) { width: 18%; }  /* Thời gian */
+.statistics-table th:nth-child(5) { width: 14%; }  /* Điểm */
+.statistics-table th:nth-child(6) { width: 10%; }  /* Vi phạm */
+.statistics-table th:nth-child(7) { width: 12%; }  /* Chi tiết */
 
 .statistics-table tbody tr {
     transition: var(--transition-fast);
@@ -368,6 +369,10 @@
 }  /* Điểm */
 
 .statistics-table td:nth-child(6) { 
+    text-align: center; 
+}  /* Vi phạm */
+
+.statistics-table td:nth-child(7) { 
     text-align: center; 
 }  /* Chi tiết */
 
@@ -817,4 +822,41 @@
     display: table-row !important;
     height: auto !important;
     min-height: 60px !important;
+}
+
+/* Violation Badge */
+.violation-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.35rem 0.6rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    gap: 0.35rem;
+    transition: var(--transition-normal);
+}
+
+.violation-badge.has-violations {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.3);
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.1);
+}
+
+.violation-badge i {
+    font-size: 0.7rem;
+}
+
+@keyframes pulse-red {
+    0% { opacity: 1; }
+    50% { opacity: 0.6; }
+    100% { opacity: 1; }
+}
+
+.violation-badge.has-violations i {
+    animation: pulse-red 2s infinite;
 }

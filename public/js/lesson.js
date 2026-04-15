@@ -265,405 +265,8 @@ async function renderQuestions(lesson) {
 
 // Submit quiz event listener setup
 // NOTE: initializeLesson() is called from the HTML inline DOMContentLoaded handler.
-// Do NOT call it again here to avoid double initialization and overlay issues.
-document.addEventListener('DOMContentLoaded', () => {
-    const submitButton = document.getElementById('submit-quiz-btn');
-    if (submitButton) { 
-
-        submitButton.addEventListener('click', async () => {
-            // Check authentication before allowing quiz submission
-            const isAuthenticated = await checkStudentAuthentication();
-            if (!isAuthenticated) {
-                promptForLogin();
-                return;
-            }
-
-            // Disable the submit button and provide visual feedback
-            submitButton.disabled = true;
-            submitButton.textContent = 'Đang nộp bài...';
-            submitButton.style.opacity = '0.7'; // Dim the button slightly
-
-            // Check if lesson data is available
-            if (!currentLessonData) {
-                console.error("Lesson data not loaded, cannot submit.");
-                alert("Lỗi: Dữ liệu bài học chưa được tải. Vui lòng tải lại trang.");
-                // Revert button state
-                submitButton.disabled = false;
-                submitButton.textContent = 'Nộp bài';
-                submitButton.style.opacity = '1';
-                return;
-            }
-            
-            try {
-                // Get IP address
-                const ipResponse = await fetch('https://api.ipify.org?format=json');
-                const ipData = await ipResponse.json();
-                
-                const lessonId = currentLessonData.id;
-                const lesson = currentLessonData;
-                
-                let score = 0;
-                let totalPossiblePoints = 0;
-                const startTime = performance.now();
-
-                const quizResults = {
-                    lessonId: lessonId,
-                    questions: [],
-                    ipAddress: ipData.ip,
-                    submittedAt: new Date().toISOString()
-                };
-
-                // Get all displayed questions
-                const questionElements = document.querySelectorAll('.question');
-                questionElements.forEach((questionElement) => {
-                    const originalIndex = parseInt(questionElement.dataset.questionIndex);
-                    const q = lesson.questions[originalIndex];
-                    
-                    const questionPoints = (typeof q.points === 'number' && q.points > 0) ? q.points : 1;
-                    totalPossiblePoints += questionPoints;
-
-                    let userAnswer, correctAnswer, isCorrect, optionsText = null;
-                    let earnedPoints = undefined; // For True/False partial scoring
-                    
-                    // --- NEW: Extract image URL if present ---
-                    let imageUrl = null;
-                    const imgRegex = /\[img\s+src="([^"]+)"\]/i;
-                    // Use the ORIGINAL question text from the lesson data to find the image
-                    const originalQuestionText = lesson.questions[originalIndex].question;
-                    const match = originalQuestionText.match(imgRegex);
-                    if (match && match[1]) {
-                        imageUrl = match[1];
-                    }
-                    // --- END NEW ---
-
-                    // --- NEW: Get the question text and remove the image tag if it exists for saving ---
-                    let questionTextForSaving = originalQuestionText; // Start with original
-                    if (imageUrl) {
-                        // If an image was found, remove the tag for the text we save
-                        questionTextForSaving = questionTextForSaving.replace(imgRegex, '').trim();
-                    }
-                    
-                    // Remove points marking pattern [X pts] or [X.X pts] from saved text
-                    // Handle both inline and multiline cases
-                    const pointsRegex = /[\s\n]*\[\s*[\d.]+\s*pts?\s*\][\s\n]*$/i;
-                    questionTextForSaving = questionTextForSaving.replace(pointsRegex, '').trim();
-                    // --- END NEW ---
-
-                    // Handle both old format (multiple_choice) and new format (abcd)
-                    const normalizedType = q.type === 'multiple_choice' ? 'abcd' :
-                                         q.type === 'true_false' ? 'truefalse' :
-                                         q.type === 'fill_blank' ? 'number' : q.type;
-
-                    // Get correct answer from either 'correct' or 'correctAnswer' property
-                    const correctAnswerValue = q.correct !== undefined ? q.correct : q.correctAnswer;
-
-                    if (normalizedType === 'truefalse' && Array.isArray(q.options)) {
-                        // --- NEW: Handle multi-option true/false with partial scoring ---
-                        const userAnswersArray = q.options.map((_, idx) => {
-                            const selectedInput = document.querySelector(`input[name="q${originalIndex}_${idx}"]:checked`);
-                            return selectedInput ? selectedInput.value === 'true' : null; // Store boolean or null
-                        });
-
-                        const correctAnswersArray = correctAnswerValue; // Should be an array of booleans
-                        optionsText = q.options.map(opt => opt.text || opt); // Store option texts
-
-                        // Debug logging for true/false questions
-                        console.log(`🔍 True/False Question ${originalIndex}:`, {
-                            userAnswers: userAnswersArray,
-                            correctAnswers: correctAnswersArray,
-                            optionsText: optionsText
-                        });
-
-                        // Count correct answers for partial scoring
-                        let correctCount = 0;
-                        if (Array.isArray(correctAnswersArray)) {
-                            correctAnswersArray.forEach((correctAns, idx) => {
-                                if (userAnswersArray[idx] !== null) {
-                                    // Normalize both values to boolean for comparison
-                                    const userBool = userAnswersArray[idx];
-                                    let correctBool;
-
-                                    // Handle different formats of correct answers
-                                    if (typeof correctAns === 'boolean') {
-                                        correctBool = correctAns;
-                                    } else if (typeof correctAns === 'string') {
-                                        correctBool = correctAns.toLowerCase() === 'true';
-                                    } else {
-                                        correctBool = Boolean(correctAns);
-                                    }
-
-                                    if (userBool === correctBool) {
-                                        correctCount++;
-                                    }
-                                }
-                            });
-                        }
-                        
-                        // Calculate partial score based on correct count
-                        let partialMultiplier = 0;
-                        const totalOptions = correctAnswersArray.length;
-                        
-                        // For 4-option True/False questions
-                        if (totalOptions === 4) {
-                            if (correctCount === 4) {
-                                partialMultiplier = 1.0; // 100%
-                                isCorrect = true;
-                            } else if (correctCount === 3) {
-                                partialMultiplier = 0.5; // 50%
-                                isCorrect = false; // Not fully correct
-                            } else if (correctCount === 2) {
-                                partialMultiplier = 0.25; // 25%
-                                isCorrect = false;
-                            } else if (correctCount === 1) {
-                                partialMultiplier = 0.1; // 10%
-                                isCorrect = false;
-                            } else {
-                                partialMultiplier = 0; // 0%
-                                isCorrect = false;
-                            }
-                        } else {
-                            // For True/False questions with different number of options
-                            // Use proportional scoring
-                            if (correctCount === totalOptions) {
-                                partialMultiplier = 1.0; // 100% if all correct
-                                isCorrect = true;
-                            } else {
-                                partialMultiplier = correctCount / totalOptions;
-                                isCorrect = false;
-                            }
-                        }
-                        
-                        // Apply partial scoring to points
-                        earnedPoints = questionPoints * partialMultiplier;
-
-                        // Debug logging for points calculation
-                        console.log(`🔍 True/False Points Calculation:`, {
-                            questionPoints,
-                            partialMultiplier,
-                            earnedPoints,
-                            correctCount,
-                            totalOptions: correctAnswersArray.length
-                        });
-
-                        userAnswer = userAnswersArray; // Save array
-                        correctAnswer = correctAnswersArray; // Save array
-                        // --- END NEW ---
-
-                    } else if (normalizedType === 'abcd') {
-                        const selectedRadio = document.querySelector(`input[name="q${originalIndex}"]:checked`);
-                        const selectedValue = selectedRadio ? selectedRadio.value : null;
-
-                        // --- ADDED: Get all option texts for abcd --- 
-                        if (Array.isArray(q.options)) {
-                            optionsText = q.options.map(opt => opt.text || opt);
-                        } else {
-                            optionsText = []; // Default to empty array if options are missing
-                        }
-                        // --- END ADDED ---
-
-                        if (selectedValue) {
-                            const mapping = window.questionMappings[originalIndex];
-                            // Ensure mapping exists before trying to find
-                            const selectedMapping = mapping ? mapping.find(m => m.displayedLetter === selectedValue) : null; 
-                            
-                            if (selectedMapping && q.options[selectedMapping.originalIndex]) {
-                                const option = q.options[selectedMapping.originalIndex];
-                                userAnswer = option.text || option; // Handle both formats
-                                
-                                const correctIndex = correctAnswerValue.toUpperCase().charCodeAt(0) - 65;
-                                // Check if correct index is valid
-                                if (correctIndex >= 0 && correctIndex < q.options.length) {
-                                    const correctOption = q.options[correctIndex];
-                                    correctAnswer = correctOption.text || correctOption; // Handle both formats
-                                    isCorrect = selectedMapping.originalIndex === correctIndex;
-                                } else {
-                                    // Handle case where correctAnswerValue is invalid
-                                    console.warn(`Invalid correct answer letter '${correctAnswerValue}' for question index ${originalIndex}`);
-                                    correctAnswer = 'Error: Invalid correct answer specified';
-                                    isCorrect = false;
-                                }
-                            } else {
-                                // Handle case where mapping or option doesn't exist (shouldn't happen often)
-                                console.warn(`Could not find mapping or option for selected value '${selectedValue}' in question index ${originalIndex}`);
-                                userAnswer = selectedValue ? `Selected: ${selectedValue}` : 'No answer';
-                                correctAnswer = 'Error: Could not determine correct answer';
-                                isCorrect = false;
-                            }
-                        } else {
-                            userAnswer = 'No answer';
-                            const correctIndex = correctAnswerValue.toUpperCase().charCodeAt(0) - 65;
-                            // Check if correct index is valid before accessing
-                             if (correctIndex >= 0 && correctIndex < q.options.length) {
-                                const correctOption = q.options[correctIndex];
-                                correctAnswer = correctOption.text || correctOption;
-                             } else {
-                                 correctAnswer = 'Error: Invalid correct answer specified';
-                             }
-                            isCorrect = false;
-                        }
-                    } else if (normalizedType === 'number') {
-                        const inputElement = document.querySelector(`[name="q${originalIndex}"]`);
-                        userAnswer = inputElement ? inputElement.value : 'No input found'; // Handle missing input
-                        correctAnswer = correctAnswerValue.toString();
-                        // Strict comparison, ensure userAnswer is not empty
-                        isCorrect = userAnswer !== '' && userAnswer === correctAnswer;
-                    } else if (normalizedType === 'truefalse' && !Array.isArray(q.options)) {
-                         // --- Handle single true/false ---
-                         const selectElement = document.querySelector(`select[name="q${originalIndex}"]`);
-                         userAnswer = selectElement ? selectElement.value : 'No selection';
-                         correctAnswer = correctAnswerValue.toString(); // correctAnswerValue should be true or false
-                         isCorrect = userAnswer === correctAnswer;
-                         // --- End single true/false ---
-                    }
-
-                    // Handle earned points for True/False partial scoring
-                    let finalEarnedPoints = isCorrect ? questionPoints : 0;
-
-                    // Override earned points for True/False questions with partial scoring
-                    if (normalizedType === 'truefalse' && Array.isArray(q.options) && typeof earnedPoints !== 'undefined') {
-                        finalEarnedPoints = earnedPoints;
-                        console.log(`🔍 True/False Final Points Override:`, {
-                            originalFinalEarnedPoints: isCorrect ? questionPoints : 0,
-                            overriddenFinalEarnedPoints: finalEarnedPoints,
-                            earnedPoints,
-                            isCorrect
-                        });
-                    } else if (normalizedType === 'truefalse') {
-                        console.log(`🔍 True/False Standard Points:`, {
-                            finalEarnedPoints,
-                            isCorrect,
-                            questionPoints,
-                            hasOptions: Array.isArray(q.options),
-                            earnedPointsDefined: typeof earnedPoints !== 'undefined'
-                        });
-                    }
-
-                    quizResults.questions.push({
-                        type: q.type,
-                        question: questionTextForSaving, // Use the cleaned text for saving
-                        imageUrl: imageUrl, // Add the extracted image URL
-                        userAnswer: userAnswer,
-                        correctAnswer: correctAnswer,
-                        isCorrect: isCorrect,
-                        points: questionPoints,
-                        earnedPoints: finalEarnedPoints,
-                        optionsText: optionsText
-                    });
-
-                    score += finalEarnedPoints;
-                });
-                
-                // Update final scores, time, and streak in the payload
-                quizResults.totalPoints = totalPossiblePoints;
-                quizResults.score = score;
-                quizResults.timeTaken = (performance.now() - startTime) / 1000;
-                quizResults.streak = getCurrentStreak(lessonId);
-
-                // --- REVERTED: Call /api/results to save and trigger rating update server-side ---
-                try {
-                    // Get student info from authentication
-                    let studentInfo = { name: 'Anonymous Student' }; // Default fallback
-
-                    try {
-                        const authResponse = await fetch('/api/auth/student/check');
-                        if (authResponse.ok) {
-                            const authData = await authResponse.json();
-                            if (authData.success && authData.data) {
-                                if (authData.data.isAuthenticated && authData.data.student) {
-                                    studentInfo = {
-                                        name: authData.data.student.name,
-                                        id: authData.data.student.id
-                                    };
-                                }
-                            }
-                        }
-                    } catch (authError) {
-                        console.warn('Could not get student info:', authError);
-                    }
-
-                    // Debug: Log the data we're about to send
-                    console.log('Debug - quizResults:', quizResults);
-                    console.log('Debug - quizResults.questions:', quizResults.questions);
-                    console.log('Debug - studentInfo:', studentInfo);
-
-                    // Ensure answers is a valid array
-                    const answers = Array.isArray(quizResults.questions) ? quizResults.questions : [];
-
-                    // Prepare data in the format expected by the server
-                    const resultPayload = {
-                        lessonId: quizResults.lessonId,
-                        answers: answers, // Server expects 'answers' not 'questions'
-                        timeTaken: Number(quizResults.timeTaken) || 0, // Ensure it's a number, default to 0
-                        studentInfo: studentInfo,
-                        mode: window.lessonMode || 'test' // Add mode to payload
-                    };
-
-                    console.log('Debug - resultPayload:', resultPayload);
-
-                    // Get CSRF token before making the request
-                    const csrfResponse = await fetch('/api/csrf-token');
-                    if (!csrfResponse.ok) {
-                        throw new Error('Failed to get CSRF token');
-                    }
-                    const csrfData = await csrfResponse.json();
-
-                    // Add CSRF token to the payload
-                    resultPayload.csrfToken = csrfData.csrfToken;
-
-                    const saveResponse = await fetch('/api/results', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(resultPayload)
-                    });
-
-                    if (!saveResponse.ok) {
-                        const errorData = await saveResponse.json();
-                        throw new Error(errorData.message || 'Failed to save results');
-                    }
-
-                    const resultData = await saveResponse.json();
-                    
-                    // Store minimal result in localStorage for potential use on result page
-                    localStorage.setItem('quizResults', JSON.stringify({
-                        lessonId: quizResults.lessonId,
-                        score: quizResults.score,
-                        totalPoints: quizResults.totalPoints,
-                        resultId: resultData.resultId
-                    })); 
-                    
-                    // Handle differently based on mode
-                    if (window.lessonMode === 'practice') {
-                        // Practice mode: Show immediate feedback
-                        showPracticeFeedback(quizResults);
-                    } else {
-                        // Test mode: Redirect to the result page
-                        window.location.href = `/result/${resultData.resultId}`;
-                    } 
-
-                } catch (saveError) {
-                    console.error('Error saving results:', saveError);
-                    alert('Lỗi khi lưu kết quả: ' + saveError.message);
-                    // Revert button state on save error
-                    submitButton.disabled = false;
-                    submitButton.textContent = 'Nộp bài';
-                    submitButton.style.opacity = '1'; 
-                    return; // Stop execution if saving failed
-                }
-                // --- END REVERT --- 
-
-            } catch (error) {
-                console.error('Error submitting quiz:', error);
-                alert('An error occurred while submitting your quiz. Please try again.');
-            } finally {
-                // Ensure button is re-enabled even if redirection happens
-                // Although redirection might make this less critical
-                submitButton.disabled = false;
-                submitButton.textContent = 'Nộp bài'; // Revert text back to Vietnamese
-                submitButton.style.opacity = '1';
-            }
-        });
-    }
-});
+// Submit quiz event listener has been moved to views/lesson.html inline script
+// to correctly support showing the confirmation modal and secure fetch.
 
 function getCurrentStreak(lessonId) {
     try {
@@ -1469,6 +1072,7 @@ function showPreviousAttemptsSummary(lesson, previousAttempts) {
 // ============================================================
 const ExamGuard = (() => {
     let flagCount = 0;
+    let flagLogs = [];
     let isActive = false;
     let isFullscreen = false;
     let statusBadge = null;
@@ -1652,6 +1256,7 @@ const ExamGuard = (() => {
         lastFlagTime = now;
 
         flagCount++;
+        flagLogs.push({ time: new Date().toISOString(), reason: reason });
         console.log(`[ExamGuard] Flag #${flagCount} triggered (${reason})`);
         updateStatusBadge();
 
@@ -1768,6 +1373,7 @@ const ExamGuard = (() => {
         isActive = true;
         guardStartTime = Date.now();
         flagCount = 0;
+        flagLogs = [];
         lastFlagTime = 0;
         warningModalOpen = false;
         requestFullscreen();
@@ -1794,7 +1400,11 @@ const ExamGuard = (() => {
         return isActive;
     }
 
-    return { activate, deactivate, getFlagCount, isGuardActive };
+    function getFlagLogs() {
+        return flagLogs;
+    }
+
+    return { activate, deactivate, getFlagCount, isGuardActive, getFlagLogs };
 })();
 
 // Deactivate guard when quiz is submitted (hook into existing submit flow)
