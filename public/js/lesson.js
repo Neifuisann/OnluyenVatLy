@@ -1,6 +1,6 @@
 // Store shuffled options mapping globally
 window.questionMappings = {};
-let currentLessonData = null; // Variable to store loaded lesson data
+// currentLessonData is already declared in inline script in views/lesson.html
 
 // --- Authentication Functions (supports both students and admins) ---
 async function checkStudentAuthentication() {
@@ -64,240 +64,189 @@ function showLoader(show) {
     }
 }
 
-// Removed duplicate shuffleArray function - using the proper one at line 1296
+
 
 async function renderQuestions(lesson) {
-    console.log('Rendering questions for lesson:', {
-        enableQuestionPool: lesson.enableQuestionPool,
-        questionPoolSize: lesson.questionPoolSize,
-        questionTypeDistribution: lesson.questionTypeDistribution,
-        totalQuestions: lesson.questions ? lesson.questions.length : 0
-    });
-    console.log('🎨 Render Debug - Questions at render time:', lesson.questions ? lesson.questions.map((q, idx) => ({
-        position: idx + 1,
-        type: q.type,
-        question: (q.question || q.id || '').substring(0, 30) + '...'
-    })) : []);
-    
-    // Check if lesson has questions property
     if (!lesson || !lesson.questions || !Array.isArray(lesson.questions)) {
-        console.warn('Lesson has no questions or questions is not an array:', lesson);
-        // Hide question sections if no questions
-        const questionSections = ['abcd-questions', 'truefalse-questions', 'number-questions'];
-        questionSections.forEach(sectionId => {
-            const element = document.getElementById(sectionId);
-            if (element) {
-                element.style.display = 'none';
-            }
-        });
-        // Hide submit button
-        const submitBtn = document.getElementById('submit-quiz-btn');
-        if (submitBtn) {
-            submitBtn.style.display = 'none';
-        }
+        console.warn('Lesson has no questions');
         return;
     }
 
-    // Get the container element where all questions will be rendered
-    const questionsContainer = document.createElement('div');
-    questionsContainer.id = 'all-questions-container';
-    
-    // Find where to insert the questions container
-    const abcdSection = document.getElementById('abcd-questions');
-    const trueFalseSection = document.getElementById('truefalse-questions');
-    const numberSection = document.getElementById('number-questions');
-    
-    // Hide original section headers since we're displaying all questions together
-    if (abcdSection) abcdSection.style.display = 'none';
-    if (trueFalseSection) trueFalseSection.style.display = 'none';
-    if (numberSection) numberSection.style.display = 'none';
-    
-    // Insert the new container before the first section
-    if (abcdSection && abcdSection.parentNode) {
-        abcdSection.parentNode.insertBefore(questionsContainer, abcdSection);
+    const container = document.getElementById('questions-container');
+    const navGrid = document.getElementById('question-nav-grid');
+    if (!container || !navGrid) {
+        console.error('Container or navGrid not found in DOM!');
+        return;
     }
-    
-    // Question pool filtering is now handled on the server side
-    // The lesson.questions already contains the filtered questions based on pool settings
-    console.log('Question pool filtering handled on server side. Total questions:', lesson.questions.length);
-    // Question shuffling has already been handled in applyRandomization() before this function is called
-    // The questions array is already in the shuffled order
+    container.innerHTML = '';
+    navGrid.innerHTML = '';
 
-    // Render questions in their shuffled order
-    lesson.questions.forEach((q, displayIndex) => {
-        const questionIndex = displayIndex; // Use display index as question index
-            // Extract points value from question text for display in header
-            const pointsExtractRegex = /\[\s*([\d.]+)\s*pts?\s*\]/i;
-            const pointsExtractMatch = lesson.questions[questionIndex].question.match(pointsExtractRegex);
-            let pointsBadge = '';
-            if (pointsExtractMatch && pointsExtractMatch[1]) {
-                const rawPts = parseFloat(pointsExtractMatch[1]);
-                // Round to at most 4 decimal places, removing trailing zeros
-                const roundedPts = parseFloat(rawPts.toFixed(4));
-                pointsBadge = ` <span class="question-points-badge">[${roundedPts} pts]</span>`;
-            }
-            let questionHtml = `
-                <div class="question" data-question-index="${questionIndex}">
-                    <p><strong>Câu ${displayIndex + 1}.</strong>${pointsBadge}</p>
+    // Questions are already appropriately shuffled, grouped, and sliced in applyRandomization()
+    // Do NOT re-shuffle here.
+    const allQuestions = [...lesson.questions];
+
+    allQuestions.forEach((q, displayIndex) => {
+        const originalIndex = q._originalIndex !== undefined ? q._originalIndex : lesson.questions.indexOf(q);
+
+        // Create navigation item
+        const navItem = document.createElement('div');
+        navItem.className = 'question-nav-item';
+        navItem.textContent = displayIndex + 1;
+        navItem.onclick = () => {
+            if (typeof navigateToQuestion === 'function') navigateToQuestion(displayIndex);
+        };
+        navGrid.appendChild(navItem);
+
+        // Create question card
+        const questionCard = document.createElement('div');
+        questionCard.className = 'question-card question';
+        questionCard.dataset.questionIndex = originalIndex;
+        questionCard.style.display = displayIndex === 0 ? 'block' : 'none';
+
+        // Extract points value from question text for display in header
+        const pointsExtractRegex = /\[\s*([\d.]+)\s*pts?\s*\]/i;
+        const pointsExtractMatch = q.question.match(pointsExtractRegex);
+        let pointsBadge = '';
+        if (pointsExtractMatch && pointsExtractMatch[1]) {
+            const rawPts = parseFloat(pointsExtractMatch[1]);
+            const roundedPts = parseFloat(rawPts.toFixed(4));
+            pointsBadge = ` <span class="question-points-badge" style="font-size: 0.9em; font-weight: normal; color: var(--accent-primary); margin-left: 8px;">[${roundedPts} pts]</span>`;
+        }
+
+        // Extract image if present
+        let imageUrl = null;
+        const imgRegex = /\[img\s+src="([^"]+)"\]/i;
+        const match = q.question.match(imgRegex);
+        if (match && match[1]) {
+            imageUrl = match[1];
+        }
+        
+        let questionText = q.question;
+        if (imageUrl) {
+            questionText = questionText.replace(imgRegex, '').trim();
+        }
+        // Remove points marking pattern [X pts] from displayed question text
+        const pointsRegex = /\s*\[\s*[\d.]+\s*pts?\s*\]\s*/gi;
+        questionText = questionText.replace(pointsRegex, ' ').trim();
+
+        let questionHtml = `
+            <div class="question-header">
+                <h3 class="question-number">Câu ${displayIndex + 1}${pointsBadge}</h3>
+                <div class="question-actions">
+                    <button class="btn-flag" type="button" onclick="if(typeof toggleFlag==='function') toggleFlag(${displayIndex})">
+                        <i class="fas fa-flag"></i> Đánh dấu
+                    </button>
+                </div>
+            </div>
+        `;
+
+        questionHtml += `<div class="question-text">${questionText}</div>`;
+
+        if (imageUrl) {
+            questionHtml += `
+            <div class="question-image-container">
+                <img src="${imageUrl}" alt="Question Image" class="question-image" loading="lazy" onload="this.classList.add('loaded')">
+            </div>
             `;
+        }
 
-            // --- START IMAGE PARSING ---
-            let imageUrl = null;
-            const imgRegex = /\[img\s+src="([^"]+)"\]/i;
-            const originalQuestionText = lesson.questions[questionIndex].question;
-            const match = originalQuestionText.match(imgRegex);
-            if (match && match[1]) {
-                imageUrl = match[1];
-            }
-            // --- END IMAGE PARSING ---
+        const normalizedType = q.type === 'multiple_choice' ? 'abcd' :
+                               q.type === 'true_false' ? 'truefalse' :
+                               q.type === 'fill_blank' ? 'number' : q.type;
 
-            // --- NEW: Get the question text and remove the image tag if it exists for saving ---
-            let questionTextForSaving = originalQuestionText; // Start with original
-            if (imageUrl) {
-                // If an image was found, remove the tag for the text we save
-                questionTextForSaving = questionTextForSaving.replace(imgRegex, '').trim();
-            }
-            // --- END NEW ---
+        switch(normalizedType) {
+            case 'abcd':
+                if (!q.options || !Array.isArray(q.options)) {
+                    console.warn('ABCD question missing options:', q);
+                    questionHtml += '<div class="error-message">Error: No options available for this question</div>';
+                    break;
+                }
 
-            // Remove points marking pattern [X pts] or [X.X pts] from displayed question text
-            // Match anywhere in the text (not just at the end) to handle all positions
-            const pointsRegex = /\s*\[\s*[\d.]+\s*pts?\s*\]\s*/gi;
-            questionTextForSaving = questionTextForSaving.replace(pointsRegex, ' ').trim();
+                // Options are already shuffled by applyRandomization! Do not re-shuffle here.
+                const optionsWithIndices = q.options.map((option, idx) => ({
+                    text: typeof option === 'string' ? option : (option.text || ''),
+                    originalIndex: idx, 
+                    letter: String.fromCharCode(65 + idx)
+                }));
 
-            questionHtml += `<p>${questionTextForSaving}</p>`;
-
-            if (imageUrl) { // Check if we have an image URL from either source
-                questionHtml += `
-                    <div class="question-image-container">
-                        <img src="${imageUrl}" 
-                             alt="Question Image" 
-                             style="max-width: 100%; margin: 10px 0;"
-                             loading="lazy"
-                             onload="this.classList.add('loaded')"
-                             class="question-image">
-                    </div>
-                `;
-            }
-
-            // Handle both old format (multiple_choice) and new format (abcd)
-            const normalizedType = q.type === 'multiple_choice' ? 'abcd' :
-                                 q.type === 'true_false' ? 'truefalse' :
-                                 q.type === 'fill_blank' ? 'number' : q.type;
-
-            switch(normalizedType) {
-                case 'abcd':
-                    // Ensure options exist
-                    if (!q.options || !Array.isArray(q.options)) {
-                        console.warn('ABCD question missing options:', q);
-                        questionHtml += '<div class="error-message">Error: No options available for this question</div>';
-                        break;
-                    }
-
-                    // Options have already been shuffled in applyRandomization if shuffleAnswers is enabled
-                    // Just create the display structure without re-shuffling
-                    const optionsWithIndices = q.options.map((option, idx) => ({
-                        text: typeof option === 'string' ? option : (option.text || ''), // Handle both object and string format
-                        originalIndex: idx,
-                        letter: String.fromCharCode(65 + idx) // A, B, C, D
+                // Ensure mapping is stored for legacy functions
+                if (typeof window.questionMappings === 'object') {
+                    window.questionMappings[originalIndex] = optionsWithIndices.map((opt, newIndex) => ({
+                        displayedLetter: String.fromCharCode(65 + newIndex),
+                        originalLetter: opt.letter,
+                        originalIndex: opt.originalIndex
                     }));
-                    
-                    // Use the options as-is (already shuffled if needed)
-                    const shuffledOptions = optionsWithIndices;
-                    
-                    // Store the mapping for this question
-                    window.questionMappings[questionIndex] = shuffledOptions.map(
-                        (opt, newIndex) => ({
-                            displayedLetter: String.fromCharCode(65 + newIndex),
-                            originalLetter: opt.letter,
-                            originalIndex: opt.originalIndex
-                        })
-                    );
+                }
 
-                    // --- ADDED: Get all option texts for abcd --- 
-                    if (Array.isArray(q.options)) {
-                        optionsText = q.options.map(opt => opt.text || opt);
-                    } else {
-                        optionsText = []; // Default to empty array if options are missing
-                    }
-                    // --- END ADDED ---
-
-                    questionHtml += shuffledOptions.map((option, idx) => `
-                        <div class="option-row">
-                            <input type="radio" 
-                                   id="q${questionIndex}_${idx}"
-                                   name="q${questionIndex}" 
-                                   value="${String.fromCharCode(65 + idx)}">
-                            <label for="q${questionIndex}_${idx}" class="option-label">
-                                <span class="option-letter">${String.fromCharCode(65 + idx)}</span>
-                                <span class="option-text">${option.text}</span>
-                            </label>
-                        </div>
-                    `).join('');
-                    break;
-
-                case 'truefalse':
-                    if (Array.isArray(q.options) && q.options.length > 0) {
-                        // Multiple true/false options
-                        questionHtml += `<div class="truefalse-options">`;
-                        q.options.forEach((option, idx) => {
-                            const optionText = typeof option === 'string' ? option : (option.text || ''); // Handle both formats
-                            questionHtml += `
-                                <div class="truefalse-option-box">
-                                    <div class="option-text">${String.fromCharCode(65 + idx)}) ${optionText}</div>
-                                    <div class="truefalse-buttons">
-                                        <label class="option-button">
-                                            <input type="radio"
-                                                   name="q${questionIndex}_${idx}"
-                                                   value="true">
-                                            <span>Đúng</span>
-                                        </label>
-                                        <label class="option-button">
-                                            <input type="radio"
-                                                   name="q${questionIndex}_${idx}"
-                                                   value="false">
-                                            <span>Sai</span>
-                                        </label>
-                                    </div>
-                                </div>
-                            `;
-                        });
-                        questionHtml += `</div>`;
-                    } else {
-                        // Single true/false question or missing options
-                        console.warn('True/false question missing options:', q);
-                        questionHtml += `
-                            <div class="form-group">
-                                <select name="q${questionIndex}" required>
-                                    <option value="">Select answer</option>
-                                    <option value="true">True</option>
-                                    <option value="false">False</option>
-                                </select>
-                            </div>
-                        `;
-                    }
-                    break;
-
-                case 'number':
+                questionHtml += '<div class="options-container">';
+                optionsWithIndices.forEach((option, idx) => {
+                    const optionLetter = String.fromCharCode(65 + idx);
                     questionHtml += `
-                        <div class="number-input-container">
-                            <input type="number" 
-                                   name="q${questionIndex}" 
-                                   class="modern-number-input"
-                                   placeholder="Enter your answer..."
-                                   required>
-                        </div>
+                    <div class="option-card" onclick="if(typeof selectOption==='function') selectOption(${originalIndex}, '${optionLetter}', this)">
+                        <input type="radio" 
+                               id="q${originalIndex}_${idx}"
+                               name="q${originalIndex}" 
+                               value="${optionLetter}">
+                        <label for="q${originalIndex}_${idx}" class="option-label">
+                            <span class="option-letter">${optionLetter}</span>
+                            <span class="option-text">${option.text}</span>
+                        </label>
+                    </div>
                     `;
-                    break;
-            }
+                });
+                questionHtml += '</div>';
+                break;
 
-            questionHtml += `</div>`;
-            questionsContainer.insertAdjacentHTML('beforeend', questionHtml);
+            case 'truefalse':
+                if (Array.isArray(q.options) && q.options.length > 0) {
+                    questionHtml += '<div class="truefalse-container">';
+                    q.options.forEach((option, idx) => {
+                        const optionText = typeof option === 'string' ? option : (option.text || '');
+                        questionHtml += `
+                        <div class="truefalse-item">
+                            <div class="truefalse-text">${String.fromCharCode(65 + idx)}) ${optionText}</div>
+                            <div class="truefalse-buttons">
+                                <label class="truefalse-btn" onclick="if(typeof selectTrueFalse==='function') selectTrueFalse(${originalIndex}, ${idx}, true, this)">
+                                    <input type="radio" name="q${originalIndex}_${idx}" value="true"> Đúng
+                                </label>
+                                <label class="truefalse-btn" onclick="if(typeof selectTrueFalse==='function') selectTrueFalse(${originalIndex}, ${idx}, false, this)">
+                                    <input type="radio" name="q${originalIndex}_${idx}" value="false"> Sai
+                                </label>
+                            </div>
+                        </div>
+                        `;
+                    });
+                    questionHtml += '</div>';
+                } else {
+                    console.warn('True/false question missing options:', q);
+                    questionHtml += '<div class="error-message">Error: No options available for this true/false question</div>';
+                }
+                break;
+
+            case 'number':
+                questionHtml += `
+                <div class="number-input-container">
+                    <input type="number" 
+                           name="q${originalIndex}" 
+                           class="modern-number-input"
+                           placeholder="Nhập câu trả lời..."
+                           onchange="if(typeof markQuestionAnswered==='function') markQuestionAnswered(${displayIndex})"
+                           required>
+                </div>
+                `;
+                break;
+        }
+
+        questionCard.innerHTML = questionHtml;
+        container.appendChild(questionCard);
     });
-    
-    // Initialize KaTeX rendering after all questions are loaded
+
+    if (navGrid.firstChild) {
+        navGrid.firstChild.classList.add('active');
+    }
+
     if (typeof renderMathInElement === 'function') {
-        // Target the new questions container
-        renderMathInElement(questionsContainer, {
+        renderMathInElement(container, {
             delimiters: [
                 {left: "$$", right: "$$", display: true},
                 {left: "$", right: "$", display: false},
@@ -309,204 +258,17 @@ async function renderQuestions(lesson) {
     }
 }
 
-async function initializeLesson() {
-    // Check student authentication (optional for viewing lessons)
-    const isAuthenticated = await checkStudentAuthentication();
-    // Continue loading lesson regardless of authentication status
-    
-    showLoader(true);
-    const lessonId = window.location.pathname.split('/')[2];
-    document.title = 'Loading lesson...';
-    
-    try {
-        // Add cache-busting param so the browser never serves a cached response.
-        // This ensures the server runs fresh random pool selection on every page load,
-        // giving students a different set of questions each time (e.g. 15 from 40).
-        const cacheBuster = Date.now();
-        const response = await fetch(`/api/lessons/${lessonId}?_=${cacheBuster}`, {
-            cache: 'no-store'
-        });
-        if (!response.ok) {
-            throw new Error(`Failed to fetch lesson: ${response.status}`);
-        }
-        
-        const responseData = await response.json();
+// initializeLesson is defined in the HTML inline script (views/lesson.html)
+// It handles encrypted fetch, exam guard overlay integration, and timer start.
+// Do NOT redefine it here to avoid shadowing the HTML version.
+// --- END Note ---
 
-        // Extract lesson from API response
-        const lesson = responseData.lesson || responseData;
-        currentLessonData = lesson; // Store the lesson data
-
-        if (lesson.error || responseData.error) {
-            document.body.innerHTML = '<h1>Lesson not found</h1>';
-            currentLessonData = null; // Clear data on error
-            return;
-        }
-        
-        document.title = lesson.title;
-        const titleElement = document.getElementById('lesson-title');
-        if (titleElement) {
-            titleElement.textContent = lesson.title;
-        }
-        
-        // Display lesson image if present
-        if (lesson.lessonImage) {
-            const imageContainer = document.getElementById('lesson-image-container');
-            const imageElement = document.getElementById('lesson-image');
-
-            console.log('Lesson image data:', {
-                imageType: typeof lesson.lessonImage,
-                isDataURL: lesson.lessonImage.startsWith('data:'),
-                imagePreview: lesson.lessonImage.substring(0, 50) + '...'
-            });
-
-            // Check if this is a base64 data URL
-            if (lesson.lessonImage.startsWith('data:')) {
-                // Handle base64 data URLs - use them directly
-                imageElement.src = lesson.lessonImage;
-                imageElement.removeAttribute('srcset'); // Remove any existing srcset
-                console.log('Using base64 data URL directly for lesson image');
-            } else {
-                // Handle regular file paths with responsive images
-                const isModernImageURL = lesson.lessonImage.includes('.webp') ||
-                                        lesson.lessonImage.includes('supabase.co') ||
-                                        lesson.lessonImage.includes('_storage/');
-
-                if (isModernImageURL) {
-                    // Extract the base URL without extension if possible
-                    let baseUrl = lesson.lessonImage;
-                    let extension = '.jpg';
-
-                    if (baseUrl.includes('.webp')) {
-                        baseUrl = baseUrl.replace('.webp', '');
-                        extension = '.webp';
-                    } else if (baseUrl.match(/\.(jpe?g|png|gif)$/i)) {
-                        const match = baseUrl.match(/\.(jpe?g|png|gif)$/i);
-                        if (match) {
-                            extension = match[0];
-                            baseUrl = baseUrl.replace(extension, '');
-                        }
-                    }
-
-                    // Preload the image in the background
-                    const preloadLink = document.createElement('link');
-                    preloadLink.rel = 'preload';
-                    preloadLink.as = 'image';
-                    preloadLink.href = lesson.lessonImage;
-                    document.head.appendChild(preloadLink);
-
-                    // Set the srcset attribute for responsive loading
-                    imageElement.srcset = `${lesson.lessonImage} 1x`;
-                }
-
-                // Always set the src as fallback
-                imageElement.src = lesson.lessonImage;
-            }
-
-            imageContainer.style.display = 'block';
-        }
-        
-        // Add console log here to inspect the lesson object
-        console.log('Lesson object before rendering:', JSON.stringify(lesson, null, 2));
-        console.log('🔍 Debug - Shuffle flags:', {
-            shuffleQuestions: lesson.shuffleQuestions,
-            shuffleAnswers: lesson.shuffleAnswers,
-            enableQuestionPool: lesson.enableQuestionPool
-        });
-        
-        // Apply randomization if enabled - MUST happen before rendering
-        if (lesson.shuffleQuestions || lesson.shuffleAnswers || lesson.enableQuestionPool) {
-            console.log('✅ Calling applyRandomization');
-            applyRandomization(lesson);
-        } else {
-            console.warn('⚠️ Skipping applyRandomization - all flags are false');
-        }
-        
-        await renderQuestions(lesson);
-        console.log('Lesson initialized successfully');
-        
-        // Handle mode-specific UI changes
-        const lessonMode = lesson.mode || 'test';
-        if (lessonMode === 'practice') {
-            // Practice mode: Show mode indicator
-            const modeIndicator = document.createElement('div');
-            modeIndicator.className = 'practice-mode-indicator';
-            modeIndicator.innerHTML = '<i class="fas fa-graduation-cap"></i> Chế độ luyện tập - Có thể làm lại nhiều lần';
-            const titleElement = document.getElementById('lesson-title');
-            if (titleElement && titleElement.parentNode) {
-                titleElement.parentNode.insertBefore(modeIndicator, titleElement.nextSibling);
-            }
-            
-            // Store mode in a global variable for use in submission
-            window.lessonMode = 'practice';
-        } else {
-            // Test mode is default
-            window.lessonMode = 'test';
-        }
-        
-        // Check attempts and cooldown
-        if (lesson.enableMultipleAttempts) {
-            const attemptCheck = await checkAttemptPermission(lesson);
-            if (!attemptCheck.allowed) {
-                showAttemptDeniedMessage(attemptCheck);
-                return;
-            } else if (attemptCheck.previousAttempts) {
-                // Show previous attempts summary if allowed
-                showPreviousAttemptsSummary(lesson, attemptCheck.previousAttempts);
-            }
-        }
-        
-        // Initialize countdown timer if enabled
-        if (lesson.timeLimitEnabled && lesson.showCountdown !== false) {
-            initializeCountdownTimer(lesson);
-        }
-
-        // --- HIDE LOADER ---
-        showLoader(false); // Hide loader AFTER main content is rendered
-
-        // Initialize auto-rendering for KaTeX and highlighting
-        // These can run after the loader is hidden as well
-        if (window.renderMathInElement) {
-            renderMathInElement(document.body, {
-                delimiters: [
-                    {left: "$$", right: "$$", display: true},
-                    {left: "$", right: "$", display: false},
-                    {left: "\\(", right: "\\)", display: false},
-                    {left: "\\[", right: "\\]", display: true}
-                ],
-                throwOnError: false
-            });
-        }
-        if (window.hljs) {
-            hljs.highlightAll();
-        }
-
-    } catch (error) {
-        console.error('Error loading lesson:', error);
-        document.body.innerHTML = `
-            <h1>Error loading lesson</h1>
-            <p>Error details: ${error.message}</p>
-        `;
-        showLoader(false); // Ensure loader is hidden on error
-    }
-}
-// --- END New Function ---
-
-// Remove the old submitQuiz function and replace with new event listener setup
+// Submit quiz event listener setup
+// NOTE: initializeLesson() is called from the HTML inline DOMContentLoaded handler.
+// Do NOT call it again here to avoid double initialization and overlay issues.
 document.addEventListener('DOMContentLoaded', () => {
-    showLoader(true); // Show loader immediately
     const submitButton = document.getElementById('submit-quiz-btn');
-    if (submitButton) {
-        // REMOVED: Get student info from localStorage
-        // REMOVED: const studentInfo = JSON.parse(localStorage.getItem('studentInfo'));
-        // REMOVED: if (!studentInfo) {
-        // REMOVED:     // If no student info, redirect back to home
-        // REMOVED:     window.location.href = '/';
-        // REMOVED:     return;
-        // REMOVED: }
-
-        // Rest of your initialization code...
-        // This function already handles authentication checks and potential redirects
-        initializeLesson(); 
+    if (submitButton) { 
 
         submitButton.addEventListener('click', async () => {
             // Check authentication before allowing quiz submission
@@ -1126,7 +888,7 @@ function initializeCountdownTimer(lesson) {
     createTimerElement();
     
     let remainingTime = totalSeconds;
-    startTime = performance.now(); // Reset start time when timer starts
+    // Removed startTime = performance.now() to prevent overwriting global HTML timer
     
     // Update timer display
     updateTimerDisplay(remainingTime);
@@ -1695,3 +1457,351 @@ function showPreviousAttemptsSummary(lesson, previousAttempts) {
         titleElement.parentNode.insertBefore(summaryElement, titleElement.nextSibling);
     }
 }
+
+// ============================================================
+// EXAM GUARD MODULE
+// Monitors tab switches, app switches, and focus loss.
+// Escalating penalties:
+//   Flag 1 → Warning
+//   Flag 2 → Final warning
+//   Flag 3 → Reset all answers
+//   Flag 4 → Force submit
+// ============================================================
+const ExamGuard = (() => {
+    let flagCount = 0;
+    let isActive = false;
+    let isFullscreen = false;
+    let statusBadge = null;
+    let warningModalOpen = false;
+    let guardStartTime = null;
+
+    // Cooldown to prevent multiple rapid flags from the same event
+    let lastFlagTime = 0;
+    const FLAG_COOLDOWN_MS = 1500;
+
+    // ---- Fullscreen helpers (cross-browser) ----
+    function requestFullscreen() {
+        const el = document.documentElement;
+        const rfs = el.requestFullscreen
+            || el.webkitRequestFullscreen
+            || el.mozRequestFullScreen
+            || el.msRequestFullscreen;
+        if (rfs) {
+            rfs.call(el).then(() => {
+                isFullscreen = true;
+                console.log('[ExamGuard] Fullscreen enabled');
+            }).catch(err => {
+                console.warn('[ExamGuard] Fullscreen request denied:', err.message);
+                // On mobile browsers that deny fullscreen, still activate the guard
+                isFullscreen = false;
+            });
+        } else {
+            console.warn('[ExamGuard] Fullscreen API not supported');
+            isFullscreen = false;
+        }
+    }
+
+    function exitFullscreen() {
+        const efs = document.exitFullscreen
+            || document.webkitExitFullscreen
+            || document.mozCancelFullScreen
+            || document.msExitFullscreen;
+        if (efs && getFullscreenElement()) {
+            efs.call(document).catch(() => {});
+        }
+    }
+
+    function getFullscreenElement() {
+        return document.fullscreenElement
+            || document.webkitFullscreenElement
+            || document.mozFullScreenElement
+            || document.msFullscreenElement;
+    }
+
+    // ---- Status badge (bottom-left) ----
+    function createStatusBadge() {
+        statusBadge = document.createElement('div');
+        statusBadge.className = 'exam-guard-status';
+        statusBadge.innerHTML = `
+            <span class="guard-dot"></span>
+            <span class="guard-status-text">Giám sát bài thi</span>
+        `;
+        document.body.appendChild(statusBadge);
+        updateStatusBadge();
+    }
+
+    function updateStatusBadge() {
+        if (!statusBadge) return;
+        const textEl = statusBadge.querySelector('.guard-status-text');
+        if (flagCount === 0) {
+            statusBadge.className = 'exam-guard-status';
+            textEl.textContent = 'Giám sát bài thi';
+        } else if (flagCount <= 2) {
+            statusBadge.className = 'exam-guard-status warning';
+            textEl.textContent = `Cảnh báo: ${flagCount}/4`;
+        } else {
+            statusBadge.className = 'exam-guard-status danger';
+            textEl.textContent = `Vi phạm: ${flagCount}/4`;
+        }
+    }
+
+    // ---- Warning modal ----
+    function showWarningModal(title, message, flagNum) {
+        if (warningModalOpen) return; // Don't stack modals
+        warningModalOpen = true;
+
+        const modal = document.createElement('div');
+        modal.className = 'exam-guard-warning-modal';
+        modal.id = 'exam-guard-warning-modal';
+
+        let iconClass = 'fa-exclamation-triangle';
+        if (flagNum >= 3) iconClass = 'fa-skull-crossbones';
+
+        modal.innerHTML = `
+            <div class="exam-guard-warning-content">
+                <div class="guard-warning-icon">
+                    <i class="fas ${iconClass}"></i>
+                </div>
+                <h3>${title}</h3>
+                <p>${message}</p>
+                <div class="guard-flag-counter">
+                    <i class="fas fa-flag"></i>
+                    Vi phạm: ${flagNum} / 4
+                </div>
+                <br>
+                <button class="guard-dismiss-btn" id="guard-dismiss-warning">
+                    <i class="fas fa-check"></i>
+                    Đã hiểu
+                </button>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        document.getElementById('guard-dismiss-warning').addEventListener('click', () => {
+            modal.remove();
+            warningModalOpen = false;
+            // Re-request fullscreen when returning
+            requestFullscreen();
+        });
+    }
+
+    // ---- Reset all selections ----
+    function resetAllSelections() {
+        console.log('[ExamGuard] Resetting all user selections');
+
+        // Reset radio buttons
+        document.querySelectorAll('input[type="radio"]:checked').forEach(radio => {
+            radio.checked = false;
+        });
+
+        // Reset number inputs
+        document.querySelectorAll('.modern-number-input').forEach(input => {
+            input.value = '';
+        });
+
+        // Reset visual selection states (option cards)
+        document.querySelectorAll('.option-card.selected').forEach(card => {
+            card.classList.remove('selected');
+        });
+
+        // Reset true/false button states
+        document.querySelectorAll('.truefalse-btn.selected-true, .truefalse-btn.selected-false').forEach(btn => {
+            btn.classList.remove('selected-true', 'selected-false');
+        });
+
+        // Reset answered tracking
+        if (typeof answeredQuestions !== 'undefined' && answeredQuestions instanceof Set) {
+            answeredQuestions.clear();
+        }
+
+        // Reset nav items visual state
+        document.querySelectorAll('.question-nav-item.answered').forEach(item => {
+            item.classList.remove('answered');
+        });
+
+        // Update stats
+        if (typeof updateStats === 'function') {
+            updateStats();
+        }
+    }
+
+    // ---- Force submit ----
+    function forceSubmit() {
+        console.log('[ExamGuard] Force submitting quiz');
+        const submitBtn = document.getElementById('submit-quiz-btn');
+        if (submitBtn && !submitBtn.disabled) {
+            submitBtn.click();
+        } else {
+            // If there's a confirmation modal flow, try the confirm button
+            const confirmBtn = document.querySelector('.btn-confirm');
+            if (confirmBtn) {
+                confirmBtn.click();
+            }
+        }
+    }
+
+    // ---- Core flag handler ----
+    function triggerFlag(reason) {
+        if (!isActive) return;
+        if (warningModalOpen) return; // Don't flag while already showing warning
+
+        // Cooldown check
+        const now = Date.now();
+        if (now - lastFlagTime < FLAG_COOLDOWN_MS) return;
+        lastFlagTime = now;
+
+        flagCount++;
+        console.log(`[ExamGuard] Flag #${flagCount} triggered (${reason})`);
+        updateStatusBadge();
+
+        switch (flagCount) {
+            case 1:
+                showWarningModal(
+                    'Cảnh báo!',
+                    'Bạn đã rời khỏi trang bài thi. Đây là cảnh báo lần 1. Vui lòng không chuyển tab hoặc rời khỏi trang.',
+                    1
+                );
+                break;
+
+            case 2:
+                showWarningModal(
+                    '⚠️ Cảnh báo lần cuối!',
+                    'Đây là lần thứ 2 bạn rời trang. Lần tiếp theo, toàn bộ câu trả lời của bạn sẽ bị xóa!',
+                    2
+                );
+                break;
+
+            case 3:
+                resetAllSelections();
+                showWarningModal(
+                    '🚨 Đã xóa câu trả lời!',
+                    'Toàn bộ câu trả lời của bạn đã bị xóa do vi phạm lần 3. Nếu rời trang thêm lần nữa, bài thi sẽ được tự động nộp.',
+                    3
+                );
+                break;
+
+            case 4:
+                // Remove any existing warning modals
+                const existingModal = document.getElementById('exam-guard-warning-modal');
+                if (existingModal) existingModal.remove();
+                warningModalOpen = false;
+
+                // Show brief notification then force submit
+                showWarningModal(
+                    '🛑 Tự động nộp bài!',
+                    'Bài thi của bạn đang được nộp tự động do vi phạm 4 lần rời trang.',
+                    4
+                );
+
+                // Force submit after short delay
+                setTimeout(() => {
+                    const modal = document.getElementById('exam-guard-warning-modal');
+                    if (modal) modal.remove();
+                    warningModalOpen = false;
+                    exitFullscreen();
+                    forceSubmit();
+                }, 2000);
+                break;
+
+            default:
+                // If somehow more than 4, just keep force submitting
+                exitFullscreen();
+                forceSubmit();
+                break;
+        }
+    }
+
+    // ---- Event listeners ----
+    function setupListeners() {
+        // 1. Visibility change (tab switch, minimize, app switch on mobile)
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && isActive) {
+                triggerFlag('visibilitychange');
+            }
+        });
+
+        // 2. Window blur (covers some edge cases visibility doesn't catch)
+        window.addEventListener('blur', () => {
+            if (isActive) {
+                // Small delay to avoid false positives from in-page interactions
+                setTimeout(() => {
+                    if (!document.hasFocus() && isActive) {
+                        triggerFlag('window-blur');
+                    }
+                }, 300);
+            }
+        });
+
+        // 3. Fullscreen exit (user presses Escape or exits fullscreen)
+        const fsEvents = ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange', 'MSFullscreenChange'];
+        fsEvents.forEach(event => {
+            document.addEventListener(event, () => {
+                if (isActive && !getFullscreenElement()) {
+                    // User exited fullscreen
+                    console.log('[ExamGuard] Fullscreen exited');
+                    isFullscreen = false;
+                    triggerFlag('fullscreen-exit');
+                }
+            });
+        });
+
+        // 4. Page unload / beforeunload
+        window.addEventListener('beforeunload', (e) => {
+            if (isActive) {
+                e.preventDefault();
+                e.returnValue = 'Bạn đang làm bài thi. Bạn có chắc muốn rời trang?';
+                return e.returnValue;
+            }
+        });
+
+        // 5. Detect mobile-specific events: pagehide (iOS Safari)
+        window.addEventListener('pagehide', () => {
+            if (isActive) {
+                triggerFlag('pagehide');
+            }
+        });
+    }
+
+    // ---- Public API ----
+    function activate() {
+        isActive = true;
+        guardStartTime = Date.now();
+        flagCount = 0;
+        lastFlagTime = 0;
+        warningModalOpen = false;
+        requestFullscreen();
+        createStatusBadge();
+        setupListeners();
+        console.log('[ExamGuard] Activated');
+    }
+
+    function deactivate() {
+        isActive = false;
+        exitFullscreen();
+        if (statusBadge) {
+            statusBadge.remove();
+            statusBadge = null;
+        }
+        console.log('[ExamGuard] Deactivated');
+    }
+
+    function getFlagCount() {
+        return flagCount;
+    }
+
+    function isGuardActive() {
+        return isActive;
+    }
+
+    return { activate, deactivate, getFlagCount, isGuardActive };
+})();
+
+// Deactivate guard when quiz is submitted (hook into existing submit flow)
+const _originalBeforeUnload = window.onbeforeunload;
+window.addEventListener('beforeunload', () => {
+    // If navigating away after submit, deactivate guard
+    if (ExamGuard.isGuardActive()) {
+        ExamGuard.deactivate();
+    }
+});
