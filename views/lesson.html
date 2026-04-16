@@ -1909,20 +1909,24 @@
             const urlParams = new URLSearchParams(window.location.search);
             const forceShuffleQuestions = urlParams.get('shuffle') === 'true';
             
-            if (lesson.shuffleQuestions || forceShuffleQuestions) {
-                if (forceShuffleQuestions) {
-                    console.log('🔧 Force shuffle enabled via URL parameter');
+            // Only shuffle / apply pool selection if applyRandomization hasn't already done it
+            if (!lesson._randomized) {
+                if (lesson.shuffleQuestions || forceShuffleQuestions) {
+                    if (forceShuffleQuestions) {
+                        console.log('🔧 Force shuffle enabled via URL parameter');
+                    }
+                    allQuestions = shuffleArray(allQuestions);
+                    console.log('🎲 Shuffle Debug - Questions after shuffle:', allQuestions.map(q => q.question || q.id));
+                } else {
+                    console.warn('⚠️ Shuffle Debug - shuffleQuestions is false or undefined!');
                 }
-                allQuestions = shuffleArray(allQuestions);
-                console.log('🎲 Shuffle Debug - Questions after shuffle:', allQuestions.map(q => q.question || q.id));
+
+                // Apply random question pool selection if specified
+                if (lesson.randomQuestions > 0 && lesson.randomQuestions < lesson.questions.length) {
+                    allQuestions = shuffleArray(allQuestions).slice(0, lesson.randomQuestions);
+                }
             } else {
-                console.warn('⚠️ Shuffle Debug - shuffleQuestions is false or undefined!');
-                console.log('💡 Tip: Add ?shuffle=true to URL to force shuffling');
-            }
-            
-            // Apply random selection if specified (legacy support)
-            if (lesson.randomQuestions > 0 && lesson.randomQuestions < lesson.questions.length) {
-                allQuestions = shuffleArray(allQuestions).slice(0, lesson.randomQuestions);
+                console.log('✅ Shuffle already applied by applyRandomization, skipping inline shuffle');
             }
 
             // Render each question
@@ -2006,10 +2010,8 @@
                             letter: String.fromCharCode(65 + idx)
                         }));
                         
-                        // Only shuffle options if shuffleAnswers is enabled AND applyRandomization has NOT
-                        // already handled it (applyRandomization shuffles options AND updates question.correct;
-                        // re-shuffling here without updating question.correct would break scoring).
-                        const shuffledOptions = (lesson.shuffleAnswers && !lesson._randomized) ? 
+                        // Shuffle options if shuffleAnswers is enabled
+                        const shuffledOptions = lesson.shuffleAnswers ? 
                             shuffleArray([...optionsWithIndices]) : 
                             optionsWithIndices;
                         
@@ -2368,7 +2370,9 @@
                         }
 
                         if (selectedValue) {
-                            const mapping = (window.questionMappings || questionMappings)[originalIndex];
+                            // Prefer local questionMappings (written by the inline renderQuestions that
+                            // actually runs) — fall back to window.questionMappings for lesson.js renderer.
+                            const mapping = questionMappings[originalIndex] ?? window.questionMappings[originalIndex];
                             const selectedMapping = mapping ? mapping.find(m => m.displayedLetter === selectedValue) : null;
                             
                             if (selectedMapping && q.options[selectedMapping.originalIndex]) {
@@ -2396,7 +2400,7 @@
                             }
                             isCorrect = false;
                         }
-                    } else if (q.type === 'number') {
+                    } else if (normalizedType === 'number') {
                         const inputElement = document.querySelector(`[name="q${originalIndex}"]`);
                         userAnswer = inputElement ? inputElement.value : 'No input found';
                         correctAnswer = q.correct.toString();
@@ -2578,12 +2582,9 @@
                     titleElement.textContent = lesson.title;
                 }
                 
-                // Apply randomization (shuffle questions, shuffle answers, select question pool/subtest)
-                // MUST run before renderQuestions so lesson.js's renderQuestions gets the already-randomized array.
-                if (typeof applyRandomization === 'function') {
-                    applyRandomization(lesson);
-                }
-
+                // renderQuestions handles its own shuffle/pool logic internally.
+                // Do NOT call applyRandomization here — the inline renderQuestions overrides
+                // lesson.js's version and manages randomization itself to keep index keys consistent.
                 await renderQuestions(lesson);
                 showLoader(false);
                 
