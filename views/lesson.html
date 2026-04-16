@@ -2363,22 +2363,29 @@
                         const selectedRadio = document.querySelector(`input[name="q${originalIndex}"]:checked`);
                         const selectedValue = selectedRadio ? selectedRadio.value : null;
 
-                        if (Array.isArray(q.options)) {
+                        // Get the mapping (displayed order A,B,C,D → original option indices)
+                        const mapping = questionMappings[originalIndex] ?? window.questionMappings[originalIndex];
+
+                        // Build optionsText in DISPLAYED order so result.js labels A,B,C,D
+                        // match exactly what the user saw on screen (critical when shuffleAnswers=true).
+                        if (mapping && mapping.length > 0) {
+                            optionsText = mapping.map(m => {
+                                const opt = q.options[m.originalIndex];
+                                return opt ? (opt.text || opt) : '';
+                            });
+                        } else if (Array.isArray(q.options)) {
                             optionsText = q.options.map(opt => opt.text || opt);
                         } else {
                             optionsText = [];
                         }
 
                         if (selectedValue) {
-                            // Prefer local questionMappings (written by the inline renderQuestions that
-                            // actually runs) — fall back to window.questionMappings for lesson.js renderer.
-                            const mapping = questionMappings[originalIndex] ?? window.questionMappings[originalIndex];
                             const selectedMapping = mapping ? mapping.find(m => m.displayedLetter === selectedValue) : null;
-                            
+
                             if (selectedMapping && q.options[selectedMapping.originalIndex]) {
                                 const option = q.options[selectedMapping.originalIndex];
                                 userAnswer = option.text || option;
-                                
+
                                 const correctIndex = correctAnswerValue.toUpperCase().charCodeAt(0) - 65;
                                 if (correctIndex >= 0 && correctIndex < q.options.length) {
                                     const correctOption = q.options[correctIndex];
@@ -2387,6 +2394,16 @@
                                 } else {
                                     correctAnswer = 'Error: Invalid correct answer specified';
                                     isCorrect = false;
+                                }
+                            } else {
+                                console.warn(`No mapping for q${originalIndex}, selectedValue=${selectedValue}`);
+                                userAnswer = 'No answer';
+                                isCorrect = false;
+                                const correctIndex = correctAnswerValue.toUpperCase().charCodeAt(0) - 65;
+                                if (correctIndex >= 0 && correctIndex < q.options.length) {
+                                    correctAnswer = (q.options[correctIndex].text || q.options[correctIndex]);
+                                } else {
+                                    correctAnswer = 'Error: Invalid correct answer specified';
                                 }
                             }
                         } else {
