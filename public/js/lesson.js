@@ -472,7 +472,6 @@ function storeResultInSession(quizResults) {
 
 // Global timer variables
 let countdownTimer = null;
-let timerElement = null;
 let warningShown = false;
 
 function initializeCountdownTimer(lesson) {
@@ -487,19 +486,28 @@ function initializeCountdownTimer(lesson) {
         return;
     }
     
-    // Create timer element
-    createTimerElement();
+    // Stop the count-up timer if it's running
+    if (typeof timerInterval !== 'undefined' && timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+    
+    // Use the existing sidebar timer element instead of creating a floating one
+    const sidebarTimer = document.getElementById('timer');
+    if (!sidebarTimer) {
+        console.warn('Sidebar timer element not found');
+        return;
+    }
     
     let remainingTime = totalSeconds;
-    // Removed startTime = performance.now() to prevent overwriting global HTML timer
     
-    // Update timer display
-    updateTimerDisplay(remainingTime);
+    // Update display immediately
+    updateCountdownDisplay(sidebarTimer, remainingTime);
     
     // Start countdown
     countdownTimer = setInterval(() => {
         remainingTime--;
-        updateTimerDisplay(remainingTime);
+        updateCountdownDisplay(sidebarTimer, remainingTime);
         
         // Show warning at 3 minutes
         if (remainingTime === 180 && !warningShown) {
@@ -519,81 +527,25 @@ function initializeCountdownTimer(lesson) {
     }, 1000);
 }
 
-function createTimerElement() {
-    // Remove existing timer if present
-    const existingTimer = document.getElementById('countdown-timer');
-    if (existingTimer) {
-        existingTimer.remove();
-    }
-    
-    // Create timer container
-    timerElement = document.createElement('div');
-    timerElement.id = 'countdown-timer';
-    timerElement.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: var(--bg-card, #1e1e2a);
-        border: 2px solid var(--accent-primary, #6366f1);
-        border-radius: 12px;
-        padding: 16px 20px;
-        font-family: 'Courier New', monospace;
-        font-size: 1.2rem;
-        font-weight: 600;
-        color: var(--text-primary, #e4e4e7);
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-        z-index: 1000;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        min-width: 160px;
-        transition: all 0.3s ease;
-    `;
-    
-    // Add icon
-    const icon = document.createElement('i');
-    icon.className = 'fas fa-clock';
-    icon.style.color = 'var(--accent-primary, #6366f1)';
-    
-    // Add time display
-    const timeDisplay = document.createElement('span');
-    timeDisplay.id = 'timer-display';
-    
-    timerElement.appendChild(icon);
-    timerElement.appendChild(timeDisplay);
-    
-    // Add to page
-    document.body.appendChild(timerElement);
-}
-
-function updateTimerDisplay(remainingTime) {
-    if (!timerElement) return;
-    
-    const timeDisplay = document.getElementById('timer-display');
-    if (!timeDisplay) return;
-    
+function updateCountdownDisplay(timerEl, remainingTime) {
     const hours = Math.floor(remainingTime / 3600);
     const minutes = Math.floor((remainingTime % 3600) / 60);
     const seconds = remainingTime % 60;
     
-    let timeText = '';
-    if (hours > 0) {
-        timeText = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    } else {
-        timeText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    }
+    timerEl.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     
-    timeDisplay.textContent = timeText;
+    // Get the parent exam-timer container for color changes
+    const timerContainer = timerEl.closest('.exam-timer');
     
     // Change color as time runs out
     if (remainingTime <= 180) { // Last 3 minutes
-        timerElement.style.borderColor = 'var(--accent-warning, #f59e0b)';
-        timerElement.style.background = 'rgba(245, 158, 11, 0.1)';
+        timerEl.style.color = 'var(--accent-warning, #f59e0b)';
+        if (timerContainer) timerContainer.style.color = 'var(--accent-warning, #f59e0b)';
     }
     if (remainingTime <= 60) { // Last minute
-        timerElement.style.borderColor = 'var(--accent-danger, #ef4444)';
-        timerElement.style.background = 'rgba(239, 68, 68, 0.1)';
-        timerElement.style.animation = 'pulse 1s infinite';
+        timerEl.style.color = 'var(--accent-danger, #ef4444)';
+        if (timerContainer) timerContainer.style.color = 'var(--accent-danger, #ef4444)';
+        timerEl.style.animation = 'pulse 1s infinite';
     }
 }
 

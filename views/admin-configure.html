@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cấu hình bài học - OnluyenVatLy</title>
-    
+
     <!-- External Dependencies -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Custom Styles -->
     <link rel="stylesheet" href="/css/admin-new-v2.css">
-    
+
     <!-- Favicon -->
     <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
 </head>
+
 <body>
     <!-- Loading Overlay -->
     <div id="loading-overlay" class="loading-overlay hidden">
@@ -63,7 +65,8 @@
                                 <label for="test-mode" class="mode-option">
                                     <i class="fas fa-clipboard-check"></i>
                                     <span class="mode-title">Chế độ kiểm tra</span>
-                                    <span class="mode-description">Một lần làm bài, có giới hạn thời gian, không hiển thị đáp án</span>
+                                    <span class="mode-description">Một lần làm bài, có giới hạn thời gian, không hiển
+                                        thị đáp án</span>
                                 </label>
                             </div>
                             <div class="mode-toggle">
@@ -71,7 +74,8 @@
                                 <label for="practice-mode" class="mode-option">
                                     <i class="fas fa-graduation-cap"></i>
                                     <span class="mode-title">Chế độ luyện tập</span>
-                                    <span class="mode-description">Làm lại nhiều lần, có gợi ý, hiển thị đáp án ngay</span>
+                                    <span class="mode-description">Làm lại nhiều lần, có gợi ý, hiển thị đáp án
+                                        ngay</span>
                                 </label>
                             </div>
                         </div>
@@ -93,23 +97,26 @@
                                     <span class="toggle-text">Bật giới hạn thời gian</span>
                                 </label>
                             </div>
-                            
+
                             <div class="time-limit-controls" id="time-limit-controls" style="display: none;">
                                 <div class="time-input-row">
                                     <div class="time-input-group">
                                         <label for="time-hours" class="time-label">Giờ</label>
-                                        <input type="number" id="time-hours" class="time-input" min="0" max="23" value="0">
+                                        <input type="number" id="time-hours" class="time-input" min="0" max="23"
+                                            value="0">
                                     </div>
                                     <div class="time-input-group">
                                         <label for="time-minutes" class="time-label">Phút</label>
-                                        <input type="number" id="time-minutes" class="time-input" min="0" max="59" value="30">
+                                        <input type="number" id="time-minutes" class="time-input" min="0" max="59"
+                                            value="30">
                                     </div>
                                     <div class="time-input-group">
                                         <label for="time-seconds" class="time-label">Giây</label>
-                                        <input type="number" id="time-seconds" class="time-input" min="0" max="59" value="0">
+                                        <input type="number" id="time-seconds" class="time-input" min="0" max="59"
+                                            value="0">
                                     </div>
                                 </div>
-                                
+
                                 <div class="time-limit-options">
                                     <div class="option-item">
                                         <input type="checkbox" id="show-countdown" class="option-checkbox" checked>
@@ -129,11 +136,11 @@
                                         <input type="checkbox" id="warning-alerts" class="option-checkbox">
                                         <label for="warning-alerts" class="option-label">
                                             <i class="fas fa-exclamation-triangle"></i>
-                                            Cảnh báo khi còn 5 phút
+                                            Cảnh báo khi còn 3 phút
                                         </label>
                                     </div>
                                 </div>
-                                
+
                                 <div class="time-preview">
                                     <span class="preview-label">Thời gian:</span>
                                     <span class="preview-time" id="time-preview">30:00</span>
@@ -160,7 +167,8 @@
                                         <span class="toggle-text">Xáo trộn thứ tự câu hỏi</span>
                                     </label>
                                 </div>
-                                <p class="randomization-description">Các câu hỏi sẽ xuất hiện theo thứ tự ngẫu nhiên cho mỗi học sinh</p>
+                                <p class="randomization-description">Các câu hỏi sẽ xuất hiện theo thứ tự ngẫu nhiên cho
+                                    mỗi học sinh</p>
                             </div>
 
                             <!-- Answer Choice Shuffling -->
@@ -172,7 +180,8 @@
                                         <span class="toggle-text">Xáo trộn đáp án trắc nghiệm</span>
                                     </label>
                                 </div>
-                                <p class="randomization-description">Các đáp án A, B, C, D sẽ được xáo trộn vị trí cho mỗi học sinh</p>
+                                <p class="randomization-description">Các đáp án A, B, C, D sẽ được xáo trộn vị trí cho
+                                    mỗi học sinh</p>
                             </div>
 
                             <!-- Question Pool Selection -->
@@ -184,8 +193,9 @@
                                         <span class="toggle-text">Chọn ngẫu nhiên từ bộ câu hỏi</span>
                                     </label>
                                 </div>
-                                <p class="randomization-description">Mỗi học sinh sẽ nhận được một tập con câu hỏi được chọn ngẫu nhiên</p>
-                                
+                                <p class="randomization-description">Mỗi học sinh sẽ nhận được một tập con câu hỏi được
+                                    chọn ngẫu nhiên</p>
+
                                 <div class="question-pool-controls" id="question-pool-controls" style="display: none;">
                                     <div class="pool-setting">
                                         <label for="pool-size" class="pool-label">Số câu hỏi cho mỗi học sinh:</label>
@@ -194,52 +204,68 @@
                                             <span class="pool-max" id="pool-max-display">/ 0 câu có sẵn</span>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="pool-setting">
                                         <label class="pool-label">Phân bố theo loại câu hỏi:</label>
                                         <div class="question-type-distribution">
                                             <div class="question-type-item">
-                                                <label for="abcd-count" class="question-type-label">Trắc nghiệm ABCD</label>
-                                                <input type="number" id="abcd-count" class="question-type-input" min="0" value="10">
+                                                <label for="abcd-count" class="question-type-label">Trắc nghiệm
+                                                    ABCD</label>
+                                                <input type="number" id="abcd-count" class="question-type-input" min="0"
+                                                    value="10">
                                                 <span class="question-type-available" id="abcd-available">/ 0 câu</span>
                                             </div>
                                             <div class="question-type-item">
-                                                <label for="truefalse-count" class="question-type-label">Đúng/Sai</label>
-                                                <input type="number" id="truefalse-count" class="question-type-input" min="0" value="5">
-                                                <span class="question-type-available" id="truefalse-available">/ 0 câu</span>
+                                                <label for="truefalse-count"
+                                                    class="question-type-label">Đúng/Sai</label>
+                                                <input type="number" id="truefalse-count" class="question-type-input"
+                                                    min="0" value="5">
+                                                <span class="question-type-available" id="truefalse-available">/ 0
+                                                    câu</span>
                                             </div>
                                             <div class="question-type-item">
                                                 <label for="number-count" class="question-type-label">Điền số</label>
-                                                <input type="number" id="number-count" class="question-type-input" min="0" value="3">
-                                                <span class="question-type-available" id="number-available">/ 0 câu</span>
+                                                <input type="number" id="number-count" class="question-type-input"
+                                                    min="0" value="3">
+                                                <span class="question-type-available" id="number-available">/ 0
+                                                    câu</span>
                                             </div>
                                         </div>
                                         <div class="question-type-total" id="question-type-total">Tổng: 18 câu</div>
                                     </div>
-                                    
+
                                     <div class="pool-setting">
                                         <label class="pool-label">Phân bố điểm theo loại câu hỏi:</label>
                                         <div class="points-distribution">
                                             <div class="points-item">
                                                 <label for="abcd-points" class="points-label">Tổng điểm ABCD</label>
-                                                <input type="number" id="abcd-points" class="points-input" min="0" step="0.1" value="6">
-                                                <span class="points-per-question" id="abcd-points-per">= 0.6 điểm/câu</span>
+                                                <input type="number" id="abcd-points" class="points-input" min="0"
+                                                    step="0.1" value="6">
+                                                <span class="points-per-question" id="abcd-points-per">= 0.6
+                                                    điểm/câu</span>
                                             </div>
                                             <div class="points-item">
-                                                <label for="truefalse-points" class="points-label">Tổng điểm Đúng/Sai</label>
-                                                <input type="number" id="truefalse-points" class="points-input" min="0" step="0.1" value="3">
-                                                <span class="points-per-question" id="truefalse-points-per">= 0.6 điểm/câu</span>
+                                                <label for="truefalse-points" class="points-label">Tổng điểm
+                                                    Đúng/Sai</label>
+                                                <input type="number" id="truefalse-points" class="points-input" min="0"
+                                                    step="0.1" value="3">
+                                                <span class="points-per-question" id="truefalse-points-per">= 0.6
+                                                    điểm/câu</span>
                                             </div>
                                             <div class="points-item">
-                                                <label for="number-points" class="points-label">Tổng điểm Điền số</label>
-                                                <input type="number" id="number-points" class="points-input" min="0" step="0.1" value="1">
-                                                <span class="points-per-question" id="number-points-per">= 0.33 điểm/câu</span>
+                                                <label for="number-points" class="points-label">Tổng điểm Điền
+                                                    số</label>
+                                                <input type="number" id="number-points" class="points-input" min="0"
+                                                    step="0.1" value="1">
+                                                <span class="points-per-question" id="number-points-per">= 0.33
+                                                    điểm/câu</span>
                                             </div>
                                         </div>
                                         <div class="points-total" id="points-total">Tổng điểm: 10</div>
                                         <div class="points-note">
                                             <i class="fas fa-info-circle"></i>
-                                            <span>Lưu ý: Câu Đúng/Sai được tính điểm theo thang: 4 đúng = 100%, 3 đúng = 50%, 2 đúng = 25%, 1 đúng = 10%</span>
+                                            <span>Lưu ý: Câu Đúng/Sai được tính điểm theo thang: 4 đúng = 100%, 3 đúng =
+                                                50%, 2 đúng = 25%, 1 đúng = 10%</span>
                                         </div>
                                     </div>
                                 </div>
@@ -252,8 +278,10 @@
                                         <i class="fas fa-dice"></i>
                                         Seed ngẫu nhiên (tùy chọn)
                                     </label>
-                                    <input type="text" id="randomization-seed" class="form-control" placeholder="Để trống cho seed tự động">
-                                    <p class="randomization-description">Seed giống nhau sẽ tạo ra cùng một pattern xáo trộn</p>
+                                    <input type="text" id="randomization-seed" class="form-control"
+                                        placeholder="Để trống cho seed tự động">
+                                    <p class="randomization-description">Seed giống nhau sẽ tạo ra cùng một pattern xáo
+                                        trộn</p>
                                 </div>
                             </div>
                         </div>
@@ -277,7 +305,8 @@
                                         <span class="toggle-text">Cho phép nhiều lần thử</span>
                                     </label>
                                 </div>
-                                <p class="attempts-description">Học sinh có thể làm bài nhiều lần (mặc định: chỉ 1 lần)</p>
+                                <p class="attempts-description">Học sinh có thể làm bài nhiều lần (mặc định: chỉ 1 lần)
+                                </p>
                             </div>
 
                             <div class="attempts-controls" id="attempts-controls" style="display: none;">
@@ -289,7 +318,8 @@
                                             Số lần thử tối đa
                                         </label>
                                         <div class="attempts-input-group">
-                                            <input type="number" id="max-attempts" class="attempts-input" min="1" max="20" value="3">
+                                            <input type="number" id="max-attempts" class="attempts-input" min="1"
+                                                max="20" value="3">
                                             <div class="attempts-options">
                                                 <label class="attempts-option">
                                                     <input type="radio" name="attempts-limit" value="limited" checked>
@@ -315,15 +345,18 @@
                                         <div class="cooldown-controls">
                                             <div class="cooldown-input-row">
                                                 <div class="cooldown-input-group">
-                                                    <input type="number" id="cooldown-hours" class="cooldown-input" min="0" max="23" value="0">
+                                                    <input type="number" id="cooldown-hours" class="cooldown-input"
+                                                        min="0" max="23" value="0">
                                                     <label class="cooldown-label">Giờ</label>
                                                 </div>
                                                 <div class="cooldown-input-group">
-                                                    <input type="number" id="cooldown-minutes" class="cooldown-input" min="0" max="59" value="30">
+                                                    <input type="number" id="cooldown-minutes" class="cooldown-input"
+                                                        min="0" max="59" value="30">
                                                     <label class="cooldown-label">Phút</label>
                                                 </div>
                                                 <div class="cooldown-input-group">
-                                                    <input type="number" id="cooldown-seconds" class="cooldown-input" min="0" max="59" value="0">
+                                                    <input type="number" id="cooldown-seconds" class="cooldown-input"
+                                                        min="0" max="59" value="0">
                                                     <label class="cooldown-label">Giây</label>
                                                 </div>
                                             </div>
@@ -348,21 +381,24 @@
                                                 <input type="radio" name="score-recording" value="highest" checked>
                                                 <div class="score-option-content">
                                                     <span class="score-option-title">Điểm cao nhất</span>
-                                                    <span class="score-option-description">Lấy điểm cao nhất trong tất cả lần thử</span>
+                                                    <span class="score-option-description">Lấy điểm cao nhất trong tất
+                                                        cả lần thử</span>
                                                 </div>
                                             </label>
                                             <label class="score-option">
                                                 <input type="radio" name="score-recording" value="latest">
                                                 <div class="score-option-content">
                                                     <span class="score-option-title">Điểm lần cuối</span>
-                                                    <span class="score-option-description">Lấy điểm của lần thử gần nhất</span>
+                                                    <span class="score-option-description">Lấy điểm của lần thử gần
+                                                        nhất</span>
                                                 </div>
                                             </label>
                                             <label class="score-option">
                                                 <input type="radio" name="score-recording" value="average">
                                                 <div class="score-option-content">
                                                     <span class="score-option-title">Điểm trung bình</span>
-                                                    <span class="score-option-description">Tính trung bình của tất cả lần thử</span>
+                                                    <span class="score-option-description">Tính trung bình của tất cả
+                                                        lần thử</span>
                                                 </div>
                                             </label>
                                         </div>
@@ -373,21 +409,24 @@
                                 <div class="attempts-group">
                                     <div class="attempts-advanced-options">
                                         <div class="advanced-option-item">
-                                            <input type="checkbox" id="show-previous-attempts" class="option-checkbox" checked>
+                                            <input type="checkbox" id="show-previous-attempts" class="option-checkbox"
+                                                checked>
                                             <label for="show-previous-attempts" class="option-label">
                                                 <i class="fas fa-history"></i>
                                                 Hiển thị kết quả lần thử trước
                                             </label>
                                         </div>
                                         <div class="advanced-option-item">
-                                            <input type="checkbox" id="allow-review-before-retry" class="option-checkbox">
+                                            <input type="checkbox" id="allow-review-before-retry"
+                                                class="option-checkbox">
                                             <label for="allow-review-before-retry" class="option-label">
                                                 <i class="fas fa-eye"></i>
                                                 Cho phép xem lại đáp án trước khi thử lại
                                             </label>
                                         </div>
                                         <div class="advanced-option-item">
-                                            <input type="checkbox" id="reset-timer-each-attempt" class="option-checkbox" checked>
+                                            <input type="checkbox" id="reset-timer-each-attempt" class="option-checkbox"
+                                                checked>
                                             <label for="reset-timer-each-attempt" class="option-label">
                                                 <i class="fas fa-stopwatch"></i>
                                                 Đặt lại thời gian cho mỗi lần thử
@@ -414,7 +453,8 @@
                                 Tên bài học
                             </label>
                             <div class="setting-input">
-                                <input id="lesson-title" type="text" class="form-control" placeholder="Nhập tên bài học...">
+                                <input id="lesson-title" type="text" class="form-control"
+                                    placeholder="Nhập tên bài học...">
                             </div>
                             <div class="validation-message" style="display: none;">
                                 Vui lòng nhập tên bài học
@@ -475,13 +515,15 @@
                             <label for="lesson-description" class="form-label">
                                 <i class="fas fa-align-left"></i>
                                 Mô tả
-                                <button type="button" class="ai-generate-btn" id="generate-description-btn" title="Tạo mô tả bằng AI">
+                                <button type="button" class="ai-generate-btn" id="generate-description-btn"
+                                    title="Tạo mô tả bằng AI">
                                     <i class="fas fa-magic"></i>
                                     AI
                                 </button>
                             </label>
                             <div class="setting-input">
-                                <textarea id="lesson-description" class="form-control" rows="4" placeholder="Nhập mô tả cho bài học..."></textarea>
+                                <textarea id="lesson-description" class="form-control" rows="4"
+                                    placeholder="Nhập mô tả cho bài học..."></textarea>
                                 <div class="ai-status" id="description-ai-status" style="display: none;">
                                     <i class="fas fa-spinner fa-spin"></i>
                                     <span>Đang tạo mô tả...</span>
@@ -495,7 +537,8 @@
                                 <label for="lesson-image" class="form-label">
                                     <i class="fas fa-image"></i>
                                     Ảnh minh họa
-                                    <button type="button" class="ai-generate-btn" id="generate-image-btn" title="Tạo ảnh bằng AI">
+                                    <button type="button" class="ai-generate-btn" id="generate-image-btn"
+                                        title="Tạo ảnh bằng AI">
                                         <i class="fas fa-magic"></i>
                                         AI
                                     </button>
@@ -504,7 +547,8 @@
                                     <input type="file" id="lesson-image" accept="image/*" class="form-file">
                                     <div class="file-upload-preview" id="image-preview" style="display: none;">
                                         <img id="lesson-image-preview" style="display: none;" alt="Preview">
-                                        <button type="button" class="remove-image-btn" style="display: none;">Remove</button>
+                                        <button type="button" class="remove-image-btn"
+                                            style="display: none;">Remove</button>
                                     </div>
                                     <div class="ai-status" id="image-ai-status" style="display: none;">
                                         <i class="fas fa-spinner fa-spin"></i>
@@ -512,13 +556,14 @@
                                     </div>
                                 </div>
                                 <div class="custom-prompt-container" style="margin-top: 10px;">
-                                    <label for="custom-image-prompt" class="form-label" style="font-size: 0.9em; color: #666;">
+                                    <label for="custom-image-prompt" class="form-label"
+                                        style="font-size: 0.9em; color: #666;">
                                         <i class="fas fa-edit"></i>
                                         Mô tả tùy chỉnh cho ảnh (tùy chọn)
                                     </label>
                                     <input type="text" id="custom-image-prompt" class="form-control"
-                                           placeholder="Nhập mô tả chi tiết cho ảnh bạn muốn tạo..."
-                                           style="font-size: 0.9em;">
+                                        placeholder="Nhập mô tả chi tiết cho ảnh bạn muốn tạo..."
+                                        style="font-size: 0.9em;">
                                     <small class="form-text text-muted">
                                         Để trống để sử dụng mô tả tự động từ nội dung bài học
                                     </small>
@@ -538,13 +583,15 @@
                                 <label for="tag-input" class="form-label">
                                     <i class="fas fa-tags"></i>
                                     Tags
-                                    <button type="button" class="ai-generate-btn" id="suggest-tags-btn" title="Gợi ý tag bằng AI">
+                                    <button type="button" class="ai-generate-btn" id="suggest-tags-btn"
+                                        title="Gợi ý tag bằng AI">
                                         <i class="fas fa-magic"></i>
                                         AI
                                     </button>
                                 </label>
                                 <div class="tags-input-container">
-                                    <input type="text" id="tag-input" class="form-control" placeholder="Nhập tag và nhấn Enter...">
+                                    <input type="text" id="tag-input" class="form-control"
+                                        placeholder="Nhập tag và nhấn Enter...">
                                     <div id="tags-list" class="tags-list"></div>
 
                                     <!-- AI Tag Suggestions Container -->
@@ -554,7 +601,8 @@
                                             <span>Đang phân tích và gợi ý tag...</span>
                                         </div>
 
-                                        <div class="tag-suggestions-content" id="tag-suggestions-content" style="display: none;">
+                                        <div class="tag-suggestions-content" id="tag-suggestions-content"
+                                            style="display: none;">
                                             <div class="existing-tags-section">
                                                 <h4 class="suggestions-title">
                                                     <i class="fas fa-check-circle"></i>
@@ -572,7 +620,8 @@
                                             </div>
 
                                             <div class="suggestions-actions">
-                                                <button type="button" class="btn btn-secondary btn-sm" id="close-suggestions-btn">
+                                                <button type="button" class="btn btn-secondary btn-sm"
+                                                    id="close-suggestions-btn">
                                                     <i class="fas fa-times"></i>
                                                     Đóng
                                                 </button>
@@ -590,7 +639,8 @@
                             <i class="fas fa-times"></i>
                             Hủy
                         </button>
-                        <button class="btn btn-primary save-btn" id="save-config-btn" onclick="saveLessonConfiguration()">
+                        <button class="btn btn-primary save-btn" id="save-config-btn"
+                            onclick="saveLessonConfiguration()">
                             <i class="fas fa-save" id="save-icon"></i>
                             <i class="fas fa-spinner fa-spin" id="save-spinner" style="display: none;"></i>
                             <span id="save-text">Lưu cấu hình</span>
@@ -607,4 +657,5 @@
     <!-- Custom Scripts -->
     <script src="/js/admin-stage2-configure.js"></script>
 </body>
+
 </html>
