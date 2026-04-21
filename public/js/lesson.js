@@ -501,8 +501,8 @@ function initializeCountdownTimer(lesson) {
         remainingTime--;
         updateTimerDisplay(remainingTime);
         
-        // Show warning at 5 minutes if enabled
-        if (lesson.warningAlerts && remainingTime === 300 && !warningShown) {
+        // Show warning at 3 minutes
+        if (remainingTime === 180 && !warningShown) {
             warningShown = true;
             showTimeWarning();
         }
@@ -586,7 +586,7 @@ function updateTimerDisplay(remainingTime) {
     timeDisplay.textContent = timeText;
     
     // Change color as time runs out
-    if (remainingTime <= 300) { // Last 5 minutes
+    if (remainingTime <= 180) { // Last 3 minutes
         timerElement.style.borderColor = 'var(--accent-warning, #f59e0b)';
         timerElement.style.background = 'rgba(245, 158, 11, 0.1)';
     }
@@ -625,7 +625,7 @@ function showTimeWarning() {
     content.innerHTML = `
         <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--accent-warning, #f59e0b); margin-bottom: 1rem;"></i>
         <h3 style="color: var(--text-primary, #e4e4e7); margin-bottom: 1rem;">Cảnh báo thời gian</h3>
-        <p style="color: var(--text-secondary, #a1a1aa); margin-bottom: 1.5rem;">Còn lại 5 phút để hoàn thành bài tập!</p>
+        <p style="color: var(--text-secondary, #a1a1aa); margin-bottom: 1.5rem;">Còn lại 3 phút để hoàn thành bài tập!</p>
         <button onclick="this.closest('.time-warning-modal').remove()" style="
             background: var(--accent-warning, #f59e0b);
             color: white;
@@ -650,14 +650,64 @@ function showTimeWarning() {
 }
 
 function showTimeUpAlert() {
-    alert('Hết thời gian làm bài! Vui lòng nộp bài.');
+    // Show a non-blocking time-up notification, then force submit
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10003;
+        backdrop-filter: blur(8px);
+    `;
+    const content = document.createElement('div');
+    content.style.cssText = `
+        background: var(--bg-card, #1e1e2a);
+        padding: 2.5rem;
+        border-radius: 16px;
+        text-align: center;
+        border: 2px solid var(--accent-danger, #ef4444);
+        max-width: 450px;
+        width: 90%;
+        box-shadow: 0 0 40px rgba(239, 68, 68, 0.3);
+        animation: guardWarningBounce 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    `;
+    content.innerHTML = `
+        <i class="fas fa-hourglass-end" style="font-size: 3.5rem; color: var(--accent-danger, #ef4444); margin-bottom: 1rem;"></i>
+        <h3 style="color: var(--accent-danger, #ef4444); font-size: 1.4rem; font-weight: 700; margin-bottom: 0.75rem;">Hết thời gian!</h3>
+        <p style="color: var(--text-secondary, #a1a1aa); font-size: 0.95rem; line-height: 1.6;">Bài thi của bạn đang được nộp tự động...</p>
+    `;
+    modal.appendChild(content);
+    document.body.appendChild(modal);
+    // Auto-submit after a brief delay so student sees the message
+    setTimeout(() => {
+        modal.remove();
+        autoSubmitQuiz();
+    }, 2000);
 }
 
 function autoSubmitQuiz() {
     console.log('Auto-submitting quiz due to time limit');
-    const submitButton = document.getElementById('submit-quiz-btn');
-    if (submitButton && !submitButton.disabled) {
-        submitButton.click();
+    // Bypass confirmation modal and submit directly
+    if (typeof submitQuiz === 'function') {
+        // Disable submit button to prevent double submission
+        const submitButton = document.getElementById('submit-quiz-btn');
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang nộp bài...';
+        }
+        submitQuiz();
+    } else {
+        // Fallback: click the submit button
+        const submitButton = document.getElementById('submit-quiz-btn');
+        if (submitButton && !submitButton.disabled) {
+            submitButton.click();
+        }
     }
 }
 

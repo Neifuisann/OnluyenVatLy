@@ -1570,7 +1570,7 @@
                     <li><i class="fas fa-circle"></i> Lần 4 rời trang: Tự động nộp bài</li>
                 </ul>
             </div>
-            <button class="exam-guard-start-btn" id="exam-guard-start-btn" onclick="console.log('Bắt đầu học CLICKED'); document.getElementById('exam-guard-overlay').style.display='none'; if(typeof ExamGuard !== 'undefined') ExamGuard.activate(); if(typeof startTimer === 'function') startTimer();">
+            <button class="exam-guard-start-btn" id="exam-guard-start-btn" onclick="console.log('Bắt đầu học CLICKED'); document.getElementById('exam-guard-overlay').style.display='none'; if(typeof ExamGuard !== 'undefined') ExamGuard.activate(); if(typeof startTimer === 'function') startTimer(); if(currentLessonData && (currentLessonData.timeLimitHours || currentLessonData.timeLimitMinutes || currentLessonData.timeLimitSeconds) && typeof initializeCountdownTimer === 'function') initializeCountdownTimer(currentLessonData);">
                 <i class="fas fa-play"></i>
                 Bắt đầu học
             </button>
