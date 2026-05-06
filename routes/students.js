@@ -90,14 +90,14 @@ router.get('/profile-test',
 // Student profile routes (any authenticated student can view any profile)
 router.get('/profile',
   requireStudentAuth,
-  shortCacheMiddleware(600), // 10 minutes cache
+  noCacheMiddleware, // Disabled cache for real-time updates
   studentController.getCurrentStudentProfile
 );
 
 router.get('/:studentId/profile',
   requireStudentAuth,
   validateIdParam('studentId'),
-  shortCacheMiddleware(600), // 10 minutes cache
+  noCacheMiddleware, // Disabled cache for real-time updates
   studentController.getStudentProfile
 );
 

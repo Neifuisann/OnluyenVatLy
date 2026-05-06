@@ -25,6 +25,106 @@
             max-height: 350px;
         }
         
+        /* Score display styles */
+        .history-score {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            min-width: 150px;
+            justify-content: flex-end;
+        }
+        
+        .history-score strong {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+        
+        .score-percentage {
+            font-size: 0.9rem;
+            font-weight: 700;
+            min-width: 45px;
+            text-align: right;
+        }
+        
+        /* Score wrapper for side-by-side layout */
+        .history-score-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+        
+        .history-elo-change {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1rem;
+            border-radius: 6px;
+            font-weight: 700;
+            min-width: 70px;
+            height: 100%;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+        
+        .history-elo-change.positive {
+            color: #5db896;
+            border-color: rgba(93, 184, 150, 0.3);
+            background: rgba(93, 184, 150, 0.05);
+        }
+        
+        .history-elo-change.negative {
+            color: #c06565;
+            border-color: rgba(192, 101, 101, 0.3);
+            background: rgba(192, 101, 101, 0.05);
+        }
+        
+        .history-elo-change i {
+            font-size: 0.8rem;
+        }
+        
+        .history-score.score-excellent {
+            background: linear-gradient(135deg, #5db896, #4a9d6f);
+            box-shadow: 0 4px 12px rgba(93, 184, 150, 0.15);
+        }
+        
+        .history-score.score-excellent .score-percentage {
+            color: #ffffff;
+        }
+        
+        .history-score.score-good {
+            background: linear-gradient(135deg, #7ab87f, #6ba86f);
+            box-shadow: 0 4px 12px rgba(107, 168, 111, 0.15);
+        }
+        
+        .history-score.score-good .score-percentage {
+            color: #ffffff;
+        }
+        
+        .history-score.score-fair {
+            background: linear-gradient(135deg, #b8903d, #a87d32);
+            box-shadow: 0 4px 12px rgba(184, 144, 61, 0.15);
+        }
+        
+        .history-score.score-fair .score-percentage {
+            color: #ffffff;
+        }
+        
+        .history-score.score-poor {
+            background: linear-gradient(135deg, #c06565, #b85a5a);
+            box-shadow: 0 4px 12px rgba(192, 101, 101, 0.15);
+        }
+        
+        .history-score.score-poor .score-percentage {
+            color: #ffffff;
+        }
+        
         /* Mobile responsive */
         @media (max-width: 768px) {
             .profile-header {
@@ -50,6 +150,15 @@
             
             .history-change {
                 align-self: flex-end;
+            }
+            
+            .history-score {
+                align-self: flex-end;
+            }
+            
+            .history-score-wrapper {
+                flex-direction: column;
+                gap: 0.5rem;
             }
             
             .chart-container {
@@ -181,14 +290,21 @@
 
             try {
                 let response;
+                const cacheBuster = `_t=${Date.now()}`;
                 if (isCurrentStudent) {
                     console.log('[Profile Debug] Fetching current student profile');
                     // Get current student's profile
-                    response = await fetch('/api/students/profile');
+                    response = await fetch(`/api/students/profile?${cacheBuster}`, {
+                        cache: 'no-store',
+                        headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' }
+                    });
                 } else {
                     console.log('[Profile Debug] Fetching specific student profile:', studentId);
                     // Get specific student's profile
-                    response = await fetch(`/api/students/${studentId}/profile`);
+                    response = await fetch(`/api/students/${studentId}/profile?${cacheBuster}`, {
+                        cache: 'no-store',
+                        headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' }
+                    });
                 }
 
                 console.log('[Profile Debug] Response received:', response.status, response.ok);
@@ -336,30 +452,72 @@
                 if (data.profile.ratingHistory && data.profile.ratingHistory.length > 0) {
                     profileHTML += `
                         <div class="profile-section">
-                            <h2><i class="fas fa-history"></i> Lịch sử thay đổi điểm</h2>
+                            <h2><i class="fas fa-history"></i> Lịch sử làm bài</h2>
                             <ul class="rating-history-list">
                     `;
                     data.profile.ratingHistory.forEach(item => {
-                        let change = item.rating_change;
-                        if (change === undefined || change === null) {
-                            const prevRating = item.previous_rating || 0;
-                            const newRating = item.new_rating || 0;
-                            change = newRating - prevRating;
+                        // Display quiz score if available, otherwise show rating change
+                        let scoreDisplay = '';
+                        let scoreClass = '';
+                        
+                        if (item.quiz_score !== undefined && item.quiz_score !== null) {
+                            const percentage = item.quiz_percentage || 0;
+                            // Color coding based on score
+                            if (percentage >= 80) scoreClass = 'score-excellent';
+                            else if (percentage >= 60) scoreClass = 'score-good';
+                            else if (percentage >= 40) scoreClass = 'score-fair';
+                            else scoreClass = 'score-poor';
+                            
+                            // Get ELO change
+                            let change = item.rating_change;
+                            if (change === undefined || change === null) {
+                                const prevRating = item.previous_rating || 0;
+                                const newRating = item.new_rating || 0;
+                                change = newRating - prevRating;
+                            }
+                            
+                            const changeClass = change > 0 ? 'positive' : change < 0 ? 'negative' : '';
+                            const changeSymbol = change > 0 ? '+' : '';
+                            
+                            scoreDisplay = `
+                                <div class="history-score-wrapper">
+                                    <div class="history-elo-change ${changeClass}">
+                                        ${changeSymbol}${change}
+                                        <i class="fas fa-arrow-${change > 0 ? 'up' : 'down'}"></i>
+                                    </div>
+                                    <div class="history-score ${scoreClass}">
+                                        <strong>${item.quiz_score.toFixed(1)} / ${item.quiz_total_points.toFixed(1)}</strong>
+                                        <span class="score-percentage">${percentage}%</span>
+                                    </div>
+                                </div>
+                            `;
+                        } else {
+                            // Fallback to rating change if no quiz score available
+                            let change = item.rating_change;
+                            if (change === undefined || change === null) {
+                                const prevRating = item.previous_rating || 0;
+                                const newRating = item.new_rating || 0;
+                                change = newRating - prevRating;
+                            }
+                            
+                            const changeClass = change > 0 ? 'positive' : change < 0 ? 'negative' : '';
+                            const changeSymbol = change > 0 ? '+' : '';
+                            scoreDisplay = `
+                                <div class="history-change ${changeClass}">
+                                    ${changeSymbol}${change}
+                                    <i class="fas fa-arrow-${change > 0 ? 'up' : 'down'}"></i>
+                                    (${Math.round(item.new_rating)})
+                                </div>
+                            `;
                         }
                         
-                        const changeClass = change > 0 ? 'positive' : change < 0 ? 'negative' : '';
-                        const changeSymbol = change > 0 ? '+' : '';
                         profileHTML += `
                             <li class="history-item">
                                 <div class="history-details">
                                     <strong>${item.lesson_title || `Bài học ID: ${item.lesson_id}`}</strong> 
                                     <span><i class="fas fa-clock"></i> ${new Date(item.timestamp).toLocaleString('vi-VN')}</span>
                                 </div>
-                                <div class="history-change ${changeClass}">
-                                    ${changeSymbol}${change}
-                                    <i class="fas fa-arrow-${change > 0 ? 'up' : 'down'}"></i>
-                                    (${Math.round(item.new_rating)})
-                                </div>
+                                ${scoreDisplay}
                             </li>
                         `;
                     });
@@ -367,8 +525,8 @@
                 } else {
                     profileHTML += `
                         <div class="profile-section">
-                            <h2><i class="fas fa-history"></i> Lịch sử thay đổi điểm</h2>
-                            <div class="no-data">Chưa có lịch sử thay đổi điểm.</div>
+                            <h2><i class="fas fa-history"></i> Lịch sử làm bài</h2>
+                            <div class="no-data">Chưa có Lịch sử làm bài.</div>
                         </div>
                     `;
                 }
