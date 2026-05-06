@@ -29,8 +29,9 @@ function formatQuestionContent(q) {
     // Replace [img src="..."] with actual img tags
     let formattedText = text.replace(/\[img\s+src=["']([^"']+)["']\]/gi, '<br><img src="$1" alt="Question" style="max-width: 100%; max-height: 200px; display: block; margin-top: 10px; border-radius: 6px;">');
     
-    // Add true/false options if present
-    if ((q.type === 'true_false' || q.type === 'truefalse') && q.options && Array.isArray(q.options)) {
+    // Add true/false options if present AND we don't have detailed sub-rows for them
+    // Now that we have sub-rows (q.optionStats), we skip appending them into the main question text
+    if (!q.optionStats && (q.type === 'true_false' || q.type === 'truefalse') && q.options && Array.isArray(q.options)) {
         let optionsHtml = '<ul style="margin-top: 10px; padding-left: 20px;">';
         q.options.forEach((opt, idx) => {
             const optText = getOptionString(opt);
@@ -231,26 +232,40 @@ function exportToExcel() {
     XLSX.utils.book_append_sheet(workbook, overviewSheet, 'Tổng quan');
 
     // Add Question Analysis sheet
-    const questionData = window.lessonStats.questionStats.map((q, idx) => {
+    const questionData = [];
+    window.lessonStats.questionStats.forEach((q, idx) => {
         let questionText = q.question;
-        if ((q.type === 'true_false' || q.type === 'truefalse') && q.options && Array.isArray(q.options)) {
-            const optionsText = q.options.map((opt, i) => {
-                const optText = getOptionString(opt);
-                return `${String.fromCharCode(65 + i)}) ${optText}`;
-            }).join('\n');
-            questionText += '\n' + optionsText;
-        }
+        // Strip HTML for excel export if we manually injected some
+        questionText = questionText.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]*>?/gm, '');
         
-        return {
+        // Push the main row
+        questionData.push({
             'STT': idx + 1,
             'Câu hỏi': questionText,
             'Tổng số học sinh': q.totalStudents,
-        'Đã làm': q.completed,
-        'Chưa làm': q.notCompleted,
-        'Làm đúng': q.correct,
-        'Làm sai': q.incorrect,
-        'Tỉ lệ làm đúng': `${q.completed > 0 ? (q.correct/q.completed * 100).toFixed(2) : "0.00"}%`
-        };
+            'Đã làm': q.completed,
+            'Chưa làm': q.notCompleted,
+            'Làm đúng': q.correct,
+            'Làm sai': q.incorrect,
+            'Tỉ lệ làm đúng': `${q.completed > 0 ? (q.correct/q.completed * 100).toFixed(2) : "0.00"}%`
+        });
+
+        // Add sub-rows for optionStats
+        if (q.optionStats && q.optionStats.length > 0) {
+            q.optionStats.forEach((opt, oIdx) => {
+                const letter = String.fromCharCode(65 + oIdx);
+                questionData.push({
+                    'STT': '', // Blank to indicate it belongs to previous STT
+                    'Câu hỏi': `  Ý ${letter}) ${opt.text}`,
+                    'Tổng số học sinh': q.totalStudents,
+                    'Đã làm': opt.completed,
+                    'Chưa làm': opt.notCompleted,
+                    'Làm đúng': opt.correct,
+                    'Làm sai': opt.incorrect,
+                    'Tỉ lệ làm đúng': `${opt.completed > 0 ? (opt.correct/opt.completed * 100).toFixed(2) : "0.00"}%`
+                });
+            });
+        }
     });
     const questionSheet = XLSX.utils.json_to_sheet(questionData);
     XLSX.utils.book_append_sheet(workbook, questionSheet, 'Phân tích câu hỏi');
@@ -297,7 +312,9 @@ function renderQuestionStatsTable(data) {
     const tbody = questionTable.querySelector('tbody');
     if (!tbody) return;
     
-    tbody.innerHTML = data.map((q, idx) => `
+    let html = '';
+    data.forEach((q, idx) => {
+        html += `
         <tr>
             <td>${idx + 1}</td>
             <td>${formatQuestionContent(q)}</td>
@@ -307,8 +324,28 @@ function renderQuestionStatsTable(data) {
             <td>${q.correct}</td>
             <td>${q.incorrect}</td>
             <td>${q.completed > 0 ? (q.correct/q.completed * 100).toFixed(2) : "0.00"}%</td>
-        </tr>
-    `).join('');
+        </tr>`;
+
+        // Render sub-rows for true/false options if present
+        if (q.optionStats && q.optionStats.length > 0) {
+            q.optionStats.forEach((opt, optIdx) => {
+                const letter = String.fromCharCode(65 + optIdx);
+                html += `
+                <tr style="background-color: rgba(0,0,0,0.03);">
+                    <td></td> <!-- Indent to show it belongs to the previous question -->
+                    <td style="padding-left: 2rem;"><strong>Ý ${letter})</strong> ${opt.text}</td>
+                    <td>${q.totalStudents}</td>
+                    <td>${opt.completed}</td>
+                    <td>${opt.notCompleted}</td>
+                    <td>${opt.correct}</td>
+                    <td>${opt.incorrect}</td>
+                    <td>${opt.completed > 0 ? (opt.correct/opt.completed * 100).toFixed(2) : "0.00"}%</td>
+                </tr>`;
+            });
+        }
+    });
+
+    tbody.innerHTML = html;
     
     // Wait a moment for KaTeX to be fully loaded if deferred, then render math
     setTimeout(() => {
