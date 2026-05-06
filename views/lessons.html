@@ -51,39 +51,6 @@
             gap: var(--space-sm);
         }
 
-        /* Progress tracking */
-        .progress-section {
-            background-color: var(--bg-secondary);
-            border: 1px solid var(--border-primary);
-            border-radius: var(--radius-lg);
-            padding: var(--space-xl);
-            margin-bottom: var(--space-2xl);
-        }
-
-        .overall-progress {
-            margin-bottom: var(--space-lg);
-        }
-
-        .progress-label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: var(--space-sm);
-        }
-
-        .streak-indicator {
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-            padding: var(--space-sm) var(--space-md);
-            background-color: var(--bg-tertiary);
-            border-radius: var(--radius-md);
-            font-size: var(--text-sm);
-        }
-
-        .streak-icon {
-            color: var(--warning-color);
-        }
-
         /* Categories */
         .category-pills {
             display: flex;
@@ -992,45 +959,6 @@
     <main id="main-content" class="main-content">
         <div class="container">
 
-            <!-- Progress Section (for logged in students) -->
-            <section class="progress-section hidden" id="progress-section">
-                <div class="section-header">
-                    <h2 class="section-title">Tiến độ học tập</h2>
-                    <div class="streak-indicator">
-                        <i class="fas fa-fire streak-icon"></i>
-                        <span id="streak-count">0 ngày liên tiếp</span>
-                    </div>
-                </div>
-
-                <div class="overall-progress">
-                    <div class="progress-label">
-                        <span>Tổng tiến độ</span>
-                        <span id="progress-percentage">0%</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 0%"></div>
-                    </div>
-                </div>
-
-                <div class="quick-actions">
-                    <div class="quick-action-card" onclick="continueLesson()">
-                        <i class="fas fa-play-circle quick-action-icon"></i>
-                        <h3 class="quick-action-title">Tiếp tục học</h3>
-                        <p class="quick-action-description">Bài: Dao động điều hòa</p>
-                    </div>
-                    <div class="quick-action-card" onclick="reviewMistakes()">
-                        <i class="fas fa-redo quick-action-icon"></i>
-                        <h3 class="quick-action-title">Ôn tập lỗi sai</h3>
-                        <p class="quick-action-description">15 câu cần ôn lại</p>
-                    </div>
-                    <div class="quick-action-card" onclick="practiceMode()">
-                        <i class="fas fa-dumbbell quick-action-icon"></i>
-                        <h3 class="quick-action-title">Luyện tập</h3>
-                        <p class="quick-action-description">Câu hỏi ngẫu nhiên</p>
-                    </div>
-                </div>
-            </section>
-
             <!-- Search and Filters -->
             <section class="search-filter-container">
                 <div class="search-box">
@@ -1229,20 +1157,7 @@
 
         // Initialize on load
         document.addEventListener('DOMContentLoaded', () => {
-
-            // Check if student is logged in to show progress section
-            checkStudentAuthentication().then(isAuthenticated => {
-                if (isAuthenticated) {
-                    document.getElementById('progress-section').classList.remove('hidden');
-                    // Load progress data
-                    loadStudentProgress();
-                } else {
-                    // Mark progress as complete if not authenticated
-                    if (typeof window.markTaskComplete === 'function') {
-                        window.markTaskComplete('progress');
-                    }
-                }
-            });
+            // Page initialization
         });
 
         // Load student progress
