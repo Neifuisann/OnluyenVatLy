@@ -224,6 +224,22 @@ function initializeEditor(initialContent) {
 
         editor.setValue(initialContent || '');
 
+        // Handle paste for images
+        editor.getWrapperElement().addEventListener('paste', async (e) => {
+            const items = (e.clipboardData || window.clipboardData)?.items;
+            if (!items) return;
+
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                    const file = items[i].getAsFile();
+                    if (file) {
+                        e.preventDefault();
+                        await uploadImage(file, null);
+                    }
+                }
+            }
+        });
+
         let debounceTimer;
         editor.on('change', (cm, change) => {
             clearTimeout(debounceTimer);

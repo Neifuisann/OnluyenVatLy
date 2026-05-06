@@ -481,6 +481,22 @@ class CodeMirrorManager {
         this.editor.on('blur', () => {
             this.eventEmitter.emit('blur');
         });
+
+        // Handle paste for images
+        this.editor.getWrapperElement().addEventListener('paste', (e) => {
+            const items = (e.clipboardData || e.originalEvent?.clipboardData)?.items;
+            if (!items) return;
+
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                    const file = items[i].getAsFile();
+                    if (file) {
+                        e.preventDefault();
+                        this.eventEmitter.emit('image-pasted', { file });
+                    }
+                }
+            }
+        });
     }
 
     setupCursorTracking() {
@@ -1318,6 +1334,9 @@ class AdminEditorV2 {
         this.editor.on('content-change', this.handleContentChange.bind(this));
         this.editor.on('cursor-change', this.handleCursorChange.bind(this));
         this.editor.on('save-requested', this.handleSaveRequested.bind(this));
+        this.editor.on('image-pasted', (data) => {
+            this.uploadImage(data.file);
+        });
     }
 
     initializePreview() {
