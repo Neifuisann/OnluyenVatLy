@@ -11,3 +11,4 @@ logs
 tests
 scripts
 test-results
+.env*.local
