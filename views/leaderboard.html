@@ -509,6 +509,7 @@
         const pageSize = 20;
         const loadingIndicator = document.getElementById('loading-indicator');
         let searchDebounceTimer;
+        let isSearchMode = false; // Track if we're in search mode
 
         function generatePageNumbers(current, total) {
             const pageNumbersTop = document.getElementById('page-numbers-top');
@@ -588,8 +589,50 @@
             document.getElementById('next-page-top').disabled = true;
 
             try {
-                const response = await fetch(`/api/ratings?page=${currentPage}&filter=${currentFilter}`);
-                const data = await response.json();
+                let response;
+                let data;
+                
+                // If in search mode, use the search endpoint
+                if (isSearchMode && searchQuery) {
+                    const params = new URLSearchParams({
+                        q: searchQuery,
+                        filter: currentFilter,
+                        limit: 1000 // Get all matching results for pagination
+                    });
+                    response = await fetch(`/api/ratings/search?${params}`);
+                    data = await response.json();
+                    
+                    if (!response.ok) {
+                        console.error('API Error searching ratings:', data);
+                        contentDiv.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-circle"></i> Lỗi tìm kiếm: ${data.details || data.error || 'Unknown error'}</div>`;
+                        loadingIndicator.style.display = 'none';
+                        return;
+                    }
+                    
+                    // Paginate the search results locally
+                    const allRatings = data.ratings || [];
+                    const startIndex = (currentPage - 1) * pageSize;
+                    const paginatedRatings = allRatings.slice(startIndex, startIndex + pageSize);
+                    
+                    // Set total pages based on search results
+                    totalPages = Math.ceil(allRatings.length / pageSize);
+                    
+                    renderLeaderboardTable(paginatedRatings, true);
+                    
+                    // Update pagination controls
+                    document.getElementById('prev-page').disabled = currentPage === 1;
+                    document.getElementById('prev-page-top').disabled = currentPage === 1;
+                    document.getElementById('next-page').disabled = currentPage >= totalPages;
+                    document.getElementById('next-page-top').disabled = currentPage >= totalPages;
+                    
+                    generatePageNumbers(currentPage, totalPages);
+                    loadingIndicator.style.display = 'none';
+                    return;
+                }
+                
+                // Regular pagination load
+                response = await fetch(`/api/ratings?page=${currentPage}&filter=${currentFilter}`);
+                data = await response.json();
 
                 if (!response.ok) {
                     console.error('API Error fetching ratings:', data);
@@ -612,111 +655,22 @@
                     return;
                 }
 
-                const table = document.createElement('table');
-                table.className = 'leaderboard-table';
+                renderLeaderboardTable(ratings, false);
                 
-                const thead = document.createElement('thead');
-                // Only show change column for time-based filters
-                const showChangeColumn = currentFilter !== 'all';
-                thead.innerHTML = `
-                    <tr>
-                        <th class="center-align rank-column">Hạng</th>
-                        <th class="name-column">Học sinh</th>
-                        <th class="center-align score-column">Điểm</th>
-                        ${showChangeColumn ? '<th class="center-align change-column">Thay đổi</th>' : ''}
-                    </tr>
-                `;
-                table.appendChild(thead);
-
-                const tbody = document.createElement('tbody');
-                
-                // Filter ratings based on search query
-                let filteredRatings = ratings;
-                if (searchQuery) {
-                    filteredRatings = ratings.filter(rating => 
-                        rating.students?.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
-                    );
-                }
-                
-                filteredRatings.forEach((rating, index) => {
-                    const rank = (currentPage - 1) * pageSize + index + 1;
-                    const row = document.createElement('tr');
-                    if (rank <= 3 && !searchQuery) row.className = 'top-3';
-
-                    // Get rating change from backend response
-                    const ratingChange = rating.ratingChange !== null && rating.ratingChange !== undefined ? rating.ratingChange : 0;
-                    const changeClass = ratingChange > 0 ? 'positive' : ratingChange < 0 ? 'negative' : '';
-                    const changeSymbol = ratingChange > 0 ? '+' : '';
-                    const changeIcon = ratingChange > 0 ? 'arrow-up' : ratingChange < 0 ? 'arrow-down' : 'minus';
-                    
-                    // Determine rating class based on score
-                    const ratingValue = Math.round(rating.rating);
-                    let ratingClass = 'rating-newbie';
-                    if (ratingValue >= 3000) {
-                        ratingClass = 'rating-grandmaster';
-                    } else if (ratingValue >= 2200) {
-                        ratingClass = 'rating-master';
-                    } else if (ratingValue >= 1900) {
-                        ratingClass = 'rating-xuatsac';
-                    } else if (ratingValue >= 1600) {
-                        ratingClass = 'rating-gioi';
-                    } else if (ratingValue >= 1400) {
-                        ratingClass = 'rating-chuyencan';
-                    } else if (ratingValue >= 1200) {
-                        ratingClass = 'rating-hocvien';
-                    }
-                    
-                    // Build change cell HTML only if showing change column
-                    const changeCell = showChangeColumn ? `
-                        <td class="center-align">
-                            <span class="rating-change ${changeClass}">
-                                ${changeSymbol}${Math.abs(ratingChange)}
-                                <i class="fas fa-${changeIcon}"></i>
-                            </span>
-                        </td>
-                    ` : '';
-                    
-                    row.innerHTML = `
-                        <td class="rank center-align">
-                            ${rank <= 3 ? `<span class="medal ${['gold', 'silver', 'bronze'][rank-1]}"><i class="fas fa-medal"></i></span>` : ''}
-                            ${rank}
-                        </td>
-                        <td class="name-cell">
-                            <div class="user-profile">
-                                <div class="user-avatar">${rating.students?.full_name?.[0]?.toUpperCase() || '?'}</div>
-                                <a href="/profile/${rating.student_id || '#'}" class="${ratingClass}" title="Xem hồ sơ của ${rating.students?.full_name || 'Vô danh'}">
-                                    <span>${rating.students?.full_name || 'Vô danh'}</span>
-                                </a>
-                            </div>
-                        </td>
-                        <td class="center-align rating-value">${Math.round(rating.rating)}</td>
-                        ${changeCell}
-                    `;
-                    tbody.appendChild(row);
-                });
-                table.appendChild(tbody);
-
-                contentDiv.innerHTML = '';
-                contentDiv.appendChild(table);
-
-                // Calculate total pages (estimate based on hasMore)
-                // Since the API doesn't provide total count, we'll estimate
+                // Calculate total pages based on hasMore flag
                 if (data.pagination?.hasMore) {
                     totalPages = Math.max(totalPages, currentPage + 1);
                 } else {
                     totalPages = currentPage;
                 }
                 
-                // Update both pagination controls
+                // Update pagination controls
                 document.getElementById('prev-page').disabled = currentPage === 1;
                 document.getElementById('prev-page-top').disabled = currentPage === 1;
                 document.getElementById('next-page').disabled = !data.pagination?.hasMore;
                 document.getElementById('next-page-top').disabled = !data.pagination?.hasMore;
                 
-                // Generate page numbers
                 generatePageNumbers(currentPage, totalPages);
-                
-                // Hide loading indicator
                 loadingIndicator.style.display = 'none';
 
             } catch (error) {
@@ -731,6 +685,89 @@
             }
         }
 
+        function renderLeaderboardTable(ratings, isSearchResult) {
+            const contentDiv = document.getElementById('leaderboard-content');
+            const table = document.createElement('table');
+            table.className = 'leaderboard-table';
+            
+            const thead = document.createElement('thead');
+            // Only show change column for time-based filters
+            const showChangeColumn = currentFilter !== 'all';
+            thead.innerHTML = `
+                <tr>
+                    <th class="center-align rank-column">Hạng</th>
+                    <th class="name-column">Học sinh</th>
+                    <th class="center-align score-column">Điểm</th>
+                    ${showChangeColumn ? '<th class="center-align change-column">Thay đổi</th>' : ''}
+                </tr>
+            `;
+            table.appendChild(thead);
+
+            const tbody = document.createElement('tbody');
+            
+            ratings.forEach((rating) => {
+                const rank = rating.rank; // Use rank from API response
+                const row = document.createElement('tr');
+                // Only highlight top 3 if not in search mode (to avoid confusion)
+                if (rank <= 3 && !isSearchResult) row.className = 'top-3';
+
+                // Get rating change from backend response
+                const ratingChange = rating.ratingChange !== null && rating.ratingChange !== undefined ? rating.ratingChange : 0;
+                const changeClass = ratingChange > 0 ? 'positive' : ratingChange < 0 ? 'negative' : '';
+                const changeSymbol = ratingChange > 0 ? '+' : '';
+                const changeIcon = ratingChange > 0 ? 'arrow-up' : ratingChange < 0 ? 'arrow-down' : 'minus';
+                
+                // Determine rating class based on score
+                const ratingValue = Math.round(rating.rating);
+                let ratingClass = 'rating-newbie';
+                if (ratingValue >= 3000) {
+                    ratingClass = 'rating-grandmaster';
+                } else if (ratingValue >= 2200) {
+                    ratingClass = 'rating-master';
+                } else if (ratingValue >= 1900) {
+                    ratingClass = 'rating-xuatsac';
+                } else if (ratingValue >= 1600) {
+                    ratingClass = 'rating-gioi';
+                } else if (ratingValue >= 1400) {
+                    ratingClass = 'rating-chuyencan';
+                } else if (ratingValue >= 1200) {
+                    ratingClass = 'rating-hocvien';
+                }
+                
+                // Build change cell HTML only if showing change column
+                const changeCell = showChangeColumn ? `
+                    <td class="center-align">
+                        <span class="rating-change ${changeClass}">
+                            ${changeSymbol}${Math.abs(ratingChange)}
+                            <i class="fas fa-${changeIcon}"></i>
+                        </span>
+                    </td>
+                ` : '';
+                
+                row.innerHTML = `
+                    <td class="rank center-align">
+                        ${rank <= 3 && !isSearchResult ? `<span class="medal ${['gold', 'silver', 'bronze'][rank-1]}"><i class="fas fa-medal"></i></span>` : ''}
+                        ${rank}
+                    </td>
+                    <td class="name-cell">
+                        <div class="user-profile">
+                            <div class="user-avatar">${rating.students?.full_name?.[0]?.toUpperCase() || '?'}</div>
+                            <a href="/profile/${rating.student_id || '#'}" class="${ratingClass}" title="Xem hồ sơ của ${rating.students?.full_name || 'Vô danh'}">
+                                <span>${rating.students?.full_name || 'Vô danh'}</span>
+                            </a>
+                        </div>
+                    </td>
+                    <td class="center-align rating-value">${Math.round(rating.rating)}</td>
+                    ${changeCell}
+                `;
+                tbody.appendChild(row);
+            });
+            table.appendChild(tbody);
+
+            contentDiv.innerHTML = '';
+            contentDiv.appendChild(table);
+        }
+
         // Event Listeners
         document.querySelectorAll('.filter-button').forEach(button => {
             button.addEventListener('click', () => {
@@ -741,6 +778,8 @@
                 currentFilter = button.dataset.filter;
                 currentPage = 1;
                 totalPages = 1; // Reset total pages
+                isSearchMode = false; // Exit search mode when filter changes
+                document.getElementById('search-input').value = ''; // Clear search
                 loadLeaderboard();
             });
         });
@@ -781,7 +820,13 @@
             
             searchDebounceTimer = setTimeout(() => {
                 currentPage = 1; // Reset to first page on search
-                totalPages = 1; // Reset total pages
+                
+                if (searchQuery) {
+                    isSearchMode = true; // Enter search mode
+                } else {
+                    isSearchMode = false; // Exit search mode if query is empty
+                }
+                
                 loadLeaderboard();
             }, 300); // Debounce for 300ms
         });

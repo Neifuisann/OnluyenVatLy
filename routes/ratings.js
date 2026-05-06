@@ -28,6 +28,13 @@ router.get('/',
   ratingController.getRatings
 );
 
+// Search ratings across all students
+router.get('/search',
+  optionalAuth,
+  shortCacheMiddleware(300), // 5 minutes cache
+  ratingController.searchRatings
+);
+
 router.get('/leaderboard',
   optionalAuth,
   validatePagination,
