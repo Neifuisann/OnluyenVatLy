@@ -153,6 +153,47 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal for students who got question wrong -->
+    <div id="wrong-students-modal" style="display: none;">
+        <div class="modal-header">
+            <h3 id="modal-title">Học sinh làm sai câu hỏi</h3>
+            <button id="close-modal-btn" class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="question-preview">
+                <strong>Câu hỏi:</strong>
+                <p id="question-text"></p>
+            </div>
+            <div class="table-responsive">
+                <table class="statistics-table">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-hashtag"></i> STT</th>
+                            <th><i class="fas fa-user"></i> Tên học sinh</th>
+                            <th><i class="fas fa-calendar"></i> Ngày sinh</th>
+                        </tr>
+                    </thead>
+                    <tbody id="wrong-students-table-body">
+                        <tr>
+                            <td colspan="3" style="text-align: center; padding: 30px; color: #999;">Đang tải...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button id="export-wrong-students-btn" class="btn-secondary">
+                <i class="fas fa-download"></i> Xuất danh sách
+            </button>
+            <button id="close-modal-footer-btn" class="btn-primary">
+                Đóng
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal overlay -->
+    <div id="modal-overlay" style="display: none;"></div>
     
     <!-- Background Animation Script -->
     <script src="/js/network-animation.js"></script>

@@ -7,6 +7,10 @@ let sortState = {
     direction: 'asc' // 'asc' or 'desc'
 };
 
+// Track modal state
+let currentModalQuestionIndex = null;
+let currentModalQuestionText = null;
+
 // Helper to recursively extract string from object
 function getOptionString(val) {
     if (val === null || val === undefined) return '';
@@ -331,7 +335,9 @@ function renderQuestionStatsTable(data) {
             <td>${q.completed}</td>
             <td>${q.notCompleted}</td>
             <td>${q.correct}</td>
-            <td>${q.incorrect}</td>
+            <td style="cursor: pointer; color: #3b82f6; text-decoration: underline;" class="incorrect-cell" data-question-index="${idx}" data-incorrect-count="${q.incorrect}">
+                ${q.incorrect}
+            </td>
             <td>${q.completed > 0 ? (q.correct/q.completed * 100).toFixed(2) : "0.00"}%</td>
         </tr>`;
 
@@ -347,7 +353,9 @@ function renderQuestionStatsTable(data) {
                     <td>${opt.completed}</td>
                     <td>${opt.notCompleted}</td>
                     <td>${opt.correct}</td>
-                    <td>${opt.incorrect}</td>
+                    <td style="cursor: pointer; color: #3b82f6; text-decoration: underline;" class="incorrect-cell-option" data-question-index="${idx}" data-option-index="${optIdx}" data-incorrect-count="${opt.incorrect}">
+                        ${opt.incorrect}
+                    </td>
                     <td>${opt.completed > 0 ? (opt.correct/opt.completed * 100).toFixed(2) : "0.00"}%</td>
                 </tr>`;
             });
@@ -355,6 +363,9 @@ function renderQuestionStatsTable(data) {
     });
 
     tbody.innerHTML = html;
+    
+    // Add click handlers to incorrect cells
+    addIncorrectCellClickHandlers(data);
     
     // Wait a moment for KaTeX to be fully loaded if deferred, then render math
     setTimeout(() => {
@@ -460,6 +471,158 @@ function sortQuestionStats(column) {
     renderQuestionStatsTable(dataToSort);
 }
 
+// Add click handlers to incorrect cells in the table
+function addIncorrectCellClickHandlers(data) {
+    const incorrectCells = document.querySelectorAll('.incorrect-cell');
+    incorrectCells.forEach(cell => {
+        cell.addEventListener('click', async function(e) {
+            e.preventDefault();
+            const questionIndex = parseInt(this.getAttribute('data-question-index'));
+            const incorrectCount = parseInt(this.getAttribute('data-incorrect-count'));
+            
+            if (incorrectCount === 0) {
+                alert('Không có học sinh nào làm sai câu hỏi này');
+                return;
+            }
+            
+            currentModalQuestionIndex = questionIndex;
+            currentModalQuestionText = data[questionIndex].question;
+            await showWrongStudentsModal(questionIndex, incorrectCount);
+        });
+    });
+}
+
+// Show modal with list of students who got the question wrong
+async function showWrongStudentsModal(questionIndex, incorrectCount) {
+    const modal = document.getElementById('wrong-students-modal');
+    const overlay = document.getElementById('modal-overlay');
+    
+    if (!modal || !overlay) return;
+    
+    // Extract lesson ID from URL
+    const pathParts = window.location.pathname.split('/');
+    const lessonId = pathParts[pathParts.length - 2];
+    
+    // Show loading state
+    const tbody = document.getElementById('wrong-students-table-body');
+    tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 30px; color: #999;">Đang tải...</td></tr>';
+    
+    // Show modal
+    modal.style.display = 'block';
+    overlay.style.display = 'block';
+    
+    // Prevent event propagation
+    modal.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+    
+    // Update question title
+    const modalTitle = document.getElementById('modal-title');
+    if (modalTitle) {
+        modalTitle.textContent = `Học sinh làm sai câu hỏi (${incorrectCount} học sinh)`;
+    }
+    
+    // Show question preview
+    const questionPreview = document.getElementById('question-preview');
+    const questionTextElement = document.getElementById('question-text');
+    if (questionPreview && questionTextElement && currentModalQuestionText) {
+        questionTextElement.innerHTML = currentModalQuestionText;
+        questionPreview.style.display = 'block';
+        
+        // Render math in question preview
+        setTimeout(() => {
+            if (window.renderMathInElement) {
+                try {
+                    renderMathInElement(questionPreview, {
+                        delimiters: [
+                            {left: '$$', right: '$$', display: true},
+                            {left: '$', right: '$', display: false},
+                            {left: '\\(', right: '\\)', display: false},
+                            {left: '\\[', right: '\\]', display: true}
+                        ],
+                        throwOnError: false
+                    });
+                } catch (e) {
+                    console.error('KaTeX rendering error in modal:', e);
+                }
+            }
+        }, 100);
+    }
+    
+    try {
+        // Fetch students who got the question wrong
+        const response = await fetch(`/api/lessons/${lessonId}/students-wrong-question?questionIndex=${questionIndex}`);
+        
+        if (!response.ok) {
+            throw new Error('Failed to load students');
+        }
+        
+        const data = await response.json();
+        
+        if (!data.success) {
+            tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; padding: 30px; color: #e74c3c;">${data.message || 'Có lỗi khi tải dữ liệu'}</td></tr>`;
+            return;
+        }
+        
+        // Populate table with students
+        if (data.students && data.students.length > 0) {
+            let html = '';
+            data.students.forEach((student, idx) => {
+                html += `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td>${student.name}</td>
+                        <td>${student.dob}</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        } else {
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 30px; color: #999;">Không có học sinh nào</td></tr>';
+        }
+        
+        // Store students data for export
+        window.wrongStudentsData = data.students;
+        
+    } catch (error) {
+        console.error('Error loading students:', error);
+        tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; padding: 30px; color: #e74c3c;">Lỗi: ${error.message}</td></tr>`;
+    }
+}
+
+// Close modal
+function closeWrongStudentsModal() {
+    const modal = document.getElementById('wrong-students-modal');
+    const overlay = document.getElementById('modal-overlay');
+    
+    if (modal) modal.style.display = 'none';
+    if (overlay) overlay.style.display = 'none';
+}
+
+// Export wrong students list
+function exportWrongStudentsList() {
+    if (!window.wrongStudentsData || window.wrongStudentsData.length === 0) {
+        alert('Không có dữ liệu để xuất');
+        return;
+    }
+    
+    if (!window.XLSX) {
+        alert('Vui lòng tải lại trang để sử dụng tính năng này');
+        return;
+    }
+    
+    const exportData = window.wrongStudentsData.map((student, idx) => ({
+        'STT': idx + 1,
+        'Tên học sinh': student.name,
+        'Ngày sinh': student.dob
+    }));
+    
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Học sinh làm sai');
+    XLSX.writeFile(workbook, 'hoc-sinh-lam-sai.xlsx');
+}
+
 // Append student filter functionality for transcripts by student name
 document.addEventListener('DOMContentLoaded', () => {
     loadStatistics();
@@ -478,6 +641,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 filterTranscripts('');
             }
         });
+    }
+    
+    // Add modal event listeners
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    const closeModalFooterBtn = document.getElementById('close-modal-footer-btn');
+    const modalOverlay = document.getElementById('modal-overlay');
+    const exportWrongStudentsBtn = document.getElementById('export-wrong-students-btn');
+    
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', closeWrongStudentsModal);
+    }
+    if (closeModalFooterBtn) {
+        closeModalFooterBtn.addEventListener('click', closeWrongStudentsModal);
+    }
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', closeWrongStudentsModal);
+    }
+    if (exportWrongStudentsBtn) {
+        exportWrongStudentsBtn.addEventListener('click', exportWrongStudentsList);
     }
 });
 

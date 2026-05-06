@@ -185,6 +185,12 @@ router.get('/:id/statistics',
   lessonController.getLessonStatistics
 );
 
+router.get('/:id/students-wrong-question',
+  requireAdminAuth,
+  validateIdParam('id'),
+  lessonController.getStudentsWhoGotQuestionWrong
+);
+
 router.get('/:id/results',
   requireAdminAuth,
   validateIdParam('id'),
