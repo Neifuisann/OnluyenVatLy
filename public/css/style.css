@@ -1756,6 +1756,10 @@ tr:hover {
 }
 
 .clear-btn {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
     background: transparent;
     border: none;
     color: var(--text-tertiary);
@@ -1765,6 +1769,7 @@ tr:hover {
     align-items: center;
     justify-content: center;
     transition: var(--transition-fast);
+    z-index: 10;
 }
 
 .clear-btn:hover {
