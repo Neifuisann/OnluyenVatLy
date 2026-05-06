@@ -29,6 +29,11 @@ function formatQuestionContent(q) {
     // Replace [img src="..."] with actual img tags
     let formattedText = text.replace(/\[img\s+src=["']([^"']+)["']\]/gi, '<br><img src="$1" alt="Question" style="max-width: 100%; max-height: 200px; display: block; margin-top: 10px; border-radius: 6px;">');
     
+    // Round decimal point values in pts notation (e.g., 0.47368421052631576 pts -> 0.47 pts)
+    formattedText = formattedText.replace(/(\d+\.\d{3,})\s+pts/gi, (match, number) => {
+        return parseFloat(number).toFixed(2) + ' pts';
+    });
+    
     // Add true/false options if present AND we don't have detailed sub-rows for them
     // Now that we have sub-rows (q.optionStats), we skip appending them into the main question text
     if (!q.optionStats && (q.type === 'true_false' || q.type === 'truefalse') && q.options && Array.isArray(q.options)) {
@@ -237,6 +242,10 @@ function exportToExcel() {
         let questionText = q.question;
         // Strip HTML for excel export if we manually injected some
         questionText = questionText.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]*>?/gm, '');
+        // Round decimal point values in pts notation
+        questionText = questionText.replace(/(\d+\.\d{3,})\s+pts/gi, (match, number) => {
+            return parseFloat(number).toFixed(2) + ' pts';
+        });
         
         // Push the main row
         questionData.push({
