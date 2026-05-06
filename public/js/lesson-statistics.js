@@ -7,11 +7,41 @@ let sortState = {
     direction: 'asc' // 'asc' or 'desc'
 };
 
+// Helper to recursively extract string from object
+function getOptionString(val) {
+    if (val === null || val === undefined) return '';
+    if (typeof val === 'string' || typeof val === 'number') return String(val);
+    if (typeof val === 'object') {
+        if (typeof val.text === 'string') return val.text;
+        if (typeof val.content === 'string') return val.content;
+        if (Array.isArray(val)) return val.map(getOptionString).join(' ');
+        if (val.text && typeof val.text === 'object') return getOptionString(val.text);
+        if (val.html && typeof val.html === 'string') return val.html.replace(/<[^>]*>?/gm, ''); // primitive strip HTML
+        return JSON.stringify(val);
+    }
+    return String(val);
+}
+
 // Helper to format question text
-function formatQuestionContent(text) {
-    if (!text) return '';
+function formatQuestionContent(q) {
+    if (!q) return '';
+    let text = q.question || '';
     // Replace [img src="..."] with actual img tags
-    return text.replace(/\[img\s+src=["']([^"']+)["']\]/gi, '<br><img src="$1" alt="Question" style="max-width: 100%; max-height: 200px; display: block; margin-top: 10px; border-radius: 6px;">');
+    let formattedText = text.replace(/\[img\s+src=["']([^"']+)["']\]/gi, '<br><img src="$1" alt="Question" style="max-width: 100%; max-height: 200px; display: block; margin-top: 10px; border-radius: 6px;">');
+    
+    // Add true/false options if present
+    if ((q.type === 'true_false' || q.type === 'truefalse') && q.options && Array.isArray(q.options)) {
+        let optionsHtml = '<ul style="margin-top: 10px; padding-left: 20px;">';
+        q.options.forEach((opt, idx) => {
+            const optText = getOptionString(opt);
+            const letter = String.fromCharCode(65 + idx);
+            optionsHtml += `<li><strong>${letter})</strong> ${optText}</li>`;
+        });
+        optionsHtml += '</ul>';
+        formattedText += optionsHtml;
+    }
+    
+    return formattedText;
 }
 
 async function loadStatistics() {
@@ -201,16 +231,27 @@ function exportToExcel() {
     XLSX.utils.book_append_sheet(workbook, overviewSheet, 'Tổng quan');
 
     // Add Question Analysis sheet
-    const questionData = window.lessonStats.questionStats.map((q, idx) => ({
-        'STT': idx + 1,
-        'Câu hỏi': q.question,
-        'Tổng số học sinh': q.totalStudents,
+    const questionData = window.lessonStats.questionStats.map((q, idx) => {
+        let questionText = q.question;
+        if ((q.type === 'true_false' || q.type === 'truefalse') && q.options && Array.isArray(q.options)) {
+            const optionsText = q.options.map((opt, i) => {
+                const optText = getOptionString(opt);
+                return `${String.fromCharCode(65 + i)}) ${optText}`;
+            }).join('\n');
+            questionText += '\n' + optionsText;
+        }
+        
+        return {
+            'STT': idx + 1,
+            'Câu hỏi': questionText,
+            'Tổng số học sinh': q.totalStudents,
         'Đã làm': q.completed,
         'Chưa làm': q.notCompleted,
         'Làm đúng': q.correct,
         'Làm sai': q.incorrect,
         'Tỉ lệ làm đúng': `${q.completed > 0 ? (q.correct/q.completed * 100).toFixed(2) : "0.00"}%`
-    }));
+        };
+    });
     const questionSheet = XLSX.utils.json_to_sheet(questionData);
     XLSX.utils.book_append_sheet(workbook, questionSheet, 'Phân tích câu hỏi');
 
@@ -259,7 +300,7 @@ function renderQuestionStatsTable(data) {
     tbody.innerHTML = data.map((q, idx) => `
         <tr>
             <td>${idx + 1}</td>
-            <td>${formatQuestionContent(q.question)}</td>
+            <td>${formatQuestionContent(q)}</td>
             <td>${q.totalStudents}</td>
             <td>${q.completed}</td>
             <td>${q.notCompleted}</td>
