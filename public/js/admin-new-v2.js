@@ -1263,6 +1263,8 @@ class AdminEditorV2 {
         this.currentQuestions = [];
         this.editingId = null;
         this.isInitialized = false;
+        this.imageUploadInitialized = false;
+        this.documentUploadInitialized = false;
         this.wordCount = 0;
         this.questionCount = 0;
     }
@@ -1854,6 +1856,9 @@ D. Cả nước được giải phóng và tiến lên xây dựng chủ nghĩa 
     }
 
     initializeDocumentUpload() {
+        if (this.documentUploadInitialized) return;
+        this.documentUploadInitialized = true;
+
         // Initialize upload options
         const manualOption = document.getElementById('manual-option');
         const fileOption = document.getElementById('file-option');
@@ -2055,6 +2060,9 @@ D. Cả nước được giải phóng và tiến lên xây dựng chủ nghĩa 
     }
 
     initializeImageUpload() {
+        if (this.imageUploadInitialized) return;
+        this.imageUploadInitialized = true;
+
         // Setup tab switching
         const tabBtns = document.querySelectorAll('.tab-btn');
         const tabContents = document.querySelectorAll('.tab-content');

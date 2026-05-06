@@ -3,11 +3,20 @@
  * Provides helper functions for handling CSRF tokens in API requests
  */
 
+let cachedToken = null;
+let lastFetchTime = 0;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 /**
  * Get CSRF token from the server
  * @returns {Promise<string>} The CSRF token
  */
 async function getCSRFToken() {
+    // Return cached token if valid
+    if (cachedToken && (Date.now() - lastFetchTime < CACHE_DURATION)) {
+        return cachedToken;
+    }
+
     try {
         const response = await fetch('/api/csrf-token', {
             credentials: 'include' // Include cookies for session
@@ -16,7 +25,12 @@ async function getCSRFToken() {
             throw new Error('Failed to get CSRF token');
         }
         const data = await response.json();
-        return data.csrfToken;
+        
+        // Cache the token
+        cachedToken = data.csrfToken;
+        lastFetchTime = Date.now();
+        
+        return cachedToken;
     } catch (error) {
         console.error('Error getting CSRF token:', error);
         throw error;
