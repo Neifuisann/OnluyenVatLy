@@ -298,6 +298,67 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+/* Sortable Table Headers */
+.statistics-table th.sortable {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.statistics-table th.sortable:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.sort-indicator {
+    display: inline-block;
+    margin-left: 0.5rem;
+    font-size: 0.75em;
+    opacity: 0.5;
+    transition: opacity 0.2s ease;
+}
+
+.statistics-table th.sortable:hover .sort-indicator {
+    opacity: 1;
+}
+
+.statistics-table th.sort-asc .sort-indicator::after {
+    content: ' ↑';
+    opacity: 1;
+    color: var(--neon-purple);
+}
+
+.statistics-table th.sort-desc .sort-indicator::after {
+    content: ' ↓';
+    opacity: 1;
+    color: var(--neon-purple);
+}
+
+/* Column widths for question-stats-table */
+.question-stats-table th:nth-child(1),
+.question-stats-table td:nth-child(1) { width: 5%; }      /* NO */
+
+.question-stats-table th:nth-child(2),
+.question-stats-table td:nth-child(2) { width: 22%; }     /* Câu (reduced 30%) */
+
+.question-stats-table th:nth-child(3),
+.question-stats-table td:nth-child(3) { width: 11%; }     /* Tổng số học sinh */
+
+.question-stats-table th:nth-child(4),
+.question-stats-table td:nth-child(4) { width: 11%; }     /* Đã làm */
+
+.question-stats-table th:nth-child(5),
+.question-stats-table td:nth-child(5) { width: 11%; }     /* Chưa làm */
+
+.question-stats-table th:nth-child(6),
+.question-stats-table td:nth-child(6) { width: 11%; }     /* Làm đúng */
+
+.question-stats-table th:nth-child(7),
+.question-stats-table td:nth-child(7) { width: 11%; }     /* Làm sai */
+
+.question-stats-table th:nth-child(8),
+.question-stats-table td:nth-child(8) { width: 11%; }     /* Tỉ lệ làm đúng */
+
 /* Status Badges Improvements */
 .device-status, .session-status {
     display: inline-flex;

@@ -1,6 +1,12 @@
 // Store chart instance globally
 let scoreChartInstance = null;
 
+// Sorting state for question statistics table
+let sortState = {
+    column: null,
+    direction: 'asc' // 'asc' or 'desc'
+};
+
 // Helper to format question text
 function formatQuestionContent(text) {
     if (!text) return '';
@@ -118,53 +124,14 @@ async function loadStatistics() {
         // Add null checks for tables
         const questionTable = document.getElementById('question-stats');
         if (questionTable) {
-            questionTable.innerHTML = `
-                <thead>
-                    <tr>
-                        <th>STT.</th>
-                        <th>Câu</th>
-                        <th>Tổng số học sinh</th>
-                        <th>Đã làm</th>
-                        <th>Chưa làm</th>
-                        <th>Làm đúng</th>
-                        <th>Làm Sai</th>
-                        <th>Tỉ lệ làm đúng</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${defaultStats.questionStats.map((q, idx) => `
-                        <tr>
-                            <td>${idx + 1}</td>
-                            <td>${formatQuestionContent(q.question)}</td>
-                            <td>${q.totalStudents}</td>
-                            <td>${q.completed}</td>
-                            <td>${q.notCompleted}</td>
-                            <td>${q.correct}</td>
-                            <td>${q.incorrect}</td>
-                            <td>${q.completed > 0 ? (q.correct/q.completed * 100).toFixed(2) : "0.00"}%</td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            `;
-
-            // Wait a moment for KaTeX to be fully loaded if deferred, then render math
-            setTimeout(() => {
-                if (window.renderMathInElement) {
-                    try {
-                        renderMathInElement(questionTable, {
-                            delimiters: [
-                                {left: '$$', right: '$$', display: true},
-                                {left: '$', right: '$', display: false},
-                                {left: '\\(', right: '\\)', display: false},
-                                {left: '\\[', right: '\\]', display: true}
-                            ],
-                            throwOnError: false
-                        });
-                    } catch (e) {
-                        console.error('KaTeX rendering error in statistics:', e);
-                    }
-                }
-            }, 500);
+            // Store original data for sorting
+            window.questionStatsData = defaultStats.questionStats;
+            
+            // Render the table
+            renderQuestionStatsTable(window.questionStatsData);
+            
+            // Add sorting event listeners
+            addQuestionTableSortListeners();
         }
 
         const transcriptsTable = document.getElementById('transcripts');
@@ -279,6 +246,131 @@ function safeUpdateLabel(elementId, text) {
     const parent = document.getElementById(elementId)?.parentElement;
     const label = parent?.querySelector('.stat-label');
     if (label) label.textContent = text;
+}
+
+// Render question stats table with current data
+function renderQuestionStatsTable(data) {
+    const questionTable = document.getElementById('question-stats');
+    if (!questionTable) return;
+    
+    const tbody = questionTable.querySelector('tbody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = data.map((q, idx) => `
+        <tr>
+            <td>${idx + 1}</td>
+            <td>${formatQuestionContent(q.question)}</td>
+            <td>${q.totalStudents}</td>
+            <td>${q.completed}</td>
+            <td>${q.notCompleted}</td>
+            <td>${q.correct}</td>
+            <td>${q.incorrect}</td>
+            <td>${q.completed > 0 ? (q.correct/q.completed * 100).toFixed(2) : "0.00"}%</td>
+        </tr>
+    `).join('');
+    
+    // Wait a moment for KaTeX to be fully loaded if deferred, then render math
+    setTimeout(() => {
+        if (window.renderMathInElement) {
+            try {
+                renderMathInElement(questionTable, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false},
+                        {left: '\\(', right: '\\)', display: false},
+                        {left: '\\[', right: '\\]', display: true}
+                    ],
+                    throwOnError: false
+                });
+            } catch (e) {
+                console.error('KaTeX rendering error in statistics:', e);
+            }
+        }
+    }, 500);
+}
+
+// Add sorting event listeners to question stats table headers
+function addQuestionTableSortListeners() {
+    const questionTable = document.getElementById('question-stats');
+    if (!questionTable) return;
+    
+    const headers = questionTable.querySelectorAll('th.sortable');
+    headers.forEach(header => {
+        header.addEventListener('click', () => {
+            const column = header.getAttribute('data-column');
+            sortQuestionStats(column);
+        });
+    });
+}
+
+// Sort question statistics by column
+function sortQuestionStats(column) {
+    // Get the current data from the DOM (either sorted or original)
+    let dataToSort = JSON.parse(JSON.stringify(window.questionStatsData));
+    
+    // Determine sort direction
+    if (sortState.column === column) {
+        // Toggle direction if same column is clicked
+        sortState.direction = sortState.direction === 'asc' ? 'desc' : 'asc';
+    } else {
+        // Default to ascending for new column
+        sortState.column = column;
+        sortState.direction = 'asc';
+    }
+    
+    // Sort the data
+    dataToSort.sort((a, b) => {
+        let aVal, bVal;
+        
+        switch(column) {
+            case 'totalStudents':
+                aVal = a.totalStudents;
+                bVal = b.totalStudents;
+                break;
+            case 'completed':
+                aVal = a.completed;
+                bVal = b.completed;
+                break;
+            case 'notCompleted':
+                aVal = a.notCompleted;
+                bVal = b.notCompleted;
+                break;
+            case 'correct':
+                aVal = a.correct;
+                bVal = b.correct;
+                break;
+            case 'incorrect':
+                aVal = a.incorrect;
+                bVal = b.incorrect;
+                break;
+            case 'correctRate':
+                aVal = a.completed > 0 ? (a.correct / a.completed) : 0;
+                bVal = b.completed > 0 ? (b.correct / b.completed) : 0;
+                break;
+            default:
+                return 0;
+        }
+        
+        // Handle numeric comparison
+        if (typeof aVal === 'number' && typeof bVal === 'number') {
+            return sortState.direction === 'asc' ? aVal - bVal : bVal - aVal;
+        }
+        
+        return 0;
+    });
+    
+    // Update sort indicators on headers
+    const questionTable = document.getElementById('question-stats');
+    const headers = questionTable.querySelectorAll('th.sortable');
+    headers.forEach(header => {
+        header.classList.remove('sort-asc', 'sort-desc');
+        if (header.getAttribute('data-column') === column) {
+            header.classList.add(sortState.direction === 'asc' ? 'sort-asc' : 'sort-desc');
+        }
+    });
+    
+    // Re-render the table with sorted data
+    renderQuestionStatsTable(dataToSort);
 }
 
 // Append student filter functionality for transcripts by student name

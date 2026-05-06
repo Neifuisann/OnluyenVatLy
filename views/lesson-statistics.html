@@ -101,17 +101,17 @@
                     <span>Phân tích câu hỏi</span>
                 </h3>
                 <div class="table-responsive">
-                    <table class="statistics-table" id="question-stats">
+                    <table class="statistics-table question-stats-table" id="question-stats">
                         <thead>
                             <tr>
-                                <th><i class="fas fa-hashtag"></i> NO.</th>
-                                <th><i class="fas fa-question-circle"></i> Câu hỏi</th>
-                                <th><i class="fas fa-users"></i> Tổng</th>
-                                <th><i class="fas fa-check"></i> Làm</th>
-                                <th><i class="fas fa-times"></i> Không làm</th>
-                                <th><i class="fas fa-check-circle"></i> Đúng</th>
-                                <th><i class="fas fa-times-circle"></i> Sai</th>
-                                <th><i class="fas fa-percentage"></i> Tỉ lệ</th>
+                                <th class="no-sort"><i class="fas fa-hashtag"></i> NO.</th>
+                                <th class="no-sort"><i class="fas fa-question-circle"></i> Câu hỏi</th>
+                                <th class="sortable" data-column="totalStudents"><i class="fas fa-users"></i> Tổng HS <span class="sort-indicator"></span></th>
+                                <th class="sortable" data-column="completed"><i class="fas fa-check"></i> Đã làm <span class="sort-indicator"></span></th>
+                                <th class="sortable" data-column="notCompleted"><i class="fas fa-times"></i> Chưa làm <span class="sort-indicator"></span></th>
+                                <th class="sortable" data-column="correct"><i class="fas fa-check-circle"></i> Đúng <span class="sort-indicator"></span></th>
+                                <th class="sortable" data-column="incorrect"><i class="fas fa-times-circle"></i> Sai <span class="sort-indicator"></span></th>
+                                <th class="sortable" data-column="correctRate"><i class="fas fa-percentage"></i> Tỉ lệ <span class="sort-indicator"></span></th>
                             </tr>
                         </thead>
                         <tbody>
