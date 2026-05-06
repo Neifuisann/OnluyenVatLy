@@ -16,38 +16,34 @@
     <!-- KaTeX for math rendering -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     
-    <!-- Styles -->
-    <link rel="stylesheet" href="/css/style.css">
-    
-    <style>
-        /* Review Mistakes Specific Styles */
-        .review-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: var(--space-xl);
-            min-height: 100vh;
-        }
-        
-        .review-header {
-            text-align: center;
-            margin-bottom: var(--space-2xl);
-        }
-        
-        .review-title {
-            font-size: var(--text-3xl);
-            font-weight: 700;
-            margin-bottom: var(--space-md);
-            background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary-color) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .review-subtitle {
-            color: var(--text-secondary);
-            font-size: var(--text-lg);
-        }
-        
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <i class="fas fa-atom"></i>
+                <span>Học Vật Lý</span>
+            </a>
+            
+            <div class="nav-links" id="nav-links">
+                <a href="/lessons" class="nav-link">
+                    <i class="fas fa-book"></i>
+                    <span>Bài học</span>
+                </a>
+                <a href="/leaderboard" class="nav-link">
+                    <i class="fas fa-trophy"></i>
+                    <span>Bảng xếp hạng</span>
+                </a>
+                <a href="/profile" class="nav-link" id="profile-link">
+                    <i class="fas fa-user"></i>
+                    <span>Hồ sơ</span>
+                </a>
+            </div>
+            
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
         .filters-section {
             background: var(--bg-secondary);
             border: 1px solid var(--border-primary);
@@ -378,10 +374,6 @@
             </a>
             
             <div class="nav-links" id="nav-links">
-                <a href="/" class="nav-link">
-                    <i class="fas fa-home"></i>
-                    <span>Trang chủ</span>
-                </a>
                 <a href="#lessons" class="nav-link">
                     <i class="fas fa-book"></i>
                     <span>Bài học</span>

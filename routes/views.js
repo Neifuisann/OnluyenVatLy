@@ -62,7 +62,13 @@ router.get('/',
   optionalAuth,
   addSessionInfo,
   longCacheMiddleware(3600), // 1 hour cache
-  serveHTML('landing.html')
+  (req, res) => {
+    // If user is already authenticated (student or admin), send them to lessons
+    if (sessionService.isStudentOrAdminAuthenticated(req)) {
+      return res.redirect('/lessons');
+    }
+    return res.sendFile(path.join(__dirname, '../views', 'landing.html'));
+  }
 );
 
 router.get('/login',
