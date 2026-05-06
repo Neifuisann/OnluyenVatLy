@@ -455,7 +455,7 @@ router.get('/share/lesson/:lessonId', async (req, res) => {
         console.log(`Questions per attempt: ${questionsPerAttempt}`);
 
         // 4. Fetch USER'S past results (if logged in)
-        let userHistoryHtml = '';
+        let historyHtmlContent = '';
         if (loggedInStudentId) {
             console.log(`Fetching history for student ${loggedInStudentId} and lesson ${lessonId}`);
             const { data: historyData, error: historyError } = await supabase
@@ -464,15 +464,28 @@ router.get('/share/lesson/:lessonId', async (req, res) => {
                 .eq('student_id', loggedInStudentId)
                 .eq('lesson_id', lessonId)
                 .order('timestamp', { ascending: false })
-                .limit(3); // Limit to latest 3 attempts
+                .limit(10); // Increased limit to show more history
 
             if (historyError) {
                 console.error(`Error fetching user history:`, historyError.message);
             } else if (historyData && historyData.length > 0) {
                 console.log(`Found ${historyData.length} history entries for the user.`);
-                // Generate HTML for history cards
-                userHistoryHtml = '<h2 style="text-align: left; margin-top: 30px; margin-bottom: 15px; font-size: 1.4em; color: #333;">Lịch sử làm bài của bạn</h2>';
-                historyData.forEach(result => {
+                
+                // Build collapsible history section
+                historyHtmlContent = `
+                    <div class="history-header">
+                        <h2>
+                            <i class="fas fa-history"></i>
+                            Lịch sử làm bài của bạn
+                        </h2>
+                        <button class="collapse-btn" title="Ẩn/Hiện lịch sử" aria-label="Toggle history">
+                          <i class="fas fa-chevron-down chev"></i>
+                        </button>
+                    </div>
+                    <div class="history-content">
+                `;
+                
+                historyData.forEach((result, index) => {
                     const score = result.score ?? 0;
                     const totalPoints = result.total_points ?? 0;
                     const scorePercent = totalPoints > 0 ? ((score / totalPoints) * 100).toFixed(2) : 'N/A';
@@ -482,16 +495,62 @@ router.get('/share/lesson/:lessonId', async (req, res) => {
                     const submissionTime = new Date(result.timestamp).toLocaleString('vi-VN', {
                         day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
                     });
+                    
+                    const dayDiff = Math.floor((Date.now() - new Date(result.timestamp).getTime()) / (1000 * 60 * 60 * 24));
+                    let timeAgo = submissionTime;
+                    if (dayDiff === 0) {
+                        const hourDiff = Math.floor((Date.now() - new Date(result.timestamp).getTime()) / (1000 * 60 * 60));
+                        if (hourDiff === 0) {
+                            const minDiff = Math.floor((Date.now() - new Date(result.timestamp).getTime()) / (1000 * 60));
+                            timeAgo = `${minDiff} phút trước`;
+                        } else {
+                            timeAgo = `${hourDiff} giờ trước`;
+                        }
+                    } else if (dayDiff === 1) {
+                        timeAgo = 'Hôm qua';
+                    } else if (dayDiff < 7) {
+                        timeAgo = `${dayDiff} ngày trước`;
+                    }
 
-                    userHistoryHtml += `
-                        <div style="background-color: #f9f9f9; border: 1px solid #eee; border-radius: 8px; padding: 15px; margin-bottom: 10px; text-align: left;">
-                            <p style="margin: 5px 0; font-size: 1.2em; font-weight: bold; color: #1877f2;">Điểm của bạn: ${scorePercent}</p>
-                            <p style="margin: 5px 0;">Thời gian nộp bài: ${submissionTime}</p>
-                            <p style="margin: 5px 0;">Số lượng đúng: <strong style="color: green;">${correctAnswers}</strong> / ${totalPoints}</p>
-                            ${result.id ? `<a href="/result/${result.id}" style="display: inline-block; margin-top: 10px; font-size: 0.9em; color: #555; text-decoration: none;">Xem chi tiết ›</a>` : ''}
+                    // Determine badge class based on score
+                    let badgeClass = 'score-badge';
+                    if (scorePercent !== 'N/A') {
+                      const pct = parseFloat(scorePercent);
+                      if (pct >= 80) badgeClass += ' score-good';
+                      else if (pct >= 60) badgeClass += ' score-medium';
+                      else badgeClass += ' score-bad';
+                    }
+
+                    historyHtmlContent += `
+                      <div class="history-card">
+                        <div class="history-card-header">
+                          <div class="score-display">
+                            <span class="${badgeClass}">
+                              ${scorePercent}%
+                            </span>
+                          </div>
+                          <span style="color: var(--text-secondary, #999); font-size: 0.9em;">${timeAgo}</span>
+                        </div>
+                            <div class="history-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>${submissionTime}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span class="correct-count">${correctAnswers} / ${totalPoints}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-star"></i>
+                                    <span>Điểm: <strong>${score}</strong></span>
+                                </div>
+                            </div>
+                            ${result.id ? `<a href="/result/${result.id}" class="details-link"><i class="fas fa-chart-line"></i>Xem chi tiết</a>` : ''}
                         </div>
                     `;
                 });
+                
+                historyHtmlContent += '</div>'; // Close history-content div
             } else {
                 console.log(`No history found for student ${loggedInStudentId} on lesson ${lessonId}`);
             }
@@ -510,7 +569,7 @@ router.get('/share/lesson/:lessonId', async (req, res) => {
         htmlContent = htmlContent.replace(/{{QUESTION_COUNT}}/g, questionsPerAttempt);
         htmlContent = htmlContent.replace(/{{SUBMISSION_COUNT}}/g, totalSubmissions);
         htmlContent = htmlContent.replace(/{{LESSON_ID}}/g, lessonData.id);
-        htmlContent = htmlContent.replace(/{{USER_HISTORY_HTML}}/g, userHistoryHtml);
+        htmlContent = htmlContent.replace(/{{HISTORY_HTML_CONTENT}}/g, historyHtmlContent);
 
         // 7. Send the response
         res.setHeader('Content-Type', 'text/html; charset=utf-8');

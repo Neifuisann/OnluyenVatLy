@@ -17,38 +17,177 @@
     <link rel="stylesheet" href="/css/style.css">
     
     <style>
-        /* Share page specific styles */
+        /* Use global theme variables so page matches /lessons theme */
         body {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 2rem;
+            padding: 2rem 1rem;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
         }
-        
+
         .share-container {
             position: relative;
             z-index: 1;
+            width: 100%;
+            max-width: 980px;
+            background: var(--bg-card);
+            padding: 28px;
+            border-radius: 12px;
+            box-shadow: var(--glass-shadow);
+            text-align: center;
+            border: 1px solid var(--border-primary);
         }
-        
-        /* Loading overlay */
+
+        .lesson-image {
+            display: block;
+            margin: 0 auto 16px auto;
+            width: 140px;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(2,6,23,0.6);
+            border: 1px solid rgba(255,255,255,0.04);
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+        }
+
+        h1 {
+            margin: 6px 0 14px 0;
+            font-size: 1.9rem;
+            line-height: 1.15;
+            color: var(--text-primary);
+        }
+
+        .info {
+            display: flex;
+            gap: 18px;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-secondary);
+            margin-bottom: 18px;
+        }
+
+        .info p { margin:0; display:inline-flex; align-items:center; gap:8px; font-size:0.98rem }
+
+        .info svg path { fill: var(--text-secondary); }
+
         .loading-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: var(--bg-primary);
+            background: rgba(2,6,23,0.8);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: var(--z-modal);
             transition: opacity 0.3s ease-out;
         }
-        
-        .loading-overlay.hidden {
-            opacity: 0;
-            pointer-events: none;
+
+        .loading-overlay.hidden { opacity: 0; pointer-events: none }
+
+        .start-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--primary-gradient);
+            color: white;
+            padding: 12px 22px;
+            border-radius: 999px;
+            text-decoration: none;
+            font-weight: 700;
+            box-shadow: 0 8px 24px rgba(16,24,40,0.4);
+            transition: transform 0.12s ease, box-shadow 0.12s ease;
+            margin-top: 8px;
+        }
+
+        .start-button:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(16,24,40,0.45); }
+
+        /* History section styles (dark) */
+        .user-history-section { margin-top: 36px; width: 100%; text-align: left }
+
+        .history-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.03) }
+
+        .history-header h2 { margin:0; font-size:1.06rem; color:var(--text-primary-dark); display:flex; align-items:center; gap:10px; font-weight:700 }
+
+        .history-header h2 i { color: var(--accent); font-size:1.05rem }
+
+        .collapse-btn { background: var(--bg-card); border:1px solid var(--border-primary); cursor:pointer; color:var(--text-primary); padding:8px 10px; border-radius:8px; display:inline-flex; align-items:center; gap:8px }
+
+        .collapse-btn:hover { background: var(--bg-hover) }
+
+        .collapse-btn .chev { transition: transform 0.25s ease; color: var(--text-secondary) }
+
+        .collapse-btn.collapsed .chev { transform: rotate(180deg); color: var(--neon-blue) }
+
+        .history-content { transition: max-height 0.35s ease, opacity 0.25s ease; max-height:1000px; overflow:hidden; opacity:1 }
+
+        .history-content.collapsed { max-height:0; opacity:0 }
+
+        .history-card { background: var(--bg-secondary); border:1px solid var(--border-primary); border-left:4px solid var(--neon-blue); border-radius:10px; padding:14px; margin-bottom:12px }
+
+        .history-card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px }
+
+        .score-badge { padding:6px 12px; border-radius:999px; color:var(--text-primary); font-weight:800; background:var(--neon-blue) }
+
+        .score-badge.score-good { background: var(--success-gradient); }
+        .score-badge.score-medium { background: var(--warning-gradient); }
+        .score-badge.score-bad { background: var(--danger-gradient); }
+
+        .history-meta { display:flex; gap:12px; flex-wrap:wrap; color:var(--muted); font-size:0.95rem }
+
+        .meta-item i { color: var(--accent); }
+
+        .correct-count { color: var(--success); font-weight:700 }
+
+        .details-link { color: var(--accent); background: rgba(58,160,255,0.06); padding:6px 10px; border-radius:6px; display:inline-flex; gap:8px; align-items:center; text-decoration:none }
+
+        .details-link:hover { background: rgba(58,160,255,0.12) }
+
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-secondary, #666);
+        }
+
+        .meta-item i {
+            color: #1877f2;
+            width: 16px;
+            text-align: center;
+        }
+
+        .correct-count {
+            color: #22ab94;
+            font-weight: 600;
+        }
+
+        .details-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 10px;
+            font-size: 0.95em;
+            color: #1877f2;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            padding: 6px 10px;
+            border-radius: 5px;
+        }
+
+        .details-link:hover {
+            background-color: rgba(24, 119, 242, 0.1);
+            color: #0d47a1;
+            transform: translateX(3px);
+        }
+
+        .details-link i {
+            font-size: 0.9em;
         }
         
         /* Mobile responsive */
@@ -73,6 +212,26 @@
                 font-size: 1.1rem;
                 padding: 0.875rem 2rem;
             }
+
+            .history-meta {
+                grid-template-columns: 1fr;
+            }
+
+            .history-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .collapse-btn {
+                position: absolute;
+                right: 0;
+                top: 0;
+            }
+
+            .history-header {
+                position: relative;
+            }
         }
         
         @media (max-width: 480px) {
@@ -88,6 +247,15 @@
             
             .share-container .info svg {
                 margin-left: 0;
+            }
+
+            .history-card {
+                padding: 12px;
+            }
+
+            .score-badge {
+                font-size: 0.85em;
+                padding: 3px 10px;
             }
         }
     </style>
@@ -129,14 +297,47 @@
             Bắt đầu luyện tập
         </a>
 
-        <!-- Placeholder for User History -->
+        <!-- History Section with Collapse -->
         <div class="user-history-section">
-            {{USER_HISTORY_HTML}}
+            {{HISTORY_HTML_CONTENT}}
         </div>
     </div>
 
     <script src="/js/network-animation.js"></script>
     <script>
+        // Initialize collapse functionality
+        function initializeCollapseButtons() {
+            const collapseBtn = document.querySelector('.collapse-btn');
+            const historyContent = document.querySelector('.history-content');
+            const chev = collapseBtn ? collapseBtn.querySelector('.chev') : null;
+
+            if (collapseBtn && historyContent) {
+                const setState = (collapsed) => {
+                    if (collapsed) {
+                        historyContent.classList.add('collapsed');
+                        collapseBtn.classList.add('collapsed');
+                        if (chev) chev.classList.add('rotated');
+                    } else {
+                        historyContent.classList.remove('collapsed');
+                        collapseBtn.classList.remove('collapsed');
+                        if (chev) chev.classList.remove('rotated');
+                    }
+                };
+
+                collapseBtn.addEventListener('click', function() {
+                    const isCollapsed = historyContent.classList.toggle('collapsed');
+                    collapseBtn.classList.toggle('collapsed');
+                    if (chev) chev.classList.toggle('rotated');
+                    // Save state to localStorage
+                    localStorage.setItem('historyCollapsed', historyContent.classList.contains('collapsed'));
+                });
+
+                // Restore collapsed state from localStorage
+                const wasCollapsed = localStorage.getItem('historyCollapsed') === 'true';
+                setState(wasCollapsed);
+            }
+        }
+
         // Hide loader and show content when the page is fully loaded
         window.addEventListener('load', () => {
             const loader = document.getElementById('loading-overlay');
@@ -150,24 +351,8 @@
                 content.classList.add('loaded');
             }
 
-            // Apply specific classes to injected history
-            const historySection = document.querySelector('.user-history-section');
-            if (historySection && historySection.innerHTML.trim() !== '') {
-                const historyCards = historySection.querySelectorAll('div');
-                historyCards.forEach(card => card.classList.add('history-card'));
-                
-                const scoreLines = historySection.querySelectorAll('.history-card p:first-child');
-                scoreLines.forEach(line => line.classList.add('score-line'));
-                
-                const links = historySection.querySelectorAll('.history-card a');
-                links.forEach(link => {
-                    link.classList.add('details-link');
-                    // Add icon to links
-                    if (!link.querySelector('i')) {
-                        link.innerHTML = `<i class="fas fa-chart-line"></i> ${link.innerHTML}`;
-                    }
-                });
-            }
+            // Initialize collapse buttons after DOM is ready
+            initializeCollapseButtons();
         });
         
         // Add animation to elements
