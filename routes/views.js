@@ -175,7 +175,7 @@ router.get('/leaderboard',
 router.get('/history',
   requireAdminAuthForHTML,
   addSessionInfo,
-  longCacheMiddleware(1800), // 30 minutes cache
+  noCacheMiddleware,
   serveHTML('history.html')
 );
 

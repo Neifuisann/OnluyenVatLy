@@ -120,7 +120,7 @@ async function renderQuestions(lesson) {
         if (match && match[1]) {
             imageUrl = match[1];
         }
-        
+
         let questionText = q.question;
         if (imageUrl) {
             questionText = questionText.replace(imgRegex, '').trim();
@@ -151,10 +151,10 @@ async function renderQuestions(lesson) {
         }
 
         const normalizedType = q.type === 'multiple_choice' ? 'abcd' :
-                               q.type === 'true_false' ? 'truefalse' :
-                               q.type === 'fill_blank' ? 'number' : q.type;
+            q.type === 'true_false' ? 'truefalse' :
+                q.type === 'fill_blank' ? 'number' : q.type;
 
-        switch(normalizedType) {
+        switch (normalizedType) {
             case 'abcd':
                 if (!q.options || !Array.isArray(q.options)) {
                     console.warn('ABCD question missing options:', q);
@@ -165,7 +165,7 @@ async function renderQuestions(lesson) {
                 // Options are already shuffled by applyRandomization! Do not re-shuffle here.
                 const optionsWithIndices = q.options.map((option, idx) => ({
                     text: typeof option === 'string' ? option : (option.text || ''),
-                    originalIndex: idx, 
+                    originalIndex: idx,
                     letter: String.fromCharCode(65 + idx)
                 }));
 
@@ -248,10 +248,10 @@ async function renderQuestions(lesson) {
     if (typeof renderMathInElement === 'function') {
         renderMathInElement(container, {
             delimiters: [
-                {left: "$$", right: "$$", display: true},
-                {left: "$", right: "$", display: false},
-                {left: "\\(", right: "\\)", display: false},
-                {left: "\\[", right: "\\]", display: true}
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "\\[", right: "\\]", display: true }
             ],
             throwOnError: false
         });
@@ -275,13 +275,13 @@ function getCurrentStreak(lessonId) {
             const { lastAttempt, streak } = JSON.parse(streakData);
             const now = new Date();
             const lastAttemptDate = new Date(lastAttempt);
-            
+
             // Check if last attempt was yesterday or today
             const isConsecutiveDay = (
                 (now.getDate() === lastAttemptDate.getDate() && now.getMonth() === lastAttemptDate.getMonth() && now.getFullYear() === lastAttemptDate.getFullYear()) ||
                 (now.getDate() === lastAttemptDate.getDate() + 1 && now.getMonth() === lastAttemptDate.getMonth() && now.getFullYear() === lastAttemptDate.getFullYear())
             );
-            
+
             return isConsecutiveDay ? streak + 1 : 1;
         }
     } catch (error) {
@@ -294,7 +294,7 @@ function updateStreak(lessonId, score, totalPoints) {
     try {
         const currentStreak = getCurrentStreak(lessonId);
         const performance = score / totalPoints;
-        
+
         // Only update streak if performance is good (e.g., > 70%)
         if (performance >= 0.7) {
             localStorage.setItem(`lesson_${lessonId}_streak`, JSON.stringify({
@@ -344,9 +344,9 @@ function showPracticeFeedback(quizResults) {
             </div>
         </div>
     `;
-    
+
     document.body.appendChild(modal);
-    
+
     // Add styles
     const style = document.createElement('style');
     style.textContent = `
@@ -434,12 +434,12 @@ function reviewAnswers() {
     document.querySelectorAll('.question').forEach(questionEl => {
         const questionIndex = parseInt(questionEl.dataset.questionIndex);
         const question = currentLessonData.questions[questionIndex];
-        
+
         // Add correct answer indicator
         const correctDiv = document.createElement('div');
         correctDiv.className = 'correct-answer-display';
         correctDiv.style.cssText = 'background: #d1fae5; padding: 0.5rem; margin-top: 0.5rem; border-radius: 0.25rem; color: #065f46;';
-        
+
         if (question.type === 'abcd' || question.type === 'multiple_choice') {
             const correctIndex = question.correct.toUpperCase().charCodeAt(0) - 65;
             const correctOption = question.options[correctIndex];
@@ -449,10 +449,10 @@ function reviewAnswers() {
         } else if (question.type === 'truefalse' || question.type === 'true_false') {
             correctDiv.innerHTML = `<i class="fas fa-check"></i> Đáp án đúng: ${question.correct}`;
         }
-        
+
         questionEl.appendChild(correctDiv);
     });
-    
+
     // Close modal
     document.querySelector('.practice-feedback-modal').remove();
 }
@@ -480,41 +480,41 @@ function initializeCountdownTimer(lesson) {
     const minutes = lesson.timeLimitMinutes || 30;
     const seconds = lesson.timeLimitSeconds || 0;
     const totalSeconds = (hours * 3600) + (minutes * 60) + seconds;
-    
+
     if (totalSeconds <= 0) {
         console.warn('Invalid time limit configuration');
         return;
     }
-    
+
     // Stop the count-up timer if it's running
     if (typeof timerInterval !== 'undefined' && timerInterval) {
         clearInterval(timerInterval);
         timerInterval = null;
     }
-    
+
     // Use the existing sidebar timer element instead of creating a floating one
     const sidebarTimer = document.getElementById('timer');
     if (!sidebarTimer) {
         console.warn('Sidebar timer element not found');
         return;
     }
-    
+
     let remainingTime = totalSeconds;
-    
+
     // Update display immediately
     updateCountdownDisplay(sidebarTimer, remainingTime);
-    
+
     // Start countdown
     countdownTimer = setInterval(() => {
         remainingTime--;
         updateCountdownDisplay(sidebarTimer, remainingTime);
-        
+
         // Show warning at 3 minutes
         if (remainingTime === 180 && !warningShown) {
             warningShown = true;
             showTimeWarning();
         }
-        
+
         // Auto-submit when time runs out
         if (remainingTime <= 0) {
             clearInterval(countdownTimer);
@@ -531,12 +531,12 @@ function updateCountdownDisplay(timerEl, remainingTime) {
     const hours = Math.floor(remainingTime / 3600);
     const minutes = Math.floor((remainingTime % 3600) / 60);
     const seconds = remainingTime % 60;
-    
+
     timerEl.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    
+
     // Get the parent exam-timer container for color changes
     const timerContainer = timerEl.closest('.exam-timer');
-    
+
     // Change color as time runs out
     if (remainingTime <= 180) { // Last 3 minutes
         timerEl.style.color = 'var(--accent-warning, #f59e0b)';
@@ -563,7 +563,7 @@ function showTimeWarning() {
         justify-content: center;
         z-index: 10000;
     `;
-    
+
     const content = document.createElement('div');
     content.style.cssText = `
         background: var(--bg-card, #1e1e2a);
@@ -573,7 +573,7 @@ function showTimeWarning() {
         border: 2px solid var(--accent-warning, #f59e0b);
         max-width: 400px;
     `;
-    
+
     content.innerHTML = `
         <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--accent-warning, #f59e0b); margin-bottom: 1rem;"></i>
         <h3 style="color: var(--text-primary, #e4e4e7); margin-bottom: 1rem;">Cảnh báo thời gian</h3>
@@ -588,11 +588,11 @@ function showTimeWarning() {
             font-weight: 600;
         ">Đã hiểu</button>
     `;
-    
+
     modal.className = 'time-warning-modal';
     modal.appendChild(content);
     document.body.appendChild(modal);
-    
+
     // Auto-close after 5 seconds
     setTimeout(() => {
         if (modal.parentNode) {
@@ -675,7 +675,7 @@ function createSeededRandom(seed) {
     if (!seed) {
         return Math.random;
     }
-    
+
     // Improved hash function for string seed
     let hash = 0;
     for (let i = 0; i < seed.length; i++) {
@@ -683,13 +683,13 @@ function createSeededRandom(seed) {
         hash = ((hash << 5) - hash) + char;
         hash = hash & hash; // Convert to 32bit integer
     }
-    
+
     // Add more entropy by mixing in the string length and a magic number
     hash = Math.abs(hash + seed.length * 0x5bd1e995);
-    
+
     // Use the hash as seed for an improved PRNG (Linear Congruential Generator)
     let state = hash || 1; // Ensure non-zero state
-    return function() {
+    return function () {
         // Better constants for the LCG (from Numerical Recipes)
         state = (state * 1664525 + 1013904223) % 4294967296;
         // Double application for better distribution
@@ -723,36 +723,36 @@ function applyRandomization(lesson) {
     // Shuffle question order if enabled
     console.log('🎲 Shuffle Debug - shuffleQuestions flag:', lesson.shuffleQuestions);
     console.log('🎲 Shuffle Debug - Questions before shuffle:', questions.map(q => q.question || q.id));
-    
+
     // Check URL parameter for force shuffle (useful for debugging)
     const urlParams = new URLSearchParams(window.location.search);
     const forceShuffleQuestions = urlParams.get('shuffle') === 'true';
-    
+
     if (lesson.shuffleQuestions || forceShuffleQuestions) {
         if (forceShuffleQuestions) {
             console.log('🔧 Force shuffle enabled via URL parameter');
         }
-        
+
         // Group questions by type
         const questionGroups = {
             abcd: [],
             truefalse: [],
             number: []
         };
-        
+
         // Log unique question types before grouping
         const uniqueTypes = [...new Set(questions.map(q => q.type))];
         console.log('🔍 Unique question types in lesson:', uniqueTypes);
-        
+
         // Normalize type names and group questions
         questions.forEach((q, originalIndex) => {
             // Store original index to maintain reference
             q._originalIndex = originalIndex;
-            
+
             const normalizedType = q.type === 'multiple_choice' ? 'abcd' :
-                                 q.type === 'true_false' ? 'truefalse' :
-                                 q.type === 'fill_blank' ? 'number' : q.type;
-            
+                q.type === 'true_false' ? 'truefalse' :
+                    q.type === 'fill_blank' ? 'number' : q.type;
+
             if (questionGroups[normalizedType]) {
                 questionGroups[normalizedType].push(q);
             } else {
@@ -761,21 +761,21 @@ function applyRandomization(lesson) {
                 questionGroups.abcd.push(q);
             }
         });
-        
+
         console.log('🎲 Question groups before shuffle:', {
             abcd: questionGroups.abcd.length,
             truefalse: questionGroups.truefalse.length,
             number: questionGroups.number.length
         });
-        
+
         // Shuffle each group independently
         const shuffledAbcd = shuffleArray(questionGroups.abcd, randomFunc);
         const shuffledTrueFalse = shuffleArray(questionGroups.truefalse, randomFunc);
         const shuffledNumber = shuffleArray(questionGroups.number, randomFunc);
-        
+
         // Combine groups in the desired order: ABCD → True/False → Short Answer
         questions = [...shuffledAbcd, ...shuffledTrueFalse, ...shuffledNumber];
-        
+
         console.log('🎲 Shuffle Debug - Questions after group shuffle:', questions.map(q => ({
             question: q.question || q.id,
             type: q.type,
@@ -786,7 +786,7 @@ function applyRandomization(lesson) {
         console.warn('⚠️ Shuffle Debug - shuffleQuestions is false or undefined!');
         console.log('💡 Tip: Add ?shuffle=true to URL to force shuffling');
     }
-    
+
     // Shuffle answer choices for multiple choice questions if enabled
     if (lesson.shuffleAnswers) {
         questions = questions.map(question => {
@@ -794,15 +794,15 @@ function applyRandomization(lesson) {
                 // Create array of indices to track original positions
                 const indices = question.options.map((_, index) => index);
                 const shuffledIndices = shuffleArray(indices, randomFunc);
-                
+
                 // Rearrange options according to shuffled indices
                 const shuffledOptions = shuffledIndices.map(index => question.options[index]);
-                
+
                 // Update the correct answer to reflect new position
                 const originalCorrectIndex = question.correct.toUpperCase().charCodeAt(0) - 65;
                 const newCorrectIndex = shuffledIndices.indexOf(originalCorrectIndex);
                 const newCorrectLetter = String.fromCharCode(65 + newCorrectIndex);
-                
+
                 return {
                     ...question,
                     options: shuffledOptions,
@@ -814,10 +814,10 @@ function applyRandomization(lesson) {
         });
         console.log('Answer choices shuffled for multiple choice questions');
     }
-    
+
     // Update the lesson object with randomized questions
     lesson.questions = questions;
-    
+
 
     console.log('Randomization complete. Final question count:', questions.length);
     console.log('🎯 Final question order:', questions.map((q, idx) => ({
@@ -826,21 +826,21 @@ function applyRandomization(lesson) {
         question: (q.question || '').substring(0, 30) + '...',
         originalIndex: q._originalIndex
     })));
-    
+
     // Verify group order
     let groupOrder = [];
     let currentGroup = null;
     questions.forEach(q => {
         const normalizedType = q.type === 'multiple_choice' ? 'abcd' :
-                             q.type === 'true_false' ? 'truefalse' :
-                             q.type === 'fill_blank' ? 'number' : q.type;
+            q.type === 'true_false' ? 'truefalse' :
+                q.type === 'fill_blank' ? 'number' : q.type;
         if (normalizedType !== currentGroup) {
             currentGroup = normalizedType;
             groupOrder.push(normalizedType);
         }
     });
     console.log('✅ Group order verification:', groupOrder.join(' → '));
-    
+
     if (groupOrder.join('-') !== 'abcd-truefalse-number') {
         console.warn('⚠️ Warning: Groups are not in the expected order!');
         console.warn('Expected: abcd → truefalse → number');
@@ -856,57 +856,57 @@ async function checkAttemptPermission(lesson) {
         if (!authResponse.ok) {
             return { allowed: false, reason: 'authentication', message: 'Vui lòng đăng nhập để làm bài' };
         }
-        
+
         const authData = await authResponse.json();
         if (!authData.success || !authData.data?.isAuthenticated) {
             return { allowed: false, reason: 'authentication', message: 'Vui lòng đăng nhập để làm bài' };
         }
-        
+
         const studentId = authData.data.student.id;
-        
+
         // Check previous attempts
         const attemptsResponse = await fetch(`/api/results/lesson/${lesson.id}?studentId=${studentId}`);
         if (!attemptsResponse.ok) {
             // If no previous attempts found, allow
             return { allowed: true };
         }
-        
+
         const attemptsData = await attemptsResponse.json();
         const previousAttempts = attemptsData.data || [];
-        
+
         // Check if max attempts reached (if not unlimited)
         if (!lesson.isUnlimitedAttempts && lesson.maxAttempts > 0) {
             if (previousAttempts.length >= lesson.maxAttempts) {
-                return { 
-                    allowed: false, 
-                    reason: 'maxAttempts', 
+                return {
+                    allowed: false,
+                    reason: 'maxAttempts',
                     message: `Bạn đã hết số lần thử (${lesson.maxAttempts} lần)`,
                     attempts: previousAttempts.length,
                     maxAttempts: lesson.maxAttempts
                 };
             }
         }
-        
+
         // Check cooldown period
         if (previousAttempts.length > 0) {
             const lastAttempt = previousAttempts[previousAttempts.length - 1];
             const lastAttemptTime = new Date(lastAttempt.created_at || lastAttempt.completedAt);
             const now = new Date();
-            
+
             const cooldownMs = (lesson.cooldownHours * 3600 + lesson.cooldownMinutes * 60 + lesson.cooldownSeconds) * 1000;
             const timeSinceLastAttempt = now - lastAttemptTime;
-            
+
             if (timeSinceLastAttempt < cooldownMs) {
                 const remainingTime = cooldownMs - timeSinceLastAttempt;
                 const remainingHours = Math.floor(remainingTime / (1000 * 60 * 60));
                 const remainingMinutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
                 const remainingSeconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
-                
+
                 let timeText = '';
                 if (remainingHours > 0) timeText += `${remainingHours} giờ `;
                 if (remainingMinutes > 0) timeText += `${remainingMinutes} phút `;
                 if (remainingSeconds > 0) timeText += `${remainingSeconds} giây`;
-                
+
                 return {
                     allowed: false,
                     reason: 'cooldown',
@@ -916,13 +916,13 @@ async function checkAttemptPermission(lesson) {
                 };
             }
         }
-        
-        return { 
-            allowed: true, 
+
+        return {
+            allowed: true,
             previousAttempts: previousAttempts,
             attemptNumber: previousAttempts.length + 1
         };
-        
+
     } catch (error) {
         console.error('Error checking attempt permission:', error);
         return { allowed: true }; // Allow on error to avoid blocking students
@@ -943,7 +943,7 @@ function showAttemptDeniedMessage(attemptCheck) {
         justify-content: center;
         z-index: 10000;
     `;
-    
+
     const content = document.createElement('div');
     content.style.cssText = `
         background: var(--bg-card, #1e1e2a);
@@ -954,17 +954,17 @@ function showAttemptDeniedMessage(attemptCheck) {
         max-width: 500px;
         margin: 1rem;
     `;
-    
+
     let iconClass = 'fa-ban';
     let iconColor = 'var(--accent-danger, #ef4444)';
-    
+
     if (attemptCheck.reason === 'cooldown') {
         iconClass = 'fa-clock';
         iconColor = 'var(--accent-warning, #f59e0b)';
     } else if (attemptCheck.reason === 'maxAttempts') {
         iconClass = 'fa-exclamation-circle';
     }
-    
+
     content.innerHTML = `
         <i class="fas ${iconClass}" style="font-size: 4rem; color: ${iconColor}; margin-bottom: 1.5rem;"></i>
         <h3 style="color: var(--text-primary, #e4e4e7); margin-bottom: 1rem;">Không thể làm bài</h3>
@@ -1004,11 +1004,11 @@ function showAttemptDeniedMessage(attemptCheck) {
             ` : ''}
         </div>
     `;
-    
+
     modal.className = 'attempt-denied-modal';
     modal.appendChild(content);
     document.body.appendChild(modal);
-    
+
     // Auto-refresh if in cooldown to update remaining time
     if (attemptCheck.reason === 'cooldown' && attemptCheck.remainingTime < 300000) { // Less than 5 minutes
         setTimeout(() => {
@@ -1021,7 +1021,7 @@ function showPreviousAttemptsSummary(lesson, previousAttempts) {
     if (!lesson.showPreviousAttempts || !previousAttempts || previousAttempts.length === 0) {
         return;
     }
-    
+
     // Create attempts summary element
     const summaryElement = document.createElement('div');
     summaryElement.className = 'previous-attempts-summary';
@@ -1032,11 +1032,11 @@ function showPreviousAttemptsSummary(lesson, previousAttempts) {
         padding: 1rem;
         margin-bottom: 1.5rem;
     `;
-    
+
     const bestScore = Math.max(...previousAttempts.map(attempt => attempt.score || 0));
     const lastScore = previousAttempts[previousAttempts.length - 1].score || 0;
     const averageScore = previousAttempts.reduce((sum, attempt) => sum + (attempt.score || 0), 0) / previousAttempts.length;
-    
+
     summaryElement.innerHTML = `
         <h4 style="color: var(--text-primary, #e4e4e7); margin-bottom: 0.75rem;">
             <i class="fas fa-history"></i> Lịch sử làm bài (${previousAttempts.length} lần)
@@ -1056,7 +1056,7 @@ function showPreviousAttemptsSummary(lesson, previousAttempts) {
             </div>
         </div>
     `;
-    
+
     // Insert after lesson title
     const titleElement = document.getElementById('lesson-title');
     if (titleElement && titleElement.parentNode) {
@@ -1114,7 +1114,7 @@ const ExamGuard = (() => {
             || document.mozCancelFullScreen
             || document.msExitFullscreen;
         if (efs && getFullscreenElement()) {
-            efs.call(document).catch(() => {});
+            efs.call(document).catch(() => { });
         }
     }
 
@@ -1123,33 +1123,6 @@ const ExamGuard = (() => {
             || document.webkitFullscreenElement
             || document.mozFullScreenElement
             || document.msFullscreenElement;
-    }
-
-    // ---- Status badge (bottom-left) ----
-    function createStatusBadge() {
-        statusBadge = document.createElement('div');
-        statusBadge.className = 'exam-guard-status';
-        statusBadge.innerHTML = `
-            <span class="guard-dot"></span>
-            <span class="guard-status-text">Giám sát bài thi</span>
-        `;
-        document.body.appendChild(statusBadge);
-        updateStatusBadge();
-    }
-
-    function updateStatusBadge() {
-        if (!statusBadge) return;
-        const textEl = statusBadge.querySelector('.guard-status-text');
-        if (flagCount === 0) {
-            statusBadge.className = 'exam-guard-status';
-            textEl.textContent = 'Giám sát bài thi';
-        } else if (flagCount <= 2) {
-            statusBadge.className = 'exam-guard-status warning';
-            textEl.textContent = `Cảnh báo: ${flagCount}/4`;
-        } else {
-            statusBadge.className = 'exam-guard-status danger';
-            textEl.textContent = `Vi phạm: ${flagCount}/4`;
-        }
     }
 
     // ---- Warning modal ----
@@ -1236,15 +1209,40 @@ const ExamGuard = (() => {
     // ---- Force submit ----
     function forceSubmit() {
         console.log('[ExamGuard] Force submitting quiz');
+        
+        // 1. If confirm button is already visible (modal is open), click it
+        const confirmBtn = document.querySelector('.btn-confirm');
+        if (confirmBtn) {
+            console.log('[ExamGuard] Clicking confirmation button');
+            confirmBtn.click();
+            return;
+        }
+
+        // 2. Try to call the submission functions directly (more reliable)
+        if (typeof confirmSubmit === 'function') {
+            console.log('[ExamGuard] Calling confirmSubmit directly');
+            confirmSubmit();
+            return;
+        } else if (typeof submitQuiz === 'function') {
+            console.log('[ExamGuard] Calling submitQuiz directly');
+            submitQuiz();
+            return;
+        }
+
+        // 3. Fallback: Click the main submit button
         const submitBtn = document.getElementById('submit-quiz-btn');
         if (submitBtn && !submitBtn.disabled) {
+            console.log('[ExamGuard] Clicking main submit button');
             submitBtn.click();
-        } else {
-            // If there's a confirmation modal flow, try the confirm button
-            const confirmBtn = document.querySelector('.btn-confirm');
-            if (confirmBtn) {
-                confirmBtn.click();
-            }
+            
+            // 4. If clicking opened a modal, try to click the confirm button after a short delay
+            setTimeout(() => {
+                const retryConfirmBtn = document.querySelector('.btn-confirm');
+                if (retryConfirmBtn) {
+                    console.log('[ExamGuard] Clicking confirmation button after delay');
+                    retryConfirmBtn.click();
+                }
+            }, 500);
         }
     }
 
@@ -1261,7 +1259,6 @@ const ExamGuard = (() => {
         flagCount++;
         flagLogs.push({ time: new Date().toISOString(), reason: reason });
         console.log(`[ExamGuard] Flag #${flagCount} triggered (${reason})`);
-        updateStatusBadge();
 
         switch (flagCount) {
             case 1:
@@ -1274,7 +1271,7 @@ const ExamGuard = (() => {
 
             case 2:
                 showWarningModal(
-                    '⚠️ Cảnh báo lần cuối!',
+                    'Cảnh báo lần cuối!',
                     'Đây là lần thứ 2 bạn rời trang. Lần tiếp theo, toàn bộ câu trả lời của bạn sẽ bị xóa!',
                     2
                 );
@@ -1283,7 +1280,7 @@ const ExamGuard = (() => {
             case 3:
                 resetAllSelections();
                 showWarningModal(
-                    '🚨 Đã xóa câu trả lời!',
+                    'Đã xóa câu trả lời!',
                     'Toàn bộ câu trả lời của bạn đã bị xóa do vi phạm lần 3. Nếu rời trang thêm lần nữa, bài thi sẽ được tự động nộp.',
                     3
                 );
@@ -1297,7 +1294,7 @@ const ExamGuard = (() => {
 
                 // Show brief notification then force submit
                 showWarningModal(
-                    '🛑 Tự động nộp bài!',
+                    'Tự động nộp bài!',
                     'Bài thi của bạn đang được nộp tự động do vi phạm 4 lần rời trang.',
                     4
                 );
@@ -1380,7 +1377,6 @@ const ExamGuard = (() => {
         lastFlagTime = 0;
         warningModalOpen = false;
         requestFullscreen();
-        createStatusBadge();
         setupListeners();
         console.log('[ExamGuard] Activated');
     }

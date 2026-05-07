@@ -540,7 +540,7 @@ document.addEventListener('DOMContentLoaded', () => {
             clearTimeout(debounceTimeout);
             debounceTimeout = setTimeout(() => {
                 filterHistory(this.value);
-            }, 2000); // Change from 300ms to 2000ms (2 seconds)
+            }, 300); // Reduced from 2000ms to 300ms for better responsiveness
         });
     }
     
