@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
     <title>Bài thi - Ôn luyện Vật lí</title>
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+
     <!-- KaTeX -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-    
+
     <style>
         /* Reset and Base Styles */
         * {
@@ -31,23 +32,23 @@
             --bg-tertiary: #252533;
             --bg-card: #1e1e2a;
             --bg-card-hover: #262635;
-            
+
             /* Text colors */
             --text-primary: #e4e4e7;
             --text-secondary: #a1a1aa;
             --text-tertiary: #71717a;
-            
+
             /* Accent colors */
             --accent-primary: #6366f1;
             --accent-secondary: #8b5cf6;
             --accent-success: #10b981;
             --accent-warning: #f59e0b;
             --accent-danger: #ef4444;
-            
+
             /* Borders */
             --border-color: #2a2a3a;
             --border-focus: #6366f1;
-            
+
             /* Spacing */
             --space-xs: 0.5rem;
             --space-sm: 1rem;
@@ -90,7 +91,9 @@
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* Main Layout */
@@ -109,7 +112,8 @@
             overflow-y: auto;
             flex-shrink: 0;
             position: relative;
-            z-index: 1000; /* Ensure sidebar is above overlay */
+            z-index: 1000;
+            /* Ensure sidebar is above overlay */
         }
 
         .exam-header {
@@ -241,8 +245,15 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .question-header {
@@ -561,7 +572,8 @@
             transition: all 0.3s;
             font-size: 0.95rem;
             box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
-            z-index: 998; /* Below sidebar overlay */
+            z-index: 998;
+            /* Below sidebar overlay */
             display: flex;
             align-items: center;
             gap: var(--space-xs);
@@ -692,7 +704,8 @@
             align-items: center;
             justify-content: center;
             font-size: 1.2rem;
-            z-index: 1001; /* Above sidebar and overlay */
+            z-index: 1001;
+            /* Above sidebar and overlay */
             transition: all 0.3s;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
@@ -715,7 +728,8 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
-            z-index: 999; /* Below sidebar to allow interaction */
+            z-index: 999;
+            /* Below sidebar to allow interaction */
             display: none;
             opacity: 0;
             transition: opacity 0.3s;
@@ -795,7 +809,8 @@
             transform: rotate(90deg) scale(1.1);
         }
 
-        .close-button:before, .close-button:after {
+        .close-button:before,
+        .close-button:after {
             content: '';
             position: absolute;
             width: 24px;
@@ -827,7 +842,8 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .zoom-button, .reset-zoom-button {
+        .zoom-button,
+        .reset-zoom-button {
             width: 40px;
             height: 40px;
             background: rgba(255, 255, 255, 0.1);
@@ -852,7 +868,8 @@
             letter-spacing: 0.05em;
         }
 
-        .zoom-button:hover, .reset-zoom-button:hover {
+        .zoom-button:hover,
+        .reset-zoom-button:hover {
             background: rgba(168, 85, 247, 0.3);
             border-color: #a855f7;
             transform: scale(1.1);
@@ -1001,10 +1018,14 @@
         }
 
         @keyframes loadingDots {
-            0%, 80%, 100% {
+
+            0%,
+            80%,
+            100% {
                 opacity: 0.3;
                 transform: scale(0.8);
             }
+
             40% {
                 opacity: 1;
                 transform: scale(1);
@@ -1153,7 +1174,7 @@
                 max-height: 250px;
             }
         }
-        
+
         /* Practice Mode Indicator */
         .practice-mode-indicator {
             background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
@@ -1168,43 +1189,53 @@
             margin-bottom: var(--space-md);
             animation: slideIn 0.5s ease;
         }
-        
+
         @keyframes slideIn {
             from {
                 opacity: 0;
                 transform: translateX(-20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateX(0);
             }
         }
-        
+
         .practice-mode-indicator i {
             font-size: 1.25rem;
         }
-        
+
         /* Countdown Timer Animation */
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
         }
-        
+
         /* Mobile Zoom Fixes */
         @media (max-width: 768px) {
+
             /* Ensure exam container fills viewport when zoomed */
             .exam-container {
                 min-width: 100vw;
                 transform-origin: top left !important;
             }
-            
+
             /* Prevent content from shrinking on zoom out */
             .exam-content {
                 width: 100% !important;
                 min-width: 100vw;
             }
-            
+
             /* Ensure content wrapper maintains proper width */
             .content-wrapper {
                 width: 100%;
@@ -1212,13 +1243,13 @@
                 padding-left: 1rem;
                 padding-right: 1rem;
             }
-            
+
             /* Question cards should fill available width */
             .question-card {
                 width: 100%;
                 box-sizing: border-box;
             }
-            
+
             /* Fix for zoomed out state */
             body.zoomed-out {
                 overflow-x: hidden;
@@ -1226,7 +1257,7 @@
         }
 
         /* ========== EXAM GUARD STYLES ========== */
-        
+
         /* Start Screen Overlay */
         .exam-guard-start-overlay {
             position: fixed;
@@ -1266,6 +1297,7 @@
                 opacity: 0;
                 transform: translateY(30px) scale(0.95);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0) scale(1);
@@ -1386,8 +1418,13 @@
         }
 
         @keyframes guardModalFadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         .exam-guard-warning-content {
@@ -1407,6 +1444,7 @@
                 opacity: 0;
                 transform: scale(0.85);
             }
+
             to {
                 opacity: 1;
                 transform: scale(1);
@@ -1421,11 +1459,27 @@
         }
 
         @keyframes guardShake {
-            0%, 100% { transform: translateX(0); }
-            20% { transform: translateX(-8px); }
-            40% { transform: translateX(8px); }
-            60% { transform: translateX(-5px); }
-            80% { transform: translateX(5px); }
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20% {
+                transform: translateX(-8px);
+            }
+
+            40% {
+                transform: translateX(8px);
+            }
+
+            60% {
+                transform: translateX(-5px);
+            }
+
+            80% {
+                transform: translateX(5px);
+            }
         }
 
         .exam-guard-warning-content h3 {
@@ -1512,8 +1566,15 @@
         }
 
         @keyframes guardDotPulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
         }
 
         @media (max-width: 768px) {
@@ -1543,6 +1604,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Loading Indicator -->
     <div id="loading-indicator" class="loading-indicator">
@@ -1570,7 +1632,8 @@
                     <li><i class="fas fa-circle"></i> Lần 4 rời trang: Tự động nộp bài</li>
                 </ul>
             </div>
-            <button class="exam-guard-start-btn" id="exam-guard-start-btn" onclick="console.log('Bắt đầu học CLICKED'); document.getElementById('exam-guard-overlay').style.display='none'; if(typeof ExamGuard !== 'undefined') ExamGuard.activate(); if(typeof startTimer === 'function') startTimer(); if(currentLessonData && (currentLessonData.timeLimitHours || currentLessonData.timeLimitMinutes || currentLessonData.timeLimitSeconds) && typeof initializeCountdownTimer === 'function') initializeCountdownTimer(currentLessonData);">
+            <button class="exam-guard-start-btn" id="exam-guard-start-btn"
+                onclick="console.log('Bắt đầu học CLICKED'); document.getElementById('exam-guard-overlay').style.display='none'; if(typeof ExamGuard !== 'undefined') ExamGuard.activate(); if(typeof startTimer === 'function') startTimer(); if(currentLessonData && (currentLessonData.timeLimitHours || currentLessonData.timeLimitMinutes || currentLessonData.timeLimitSeconds) && typeof initializeCountdownTimer === 'function') initializeCountdownTimer(currentLessonData);">
                 <i class="fas fa-play"></i>
                 Bắt đầu học
             </button>
@@ -1652,7 +1715,7 @@
                         <i class="fas fa-chevron-left"></i>
                         Câu trước
                     </button>
-                    
+
                     <button class="nav-button" id="next-button" onclick="navigateQuestion(1)">
                         Câu sau
                         <i class="fas fa-chevron-right"></i>
@@ -1708,7 +1771,7 @@
     <script src="/js/encryption.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-    
+
     <script>
         // Global variables
         let currentQuestionIndex = 0;
@@ -1726,10 +1789,10 @@
                 const hours = Math.floor(elapsed / 3600000);
                 const minutes = Math.floor((elapsed % 3600000) / 60000);
                 const seconds = Math.floor((elapsed % 60000) / 1000);
-                
+
                 const timerElement = document.getElementById('timer');
                 if (timerElement) {
-                    timerElement.textContent = 
+                    timerElement.textContent =
                         `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
                 }
             }, 1000);
@@ -1752,7 +1815,7 @@
                         return true;
                     }
                 }
-                
+
                 console.log('Student not authenticated');
                 return false;
             } catch (error) {
@@ -1790,14 +1853,14 @@
             if (index >= 0 && index < questions.length) {
                 // Hide all questions
                 questions.forEach(q => q.style.display = 'none');
-                
+
                 // Show selected question
                 questions[index].style.display = 'block';
                 currentQuestionIndex = index;
-                
+
                 // Update navigation state
                 updateNavigationState();
-                
+
                 // Scroll to top
                 document.querySelector('.exam-content').scrollTop = 0;
             }
@@ -1818,7 +1881,7 @@
             const prevButton = document.getElementById('prev-button');
             const nextButton = document.getElementById('next-button');
             const totalQuestions = document.querySelectorAll('.question-card').length;
-            
+
             prevButton.disabled = currentQuestionIndex === 0;
             nextButton.disabled = currentQuestionIndex === totalQuestions - 1;
 
@@ -1900,23 +1963,23 @@
 
             // Process questions
             let allQuestions = [...lesson.questions];
-            
+
             // Apply shuffle if enabled
-            console.log('🎲 Shuffle Debug - shuffleQuestions flag:', lesson.shuffleQuestions);
-            console.log('🎲 Shuffle Debug - Questions before shuffle:', allQuestions.map(q => q.question || q.id));
-            
+            //console.log('🎲 Shuffle Debug - shuffleQuestions flag:', lesson.shuffleQuestions);
+            //console.log('🎲 Shuffle Debug - Questions before shuffle:', allQuestions.map(q => q.question || q.id));
+
             // Check URL parameter for force shuffle
             const urlParams = new URLSearchParams(window.location.search);
             const forceShuffleQuestions = urlParams.get('shuffle') === 'true';
-            
+
             // Only shuffle / apply pool selection if applyRandomization hasn't already done it
             if (!lesson._randomized) {
                 if (lesson.shuffleQuestions || forceShuffleQuestions) {
                     if (forceShuffleQuestions) {
-                        console.log('🔧 Force shuffle enabled via URL parameter');
+                        //console.log('🔧 Force shuffle enabled via URL parameter');
                     }
                     allQuestions = shuffleArray(allQuestions);
-                    console.log('🎲 Shuffle Debug - Questions after shuffle:', allQuestions.map(q => q.question || q.id));
+                    //console.log('🎲 Shuffle Debug - Questions after shuffle:', allQuestions.map(q => q.question || q.id));
                 } else {
                     console.warn('⚠️ Shuffle Debug - shuffleQuestions is false or undefined!');
                 }
@@ -1926,13 +1989,13 @@
                     allQuestions = shuffleArray(allQuestions).slice(0, lesson.randomQuestions);
                 }
             } else {
-                console.log('✅ Shuffle already applied by applyRandomization, skipping inline shuffle');
+                //console.log('✅ Shuffle already applied by applyRandomization, skipping inline shuffle');
             }
 
             // Render each question
             allQuestions.forEach((q, displayIndex) => {
                 const originalIndex = lesson.questions.indexOf(q);
-                
+
                 // Create navigation item
                 const navItem = document.createElement('div');
                 navItem.className = 'question-nav-item';
@@ -1992,10 +2055,10 @@
                 // Render options based on question type
                 // Handle both old format (multiple_choice) and new format (abcd)
                 const normalizedType = q.type === 'multiple_choice' ? 'abcd' :
-                                     q.type === 'true_false' ? 'truefalse' :
-                                     q.type === 'fill_blank' ? 'number' : q.type;
+                    q.type === 'true_false' ? 'truefalse' :
+                        q.type === 'fill_blank' ? 'number' : q.type;
 
-                switch(normalizedType) {
+                switch (normalizedType) {
                     case 'abcd':
                         // Ensure options exist and handle both string and object formats
                         if (!q.options || !Array.isArray(q.options)) {
@@ -2009,12 +2072,12 @@
                             originalIndex: idx,
                             letter: String.fromCharCode(65 + idx)
                         }));
-                        
+
                         // Shuffle options if shuffleAnswers is enabled
-                        const shuffledOptions = lesson.shuffleAnswers ? 
-                            shuffleArray([...optionsWithIndices]) : 
+                        const shuffledOptions = lesson.shuffleAnswers ?
+                            shuffleArray([...optionsWithIndices]) :
                             optionsWithIndices;
-                        
+
                         questionMappings[originalIndex] = shuffledOptions.map(
                             (opt, newIndex) => ({
                                 displayedLetter: String.fromCharCode(65 + newIndex),
@@ -2101,10 +2164,10 @@
             if (typeof renderMathInElement === 'function') {
                 renderMathInElement(container, {
                     delimiters: [
-                        {left: "$$", right: "$$", display: true},
-                        {left: "$", right: "$", display: false},
-                        {left: "\\(", right: "\\)", display: false},
-                        {left: "\\[", right: "\\]", display: true}
+                        { left: "$$", right: "$$", display: true },
+                        { left: "$", right: "$", display: false },
+                        { left: "\\(", right: "\\)", display: false },
+                        { left: "\\[", right: "\\]", display: true }
                     ],
                     throwOnError: false
                 });
@@ -2116,14 +2179,14 @@
             // Remove selected class from all options
             const allOptions = element.parentElement.querySelectorAll('.option-card');
             allOptions.forEach(opt => opt.classList.remove('selected'));
-            
+
             // Add selected class to clicked option
             element.classList.add('selected');
-            
+
             // Check the radio button
             const radio = element.querySelector('input[type="radio"]');
             radio.checked = true;
-            
+
             // Mark question as answered
             const displayIndex = Array.from(document.querySelectorAll('.question-card'))
                 .findIndex(card => card.dataset.questionIndex == questionIndex);
@@ -2136,19 +2199,19 @@
             buttons.forEach(btn => {
                 btn.classList.remove('selected-true', 'selected-false');
             });
-            
+
             // Add appropriate class
             element.classList.add(value ? 'selected-true' : 'selected-false');
-            
+
             // Check the radio button
             const radio = element.querySelector('input[type="radio"]');
             radio.checked = true;
-            
+
             // Check if all options are answered for this question
             const questionCard = document.querySelector(`[data-question-index="${questionIndex}"]`);
             const allRadios = questionCard.querySelectorAll('input[type="radio"]');
             const checkedRadios = questionCard.querySelectorAll('input[type="radio"]:checked');
-            
+
             if (allRadios.length / 2 === checkedRadios.length) {
                 const displayIndex = Array.from(document.querySelectorAll('.question-card'))
                     .findIndex(card => card.dataset.questionIndex == questionIndex);
@@ -2160,11 +2223,11 @@
         function showConfirmationModal() {
             const modal = document.getElementById('confirmation-modal');
             const totalQuestions = document.querySelectorAll('.question-card').length;
-            
+
             document.getElementById('modal-answered').textContent = answeredQuestions.size;
             document.getElementById('modal-unanswered').textContent = totalQuestions - answeredQuestions.size;
             document.getElementById('modal-flagged').textContent = flaggedQuestions.size;
-            
+
             modal.classList.add('show');
         }
 
@@ -2221,10 +2284,10 @@
                 // Get IP address
                 const ipResponse = await fetch('https://api.ipify.org?format=json');
                 const ipData = await ipResponse.json();
-                
+
                 const lessonId = currentLessonData.id;
                 const lesson = currentLessonData;
-                
+
                 let score = 0;
                 let totalPossiblePoints = 0;
                 const timeTaken = (Date.now() - startTime) / 1000;
@@ -2243,13 +2306,13 @@
                 questionElements.forEach((questionElement) => {
                     const originalIndex = parseInt(questionElement.dataset.questionIndex);
                     const q = lesson.questions[originalIndex];
-                    
+
                     const questionPoints = (typeof q.points === 'number' && q.points > 0) ? q.points : 1;
                     totalPossiblePoints += questionPoints;
 
                     let userAnswer, correctAnswer, isCorrect, optionsText = null;
                     let earnedPoints = undefined; // For True/False partial scoring
-                    
+
                     // Extract image URL if present
                     let imageUrl = null;
                     const imgRegex = /\[img\s+src="([^"]+)"\]/i;
@@ -2258,7 +2321,7 @@
                     if (match && match[1]) {
                         imageUrl = match[1];
                     }
-                    
+
                     let questionTextForSaving = originalQuestionText;
                     if (imageUrl) {
                         questionTextForSaving = questionTextForSaving.replace(imgRegex, '').trim();
@@ -2267,8 +2330,8 @@
                     // Process answers based on question type
                     // Handle both old format (multiple_choice) and new format (abcd)
                     const normalizedType = q.type === 'multiple_choice' ? 'abcd' :
-                                         q.type === 'true_false' ? 'truefalse' :
-                                         q.type === 'fill_blank' ? 'number' : q.type;
+                        q.type === 'true_false' ? 'truefalse' :
+                            q.type === 'fill_blank' ? 'number' : q.type;
 
                     // Get correct answer from either 'correct' or 'correctAnswer' property
                     const correctAnswerValue = q.correct !== undefined ? q.correct : q.correctAnswer;
@@ -2344,18 +2407,18 @@
                         // Apply partial scoring to points
                         earnedPoints = questionPoints * partialMultiplier;
 
-                        // Debug logging for true/false questions (development only)
-                        if (window.location.hostname === 'localhost' || window.location.hostname.includes('dev')) {
-                            console.log(`🔍 True/False Question ${originalIndex} (lesson.html):`, {
-                                userAnswers: userAnswersArray,
-                                correctAnswers: correctAnswersArray,
-                                correctCount,
-                                totalOptions,
-                                partialMultiplier,
-                                questionPoints,
-                                earnedPoints
-                            });
-                        }
+                        // // Debug logging for true/false questions (development only)
+                        // if (window.location.hostname === 'localhost' || window.location.hostname.includes('dev')) {
+                        //     console.log(`🔍 True/False Question ${originalIndex} (lesson.html):`, {
+                        //         userAnswers: userAnswersArray,
+                        //         correctAnswers: correctAnswersArray,
+                        //         correctCount,
+                        //         totalOptions,
+                        //         partialMultiplier,
+                        //         questionPoints,
+                        //         earnedPoints
+                        //     });
+                        // }
 
                         userAnswer = userAnswersArray;
                         correctAnswer = correctAnswersArray;
@@ -2430,15 +2493,15 @@
                     // Override earned points for True/False questions with partial scoring
                     if (normalizedType === 'truefalse' && Array.isArray(q.options) && typeof earnedPoints !== 'undefined') {
                         finalEarnedPoints = earnedPoints;
-                        // Debug logging (development only)
-                        if (window.location.hostname === 'localhost' || window.location.hostname.includes('dev')) {
-                            console.log(`🔍 True/False Final Points Override (lesson.html):`, {
-                                originalFinalEarnedPoints: isCorrect ? questionPoints : 0,
-                                overriddenFinalEarnedPoints: finalEarnedPoints,
-                                earnedPoints,
-                                isCorrect
-                            });
-                        }
+                        // // Debug logging (development only)
+                        // if (window.location.hostname === 'localhost' || window.location.hostname.includes('dev')) {
+                        //     console.log(`🔍 True/False Final Points Override (lesson.html):`, {
+                        //         originalFinalEarnedPoints: isCorrect ? questionPoints : 0,
+                        //         overriddenFinalEarnedPoints: finalEarnedPoints,
+                        //         earnedPoints,
+                        //         isCorrect
+                        //     });
+                        // }
                     }
 
                     quizResults.questions.push({
@@ -2455,7 +2518,7 @@
 
                     score += finalEarnedPoints;
                 });
-                
+
                 quizResults.totalPoints = totalPossiblePoints;
                 quizResults.score = score;
 
@@ -2507,14 +2570,14 @@
                 }
 
                 const resultData = await saveResponse.json();
-                
+
                 localStorage.setItem('quizResults', JSON.stringify({
                     lessonId: quizResults.lessonId,
                     score: quizResults.score,
                     totalPoints: quizResults.totalPoints,
                     resultId: resultData.resultId
                 }));
-                
+
                 window.location.href = `/result/${resultData.resultId}`;
 
             } catch (error) {
@@ -2539,21 +2602,21 @@
         // Initialize lesson
         async function initializeLesson() {
             const isAuthenticated = await checkStudentAuthentication();
-            
+
             showLoader(true);
             let lessonId = window.location.pathname.split('/')[2];
             document.title = 'Loading lesson...';
-            
+
             try {
                 let response;
-                
+
                 // Check if we're loading the last incomplete lesson
                 if (lessonId === 'last-incomplete') {
                     response = await fetch('/api/lessons/last-incomplete');
                     if (!response.ok) {
                         throw new Error(`Failed to fetch last incomplete lesson: ${response.status}`);
                     }
-                    
+
                     const result = await response.json();
                     if (!result.lesson) {
                         // No incomplete lessons, redirect to lessons page
@@ -2561,59 +2624,59 @@
                         window.location.href = '/lessons';
                         return;
                     }
-                    
+
                     // Update the URL to show the actual lesson ID
                     lessonId = result.lesson.id;
                     window.history.replaceState({}, '', `/lesson/${lessonId}`);
-                    
+
                     // Now fetch the full lesson data with encryption
                     response = await window.encryptionClient.secureFetch(`/api/lessons/${lessonId}`);
                 } else {
                     response = await window.encryptionClient.secureFetch(`/api/lessons/${lessonId}`);
                 }
-                
+
                 if (!response.ok) {
                     throw new Error(`Failed to fetch lesson: ${response.status}`);
                 }
-                
+
                 const responseData = await response.json();
                 const lesson = responseData.lesson || responseData;
                 currentLessonData = lesson;
-                
-                console.log('📚 Lesson loaded:', JSON.stringify(lesson, null, 2));
-                console.log('🔍 Debug - Shuffle flags:', {
-                    shuffleQuestions: lesson.shuffleQuestions,
-                    shuffleAnswers: lesson.shuffleAnswers,
-                    randomQuestions: lesson.randomQuestions
-                });
+
+                //console.log('📚 Lesson loaded:', JSON.stringify(lesson, null, 2));
+                // console.log('🔍 Debug - Shuffle flags:', {
+                //     shuffleQuestions: lesson.shuffleQuestions,
+                //     shuffleAnswers: lesson.shuffleAnswers,
+                //     randomQuestions: lesson.randomQuestions
+                // });
 
                 if (lesson.error || responseData.error) {
                     document.body.innerHTML = '<h1>Lesson not found</h1>';
                     currentLessonData = null;
                     return;
                 }
-                
+
                 document.title = lesson.title;
                 const titleElement = document.getElementById('lesson-title');
                 if (titleElement) {
                     titleElement.textContent = lesson.title;
                 }
-                
+
                 // renderQuestions handles its own shuffle/pool logic internally.
                 // Do NOT call applyRandomization here — the inline renderQuestions overrides
                 // lesson.js's version and manages randomization itself to keep index keys consistent.
                 await renderQuestions(lesson);
                 showLoader(false);
-                
+
                 // Update exam guard overlay title with actual lesson name
                 const guardTitleElement = document.getElementById('guard-lesson-title');
                 if (guardTitleElement) {
                     guardTitleElement.textContent = lesson.title;
                 }
-                
+
                 // Timer is started by the "Bắt đầu học" button onclick handler,
                 // NOT here, so the timer doesn't run behind the exam guard overlay.
-                
+
                 // Update initial stats
                 updateStats();
 
@@ -2642,7 +2705,7 @@
                         alert("Lỗi: Dữ liệu bài học chưa được tải. Vui lòng tải lại trang.");
                         return;
                     }
-                    
+
                     showConfirmationModal();
                 });
             }
@@ -2655,7 +2718,7 @@
             const sidebar = document.getElementById('exam-sidebar');
             const submitButton = document.getElementById('submit-quiz-btn');
             const isVisible = sidebar.classList.contains('show');
-            
+
             if (isVisible) {
                 sidebar.classList.remove('show');
                 document.body.style.overflow = '';
@@ -2692,8 +2755,8 @@
             let startY = 0;
 
             // Open modal when any question image is clicked
-            questionImages.forEach(function(image) {
-                image.addEventListener('click', function() {
+            questionImages.forEach(function (image) {
+                image.addEventListener('click', function () {
                     openModal(this);
                 });
             });
@@ -2712,14 +2775,14 @@
             }
 
             // Close modal when clicking outside the image
-            imageModal.addEventListener('click', function(e) {
+            imageModal.addEventListener('click', function (e) {
                 if (e.target === imageModal) {
                     closeModal();
                 }
             });
 
             // Close modal when ESC key is pressed
-            document.addEventListener('keydown', function(e) {
+            document.addEventListener('keydown', function (e) {
                 if (e.key === 'Escape' && imageModal.classList.contains('open')) {
                     closeModal();
                 }
@@ -2733,13 +2796,13 @@
 
             // Zoom controls
             if (zoomInButton) {
-                zoomInButton.addEventListener('click', function() {
+                zoomInButton.addEventListener('click', function () {
                     setZoom(scale + 0.5);
                 });
             }
 
             if (zoomOutButton) {
-                zoomOutButton.addEventListener('click', function() {
+                zoomOutButton.addEventListener('click', function () {
                     setZoom(Math.max(1, scale - 0.5));
                 });
             }
@@ -2761,7 +2824,7 @@
             }
 
             // Mouse wheel zoom
-            modalImage.addEventListener('wheel', function(e) {
+            modalImage.addEventListener('wheel', function (e) {
                 e.preventDefault();
                 const xs = (e.clientX - pointX) / scale;
                 const ys = (e.clientY - pointY) / scale;
@@ -2781,7 +2844,7 @@
             });
 
             // Drag to pan
-            modalImage.addEventListener('mousedown', function(e) {
+            modalImage.addEventListener('mousedown', function (e) {
                 e.preventDefault();
 
                 if (scale > 1) {
@@ -2791,7 +2854,7 @@
                 }
             });
 
-            imageModal.addEventListener('mousemove', function(e) {
+            imageModal.addEventListener('mousemove', function (e) {
                 e.preventDefault();
 
                 if (panning && scale > 1) {
@@ -2801,11 +2864,11 @@
                 }
             });
 
-            imageModal.addEventListener('mouseup', function(e) {
+            imageModal.addEventListener('mouseup', function (e) {
                 panning = false;
             });
 
-            imageModal.addEventListener('mouseleave', function(e) {
+            imageModal.addEventListener('mouseleave', function (e) {
                 panning = false;
             });
 
@@ -2813,7 +2876,7 @@
             let evCache = [];
             let prevDiff = -1;
 
-            modalImage.addEventListener('touchstart', function(e) {
+            modalImage.addEventListener('touchstart', function (e) {
                 for (let i = 0; i < e.touches.length; i++) {
                     evCache.push({
                         identifier: e.touches[i].identifier,
@@ -2829,7 +2892,7 @@
                 }
             });
 
-            modalImage.addEventListener('touchmove', function(e) {
+            modalImage.addEventListener('touchmove', function (e) {
                 for (let i = 0; i < e.touches.length; i++) {
                     const idx = evCache.findIndex(cachedTouch =>
                         cachedTouch.identifier === e.touches[i].identifier
@@ -2861,7 +2924,7 @@
                 }
             });
 
-            modalImage.addEventListener('touchend', function(e) {
+            modalImage.addEventListener('touchend', function (e) {
                 for (let i = 0; i < e.changedTouches.length; i++) {
                     const idx = evCache.findIndex(cachedTouch =>
                         cachedTouch.identifier === e.changedTouches[i].identifier
@@ -2881,7 +2944,7 @@
             });
 
             // Prevent default touchmove behavior
-            modalImage.addEventListener('touchmove', function(e) {
+            modalImage.addEventListener('touchmove', function (e) {
                 if (e.touches.length > 1 || (scale > 1 && e.touches.length === 1)) {
                     e.preventDefault();
                 }
@@ -2928,13 +2991,13 @@
 
         function changeZoom(delta) {
             let newIndex;
-            
+
             // Handle reset to normal (delta = 0)
             if (delta === 0) {
                 newIndex = 3; // 100% zoom
             } else {
                 newIndex = currentZoomIndex + delta;
-                
+
                 // Check bounds
                 if (newIndex < 0 || newIndex >= zoomLevels.length) {
                     // Provide visual feedback that we've reached the limit
@@ -2953,10 +3016,10 @@
             currentZoomIndex = newIndex;
             const newZoomLevel = zoomLevels[currentZoomIndex];
             applyZoom(newZoomLevel);
-            
+
             // Save to localStorage
             localStorage.setItem('lessonZoomLevel', newZoomLevel.toString());
-            
+
             // Update label
             updateZoomLabel();
 
@@ -2970,14 +3033,14 @@
                 // Set transform origin to top left to prevent content shifting
                 container.style.transformOrigin = 'top left';
                 container.style.transform = `scale(${zoomLevel})`;
-                
+
                 // Add/remove zoomed-out class for mobile fixes
                 if (zoomLevel < 1) {
                     document.body.classList.add('zoomed-out');
                 } else {
                     document.body.classList.remove('zoomed-out');
                 }
-                
+
                 // On mobile, handle zoom differently
                 if (window.innerWidth <= 768) {
                     if (zoomLevel < 1) {
@@ -2985,10 +3048,10 @@
                         container.style.width = '100vw';
                         container.style.height = 'auto';
                         container.style.minHeight = '100vh';
-                        
+
                         // Reset body overflow
                         document.body.style.overflow = 'auto';
-                        
+
                         // Ensure content wrapper fills width
                         const contentWrapper = document.querySelector('.content-wrapper');
                         if (contentWrapper) {
@@ -3010,16 +3073,16 @@
                         container.style.height = '100vh';
                     }
                 }
-                
+
                 // Scale floating buttons inversely
                 const mobileToggle = document.getElementById('mobile-sidebar-toggle');
                 const submitButton = document.getElementById('submit-quiz-btn');
-                
+
                 if (mobileToggle) {
                     mobileToggle.style.transform = `scale(${1 / zoomLevel})`;
                     mobileToggle.style.transformOrigin = 'top left';
                 }
-                
+
                 if (submitButton) {
                     submitButton.style.transform = `scale(${1 / zoomLevel})`;
                     submitButton.style.transformOrigin = 'top right';
@@ -3037,13 +3100,13 @@
             // Update button states
             const decreaseBtn = document.getElementById('decrease-zoom');
             const increaseBtn = document.getElementById('increase-zoom');
-            
+
             if (decreaseBtn) {
                 decreaseBtn.disabled = currentZoomIndex === 0;
                 decreaseBtn.style.opacity = currentZoomIndex === 0 ? '0.5' : '1';
                 decreaseBtn.style.cursor = currentZoomIndex === 0 ? 'not-allowed' : 'pointer';
             }
-            
+
             if (increaseBtn) {
                 increaseBtn.disabled = currentZoomIndex === zoomLevels.length - 1;
                 increaseBtn.style.opacity = currentZoomIndex === zoomLevels.length - 1 ? '0.5' : '1';
@@ -3115,8 +3178,9 @@
             }
         });
     </script>
-    
+
     <!-- Load external lesson.js file with cache busting -->
     <script src="/js/lesson.js?v=1.5"></script>
 </body>
+
 </html>

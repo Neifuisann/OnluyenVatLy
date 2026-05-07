@@ -128,11 +128,11 @@ async function displayResults() {
     try {
         if (resultId) {
             // Fetch result from server
-            console.log('🔍 Fetching result with ID:', resultId);
+            //console.log('🔍 Fetching result with ID:', resultId);
             const response = await fetch(`/api/results/${resultId}`, {
                 credentials: 'include' // Include cookies for authentication
             });
-            console.log('🔍 Response status:', response.status, response.statusText);
+            //console.log('🔍 Response status:', response.status, response.statusText);
             if (!response.ok) {
                 console.error('❌ Response not OK:', response.status, response.statusText);
                 const errorText = await response.text();
@@ -140,10 +140,10 @@ async function displayResults() {
                 throw new Error('Result not found');
             }
             const responseData = await response.json();
-            console.log('🔍 Raw API response:', JSON.stringify(responseData, null, 2));
+            //console.log('🔍 Raw API response:', JSON.stringify(responseData, null, 2));
             // Extract the actual result data from the API response
             currentResult = responseData.data?.result || responseData.result || responseData;
-            console.log('🔍 Extracted currentResult:', JSON.stringify(currentResult, null, 2));
+            //console.log('🔍 Extracted currentResult:', JSON.stringify(currentResult, null, 2));
         } else {
             // Use the result from localStorage
             const resultData = JSON.parse(localStorage.getItem('quizResults'));
@@ -151,8 +151,8 @@ async function displayResults() {
         }
 
         // Log the result for debugging
-        console.log('Extracted currentResult:', currentResult);
-        console.log('Questions array:', currentResult?.questions || currentResult?.answers || []);
+        //console.log('Extracted currentResult:', currentResult);
+        //console.log('Questions array:', currentResult?.questions || currentResult?.answers || []);
 
         // Store this result in session storage for persistence
         storeResultInSession(currentResult);
@@ -202,7 +202,7 @@ function storeResultInSession(result) {
 }
 
 function updateStatisticsCards(result) {
-    console.log('🔍 Updating statistics with result:', result);
+    //console.log('🔍 Updating statistics with result:', result);
 
     // Handle different data structures - questions might be in different properties
     let questions = [];
@@ -216,7 +216,7 @@ function updateStatisticsCards(result) {
         questions = result.data.answers;
     }
 
-    console.log('🔍 Questions for statistics:', questions.length);
+    //console.log('🔍 Questions for statistics:', questions.length);
 
     // Calculate statistics
     const totalQuestions = questions.length;
@@ -229,7 +229,7 @@ function updateStatisticsCards(result) {
         result.totalPoints !== undefined ? result.totalPoints : totalQuestions;
     const scorePercentage = totalPoints > 0 ? ((score / totalPoints) * 100).toFixed(1) : '0.0';
 
-    console.log('🔍 Statistics calculated:', { score, totalPoints, totalQuestions, correctAnswers });
+    //console.log('🔍 Statistics calculated:', { score, totalPoints, totalQuestions, correctAnswers });
 
     // Update statistics cards
     const scoreElement = document.getElementById('score-value');
@@ -395,8 +395,8 @@ function createParticleEffect(container, color, type) {
 }
 
 function displaySortedResults(sortType) {
-    console.log('🔍 displaySortedResults called with:', sortType);
-    console.log('🔍 currentResult:', currentResult);
+    //console.log('🔍 displaySortedResults called with:', sortType);
+    //console.log('🔍 currentResult:', currentResult);
 
     if (!currentResult) {
         console.error('❌ No currentResult available for display');
@@ -419,27 +419,27 @@ function displaySortedResults(sortType) {
     // Check multiple possible locations for questions data
     if (currentResult.questions && Array.isArray(currentResult.questions)) {
         questions = currentResult.questions;
-        console.log('✅ Found questions in currentResult.questions');
+        //console.log('✅ Found questions in currentResult.questions');
     } else if (currentResult.answers && Array.isArray(currentResult.answers)) {
         questions = currentResult.answers;
-        console.log('✅ Found questions in currentResult.answers');
+        //console.log('✅ Found questions in currentResult.answers');
     } else if (currentResult.data && currentResult.data.questions && Array.isArray(currentResult.data.questions)) {
         questions = currentResult.data.questions;
-        console.log('✅ Found questions in currentResult.data.questions');
+        //console.log('✅ Found questions in currentResult.data.questions');
     } else if (currentResult.data && currentResult.data.answers && Array.isArray(currentResult.data.answers)) {
         questions = currentResult.data.answers;
-        console.log('✅ Found questions in currentResult.data.answers');
+        //console.log('✅ Found questions in currentResult.data.answers');
     }
 
-    console.log('🔍 Questions found:', questions.length);
-    console.log('🔍 Questions array:', questions);
-    console.log('🔍 First question sample:', questions[0]);
-    console.log('🔍 currentResult keys:', Object.keys(currentResult || {}));
+    //console.log('🔍 Questions found:', questions.length);
+    //console.log('🔍 Questions array:', questions);
+    //console.log('🔍 First question sample:', questions[0]);
+    //console.log('🔍 currentResult keys:', Object.keys(currentResult || {}));
 
     // If still no questions, show debug info
     if (questions.length === 0) {
         console.warn('⚠️  No questions found in any expected location');
-        console.log('🔍 Full currentResult structure:', JSON.stringify(currentResult, null, 2));
+        //console.log('🔍 Full currentResult structure:', JSON.stringify(currentResult, null, 2));
 
         // Try to show some basic info if available
         const debugInfo = `
@@ -469,7 +469,7 @@ function displaySortedResults(sortType) {
         return true;
     });
 
-    console.log('🔍 Filtered questions:', filteredQuestions.length);
+    //console.log('🔍 Filtered questions:', filteredQuestions.length);
 
     // Helper function to format answers with line breaks
     const formatAnswer = (answer, type) => {

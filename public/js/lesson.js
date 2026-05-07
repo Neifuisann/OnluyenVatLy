@@ -721,8 +721,8 @@ function applyRandomization(lesson) {
     let questions = [...lesson.questions];
 
     // Shuffle question order if enabled
-    console.log('🎲 Shuffle Debug - shuffleQuestions flag:', lesson.shuffleQuestions);
-    console.log('🎲 Shuffle Debug - Questions before shuffle:', questions.map(q => q.question || q.id));
+    //console.log('🎲 Shuffle Debug - shuffleQuestions flag:', lesson.shuffleQuestions);
+    //console.log('🎲 Shuffle Debug - Questions before shuffle:', questions.map(q => q.question || q.id));
 
     // Check URL parameter for force shuffle (useful for debugging)
     const urlParams = new URLSearchParams(window.location.search);
@@ -730,7 +730,7 @@ function applyRandomization(lesson) {
 
     if (lesson.shuffleQuestions || forceShuffleQuestions) {
         if (forceShuffleQuestions) {
-            console.log('🔧 Force shuffle enabled via URL parameter');
+            //console.log('🔧 Force shuffle enabled via URL parameter');
         }
 
         // Group questions by type
@@ -742,7 +742,7 @@ function applyRandomization(lesson) {
 
         // Log unique question types before grouping
         const uniqueTypes = [...new Set(questions.map(q => q.type))];
-        console.log('🔍 Unique question types in lesson:', uniqueTypes);
+        //console.log('🔍 Unique question types in lesson:', uniqueTypes);
 
         // Normalize type names and group questions
         questions.forEach((q, originalIndex) => {
@@ -762,11 +762,11 @@ function applyRandomization(lesson) {
             }
         });
 
-        console.log('🎲 Question groups before shuffle:', {
-            abcd: questionGroups.abcd.length,
-            truefalse: questionGroups.truefalse.length,
-            number: questionGroups.number.length
-        });
+        //     console.log('🎲 Question groups before shuffle:', {
+        //     abcd: questionGroups.abcd.length,
+        //         truefalse: questionGroups.truefalse.length,
+        //             number: questionGroups.number.length
+        // });
 
         // Shuffle each group independently
         const shuffledAbcd = shuffleArray(questionGroups.abcd, randomFunc);
@@ -776,15 +776,15 @@ function applyRandomization(lesson) {
         // Combine groups in the desired order: ABCD → True/False → Short Answer
         questions = [...shuffledAbcd, ...shuffledTrueFalse, ...shuffledNumber];
 
-        console.log('🎲 Shuffle Debug - Questions after group shuffle:', questions.map(q => ({
-            question: q.question || q.id,
-            type: q.type,
-            originalIndex: q._originalIndex
-        })));
+        // console.log('🎲 Shuffle Debug - Questions after group shuffle:', questions.map(q => ({
+        //     question: q.question || q.id,
+        //     type: q.type,
+        //     originalIndex: q._originalIndex
+        // })));
         console.log('Questions shuffled within groups while maintaining type order');
     } else {
         console.warn('⚠️ Shuffle Debug - shuffleQuestions is false or undefined!');
-        console.log('💡 Tip: Add ?shuffle=true to URL to force shuffling');
+        //console.log('💡 Tip: Add ?shuffle=true to URL to force shuffling');
     }
 
     // Shuffle answer choices for multiple choice questions if enabled
@@ -812,20 +812,20 @@ function applyRandomization(lesson) {
             }
             return question;
         });
-        console.log('Answer choices shuffled for multiple choice questions');
+        //console.log('Answer choices shuffled for multiple choice questions');
     }
 
     // Update the lesson object with randomized questions
     lesson.questions = questions;
 
 
-    console.log('Randomization complete. Final question count:', questions.length);
-    console.log('🎯 Final question order:', questions.map((q, idx) => ({
-        position: idx + 1,
-        type: q.type,
-        question: (q.question || '').substring(0, 30) + '...',
-        originalIndex: q._originalIndex
-    })));
+    // console.log('Randomization complete. Final question count:', questions.length);
+    // console.log('🎯 Final question order:', questions.map((q, idx) => ({
+    //     position: idx + 1,
+    //     type: q.type,
+    //     question: (q.question || '').substring(0, 30) + '...',
+    //     originalIndex: q._originalIndex
+    // })));
 
     // Verify group order
     let groupOrder = [];
@@ -839,7 +839,7 @@ function applyRandomization(lesson) {
             groupOrder.push(normalizedType);
         }
     });
-    console.log('✅ Group order verification:', groupOrder.join(' → '));
+    //console.log('✅ Group order verification:', groupOrder.join(' → '));
 
     if (groupOrder.join('-') !== 'abcd-truefalse-number') {
         console.warn('⚠️ Warning: Groups are not in the expected order!');
@@ -1209,7 +1209,7 @@ const ExamGuard = (() => {
     // ---- Force submit ----
     function forceSubmit() {
         console.log('[ExamGuard] Force submitting quiz');
-        
+
         // 1. If confirm button is already visible (modal is open), click it
         const confirmBtn = document.querySelector('.btn-confirm');
         if (confirmBtn) {
@@ -1234,7 +1234,7 @@ const ExamGuard = (() => {
         if (submitBtn && !submitBtn.disabled) {
             console.log('[ExamGuard] Clicking main submit button');
             submitBtn.click();
-            
+
             // 4. If clicking opened a modal, try to click the confirm button after a short delay
             setTimeout(() => {
                 const retryConfirmBtn = document.querySelector('.btn-confirm');
