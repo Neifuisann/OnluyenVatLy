@@ -1,29 +1,32 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kết quả bài làm - Next Gen Learning</title>
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+
     <!-- Styles -->
     <link rel="stylesheet" href="/css/style.css">
-    
+
     <!-- External Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/atom-one-dark.min.css">
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/atom-one-dark.min.css">
     <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
-    
+
     <!-- KaTeX CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
-    
+
     <style>
         /* Enhanced Modern Styles */
         body {
@@ -40,7 +43,7 @@
             width: 100%;
             height: 100%;
             z-index: -2;
-            background: 
+            background:
                 radial-gradient(circle at 20% 50%, rgba(120, 60, 237, 0.15) 0%, transparent 50%),
                 radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.15) 0%, transparent 50%),
                 radial-gradient(circle at 40% 20%, rgba(6, 182, 212, 0.15) 0%, transparent 50%);
@@ -48,9 +51,19 @@
         }
 
         @keyframes bgShift {
-            0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
-            33% { transform: translate(-30px, -30px) scale(1.1) rotate(1deg); }
-            66% { transform: translate(30px, -10px) scale(0.95) rotate(-1deg); }
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1) rotate(0deg);
+            }
+
+            33% {
+                transform: translate(-30px, -30px) scale(1.1) rotate(1deg);
+            }
+
+            66% {
+                transform: translate(30px, -10px) scale(0.95) rotate(-1deg);
+            }
         }
 
         /* Floating Elements */
@@ -70,31 +83,35 @@
             filter: blur(1px);
         }
 
-        .floating-element:nth-child(1) { 
-            left: 10%; 
-            animation-delay: 0s; 
+        .floating-element:nth-child(1) {
+            left: 10%;
+            animation-delay: 0s;
             font-size: 3rem;
             color: #667eea;
         }
-        .floating-element:nth-child(2) { 
-            left: 25%; 
-            animation-delay: 5s; 
+
+        .floating-element:nth-child(2) {
+            left: 25%;
+            animation-delay: 5s;
             color: #764ba2;
         }
-        .floating-element:nth-child(3) { 
-            left: 45%; 
-            animation-delay: 10s; 
+
+        .floating-element:nth-child(3) {
+            left: 45%;
+            animation-delay: 10s;
             font-size: 2.5rem;
             color: #f093fb;
         }
-        .floating-element:nth-child(4) { 
-            left: 65%; 
-            animation-delay: 15s; 
+
+        .floating-element:nth-child(4) {
+            left: 65%;
+            animation-delay: 15s;
             color: #f5576c;
         }
-        .floating-element:nth-child(5) { 
-            left: 85%; 
-            animation-delay: 20s; 
+
+        .floating-element:nth-child(5) {
+            left: 85%;
+            animation-delay: 20s;
             font-size: 3.5rem;
             color: #4facfe;
         }
@@ -104,12 +121,15 @@
                 transform: translateY(110vh) rotate(0deg);
                 opacity: 0;
             }
+
             10% {
                 opacity: 0.08;
             }
+
             90% {
                 opacity: 0.08;
             }
+
             100% {
                 transform: translateY(-110vh) rotate(360deg);
                 opacity: 0;
@@ -130,6 +150,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -149,6 +170,7 @@
                 opacity: 0;
                 transform: translateY(-50px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -169,9 +191,17 @@
         }
 
         @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         .results-header p {
@@ -194,6 +224,7 @@
                 opacity: 0;
                 transform: scale(0.9);
             }
+
             to {
                 opacity: 1;
                 transform: scale(1);
@@ -221,7 +252,7 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
             transform: rotate(45deg);
             transition: all 0.6s ease;
             opacity: 0;
@@ -235,7 +266,7 @@
         .stat-card:hover {
             transform: translateY(-10px) scale(1.03);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3),
-                        0 0 60px rgba(168, 85, 247, 0.2);
+                0 0 60px rgba(168, 85, 247, 0.2);
         }
 
         .stat-card.primary {
@@ -245,7 +276,7 @@
 
         .stat-card.primary:hover {
             box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3),
-                        0 0 60px rgba(102, 126, 234, 0.2);
+                0 0 60px rgba(102, 126, 234, 0.2);
         }
 
         .stat-card.info {
@@ -255,7 +286,7 @@
 
         .stat-card.info:hover {
             box-shadow: 0 20px 40px rgba(79, 172, 254, 0.3),
-                        0 0 60px rgba(79, 172, 254, 0.2);
+                0 0 60px rgba(79, 172, 254, 0.2);
         }
 
         .stat-card.warning {
@@ -265,7 +296,7 @@
 
         .stat-card.warning:hover {
             box-shadow: 0 20px 40px rgba(250, 112, 154, 0.3),
-                        0 0 60px rgba(250, 112, 154, 0.2);
+                0 0 60px rgba(250, 112, 154, 0.2);
         }
 
         .stat-icon {
@@ -280,12 +311,15 @@
         }
 
         @keyframes iconPulse {
-            0%, 100% { 
-                transform: scale(1); 
+
+            0%,
+            100% {
+                transform: scale(1);
                 filter: drop-shadow(0 0 20px currentColor);
             }
-            50% { 
-                transform: scale(1.1); 
+
+            50% {
+                transform: scale(1.1);
                 filter: drop-shadow(0 0 30px currentColor);
             }
         }
@@ -300,8 +334,13 @@
         }
 
         @keyframes valueGlow {
-            from { text-shadow: 0 0 20px rgba(255, 255, 255, 0.5); }
-            to { text-shadow: 0 0 30px rgba(255, 255, 255, 0.8), 0 0 40px rgba(168, 85, 247, 0.4); }
+            from {
+                text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            }
+
+            to {
+                text-shadow: 0 0 30px rgba(255, 255, 255, 0.8), 0 0 40px rgba(168, 85, 247, 0.4);
+            }
         }
 
         .stat-label {
@@ -337,8 +376,13 @@
         }
 
         @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
         }
 
         @keyframes contentSlide {
@@ -346,6 +390,7 @@
                 opacity: 0;
                 transform: translateY(50px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -428,17 +473,32 @@
                 opacity: 0;
                 transform: translateX(-30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateX(0);
             }
         }
 
-        .question-result:nth-child(1) { animation-delay: 0.1s; }
-        .question-result:nth-child(2) { animation-delay: 0.2s; }
-        .question-result:nth-child(3) { animation-delay: 0.3s; }
-        .question-result:nth-child(4) { animation-delay: 0.4s; }
-        .question-result:nth-child(5) { animation-delay: 0.5s; }
+        .question-result:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .question-result:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .question-result:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .question-result:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+        .question-result:nth-child(5) {
+            animation-delay: 0.5s;
+        }
 
         .question-result::before {
             content: '';
@@ -502,8 +562,15 @@
         }
 
         @keyframes iconBounce {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-5px) scale(1.1); }
+
+            0%,
+            100% {
+                transform: translateY(0) scale(1);
+            }
+
+            50% {
+                transform: translateY(-5px) scale(1.1);
+            }
         }
 
         .result-icon.correct {
@@ -589,9 +656,17 @@
         }
 
         @keyframes checkPulse {
-            0% { transform: scale(0); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
+            0% {
+                transform: scale(0);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+            }
         }
 
         .option-item.incorrect-selected {
@@ -613,9 +688,19 @@
         }
 
         @keyframes xShake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
         }
 
         /* Enhanced Answer Section */
@@ -634,6 +719,7 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -656,8 +742,13 @@
         }
 
         @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* Enhanced Loading */
@@ -744,7 +835,7 @@
             transform: scale(1.15) rotate(10deg);
             border-color: #a855f7;
             box-shadow: 0 15px 40px rgba(168, 85, 247, 0.5),
-                        0 0 60px rgba(168, 85, 247, 0.3);
+                0 0 60px rgba(168, 85, 247, 0.3);
         }
 
         .home-button:hover img {
@@ -820,7 +911,8 @@
             transform: rotate(90deg) scale(1.1);
         }
 
-        .close-button:before, .close-button:after {
+        .close-button:before,
+        .close-button:after {
             content: '';
             position: absolute;
             width: 24px;
@@ -852,7 +944,8 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .zoom-button, .reset-zoom-button {
+        .zoom-button,
+        .reset-zoom-button {
             width: 40px;
             height: 40px;
             background: rgba(255, 255, 255, 0.1);
@@ -877,7 +970,8 @@
             letter-spacing: 0.05em;
         }
 
-        .zoom-button:hover, .reset-zoom-button:hover {
+        .zoom-button:hover,
+        .reset-zoom-button:hover {
             background: rgba(168, 85, 247, 0.3);
             border-color: #a855f7;
             transform: scale(1.1);
@@ -896,126 +990,6 @@
         .question-image:hover {
             transform: scale(1.03);
             box-shadow: 0 15px 40px rgba(168, 85, 247, 0.3);
-        }
-
-        /* Special Rank Animations */
-        #user-rank {
-            transition: all 0.5s ease;
-            min-height: 3em;
-        }
-
-        .rank-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 0.3em;
-            opacity: 0;
-            transform: scale(0.3) rotate(-180deg);
-            transition: all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        .rank-revealed .rank-container {
-            opacity: 1;
-            transform: scale(1) rotate(0deg);
-        }
-
-        .numeric-rank {
-            font-size: 0.9em;
-            font-weight: 600;
-            opacity: 0.8;
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .tier-rank {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-weight: 800;
-            text-shadow: 0 0 10px currentColor;
-        }
-
-        .tier-icon {
-            font-size: 2em;
-            margin-bottom: 0.3em;
-            filter: drop-shadow(0 0 8px currentColor);
-            animation: tierPulse 2s infinite;
-        }
-
-        @keyframes tierPulse {
-            0%, 100% { 
-                transform: scale(1); 
-                filter: drop-shadow(0 0 8px currentColor);
-            }
-            50% { 
-                transform: scale(1.15); 
-                filter: drop-shadow(0 0 15px currentColor);
-            }
-        }
-
-        .tier-name {
-            font-size: 1em;
-            white-space: nowrap;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
-        /* Tier-specific colors and effects */
-        [data-tier="thách-đấu"] .stat-card.warning {
-            background: linear-gradient(135deg, rgba(255, 78, 255, 0.2) 0%, rgba(183, 0, 165, 0.1) 100%);
-            border: 2px solid rgba(255, 78, 255, 0.5);
-            animation: challengerPulse 3s infinite;
-        }
-
-        @keyframes challengerPulse {
-            0%, 100% { 
-                box-shadow: 0 0 30px rgba(255, 78, 255, 0.5),
-                           inset 0 0 30px rgba(255, 78, 255, 0.1);
-            }
-            50% { 
-                box-shadow: 0 0 60px rgba(255, 78, 255, 0.8),
-                           inset 0 0 50px rgba(255, 78, 255, 0.2);
-            }
-        }
-
-        [data-tier="thách-đấu"] .tier-icon {
-            color: #FF4EFF;
-            animation: challengerSpin 4s linear infinite;
-        }
-
-        @keyframes challengerSpin {
-            0% { transform: rotate(0deg) scale(1); }
-            25% { transform: rotate(5deg) scale(1.1); }
-            50% { transform: rotate(0deg) scale(1.2); }
-            75% { transform: rotate(-5deg) scale(1.1); }
-            100% { transform: rotate(0deg) scale(1); }
-        }
-
-        [data-tier="cao-thủ"] .stat-card.warning {
-            background: linear-gradient(135deg, rgba(255, 85, 85, 0.2) 0%, rgba(183, 0, 0, 0.1) 100%);
-            border: 2px solid rgba(255, 85, 85, 0.5);
-        }
-
-        [data-tier="cao-thủ"] .tier-icon {
-            color: #FF5555;
-        }
-
-        [data-tier="tinh-anh"] .stat-card.warning {
-            background: linear-gradient(135deg, rgba(140, 0, 255, 0.2) 0%, rgba(88, 0, 163, 0.1) 100%);
-            border: 2px solid rgba(140, 0, 255, 0.5);
-        }
-
-        [data-tier="tinh-anh"] .tier-icon {
-            color: #8C00FF;
-        }
-
-        [data-tier="kim-cương"] .stat-card.warning {
-            background: linear-gradient(135deg, rgba(0, 170, 255, 0.2) 0%, rgba(0, 102, 204, 0.1) 100%);
-            border: 2px solid rgba(0, 170, 255, 0.5);
-        }
-
-        [data-tier="kim-cương"] .tier-icon {
-            color: #00AAFF;
         }
 
         /* Particles Container */
@@ -1042,28 +1016,55 @@
 
         /* Particle animations */
         @keyframes particleFade {
-            0% { opacity: 0.8; transform: scale(1); }
-            100% { opacity: 0; transform: scale(0.3); }
+            0% {
+                opacity: 0.8;
+                transform: scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
         }
 
         @keyframes particleMove0 {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(var(--x, 100px), calc(var(--y, 100px) - 80px)); }
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(var(--x, 100px), calc(var(--y, 100px) - 80px));
+            }
         }
 
         @keyframes particleMove1 {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(calc(var(--x, -100px) * -1), calc(var(--y, 100px) - 100px)); }
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(calc(var(--x, -100px) * -1), calc(var(--y, 100px) - 100px));
+            }
         }
 
         @keyframes particleMove2 {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(calc(var(--x, 70px) - 50px), var(--y, -120px)); }
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(calc(var(--x, 70px) - 50px), var(--y, -120px));
+            }
         }
 
         @keyframes particleMove3 {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(calc(var(--x, -70px) * -1.2), var(--y, -100px)); }
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(calc(var(--x, -70px) * -1.2), var(--y, -100px));
+            }
         }
 
         /* Confetti for high scores */
@@ -1077,11 +1078,12 @@
         }
 
         @keyframes confettiFall {
-            0% { 
-                transform: translateY(0) rotate(0deg); 
+            0% {
+                transform: translateY(0) rotate(0deg);
                 opacity: 1;
             }
-            100% { 
+
+            100% {
                 transform: translateY(100vh) rotate(720deg);
                 opacity: 0;
             }
@@ -1092,45 +1094,45 @@
             .results-container {
                 padding: 1rem;
             }
-            
+
             .results-header h1 {
                 font-size: 2.5rem;
             }
-            
+
             .stats-grid {
                 grid-template-columns: 1fr;
                 gap: 1rem;
             }
-            
+
             .stat-card {
                 padding: 1.5rem;
             }
-            
+
             .results-content {
                 padding: 1.5rem;
                 border-radius: 20px;
             }
-            
+
             .sort-buttons {
                 gap: 0.5rem;
             }
-            
+
             .sort-btn {
                 padding: 0.75rem 1.5rem;
                 font-size: 0.9rem;
             }
-            
+
             .home-button {
                 width: 60px;
                 height: 60px;
                 top: 1rem;
                 right: 1rem;
             }
-            
+
             .question-result {
                 padding: 1.5rem;
             }
-            
+
             .question-header {
                 flex-direction: column;
                 align-items: flex-start;
@@ -1142,16 +1144,16 @@
             .results-header h1 {
                 font-size: 2rem;
             }
-            
+
             .sort-btn {
                 padding: 0.6rem 1.2rem;
                 font-size: 0.85rem;
             }
-            
+
             .stat-value {
                 font-size: 2rem;
             }
-            
+
             .stat-icon {
                 font-size: 2.5rem;
             }
@@ -1185,7 +1187,7 @@
                 opacity: 0;
                 animation: none;
             }
-            
+
             .question-result.in-view {
                 opacity: 1;
                 animation: questionFadeIn 0.6s ease-out;
@@ -1218,10 +1220,11 @@
     </style>
     <script src="/js/nav-mobile.js"></script>
 </head>
+
 <body>
     <!-- Animated Background -->
     <div class="animated-bg"></div>
-    
+
     <!-- Floating Elements -->
     <div class="floating-elements">
         <div class="floating-element">⚡</div>
@@ -1244,9 +1247,9 @@
                 <i class="fas fa-atom"></i>
                 <span>Học Vật Lý</span>
             </a>
-            
-                <div class="nav-links" id="nav-links">
-                    <a href="/lessons" class="nav-link">
+
+            <div class="nav-links" id="nav-links">
+                <a href="/lessons" class="nav-link">
                     <i class="fas fa-book"></i>
                     <span>Bài học</span>
                 </a>
@@ -1259,7 +1262,7 @@
                     <span>Hồ sơ</span>
                 </a>
             </div>
-            
+
             <button class="mobile-menu-toggle" id="mobile-menu-toggle">
                 <i class="fas fa-bars"></i>
             </button>
@@ -1283,11 +1286,10 @@
     <div class="results-container">
         <div class="results-header">
             <h1>Kết quả của bạn</h1>
-            <p>Hãy xem bạn đã làm tốt như thế nào! 🎯</p>
         </div>
 
         <!-- Stats Grid -->
-        <div class="stats-grid">    
+        <div class="stats-grid">
             <div class="stat-card primary">
                 <div class="stat-icon">
                     <i class="fas fa-star"></i>
@@ -1301,13 +1303,6 @@
                 </div>
                 <div class="stat-value" id="lesson-name">-</div>
                 <div class="stat-label">Bài học</div>
-            </div>
-            <div class="stat-card warning">
-                <div class="stat-icon">
-                    <i class="fas fa-trophy"></i>
-                </div>
-                <div class="stat-value" id="user-rank">-</div>
-                <div class="stat-label">Xếp hạng của bạn</div>
             </div>
         </div>
 
@@ -1332,30 +1327,31 @@
     <script src="/js/encryption.js"></script>
     <script src="/js/csrf-utils.js"></script>
     <script src="/js/result.js"></script>
-    
+
     <!-- KaTeX JS -->
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
-    
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        crossorigin="anonymous"></script>
+
     <!-- Additional animations -->
     <script>
         // Initialize KaTeX when auto-render is loaded
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Wait for KaTeX auto-render to load
             function waitForKaTeX() {
                 if (typeof renderMathInElement !== 'undefined') {
                     // KaTeX is loaded, now we can use it
                     console.log('KaTeX auto-render loaded successfully');
-                    
+
                     // If results are already loaded, render math
                     const resultElement = document.getElementById('result');
                     if (resultElement && resultElement.innerHTML.trim() !== '') {
                         renderMathInElement(resultElement, {
                             delimiters: [
-                                {left: "$$", right: "$$", display: true},
-                                {left: "$", right: "$", display: false},
-                                {left: "\\(", right: "\\)", display: false},
-                                {left: "\\[", right: "\\]", display: true}
+                                { left: "$$", right: "$$", display: true },
+                                { left: "$", right: "$", display: false },
+                                { left: "\\(", right: "\\)", display: false },
+                                { left: "\\[", right: "\\]", display: true }
                             ],
                             throwOnError: false
                         });
@@ -1400,7 +1396,7 @@
                 confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
                 confetti.style.animationDelay = Math.random() * 2 + 's';
                 document.body.appendChild(confetti);
-                
+
                 setTimeout(() => confetti.remove(), 5000);
             }
         }
@@ -1430,16 +1426,16 @@
                 const rect = card.getBoundingClientRect();
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
-                
+
                 card.style.setProperty('--mouse-x', `${x}px`);
                 card.style.setProperty('--mouse-y', `${y}px`);
             });
         });
-        
+
         // Mobile menu toggle functionality
         const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
         const navLinks = document.getElementById('nav-links');
-        
+
         if (mobileMenuToggle && navLinks) {
             mobileMenuToggle.addEventListener('click', () => {
                 navLinks.classList.toggle('active');
@@ -1447,4 +1443,5 @@
         }
     </script>
 </body>
+
 </html>

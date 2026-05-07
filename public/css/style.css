@@ -3341,141 +3341,6 @@ select:focus {
     color: var(--text-secondary);
 }
 
-/* Rank display animations and styles */
-#user-rank {
-    transition: all 0.5s ease;
-    min-height: 2.5em;
-}
-
-.rank-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.2em;
-    opacity: 0;
-    transform: scale(0.5);
-    transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.numeric-rank {
-    font-size: 0.8em;
-    font-weight: normal;
-    opacity: 0.8;
-}
-
-.tier-rank {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-weight: bold;
-    text-shadow: 0 0 5px currentColor;
-}
-
-.tier-icon {
-    font-size: 1.5em;
-    margin-bottom: 0.2em;
-    filter: drop-shadow(0 0 4px currentColor);
-    animation: pulse 2s infinite;
-}
-
-.tier-name {
-    font-size: 0.9em;
-    white-space: nowrap;
-}
-
-.rank-revealed .rank-container {
-    opacity: 1;
-    transform: scale(1);
-}
-
-/* Tier-specific styling and animations */
-[data-tier="thách-đấu"] .stat-card.warning {
-    background: linear-gradient(135deg, rgba(255, 78, 255, 0.1) 0%, rgba(183, 0, 165, 0.1) 100%);
-    border-color: rgba(255, 78, 255, 0.3);
-    animation: challengerGlow 3s infinite;
-}
-
-[data-tier="cao-thủ"] .stat-card.warning {
-    background: linear-gradient(135deg, rgba(255, 85, 85, 0.1) 0%, rgba(183, 0, 0, 0.1) 100%);
-    border-color: rgba(255, 85, 85, 0.3);
-}
-
-[data-tier="tinh-anh"] .stat-card.warning {
-    background: linear-gradient(135deg, rgba(140, 0, 255, 0.1) 0%, rgba(88, 0, 163, 0.1) 100%);
-    border-color: rgba(140, 0, 255, 0.3);
-}
-
-[data-tier="kim-cương"] .stat-card.warning {
-    background: linear-gradient(135deg, rgba(0, 170, 255, 0.1) 0%, rgba(0, 102, 204, 0.1) 100%);
-    border-color: rgba(0, 170, 255, 0.3);
-}
-
-@keyframes challengerGlow {
-    0% {
-        box-shadow: 0 0 10px rgba(255, 78, 255, 0.5);
-    }
-
-    50% {
-        box-shadow: 0 0 30px rgba(255, 78, 255, 0.8), 0 0 50px rgba(255, 78, 255, 0.4);
-    }
-
-    100% {
-        box-shadow: 0 0 10px rgba(255, 78, 255, 0.5);
-    }
-}
-
-[data-tier="thách-đấu"] .tier-icon {
-    animation: challenger-shine 3s infinite;
-}
-
-[data-tier="cao-thủ"] .tier-icon,
-[data-tier="tinh-anh"] .tier-icon,
-[data-tier="kim-cương"] .tier-icon {
-    animation: shimmer 2s infinite;
-}
-
-@keyframes challenger-shine {
-    0% {
-        filter: drop-shadow(0 0 5px currentColor);
-        transform: scale(1) rotate(0deg);
-    }
-
-    25% {
-        filter: drop-shadow(0 0 10px currentColor);
-        transform: scale(1.1) rotate(5deg);
-    }
-
-    50% {
-        filter: drop-shadow(0 0 15px currentColor);
-        transform: scale(1.15) rotate(0deg);
-    }
-
-    75% {
-        filter: drop-shadow(0 0 10px currentColor);
-        transform: scale(1.1) rotate(-5deg);
-    }
-
-    100% {
-        filter: drop-shadow(0 0 5px currentColor);
-        transform: scale(1) rotate(0deg);
-    }
-}
-
-@keyframes shimmer {
-    0% {
-        filter: drop-shadow(0 0 3px currentColor);
-    }
-
-    50% {
-        filter: drop-shadow(0 0 7px currentColor);
-    }
-
-    100% {
-        filter: drop-shadow(0 0 3px currentColor);
-    }
-}
-
 /* Particles for special effects */
 .particles-container {
     position: absolute;
@@ -4238,39 +4103,6 @@ select.modern:focus {
     border-color: #a855f7;
     box-shadow: 0 0 30px rgba(168, 85, 247, 0.4);
     transform: translateY(-2px);
-}
-
-/* ===== RANK TIER COLORS ===== */
-.tier-challenger {
-    color: #FF4EFF;
-}
-
-.tier-grandmaster {
-    color: #FF5555;
-}
-
-.tier-master {
-    color: #8C00FF;
-}
-
-.tier-diamond {
-    color: #00AAFF;
-}
-
-.tier-platinum {
-    color: #00D4A4;
-}
-
-.tier-gold {
-    color: #FFD700;
-}
-
-.tier-silver {
-    color: #C0C0C0;
-}
-
-.tier-bronze {
-    color: #CD7F32;
 }
 
 /* ===== MODERN ANIMATIONS ===== */
@@ -5675,12 +5507,12 @@ tr:hover td {
         max-width: 95%;
         max-height: 80vh;
     }
-    
+
     #wrong-students-modal .modal-header {
         flex-direction: column;
         align-items: flex-start;
     }
-    
+
     #wrong-students-modal .close-btn {
         align-self: flex-end;
         margin-bottom: 10px;

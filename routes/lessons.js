@@ -199,14 +199,6 @@ router.get('/:id/results',
   lessonController.getLessonResults
 );
 
-// Student-accessible ranking data
-router.get('/:id/rankings',
-  optionalAuth,
-  validateIdParam('id'),
-  shortCacheMiddleware(300), // 5 minutes cache
-  lessonController.getStudentRankings
-);
-
 // AI Generation routes (admin only)
 router.post('/generate-summary',
   requireAdminAuth,
