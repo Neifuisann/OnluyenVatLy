@@ -72,7 +72,35 @@ app.use((req, res, next) => {
         if (typeof body === 'string' && body.includes('</head>')) {
             // Inject the Speed Insights script before the closing head tag
             const speedInsightsScript = '<script defer src="/_vercel/speed-insights/script.js"></script>';
-            body = body.replace('</head>', `${speedInsightsScript}</head>`);
+            
+            // Protection script: Disable right-click, copy, and selection for non-admin routes
+            const protectionScript = `
+<script>
+    (function() {
+        // Skip protection for admin routes
+        if (window.location.pathname.startsWith('/admin')) return;
+        
+        // Disable right-click context menu
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        
+        // Disable copy event
+        document.addEventListener('copy', e => e.preventDefault());
+        
+        // Disable text selection via CSS
+        const style = document.createElement('style');
+        style.textContent = 'body { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }';
+        document.head.appendChild(style);
+        
+        // Disable keyboard shortcuts (Ctrl+C, Ctrl+U, Ctrl+S)
+        document.addEventListener('keydown', e => {
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'u' || e.key === 's')) {
+                e.preventDefault();
+            }
+        });
+    })();
+</script>`;
+            
+            body = body.replace('</head>', `${speedInsightsScript}${protectionScript}</head>`);
         }
         return originalSend.call(this, body);
     };
@@ -322,7 +350,13 @@ app.use('*', (req, res) => {
             message: 'Route not found'
         });
     } else {
-        res.status(404).sendFile(path.join(process.cwd(), 'views', '404.html'));
+        try {
+            const filePath = path.join(process.cwd(), 'views', '404.html');
+            const content = require('fs').readFileSync(filePath, 'utf8');
+            res.status(404).send(content);
+        } catch (err) {
+            res.status(404).send('404 Not Found');
+        }
     }
 });
 

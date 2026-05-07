@@ -16,8 +16,16 @@ const { longCacheMiddleware, noCacheMiddleware } = require('../lib/middleware/ca
 
 // Helper function to serve HTML files
 const serveHTML = (filename) => {
-  return (req, res) => {
-    res.sendFile(path.join(__dirname, '../views', filename));
+  return async (req, res) => {
+    try {
+      const filePath = path.join(__dirname, '../views', filename);
+      const content = await fs.readFile(filePath, 'utf8');
+      res.send(content);
+    } catch (err) {
+      console.error(`Error serving ${filename}:`, err);
+      // Fallback to sendFile if read fails, or send error
+      res.status(500).send('Error loading page');
+    }
   };
 };
 
