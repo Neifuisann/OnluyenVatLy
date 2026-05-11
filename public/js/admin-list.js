@@ -12,6 +12,156 @@ let currentSort = 'newest'; // Default to newest
 let currentTags = [];
 let completeTagsData = null; // Cache for complete tags data
 
+const LESSONS_CACHE_TTL_MS = 300000;
+const LESSONS_PREFETCH_NEIGHBOR_PAGES = 2;
+const LESSONS_CACHE_STORAGE_KEY = 'adminLessonsCache:v1';
+const lessonsRequestCache = new Map();
+const inFlightLessonRequests = new Map();
+
+function loadLessonsCacheFromStorage() {
+    try {
+        const raw = sessionStorage.getItem(LESSONS_CACHE_STORAGE_KEY);
+        if (!raw) return;
+
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed !== 'object') return;
+
+        Object.entries(parsed).forEach(([key, entry]) => {
+            if (!entry || typeof entry !== 'object') return;
+            if (typeof entry.timestamp !== 'number') return;
+            if (!('data' in entry)) return;
+
+            const isExpired = (Date.now() - entry.timestamp) > LESSONS_CACHE_TTL_MS;
+            if (!isExpired) {
+                lessonsRequestCache.set(key, {
+                    timestamp: entry.timestamp,
+                    data: entry.data
+                });
+            }
+        });
+    } catch (error) {
+        console.warn('Failed to hydrate lessons cache from sessionStorage:', error);
+    }
+}
+
+function persistLessonsCacheToStorage() {
+    try {
+        const serializable = Object.fromEntries(lessonsRequestCache.entries());
+        sessionStorage.setItem(LESSONS_CACHE_STORAGE_KEY, JSON.stringify(serializable));
+    } catch (error) {
+        console.warn('Failed to persist lessons cache to sessionStorage:', error);
+    }
+}
+
+function buildLessonsQueryParams(page = currentPage) {
+    const params = new URLSearchParams({
+        page: String(page),
+        limit: String(lessonsPerPage),
+        sort: currentSort,
+        includeStats: 'true'
+    });
+
+    if (currentSearch) {
+        params.append('search', currentSearch);
+    }
+
+    if (currentTags.length > 0) {
+        params.append('tags', currentTags.join(','));
+    }
+
+    return params;
+}
+
+function buildLessonsCacheKey(page = currentPage) {
+    return buildLessonsQueryParams(page).toString();
+}
+
+function getCachedLessonsData(cacheKey) {
+    const cached = lessonsRequestCache.get(cacheKey);
+    if (!cached) return null;
+
+    const isExpired = (Date.now() - cached.timestamp) > LESSONS_CACHE_TTL_MS;
+    if (isExpired) {
+        lessonsRequestCache.delete(cacheKey);
+        return null;
+    }
+
+    return cached.data;
+}
+
+function setCachedLessonsData(cacheKey, data) {
+    lessonsRequestCache.set(cacheKey, {
+        timestamp: Date.now(),
+        data
+    });
+    persistLessonsCacheToStorage();
+}
+
+function invalidateLessonsCache() {
+    lessonsRequestCache.clear();
+    inFlightLessonRequests.clear();
+    try {
+        sessionStorage.removeItem(LESSONS_CACHE_STORAGE_KEY);
+    } catch (error) {
+        console.warn('Failed to clear lessons cache from sessionStorage:', error);
+    }
+}
+
+async function fetchLessonsData(page = currentPage) {
+    const cacheKey = buildLessonsCacheKey(page);
+    const cachedData = getCachedLessonsData(cacheKey);
+    if (cachedData) {
+        return cachedData;
+    }
+
+    if (inFlightLessonRequests.has(cacheKey)) {
+        return inFlightLessonRequests.get(cacheKey);
+    }
+
+    const requestPromise = (async () => {
+        const params = buildLessonsQueryParams(page);
+        const url = `/api/lessons?${params.toString()}`;
+        console.log('Admin lessons API URL:', url);
+
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error('Failed to fetch lessons');
+        }
+
+        const data = await response.json();
+        setCachedLessonsData(cacheKey, data);
+        return data;
+    })();
+
+    inFlightLessonRequests.set(cacheKey, requestPromise);
+
+    try {
+        return await requestPromise;
+    } finally {
+        inFlightLessonRequests.delete(cacheKey);
+    }
+}
+
+function prefetchNeighborLessonPages() {
+    const totalPages = Math.ceil(totalLessons / lessonsPerPage);
+    if (!totalPages || totalPages <= 1) return;
+
+    for (let offset = 1; offset <= LESSONS_PREFETCH_NEIGHBOR_PAGES; offset++) {
+        const candidates = [currentPage + offset, currentPage - offset];
+
+        candidates.forEach((page) => {
+            if (page < 1 || page > totalPages) return;
+
+            const key = buildLessonsCacheKey(page);
+            if (getCachedLessonsData(key) || inFlightLessonRequests.has(key)) return;
+
+            fetchLessonsData(page).catch((error) => {
+                console.warn(`Prefetch lessons page ${page} failed:`, error);
+            });
+        });
+    }
+}
+
 // Statistics tracking
 let statsData = {
     total: 0,
@@ -26,6 +176,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initializeAdminDashboard() {
+    loadLessonsCacheFromStorage();
+
     // Create search and sort elements if they don't exist
     createEnhancedUIElements();
     
@@ -334,45 +486,23 @@ async function loadLessonsForAdmin() {
     if (isLoading) return;
     isLoading = true;
     showLoader(true);
-    
+
     try {
-        const params = new URLSearchParams({
-            page: currentPage,
-            limit: lessonsPerPage,
-            sort: currentSort,
-            includeStats: 'true' // Request statistics for admin view
-        });
-        
-        if (currentSearch) {
-            params.append('search', currentSearch);
-        }
-        
         if (currentTags.length > 0) {
-            params.append('tags', currentTags.join(','));
             console.log('Admin filtering by tags:', currentTags);
         }
 
-        console.log('Admin lessons API URL:', `/api/lessons?${params.toString()}`);
-        const response = await fetch(`/api/lessons?${params.toString()}`);
-        if (!response.ok) {
-            throw new Error('Failed to fetch lessons');
-        }
-        
-        const data = await response.json();
+        const data = await fetchLessonsData(currentPage);
         displayedLessons = data.lessons || [];
         totalLessons = data.total || 0;
 
         console.log(`Admin loaded ${displayedLessons.length} lessons (total: ${totalLessons}) with tags:`, currentTags);
-        
-        // Update stats
+
         updateStatsFromLessons();
-        
-        // Render lessons
         renderLessons();
-        
-        // Update pagination
         updateAdminPaginationControls();
-        
+        prefetchNeighborLessonPages();
+
     } catch (error) {
         console.error('Error loading lessons:', error);
         showErrorMessage();
@@ -817,7 +947,9 @@ async function deleteLesson(id) {
         }
         
         showToast('Đã xóa bài học thành công', 'success');
-        
+
+        invalidateLessonsCache();
+
         // Reload the current page after deletion
         loadLessonsForAdmin();
         
@@ -856,6 +988,8 @@ async function updateLessonColor(id, color) {
         
         const result = await response.json();
         console.log('Color update result:', result);
+
+        invalidateLessonsCache();
         
         // Update local data
         const lesson = displayedLessons.find(l => l.id == id);

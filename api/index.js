@@ -63,16 +63,13 @@ app.use((req, res, next) => {
     next();
 });
 
-// Middleware to inject Speed Insights script
+// Middleware to inject protection scripts (Speed Insights removed to save budget)
 app.use((req, res, next) => {
     const originalSend = res.send;
 
     res.send = function(body) {
         // Only inject script into HTML responses
         if (typeof body === 'string' && body.includes('</head>')) {
-            // Inject the Speed Insights script before the closing head tag
-            const speedInsightsScript = '<script defer src="/_vercel/speed-insights/script.js"></script>';
-            
             // Protection script: Disable right-click, copy, and selection for non-admin routes
             const protectionScript = `
 <script>
@@ -100,7 +97,7 @@ app.use((req, res, next) => {
     })();
 </script>`;
             
-            body = body.replace('</head>', `${speedInsightsScript}${protectionScript}</head>`);
+            body = body.replace('</head>', `${protectionScript}</head>`);
         }
         return originalSend.call(this, body);
     };

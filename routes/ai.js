@@ -252,7 +252,7 @@ router.post('/analyze-lesson',
   noCacheMiddleware,
   asyncHandler(async (req, res) => {
     try {
-      const { lessonContent } = req.body;
+      const { lessonContent, stream = false } = req.body;
 
       if (!lessonContent) {
         return res.status(400).json({
@@ -261,13 +261,33 @@ router.post('/analyze-lesson',
         });
       }
 
-      // Generate lesson analysis
-      const analysis = await aiService.analyzeLessonContent(lessonContent);
+      if (stream) {
+        // Set up Server-Sent Events
+        res.writeHead(200, {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive'
+        });
 
-      res.json({
-        success: true,
-        analysis: analysis
-      });
+        try {
+          const analysis = await aiService.analyzeLessonContent(lessonContent, (chunk) => {
+            res.write(`data: ${JSON.stringify({ type: 'chunk', content: chunk })}\n\n`);
+          });
+
+          res.write(`data: ${JSON.stringify({ type: 'done', fullAnalysis: analysis })}\n\n`);
+          res.end();
+        } catch (streamError) {
+          res.write(`data: ${JSON.stringify({ type: 'error', error: streamError.message })}\n\n`);
+          res.end();
+        }
+      } else {
+        // Regular non-streaming response
+        const analysis = await aiService.analyzeLessonContent(lessonContent);
+        res.json({
+          success: true,
+          analysis: analysis
+        });
+      }
 
     } catch (error) {
       console.error('Error in lesson analysis:', error);
