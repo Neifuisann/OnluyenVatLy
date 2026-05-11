@@ -10,6 +10,7 @@ let sortState = {
 // Track modal state
 let currentModalQuestionIndex = null;
 let currentModalQuestionText = null;
+let currentModalOptionIndex = null;
 
 // Helper to recursively extract string from object
 function getOptionString(val) {
@@ -321,6 +322,8 @@ function safeUpdateLabel(elementId, text) {
 function renderQuestionStatsTable(data) {
     const questionTable = document.getElementById('question-stats');
     if (!questionTable) return;
+
+    window.currentQuestionStatsTableData = data;
     
     const tbody = questionTable.querySelector('tbody');
     if (!tbody) return;
@@ -487,13 +490,34 @@ function addIncorrectCellClickHandlers(data) {
             
             currentModalQuestionIndex = questionIndex;
             currentModalQuestionText = data[questionIndex].question;
-            await showWrongStudentsModal(questionIndex, incorrectCount);
+            currentModalOptionIndex = null;
+            await showWrongStudentsModal(questionIndex, incorrectCount, null);
+        });
+    });
+
+    const incorrectOptionCells = document.querySelectorAll('.incorrect-cell-option');
+    incorrectOptionCells.forEach(cell => {
+        cell.addEventListener('click', async function(e) {
+            e.preventDefault();
+            const questionIndex = parseInt(this.getAttribute('data-question-index'));
+            const optionIndex = parseInt(this.getAttribute('data-option-index'));
+            const incorrectCount = parseInt(this.getAttribute('data-incorrect-count'));
+
+            if (incorrectCount === 0) {
+                alert('Không có học sinh nào làm sai câu hỏi này');
+                return;
+            }
+
+            currentModalQuestionIndex = questionIndex;
+            currentModalQuestionText = data[questionIndex].question;
+            currentModalOptionIndex = optionIndex;
+            await showWrongStudentsModal(questionIndex, incorrectCount, optionIndex);
         });
     });
 }
 
 // Show modal with list of students who got the question wrong
-async function showWrongStudentsModal(questionIndex, incorrectCount) {
+async function showWrongStudentsModal(questionIndex, incorrectCount, optionIndex = null) {
     const modal = document.getElementById('wrong-students-modal');
     const overlay = document.getElementById('modal-overlay');
     
@@ -519,14 +543,23 @@ async function showWrongStudentsModal(questionIndex, incorrectCount) {
     // Update question title
     const modalTitle = document.getElementById('modal-title');
     if (modalTitle) {
-        modalTitle.textContent = `Học sinh làm sai câu hỏi (${incorrectCount} học sinh)`;
+        const optionLabel = optionIndex !== null ? ` - Ý ${String.fromCharCode(65 + optionIndex)}` : '';
+        modalTitle.textContent = `Học sinh làm sai câu hỏi${optionLabel} (${incorrectCount} học sinh)`;
     }
     
     // Show question preview
     const questionPreview = document.getElementById('question-preview');
     const questionTextElement = document.getElementById('question-text');
     if (questionPreview && questionTextElement && currentModalQuestionText) {
-        questionTextElement.innerHTML = currentModalQuestionText;
+        let previewHtml = currentModalQuestionText;
+        if (optionIndex !== null && window.currentQuestionStatsTableData && window.currentQuestionStatsTableData[questionIndex]) {
+            const optionText = window.currentQuestionStatsTableData[questionIndex].optionStats?.[optionIndex]?.text;
+            if (optionText) {
+                previewHtml += `<br><strong>Ý ${String.fromCharCode(65 + optionIndex)})</strong> ${optionText}`;
+            }
+        }
+
+        questionTextElement.innerHTML = previewHtml;
         questionPreview.style.display = 'block';
         
         // Render math in question preview
@@ -551,7 +584,8 @@ async function showWrongStudentsModal(questionIndex, incorrectCount) {
     
     try {
         // Fetch students who got the question wrong
-        const response = await fetch(`/api/lessons/${lessonId}/students-wrong-question?questionIndex=${questionIndex}`);
+        const optionParam = optionIndex !== null ? `&optionIndex=${optionIndex}` : '';
+        const response = await fetch(`/api/lessons/${lessonId}/students-wrong-question?questionIndex=${questionIndex}${optionParam}`);
         
         if (!response.ok) {
             throw new Error('Failed to load students');

@@ -15,8 +15,39 @@ let completeTagsData = null; // Cache for complete tags data
 const LESSONS_CACHE_TTL_MS = 300000;
 const LESSONS_PREFETCH_NEIGHBOR_PAGES = 2;
 const LESSONS_CACHE_STORAGE_KEY = 'adminLessonsCache:v1';
+const TAGS_CACHE_TTL_MS = 300000;
+const TAGS_CACHE_STORAGE_KEY = 'adminTagsCache:v1';
+const STATS_CACHE_TTL_MS = 180000;
+const STATS_CACHE_STORAGE_KEY = 'adminStatsCache:v1';
 const lessonsRequestCache = new Map();
 const inFlightLessonRequests = new Map();
+
+function readSessionCache(key, ttlMs) {
+    try {
+        const raw = sessionStorage.getItem(key);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed !== 'object') return null;
+        if (typeof parsed.timestamp !== 'number') return null;
+        if (!('data' in parsed)) return null;
+        const isExpired = (Date.now() - parsed.timestamp) > ttlMs;
+        return isExpired ? null : parsed.data;
+    } catch (error) {
+        console.warn(`Failed to read session cache for ${key}:`, error);
+        return null;
+    }
+}
+
+function writeSessionCache(key, data) {
+    try {
+        sessionStorage.setItem(key, JSON.stringify({
+            timestamp: Date.now(),
+            data
+        }));
+    } catch (error) {
+        console.warn(`Failed to write session cache for ${key}:`, error);
+    }
+}
 
 function loadLessonsCacheFromStorage() {
     try {
@@ -187,13 +218,10 @@ function initializeAdminDashboard() {
     // Load initial data
     showLoader(true);
     
-    // Load tags and lessons
-    Promise.all([
-        loadTags(),
-        loadDashboardStats()
-    ]).then(() => {
-        loadLessonsForAdmin();
-    });
+    // Load lessons immediately; fetch tags/stats in parallel without blocking
+    loadLessonsForAdmin();
+    loadTags();
+    loadDashboardStats();
 }
 
 // ===== UI CREATION =====
@@ -403,6 +431,13 @@ function initializeEventListeners() {
 
 // ===== DATA LOADING =====
 async function loadTags() {
+    const cachedTags = readSessionCache(TAGS_CACHE_STORAGE_KEY, TAGS_CACHE_TTL_MS);
+    if (cachedTags) {
+        allTags = cachedTags.tags || cachedTags;
+        completeTagsData = cachedTags.completeTagsData || null;
+        renderTagsList();
+    }
+
     try {
         console.log('Loading complete tags data for admin dashboard...');
         const response = await fetch('/api/tags/complete?limit=8');
@@ -416,6 +451,14 @@ async function loadTags() {
                 tagToLessons: result.tagToLessons
             };
             allTags = result.tags;
+            writeSessionCache(TAGS_CACHE_STORAGE_KEY, {
+                tags: result.tags,
+                tagToLessons: result.tagToLessons,
+                completeTagsData: {
+                    tags: result.tags,
+                    tagToLessons: result.tagToLessons
+                }
+            });
             console.log('Loaded complete tags data for admin:', allTags.length, 'tags');
             renderTagsList();
         } else {
@@ -434,6 +477,11 @@ async function loadTags() {
                     allTags = popularResult.tags;
                     // Without complete data, admin will use simpler filtering
                     completeTagsData = null;
+                    writeSessionCache(TAGS_CACHE_STORAGE_KEY, {
+                        tags: popularResult.tags,
+                        tagToLessons: null,
+                        completeTagsData: null
+                    });
                     console.log('Loaded fallback popular tags for admin:', allTags);
                     renderTagsList();
                 } else {
@@ -454,6 +502,11 @@ async function loadTags() {
                     popularityScore: 0
                 }));
             completeTagsData = null;
+            writeSessionCache(TAGS_CACHE_STORAGE_KEY, {
+                tags: allTags,
+                tagToLessons: null,
+                completeTagsData: null
+            });
             console.log('Using hardcoded fallback tags for admin');
             renderTagsList();
         }
@@ -461,12 +514,19 @@ async function loadTags() {
 }
 
 async function loadDashboardStats() {
+    const cachedStats = readSessionCache(STATS_CACHE_STORAGE_KEY, STATS_CACHE_TTL_MS);
+    if (cachedStats) {
+        statsData = cachedStats;
+        updateStatsDisplay();
+    }
+
     try {
         const response = await fetch('/api/admin/dashboard-stats');
         if (response.ok) {
             const result = await response.json();
             if (result.success && result.data) {
                 statsData = result.data;
+                writeSessionCache(STATS_CACHE_STORAGE_KEY, statsData);
                 updateStatsDisplay();
             } else {
                 console.error('Failed to load dashboard stats');
