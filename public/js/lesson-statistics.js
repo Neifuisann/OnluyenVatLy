@@ -1,5 +1,7 @@
-// Store chart instance globally
+// Store chart instances globally
 let scoreChartInstance = null;
+let cumulativeScoreChartInstance = null;
+let passFailChartInstance = null;
 
 // Sorting state for question statistics table
 let sortState = {
@@ -60,6 +62,7 @@ async function loadStatistics() {
         // Extract lesson ID from URL path like /admin/lessons/1744597118421/statistics
         const pathParts = window.location.pathname.split('/');
         const lessonId = pathParts[pathParts.length - 2]; // Get the ID before 'statistics'
+        window.currentLessonId = lessonId;
         const response = await fetch(`/api/lessons/${lessonId}/statistics`);
         
         if (!response.ok) {
@@ -100,21 +103,27 @@ async function loadStatistics() {
         safeUpdateLabel('high-scores', 'Tỉ lệ đúng ≥ 50%');
 
         // Modified score chart section
+        const distributionLabels = Array.isArray(defaultStats.scoreDistribution?.labels)
+            ? defaultStats.scoreDistribution.labels
+            : [];
+        const distributionData = Array.isArray(defaultStats.scoreDistribution?.data)
+            ? defaultStats.scoreDistribution.data.map(value => Number(value) || 0)
+            : [];
+        const totalAttemptsCount = distributionData.reduce((sum, value) => sum + value, 0);
+
         const scoreChart = document.getElementById('scoreChart');
         if (scoreChart) {
-            // Destroy existing chart if it exists
             if (scoreChartInstance) {
                 scoreChartInstance.destroy();
             }
 
-            // Create new chart
             scoreChartInstance = new Chart(scoreChart, {
                 type: 'bar',
                 data: {
-                    labels: defaultStats.scoreDistribution.labels,
+                    labels: distributionLabels,
                     datasets: [{
                         label: 'Số lượt làm bài',
-                        data: defaultStats.scoreDistribution.data,
+                        data: distributionData,
                         backgroundColor: 'rgba(54, 162, 235, 0.5)',
                         borderColor: 'rgba(54, 162, 235, 1)',
                         borderWidth: 1
@@ -122,6 +131,15 @@ async function loadStatistics() {
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
+                    layout: {
+                        padding: {
+                            left: 0,
+                            right: 0,
+                            top: 0,
+                            bottom: 0
+                        }
+                    },
                     scales: {
                         y: {
                             beginAtZero: true,
@@ -135,6 +153,7 @@ async function loadStatistics() {
                             }
                         },
                         x: {
+                            offset: false,
                             title: {
                                 display: true,
                                 text: 'Khoảng điểm'
@@ -147,13 +166,140 @@ async function loadStatistics() {
                             position: 'top'
                         },
                         title: {
-                            display: true,
-                            text: 'Phân bố điểm'
+                            display: false
                         },
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
-                                    return `Number of attempts: ${context.raw}`;
+                                    return `Số lượt làm: ${context.raw}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        const cumulativeScoreChart = document.getElementById('cumulativeScoreChart');
+        if (cumulativeScoreChart) {
+            if (cumulativeScoreChartInstance) {
+                cumulativeScoreChartInstance.destroy();
+            }
+
+            const cumulativeData = [];
+            let runningTotal = 0;
+            distributionData.forEach(value => {
+                runningTotal += value;
+                const percent = totalAttemptsCount > 0
+                    ? Math.round((runningTotal / totalAttemptsCount) * 1000) / 10
+                    : 0;
+                cumulativeData.push(percent);
+            });
+
+            cumulativeScoreChartInstance = new Chart(cumulativeScoreChart, {
+                type: 'line',
+                data: {
+                    labels: distributionLabels,
+                    datasets: [{
+                        label: 'Tích lũy (%)',
+                        data: cumulativeData,
+                        borderColor: 'rgba(34, 197, 94, 1)',
+                        backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                        borderWidth: 2,
+                        tension: 0.25,
+                        fill: true,
+                        pointRadius: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    layout: {
+                        padding: {
+                            left: 0,
+                            right: 0,
+                            top: 0,
+                            bottom: 0
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return `${value}%`;
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Tỉ lệ tích lũy'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Khoảng điểm'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Tích lũy: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        const passFailChart = document.getElementById('passFailChart');
+        if (passFailChart) {
+            if (passFailChartInstance) {
+                passFailChartInstance.destroy();
+            }
+
+            const passCount = Number(defaultStats.highScores) || 0;
+            const failCount = Number(defaultStats.lowScores) || 0;
+            const passFailTotal = passCount + failCount;
+
+            passFailChartInstance = new Chart(passFailChart, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Đạt (>=50%)', 'Chưa đạt (<50%)'],
+                    datasets: [{
+                        data: [passCount, failCount],
+                        backgroundColor: ['rgba(59, 130, 246, 0.7)', 'rgba(248, 113, 113, 0.7)'],
+                        borderColor: ['rgba(59, 130, 246, 1)', 'rgba(248, 113, 113, 1)'],
+                        borderWidth: 1,
+                        radius: '95%',
+                        cutout: '60%'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    layout: {
+                        padding: 0
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.raw || 0;
+                                    const percent = passFailTotal > 0
+                                        ? Math.round((value / passFailTotal) * 1000) / 10
+                                        : 0;
+                                    return `${context.label}: ${value} lượt (${percent}%)`;
                                 }
                             }
                         }
@@ -189,11 +335,11 @@ async function loadStatistics() {
                 </thead>
                 <tbody>
                     ${transcriptData.length > 0 ? transcriptData.map((t, idx) => `
-                        <tr>
+                        <tr data-student-id="${t.studentId || ''}" data-student-name="${t.name || ''}" data-student-dob="${t.dob || ''}">
                             <td>${idx + 1}</td>
-                            <td>${t.name}</td>
+                            <td class="clickable-student">${t.name}</td>
                             <td>${t.dob || 'N/A'}</td>
-                            <td>${t.score}%</td>
+                            <td>${(t.bestScore ?? t.score) || 0}%</td>
                         </tr>
                     `).join('') : `
                         <tr>
@@ -202,6 +348,8 @@ async function loadStatistics() {
                     `}
                 </tbody>
             `;
+
+            addTranscriptRowHandlers();
         }
     } catch (error) {
         console.error('Error loading statistics:', error);
@@ -289,7 +437,7 @@ function exportToExcel() {
         'STT': idx + 1,
         'Tên': t.name,
         'Ngày sinh': t.dob || 'N/A',
-        'Điểm': `${t.score}%`
+        'Điểm': `${(t.bestScore ?? t.score) || 0}%`
     }));
     const transcriptSheet = XLSX.utils.json_to_sheet(transcriptData);
     XLSX.utils.book_append_sheet(workbook, transcriptSheet, 'Bảng điểm');
@@ -682,6 +830,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeModalFooterBtn = document.getElementById('close-modal-footer-btn');
     const modalOverlay = document.getElementById('modal-overlay');
     const exportWrongStudentsBtn = document.getElementById('export-wrong-students-btn');
+    const closeAttemptsModalBtn = document.getElementById('close-attempts-modal-btn');
+    const closeAttemptsModalFooterBtn = document.getElementById('close-attempts-modal-footer-btn');
     
     if (closeModalBtn) {
         closeModalBtn.addEventListener('click', closeWrongStudentsModal);
@@ -690,12 +840,108 @@ document.addEventListener('DOMContentLoaded', () => {
         closeModalFooterBtn.addEventListener('click', closeWrongStudentsModal);
     }
     if (modalOverlay) {
-        modalOverlay.addEventListener('click', closeWrongStudentsModal);
+        modalOverlay.addEventListener('click', () => {
+            closeWrongStudentsModal();
+            closeStudentAttemptsModal();
+        });
     }
     if (exportWrongStudentsBtn) {
         exportWrongStudentsBtn.addEventListener('click', exportWrongStudentsList);
     }
+    if (closeAttemptsModalBtn) {
+        closeAttemptsModalBtn.addEventListener('click', closeStudentAttemptsModal);
+    }
+    if (closeAttemptsModalFooterBtn) {
+        closeAttemptsModalFooterBtn.addEventListener('click', closeStudentAttemptsModal);
+    }
 });
+
+function addTranscriptRowHandlers() {
+    const transcriptsTable = document.getElementById('transcripts');
+    if (!transcriptsTable) return;
+
+    const rows = transcriptsTable.querySelectorAll('tbody tr[data-student-id]');
+    rows.forEach(row => {
+        const studentId = row.getAttribute('data-student-id');
+        if (!studentId) return;
+
+        row.style.cursor = 'pointer';
+        row.addEventListener('click', async () => {
+            const studentName = row.getAttribute('data-student-name') || 'Học sinh';
+            const studentDob = row.getAttribute('data-student-dob') || '';
+            await showStudentAttemptsModal(studentId, studentName, studentDob);
+        });
+    });
+}
+
+async function showStudentAttemptsModal(studentId, studentName, studentDob) {
+    const modal = document.getElementById('student-attempts-modal');
+    const overlay = document.getElementById('modal-overlay');
+    const tbody = document.getElementById('student-attempts-table-body');
+    const title = document.getElementById('student-attempts-title');
+
+    if (!modal || !overlay || !tbody) return;
+
+    if (title) {
+        const dobText = studentDob ? ` - ${studentDob}` : '';
+        title.textContent = `Lịch sử làm bài: ${studentName}${dobText}`;
+    }
+
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 30px; color: #999;">Đang tải...</td></tr>';
+    modal.style.display = 'block';
+    overlay.style.display = 'block';
+
+    try {
+        const lessonId = window.currentLessonId || '';
+        const response = await fetch(`/api/lessons/${lessonId}/student-attempts?studentId=${encodeURIComponent(studentId)}`);
+        if (!response.ok) {
+            throw new Error('Failed to load attempts');
+        }
+
+        const data = await response.json();
+        if (!data.success) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 30px; color: #e74c3c;">${data.message || 'Có lỗi khi tải dữ liệu'}</td></tr>`;
+            return;
+        }
+
+        if (data.attempts && data.attempts.length > 0) {
+            let html = '';
+            data.attempts.forEach(attempt => {
+                const timestamp = attempt.timestamp
+                    ? new Date(attempt.timestamp).toLocaleString('vi-VN')
+                    : 'N/A';
+                const timeTakenMinutes = attempt.timeTaken ? Math.round(attempt.timeTaken / 60) : 0;
+                const timeTakenText = attempt.timeTaken ? `${timeTakenMinutes} phút` : 'N/A';
+                const scoreText = attempt.totalPoints > 0
+                    ? `${attempt.scorePercentage}% (${attempt.score}/${attempt.totalPoints})`
+                    : `${attempt.scorePercentage}%`;
+
+                html += `
+                    <tr>
+                        <td>${attempt.attemptNumber}</td>
+                        <td>${timestamp}</td>
+                        <td>${scoreText}</td>
+                        <td>${timeTakenText}</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        } else {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 30px; color: #999;">Không có dữ liệu</td></tr>';
+        }
+    } catch (error) {
+        console.error('Error loading student attempts:', error);
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 30px; color: #e74c3c;">Lỗi: ${error.message}</td></tr>`;
+    }
+}
+
+function closeStudentAttemptsModal() {
+    const modal = document.getElementById('student-attempts-modal');
+    const overlay = document.getElementById('modal-overlay');
+
+    if (modal) modal.style.display = 'none';
+    if (overlay) overlay.style.display = 'none';
+}
 
 function filterTranscripts(filterValue) {
     const transcriptsTable = document.getElementById('transcripts');

@@ -46,7 +46,7 @@
             </div>
         </div>
         
-        <div class="stats-grid">
+        <div class="stats-grid stats-grid-5">
             <div class="stat-card primary mobile-full">
                 <div class="stat-icon">
                     <i class="fas fa-users"></i>
@@ -90,8 +90,25 @@
                     <i class="fas fa-chart-bar"></i> 
                     <span>Phân bố điểm</span>
                 </h3>
-                <div class="chart-container">
-                    <canvas id="scoreChart"></canvas>
+                <div class="chart-grid">
+                    <div class="chart-panel full">
+                        <div class="chart-subtitle">Phân bố điểm theo khoảng</div>
+                        <div class="chart-container">
+                            <canvas id="scoreChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-panel">
+                        <div class="chart-subtitle">Tích lũy theo phần trăm</div>
+                        <div class="chart-container compact">
+                            <canvas id="cumulativeScoreChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-panel">
+                        <div class="chart-subtitle">Tỉ lệ đạt / chưa đạt</div>
+                        <div class="chart-container compact">
+                            <canvas id="passFailChart"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -100,7 +117,7 @@
                     <i class="fas fa-clipboard-check"></i> 
                     <span>Phân tích câu hỏi</span>
                 </h3>
-                <div class="table-responsive">
+                <div class="table-responsive scrollable-table">
                     <table class="statistics-table question-stats-table" id="question-stats">
                         <thead>
                             <tr>
@@ -135,7 +152,7 @@
                         </button>
                     </div>
                 </div>
-                <div class="table-responsive">
+                <div class="table-responsive scrollable-table">
                     <table class="statistics-table" id="transcripts">
                         <thead>
                             <tr>
@@ -189,6 +206,36 @@
             <button id="close-modal-footer-btn" class="btn-primary">
                 Đóng
             </button>
+        </div>
+    </div>
+
+    <!-- Modal for student attempts -->
+    <div id="student-attempts-modal" style="display: none;">
+        <div class="modal-header">
+            <h3 id="student-attempts-title">Lịch sử làm bài</h3>
+            <button id="close-attempts-modal-btn" class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="table-responsive">
+                <table class="statistics-table">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-hashtag"></i> Lần</th>
+                            <th><i class="fas fa-calendar"></i> Thời gian</th>
+                            <th><i class="fas fa-star"></i> Điểm</th>
+                            <th><i class="fas fa-clock"></i> Thời gian làm</th>
+                        </tr>
+                    </thead>
+                    <tbody id="student-attempts-table-body">
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 30px; color: #999;">Đang tải...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button id="close-attempts-modal-footer-btn" class="btn-primary">Đóng</button>
         </div>
     </div>
 
