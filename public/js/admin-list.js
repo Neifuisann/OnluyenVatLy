@@ -15,6 +15,7 @@ let completeTagsData = null; // Cache for complete tags data
 const LESSONS_CACHE_TTL_MS = 300000;
 const LESSONS_PREFETCH_NEIGHBOR_PAGES = 2;
 const LESSONS_CACHE_STORAGE_KEY = 'adminLessonsCache:v1';
+const LESSONS_CACHE_INVALIDATION_KEY = 'adminLessonsCacheInvalidate:v1';
 const TAGS_CACHE_TTL_MS = 300000;
 const TAGS_CACHE_STORAGE_KEY = 'adminTagsCache:v1';
 const STATS_CACHE_TTL_MS = 180000;
@@ -81,6 +82,57 @@ function persistLessonsCacheToStorage() {
         sessionStorage.setItem(LESSONS_CACHE_STORAGE_KEY, JSON.stringify(serializable));
     } catch (error) {
         console.warn('Failed to persist lessons cache to sessionStorage:', error);
+    }
+}
+
+function invalidateLessonsCacheByPages(pages) {
+    const pageSet = new Set(
+        (pages || [])
+            .map((page) => Number(page))
+            .filter((page) => Number.isFinite(page))
+    );
+
+    if (pageSet.size === 0) return;
+
+    let removed = false;
+    lessonsRequestCache.forEach((entry, key) => {
+        const params = new URLSearchParams(key);
+        const page = Number(params.get('page'));
+        if (pageSet.has(page)) {
+            lessonsRequestCache.delete(key);
+            removed = true;
+        }
+    });
+
+    if (removed) {
+        persistLessonsCacheToStorage();
+    }
+}
+
+function consumeLessonsCacheInvalidation() {
+    try {
+        const raw = sessionStorage.getItem(LESSONS_CACHE_INVALIDATION_KEY);
+        if (!raw) return;
+
+        sessionStorage.removeItem(LESSONS_CACHE_INVALIDATION_KEY);
+        const payload = JSON.parse(raw);
+        if (!payload || typeof payload !== 'object') return;
+
+        if (payload.mode === 'all') {
+            invalidateLessonsCache();
+            return;
+        }
+
+        if (Array.isArray(payload.pages)) {
+            invalidateLessonsCacheByPages(payload.pages);
+            return;
+        }
+
+        if (payload.page !== undefined) {
+            invalidateLessonsCacheByPages([payload.page]);
+        }
+    } catch (error) {
+        console.warn('Failed to consume lessons cache invalidation:', error);
     }
 }
 
@@ -208,6 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initializeAdminDashboard() {
     loadLessonsCacheFromStorage();
+    consumeLessonsCacheInvalidation();
 
     // Create search and sort elements if they don't exist
     createEnhancedUIElements();

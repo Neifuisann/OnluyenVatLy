@@ -823,6 +823,15 @@ async function saveLessonConfiguration() {
 
         // Success - clear sessionStorage and redirect
         sessionStorage.removeItem('lessonStage1Data');
+        try {
+            sessionStorage.setItem('adminLessonsCacheInvalidate:v1', JSON.stringify({
+                mode: 'all',
+                reason: editingId ? 'update' : 'create',
+                timestamp: Date.now()
+            }));
+        } catch (error) {
+            console.warn('Failed to flag admin lessons cache invalidation:', error);
+        }
         // Note: No need to reset button state here since we're redirecting
         window.location.href = '/admin';
 
