@@ -6,6 +6,42 @@ let currentSearch = '';
 let currentSortColumn = 'time-desc'; // Default sort: newest first
 let isLoading = false;
 
+const TARGET_TZ_OFFSET_MINUTES = 7 * 60; // UTC+7
+
+function getSystemTimezoneOffsetMinutes(date = new Date()) {
+    return -date.getTimezoneOffset();
+}
+
+function toUtcPlus7Date(dateInput) {
+    const date = new Date(dateInput);
+    if (isNaN(date.getTime())) return null;
+    const localOffsetMinutes = getSystemTimezoneOffsetMinutes(date);
+    const diffMinutes = TARGET_TZ_OFFSET_MINUTES - localOffsetMinutes;
+    return new Date(date.getTime() + diffMinutes * 60 * 1000);
+}
+
+function formatUtcPlus7DateTime(dateInput) {
+    const shiftedDate = toUtcPlus7Date(dateInput);
+    if (!shiftedDate) return 'N/A';
+    return shiftedDate.toLocaleString('vi-VN', {
+        timeZone: 'UTC',
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+function getUtcPlus7DayKey(dateInput) {
+    const shiftedDate = toUtcPlus7Date(dateInput);
+    if (!shiftedDate) return null;
+    const year = shiftedDate.getUTCFullYear();
+    const month = String(shiftedDate.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(shiftedDate.getUTCDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
 // Function to show/hide loader
 function showLoader(show) {
     const loader = document.getElementById('loading-indicator');
@@ -98,10 +134,10 @@ function updateStatisticsCards(historyData) {
     }
     
     // Count submissions from today
-    const today = new Date().setHours(0, 0, 0, 0);
+    const todayKey = getUtcPlus7DayKey(new Date());
     const submissionsToday = historyData.filter(log => {
-        const submissionDate = new Date(log.submittedAt).setHours(0, 0, 0, 0);
-        return submissionDate === today;
+        const submissionKey = getUtcPlus7DayKey(log.submittedAt);
+        return submissionKey && submissionKey === todayKey;
     }).length;
 
     // Update statistics cards with validation
@@ -142,7 +178,7 @@ function exportToExcel() {
         'STT': (currentPage - 1) * itemsPerPage + index + 1,
         'Tên học sinh': log.studentName,
         'Bài học': log.lessonTitle,
-        'Thời gian nộp': new Date(log.submittedAt).toLocaleString(),
+        'Thời gian nộp': formatUtcPlus7DateTime(log.submittedAt),
         'Điểm số': parseFloat(log.score).toFixed(2),
         'Tỉ lệ': log.totalPoints ? ((log.score / log.totalPoints) * 100).toFixed(1) + '%' : 'N/A'
     }));
@@ -400,21 +436,7 @@ function updateTable() {
     
     tbody.innerHTML = window.historyData.map((log, index) => {
         // Validate and format date
-        let submittedAt = 'N/A';
-        try {
-            const date = new Date(log.submittedAt);
-            if (!isNaN(date.getTime())) {
-                submittedAt = date.toLocaleDateString('vi-VN', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-            }
-        } catch (e) {
-            console.warn('Invalid date format for submission:', log.submittedAt);
-        }
+        const submittedAt = formatUtcPlus7DateTime(log.submittedAt);
         
         // Validate and calculate score
         const score = parseFloat(log.score);
