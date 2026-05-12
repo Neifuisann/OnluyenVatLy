@@ -269,6 +269,50 @@
             }
             return "Unrated";
         }
+
+        const TARGET_TZ_OFFSET_MS = 7 * 60 * 60 * 1000; // UTC+7
+
+        function parseUtcDate(dateInput) {
+            if (dateInput instanceof Date) return dateInput;
+            if (typeof dateInput === 'string') {
+                const trimmed = dateInput.trim();
+                const hasTimezone = /[zZ]|[+-]\d{2}:\d{2}$/.test(trimmed);
+                const normalized = hasTimezone ? trimmed : `${trimmed}Z`;
+                const parsed = new Date(normalized);
+                if (!isNaN(parsed.getTime())) return parsed;
+            }
+            return new Date(dateInput);
+        }
+
+        function toUtcPlus7Date(dateInput) {
+            const date = parseUtcDate(dateInput);
+            if (isNaN(date.getTime())) return null;
+            return new Date(date.getTime() + TARGET_TZ_OFFSET_MS);
+        }
+
+        function formatUtcPlus7DateTime(dateInput) {
+            const shiftedDate = toUtcPlus7Date(dateInput);
+            if (!shiftedDate) return 'N/A';
+            return shiftedDate.toLocaleString('vi-VN', {
+                timeZone: 'UTC',
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function formatUtcPlus7DateOnly(dateInput) {
+            const shiftedDate = toUtcPlus7Date(dateInput);
+            if (!shiftedDate) return 'N/A';
+            return shiftedDate.toLocaleDateString('vi-VN', {
+                timeZone: 'UTC',
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        }
         
         async function loadProfile() {
             console.log('[Profile Debug] loadProfile called');
@@ -340,7 +384,7 @@
                                 <i class="fas fa-star"></i> ${Math.round(data.profile.rating?.rating || 1500)} điểm
                                 <span style="color: ${getRatingColor(data.profile.rating?.rating || 1500)}; font-weight: 700;"> (${getRatingTier(data.profile.rating?.rating || 1500)})</span>
                             </p>
-                            <p><i class="fas fa-calendar-alt"></i> Tham gia: ${new Date(data.profile.student.created_at).toLocaleDateString('vi-VN')}</p>
+                            <p><i class="fas fa-calendar-alt"></i> Tham gia: ${formatUtcPlus7DateOnly(data.profile.student.created_at)}</p>
                         </div>
                     </div>
                 `;
@@ -515,7 +559,7 @@
                             <li class="history-item">
                                 <div class="history-details">
                                     <strong>${item.lesson_title || `Bài học ID: ${item.lesson_id}`}</strong> 
-                                    <span><i class="fas fa-clock"></i> ${new Date(item.timestamp).toLocaleString('vi-VN')}</span>
+                                    <span><i class="fas fa-clock"></i> ${formatUtcPlus7DateTime(item.timestamp)}</span>
                                 </div>
                                 ${scoreDisplay}
                             </li>
@@ -569,8 +613,9 @@
             
             // Format data for chart
             const labels = historyData.map(item => {
-                const date = new Date(item.timestamp);
-                return date.toLocaleDateString('vi-VN', { day: 'numeric', month: 'numeric' });
+                const date = toUtcPlus7Date(item.timestamp);
+                if (!date) return '';
+                return date.toLocaleDateString('vi-VN', { timeZone: 'UTC', day: 'numeric', month: 'numeric' });
             });
             
             const ratings = historyData.map(item => Math.round(item.new_rating || 1500));
@@ -583,10 +628,13 @@
                                       (Math.round(firstEntry.new_rating) - firstEntry.rating_change) || 
                                       1500;
                 
-                const firstDate = new Date(firstEntry.timestamp);
-                firstDate.setDate(firstDate.getDate() - 1);
-                
-                labels.unshift(firstDate.toLocaleDateString('vi-VN', { day: 'numeric', month: 'numeric' }));
+                const firstDate = toUtcPlus7Date(firstEntry.timestamp);
+                if (firstDate) {
+                    firstDate.setUTCDate(firstDate.getUTCDate() - 1);
+                    labels.unshift(firstDate.toLocaleDateString('vi-VN', { timeZone: 'UTC', day: 'numeric', month: 'numeric' }));
+                } else {
+                    labels.unshift('');
+                }
                 ratings.unshift(startingRating);
                 pointColors.unshift(getRatingColor(startingRating));
             }

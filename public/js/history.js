@@ -6,18 +6,24 @@ let currentSearch = '';
 let currentSortColumn = 'time-desc'; // Default sort: newest first
 let isLoading = false;
 
-const TARGET_TZ_OFFSET_MINUTES = 7 * 60; // UTC+7
+const TARGET_TZ_OFFSET_MS = 7 * 60 * 60 * 1000; // UTC+7
 
-function getSystemTimezoneOffsetMinutes(date = new Date()) {
-    return -date.getTimezoneOffset();
+function parseUtcDate(dateInput) {
+    if (dateInput instanceof Date) return dateInput;
+    if (typeof dateInput === 'string') {
+        const trimmed = dateInput.trim();
+        const hasTimezone = /[zZ]|[+-]\d{2}:\d{2}$/.test(trimmed);
+        const normalized = hasTimezone ? trimmed : `${trimmed}Z`;
+        const parsed = new Date(normalized);
+        if (!isNaN(parsed.getTime())) return parsed;
+    }
+    return new Date(dateInput);
 }
 
 function toUtcPlus7Date(dateInput) {
-    const date = new Date(dateInput);
+    const date = parseUtcDate(dateInput);
     if (isNaN(date.getTime())) return null;
-    const localOffsetMinutes = getSystemTimezoneOffsetMinutes(date);
-    const diffMinutes = TARGET_TZ_OFFSET_MINUTES - localOffsetMinutes;
-    return new Date(date.getTime() + diffMinutes * 60 * 1000);
+    return new Date(date.getTime() + TARGET_TZ_OFFSET_MS);
 }
 
 function formatUtcPlus7DateTime(dateInput) {
